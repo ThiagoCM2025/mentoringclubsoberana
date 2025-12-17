@@ -20,6 +20,7 @@ import AdminStudents from "./pages/admin/AdminStudents";
 import AdminStudentProfile from "./pages/admin/AdminStudentProfile";
 import AdminEnrollments from "./pages/admin/AdminEnrollments";
 import AdminLeads from "./pages/admin/AdminLeads";
+import AdminSettings from "./pages/admin/AdminSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -132,6 +133,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin>
                   <AdminLeads />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/settings"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminSettings />
                 </ProtectedRoute>
               }
             />
