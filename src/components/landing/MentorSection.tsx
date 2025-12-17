@@ -4,7 +4,7 @@ import { useRef } from "react";
 import mentorSobre from "@/assets/mentor-sobre.jpg";
 import patternCirclesMarsala from "@/assets/brand/pattern-circles-marsala.png";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
-import isotipoMarsala from "@/assets/brand/isotipo-marsala.png";
+import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 
 export const MentorSection = () => {
   const ref = useRef(null);
@@ -92,6 +92,11 @@ export const MentorSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="order-1 lg:order-2"
           >
+            {/* Isotipo S decoration */}
+            <div className="flex mb-4">
+              <img src={isotipoSGold} alt="" className="w-10 h-10 opacity-80" />
+            </div>
+            
             <span className="inline-block text-secondary text-xs tracking-[0.25em] uppercase mb-6">
               A Metodologia
             </span>

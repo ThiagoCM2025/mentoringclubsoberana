@@ -677,4 +677,57 @@
     background: linear-gradient(to bottom, hsl(var(--secondary) / 0.1), transparent);
     pointer-events: none;
   }
+
+  /* ============ CTA PREMIUM EFFECTS ============ */
+  
+  .cta-premium {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+      0 0 30px hsla(38, 30%, 51%, 0.25),
+      0 4px 20px hsla(0, 0%, 0%, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .cta-premium::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 20%,
+      hsla(43, 100%, 90%, 0.2) 40%,
+      hsla(43, 100%, 90%, 0.3) 50%,
+      hsla(43, 100%, 90%, 0.2) 60%,
+      transparent 80%
+    );
+    background-size: 200% 100%;
+    animation: cta-shimmer 3s infinite linear;
+    pointer-events: none;
+  }
+
+  .cta-premium:hover {
+    box-shadow: 
+      0 0 50px hsla(38, 30%, 51%, 0.4),
+      0 8px 30px hsla(0, 0%, 0%, 0.15);
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  .cta-premium:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  @keyframes cta-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* CTA glow ring on focus */
+  .cta-premium:focus-visible {
+    outline: none;
+    box-shadow: 
+      0 0 0 3px hsl(var(--background)),
+      0 0 0 6px hsl(var(--secondary)),
+      0 0 50px hsla(38, 30%, 51%, 0.4);
+  }
 }

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, ArrowRight } from "lucide-react";
 import patternCirclesWhite from "@/assets/brand/pattern-circles-white.png";
 import isotipoWhite from "@/assets/brand/isotipo-white.png";
+import isotipoSWhite from "@/assets/brand/isotipo-s-white.png";
 
 export const DuvidaCTASection = () => {
   const ref = useRef(null);
@@ -37,6 +38,11 @@ export const DuvidaCTASection = () => {
           transition={{ duration: 0.6 }}
           className="max-w-3xl mx-auto text-center"
         >
+          {/* Isotipo S decoration */}
+          <div className="flex justify-center mb-4">
+            <img src={isotipoSWhite} alt="" className="w-10 h-10 opacity-80" />
+          </div>
+          
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-primary-foreground mb-6">
             Ainda está em dúvida sobre qual o{" "}
             <span className="text-secondary">melhor caminho</span> para você?
@@ -48,7 +54,7 @@ export const DuvidaCTASection = () => {
           <Button
             asChild
             size="lg"
-            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 py-6 text-lg group"
+            className="cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 py-6 text-lg group"
           >
             <a
               href="https://wa.me/5511993563468?text=Olá! Estou em dúvida sobre qual programa escolher e gostaria de uma orientação."
