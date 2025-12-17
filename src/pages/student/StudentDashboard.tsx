@@ -19,7 +19,10 @@ import {
   Medal,
   ChevronRight,
   Heart,
-  Users
+  Users,
+  MessageCircle,
+  Settings,
+  Search
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -30,8 +33,9 @@ import CoursePreviewModal from "@/components/student/CoursePreviewModal";
 import { DiagnosticBanner } from "@/components/student/DiagnosticBanner";
 import { NotificationBell } from "@/components/student/NotificationBell";
 import StudyReminderButton from "@/components/student/StudyReminderButton";
+import { SoberanaLogo } from "@/components/brand/SoberanaLogo";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
-import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
+import heroVariations from "@/assets/hero-variations.jpeg";
 
 interface Course {
   id: string;
@@ -238,74 +242,67 @@ const StudentDashboard = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Header - Premium Black with Gold accents */}
-      <header className="bg-black/95 backdrop-blur-sm border-b border-secondary/20 py-4 px-4 sticky top-0 z-50">
+      {/* Header - Premium Navbar estilo MestresAI */}
+      <header className="bg-black/95 backdrop-blur-sm border-b border-secondary/20 py-3 px-4 sticky top-0 z-50">
         <div className="container-soberana flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={isotipoGold} alt="Soberana" className="w-10 h-10 object-contain" />
-            <span className="font-serif font-bold text-xl hidden sm:block text-secondary">Área do Aluno</span>
-          </div>
+          {/* Logo */}
+          <SoberanaLogo size="md" />
           
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-6">
-            <nav className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/student/favorites")}
-                className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
-              >
-                <Heart className="w-4 h-4 mr-2" />
-                Favoritos
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/student/community")}
-                className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
-              >
-                <Users className="w-4 h-4 mr-2" />
-                Comunidade
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/student/achievements")}
-                className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
-              >
-                <Trophy className="w-4 h-4 mr-2" />
-                Conquistas
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/student/certificates")}
-                className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
-              >
-                <Medal className="w-4 h-4 mr-2" />
-                Certificados
-              </Button>
-            </nav>
-            <div className="flex items-center gap-1">
-              <StudyReminderButton />
-              <NotificationBell />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
-                onClick={() => navigate("/student/profile")}
-              >
-                <User className="w-5 h-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleSignOut}
-                className="text-cream/70 hover:text-red-400 hover:bg-red-400/10"
-              >
-                <LogOut className="w-5 h-5" />
-              </Button>
-            </div>
+          {/* Desktop Nav - Centro */}
+          <nav className="hidden md:flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/student")}
+              className="text-cream hover:text-secondary hover:bg-secondary/10"
+            >
+              Início
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/student/favorites")}
+              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
+            >
+              Favoritos
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/student/community")}
+              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
+            >
+              Comunidades
+            </Button>
+          </nav>
+
+          {/* Desktop Icons - Direita */}
+          <div className="hidden md:flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
+            >
+              <Search className="w-5 h-5" />
+            </Button>
+            <StudyReminderButton />
+            <NotificationBell />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
+              onClick={() => navigate("/student/profile")}
+            >
+              <User className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSignOut}
+              className="text-cream/70 hover:text-red-400 hover:bg-red-400/10"
+            >
+              <LogOut className="w-5 h-5" />
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -380,67 +377,156 @@ const StudentDashboard = () => {
         )}
       </header>
 
+      {/* Hero Banner Full-Width - Estilo MestresAI */}
+      <section className="relative h-[420px] md:h-[480px] w-full overflow-hidden">
+        {/* Background Image */}
+        <img 
+          src={heroVariations} 
+          alt="Hero"
+          className="absolute inset-0 w-full h-full object-cover object-top"
+        />
+        
+        {/* Gradient Overlay - Dark com dourado */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+        
+        {/* Content */}
+        <div className="relative z-10 h-full flex items-center container-soberana px-4">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-xl"
+          >
+            {/* Logo e brand */}
+            <div className="flex items-center gap-4 mb-6">
+              <img src={isotipoGold} alt="Soberana" className="w-20 h-20 drop-shadow-[0_0_20px_rgba(166,144,97,0.4)]" />
+              <span className="font-serif text-4xl md:text-5xl font-bold text-secondary drop-shadow-lg">SOBERANA</span>
+            </div>
+            
+            {/* Welcome text */}
+            <h1 className="text-2xl md:text-3xl font-serif text-cream mb-4 leading-tight">
+              Bem-vinda ao Mentoring Club Soberana —
+            </h1>
+            <p className="text-cream/70 text-base md:text-lg leading-relaxed">
+              O lugar onde advogadas estão se transformando em empresárias de sucesso. 
+              A mentoria é o poder que move sua jornada soberana.
+            </p>
+          </motion.div>
+        </div>
+        
+        {/* Arrow indicator */}
+        <button className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 p-2 rounded-full bg-secondary/10 border border-secondary/30 hover:bg-secondary/20 transition-colors">
+          <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-cream/60" />
+        </button>
+      </section>
+
       <main className="container-soberana py-8 px-4">
-        {/* Welcome Banner with XP - Premium Black/Gold */}
+        {/* XP e Streak Badges */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-900 via-black to-zinc-900 p-6 md:p-8 mb-8 border border-secondary/20"
+          transition={{ delay: 0.2 }}
+          className="flex flex-wrap items-center gap-4 mb-8 -mt-16 relative z-20"
         >
-          {/* Decorative pattern */}
           <div 
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `url(${patternCirclesGold})`,
-              backgroundRepeat: 'repeat',
-              backgroundSize: '200px',
-            }}
-          />
-          
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div>
-              <h1 className="text-2xl md:text-4xl font-serif font-bold text-cream mb-2">
-                Olá, {firstName}! 👋
-              </h1>
-              <p className="text-cream/60 max-w-xl">
-                Continue sua jornada para se tornar uma advogada soberana.
-              </p>
+            className="bg-black/90 backdrop-blur-sm border border-secondary/30 rounded-xl p-4 cursor-pointer hover:border-secondary/60 transition-all shadow-[0_0_30px_rgba(166,144,97,0.15)]"
+            onClick={() => navigate("/student/achievements")}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <Star className="w-5 h-5 text-secondary" />
+              <span className="text-sm text-cream/60">Nível {level}</span>
             </div>
-            
-            {/* XP and Streak */}
-            <div className="flex items-center gap-4">
-              <div 
-                className="bg-secondary/10 border border-secondary/20 backdrop-blur-sm rounded-xl p-4 cursor-pointer hover:bg-secondary/20 transition-colors"
-                onClick={() => navigate("/student/achievements")}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <Star className="w-5 h-5 text-secondary" />
-                  <span className="text-sm text-cream/60">Nível {level}</span>
-                </div>
-                <p className="text-2xl font-bold text-cream">{gamificationStats?.xp || 0} XP</p>
-                <Progress value={levelProgress} className="h-1.5 mt-2 bg-secondary/20" />
-              </div>
-              
-              <div 
-                className="bg-orange-500/10 border border-orange-500/20 backdrop-blur-sm rounded-xl p-4 cursor-pointer hover:bg-orange-500/20 transition-colors"
-                onClick={() => navigate("/student/achievements")}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <Flame className="w-5 h-5 text-orange-400" />
-                  <span className="text-sm text-cream/60">Streak</span>
-                </div>
-                <p className="text-2xl font-bold text-cream">{gamificationStats?.streak_days || 0} dias</p>
-              </div>
-            </div>
+            <p className="text-2xl font-bold text-cream">{gamificationStats?.xp || 0} XP</p>
+            <Progress value={levelProgress} className="h-1.5 mt-2 bg-secondary/20" />
           </div>
           
-          {/* Decorative glow elements */}
-          <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl" />
-          <div className="absolute right-20 top-0 w-20 h-20 bg-secondary/5 rounded-full blur-2xl" />
+          <div 
+            className="bg-black/90 backdrop-blur-sm border border-orange-500/30 rounded-xl p-4 cursor-pointer hover:border-orange-500/60 transition-all shadow-[0_0_30px_rgba(249,115,22,0.1)]"
+            onClick={() => navigate("/student/achievements")}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <Flame className="w-5 h-5 text-orange-400" />
+              <span className="text-sm text-cream/60">Streak</span>
+            </div>
+            <p className="text-2xl font-bold text-cream">{gamificationStats?.streak_days || 0} dias</p>
+          </div>
         </motion.div>
 
         {/* Diagnostic Banner */}
         <DiagnosticBanner />
+
+        {/* Bem Vinda Cards - Estilo MestresAI */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-serif font-bold text-cream mb-6">
+            Bem Vinda, {firstName}!
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Card 1 - Plataforma */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all hover:shadow-[0_0_40px_rgba(166,144,97,0.15)]"
+            >
+              <div className="aspect-[4/3] relative">
+                <img 
+                  src={heroVariations} 
+                  alt="Plataforma"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                <div className="absolute top-3 left-3 bg-secondary text-black text-xs font-semibold px-3 py-1 rounded">
+                  BEM VINDA À PLATAFORMA
+                </div>
+                <div className="absolute bottom-4 left-4">
+                  <span className="font-serif text-2xl text-secondary font-bold">SOBERANA</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Card 2 - Comunidade */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              onClick={() => navigate("/student/community")}
+              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all cursor-pointer hover:shadow-[0_0_40px_rgba(166,144,97,0.15)]"
+            >
+              <div className="aspect-[4/3] relative bg-gradient-to-br from-zinc-800 to-zinc-900 flex flex-col items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-secondary/20 border border-secondary/40 flex items-center justify-center mb-4">
+                  <MessageCircle className="w-8 h-8 text-secondary" />
+                </div>
+                <h3 className="text-lg font-semibold text-cream mb-1">Acesse a Comunidade</h3>
+                <p className="text-cream/50 text-sm">Conecte-se com outras Soberanas</p>
+                <div className="absolute top-3 left-3 bg-secondary/20 border border-secondary/40 text-secondary text-xs font-semibold px-3 py-1 rounded">
+                  COMUNIDADE
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Card 3 - Conquistas */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              onClick={() => navigate("/student/achievements")}
+              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all cursor-pointer hover:shadow-[0_0_40px_rgba(166,144,97,0.15)]"
+            >
+              <div className="aspect-[4/3] relative bg-gradient-to-br from-zinc-800 to-zinc-900 flex flex-col items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-secondary/20 border border-secondary/40 flex items-center justify-center mb-4">
+                  <Trophy className="w-8 h-8 text-secondary" />
+                </div>
+                <h3 className="text-lg font-semibold text-cream mb-1">Suas Conquistas</h3>
+                <p className="text-cream/50 text-sm">Veja seu progresso e badges</p>
+                <div className="absolute top-3 left-3 bg-secondary/20 border border-secondary/40 text-secondary text-xs font-semibold px-3 py-1 rounded">
+                  GAMIFICAÇÃO
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
@@ -488,35 +574,15 @@ const StudentDashboard = () => {
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="aspect-[16/10] rounded-xl bg-zinc-800 mb-4" />
-                  <div className="h-6 bg-zinc-800 rounded w-3/4 mb-2" />
-                  <div className="h-4 bg-zinc-800 rounded w-1/2" />
-                </div>
+                <div key={i} className="aspect-[4/3] rounded-xl bg-zinc-900 animate-pulse" />
               ))}
             </div>
-          ) : enrollments.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-zinc-900 rounded-2xl p-8 text-center border border-secondary/10"
-            >
-              <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-8 h-8 text-cream/40" />
-              </div>
-              <h3 className="text-lg font-serif font-semibold text-cream mb-2">
-                Nenhum curso ainda
-              </h3>
-              <p className="text-cream/50 text-sm max-w-md mx-auto">
-                Você ainda não está matriculada em nenhum curso. Explore os cursos disponíveis abaixo!
-              </p>
-            </motion.div>
-          ) : (
+          ) : enrollments.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {enrollments.map((enrollment, index) => (
                 <CourseCard
                   key={enrollment.course_id}
-                  id={enrollment.course_id}
+                  id={enrollment.courses.id}
                   title={enrollment.courses.title}
                   description={enrollment.courses.description}
                   thumbnail={enrollment.courses.thumbnail_url}
@@ -527,47 +593,47 @@ const StudentDashboard = () => {
                 />
               ))}
             </div>
+          ) : (
+            <div className="text-center py-16 bg-zinc-900/50 rounded-2xl border border-secondary/10">
+              <BookOpen className="w-16 h-16 text-secondary/40 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-cream mb-2">
+                Nenhum curso ainda
+              </h3>
+              <p className="text-cream/60 max-w-md mx-auto">
+                Você ainda não está matriculada em nenhum curso. Explore os cursos disponíveis abaixo.
+              </p>
+            </div>
           )}
         </section>
 
-        {/* Available Courses (Locked) */}
-        {(() => {
-          const enrolledIds = new Set(enrollments.map(e => e.course_id));
-          const lockedCourses = allCourses.filter(c => !enrolledIds.has(c.id));
-          
-          if (lockedCourses.length === 0) return null;
-          
-          return (
-            <section>
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-serif font-bold text-cream">
-                    Cursos Disponíveis
-                  </h2>
-                  <p className="text-cream/50 text-sm mt-1">
-                    Expanda seu conhecimento com nossos outros cursos
-                  </p>
-                </div>
-              </div>
+        {/* Available Courses */}
+        {allCourses.filter(course => !enrollments.find(e => e.course_id === course.id)).length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-serif font-bold text-cream">
+                Cursos Disponíveis
+              </h2>
+            </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {lockedCourses.map((course, index) => (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {allCourses
+                .filter(course => !enrollments.find(e => e.course_id === course.id))
+                .map((course, index) => (
                   <CourseCard
                     key={course.id}
                     id={course.id}
                     title={course.title}
                     description={course.description}
                     thumbnail={course.thumbnail_url}
-                    isLocked={true}
+                    isLocked
                     price={course.price}
                     index={index}
                     onPreview={() => setPreviewCourseId(course.id)}
                   />
                 ))}
-              </div>
-            </section>
-          );
-        })()}
+            </div>
+          </section>
+        )}
       </main>
 
       {/* Course Preview Modal */}

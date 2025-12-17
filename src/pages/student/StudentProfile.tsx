@@ -23,7 +23,7 @@ import {
   BookOpen,
   Loader2
 } from "lucide-react";
-import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
+import { SoberanaLogo } from "@/components/brand/SoberanaLogo";
 import StudyReminderDialog from "@/components/student/StudyReminderDialog";
 
 interface Profile {
@@ -281,8 +281,7 @@ const StudentProfile = () => {
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-3">
-              <img src={isotipoGold} alt="Soberana" className="w-10 h-10 object-contain" />
-              <span className="font-serif font-bold text-xl text-secondary">Meu Perfil</span>
+              <SoberanaLogo size="md" />
             </div>
           </div>
         </div>
