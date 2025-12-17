@@ -9,7 +9,8 @@ import {
   TrendingUp,
   Target,
   GraduationCap,
-  Activity
+  Activity,
+  Calendar
 } from "lucide-react";
 import {
   LineChart,
@@ -34,6 +35,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+type PeriodFilter = '7d' | '30d' | '6m' | '1y';
 
 interface Stats {
   totalCourses: number;
@@ -45,7 +55,7 @@ interface Stats {
 }
 
 interface EnrollmentTrend {
-  month: string;
+  period: string;
   enrollments: number;
 }
 
@@ -53,6 +63,12 @@ interface LeadByStatus {
   name: string;
   value: number;
   color: string;
+}
+
+interface StudentProgress {
+  name: string;
+  completed: number;
+  inProgress: number;
 }
 
 interface RecentActivity {
@@ -76,6 +92,32 @@ const LEAD_STATUS_LABELS: Record<string, string> = {
   lost: 'Perdidos'
 };
 
+const PERIOD_OPTIONS = [
+  { value: '7d', label: '7 dias' },
+  { value: '30d', label: '30 dias' },
+  { value: '6m', label: '6 meses' },
+  { value: '1y', label: '1 ano' },
+];
+
+const getDateFromPeriod = (period: PeriodFilter): Date => {
+  const date = new Date();
+  switch (period) {
+    case '7d':
+      date.setDate(date.getDate() - 7);
+      break;
+    case '30d':
+      date.setDate(date.getDate() - 30);
+      break;
+    case '6m':
+      date.setMonth(date.getMonth() - 6);
+      break;
+    case '1y':
+      date.setFullYear(date.getFullYear() - 1);
+      break;
+  }
+  return date;
+};
+
 const AdminDashboard = () => {
   const [stats, setStats] = useState<Stats>({
     totalCourses: 0,
@@ -87,22 +129,35 @@ const AdminDashboard = () => {
   });
   const [enrollmentTrends, setEnrollmentTrends] = useState<EnrollmentTrend[]>([]);
   const [leadsByStatus, setLeadsByStatus] = useState<LeadByStatus[]>([]);
+  const [studentProgress, setStudentProgress] = useState<StudentProgress[]>([]);
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [enrollmentPeriod, setEnrollmentPeriod] = useState<PeriodFilter>('6m');
+  const [leadsPeriod, setLeadsPeriod] = useState<PeriodFilter>('30d');
+  const [progressPeriod, setProgressPeriod] = useState<PeriodFilter>('30d');
 
   useEffect(() => {
-    fetchAllData();
+    fetchStats();
+    fetchRecentActivities();
   }, []);
 
-  const fetchAllData = async () => {
-    await Promise.all([
-      fetchStats(),
-      fetchEnrollmentTrends(),
-      fetchLeadsByStatus(),
-      fetchRecentActivities()
-    ]);
-    setLoading(false);
-  };
+  useEffect(() => {
+    fetchEnrollmentTrends();
+  }, [enrollmentPeriod]);
+
+  useEffect(() => {
+    fetchLeadsByStatus();
+  }, [leadsPeriod]);
+
+  useEffect(() => {
+    fetchStudentProgress();
+  }, [progressPeriod]);
+
+  useEffect(() => {
+    if (stats.totalCourses > 0 || enrollmentTrends.length > 0) {
+      setLoading(false);
+    }
+  }, [stats, enrollmentTrends]);
 
   const fetchStats = async () => {
     // Total courses
@@ -164,40 +219,57 @@ const AdminDashboard = () => {
   };
 
   const fetchEnrollmentTrends = async () => {
-    // Get enrollments from last 6 months
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    const startDate = getDateFromPeriod(enrollmentPeriod);
 
     const { data: enrollments } = await supabase
       .from("enrollments")
       .select("enrolled_at")
-      .gte("enrolled_at", sixMonthsAgo.toISOString())
+      .gte("enrolled_at", startDate.toISOString())
       .order("enrolled_at", { ascending: true });
 
     if (enrollments) {
-      // Group by month
-      const monthlyData: Record<string, number> = {};
       const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-      
-      // Initialize last 6 months
-      for (let i = 5; i >= 0; i--) {
-        const date = new Date();
-        date.setMonth(date.getMonth() - i);
-        const key = `${months[date.getMonth()]}/${date.getFullYear().toString().slice(2)}`;
-        monthlyData[key] = 0;
+      const groupedData: Record<string, number> = {};
+
+      // Initialize periods based on filter
+      if (enrollmentPeriod === '7d' || enrollmentPeriod === '30d') {
+        // Group by day
+        const days = enrollmentPeriod === '7d' ? 7 : 30;
+        for (let i = days - 1; i >= 0; i--) {
+          const date = new Date();
+          date.setDate(date.getDate() - i);
+          const key = `${date.getDate()}/${date.getMonth() + 1}`;
+          groupedData[key] = 0;
+        }
+        
+        enrollments.forEach(e => {
+          const date = new Date(e.enrolled_at);
+          const key = `${date.getDate()}/${date.getMonth() + 1}`;
+          if (key in groupedData) {
+            groupedData[key]++;
+          }
+        });
+      } else {
+        // Group by month
+        const monthsCount = enrollmentPeriod === '6m' ? 6 : 12;
+        for (let i = monthsCount - 1; i >= 0; i--) {
+          const date = new Date();
+          date.setMonth(date.getMonth() - i);
+          const key = `${months[date.getMonth()]}/${date.getFullYear().toString().slice(2)}`;
+          groupedData[key] = 0;
+        }
+
+        enrollments.forEach(e => {
+          const date = new Date(e.enrolled_at);
+          const key = `${months[date.getMonth()]}/${date.getFullYear().toString().slice(2)}`;
+          if (key in groupedData) {
+            groupedData[key]++;
+          }
+        });
       }
 
-      // Count enrollments per month
-      enrollments.forEach(e => {
-        const date = new Date(e.enrolled_at);
-        const key = `${months[date.getMonth()]}/${date.getFullYear().toString().slice(2)}`;
-        if (key in monthlyData) {
-          monthlyData[key]++;
-        }
-      });
-
-      const trends = Object.entries(monthlyData).map(([month, enrollments]) => ({
-        month,
+      const trends = Object.entries(groupedData).map(([period, enrollments]) => ({
+        period,
         enrollments
       }));
 
@@ -206,9 +278,12 @@ const AdminDashboard = () => {
   };
 
   const fetchLeadsByStatus = async () => {
+    const startDate = getDateFromPeriod(leadsPeriod);
+
     const { data: leads } = await supabase
       .from("leads")
-      .select("status");
+      .select("status")
+      .gte("created_at", startDate.toISOString());
 
     if (leads) {
       const statusCounts: Record<string, number> = {
@@ -234,6 +309,60 @@ const AdminDashboard = () => {
         }));
 
       setLeadsByStatus(chartData);
+    }
+  };
+
+  const fetchStudentProgress = async () => {
+    const startDate = getDateFromPeriod(progressPeriod);
+
+    // Get progress data with user info
+    const { data: progressData } = await supabase
+      .from("progress")
+      .select("user_id, completed, updated_at")
+      .gte("updated_at", startDate.toISOString());
+
+    if (progressData && progressData.length > 0) {
+      // Group by user
+      const userProgress: Record<string, { completed: number; inProgress: number }> = {};
+      
+      progressData.forEach(p => {
+        if (!userProgress[p.user_id]) {
+          userProgress[p.user_id] = { completed: 0, inProgress: 0 };
+        }
+        if (p.completed) {
+          userProgress[p.user_id].completed++;
+        } else {
+          userProgress[p.user_id].inProgress++;
+        }
+      });
+
+      // Get top 5 by completed lessons
+      const topUserIds = Object.entries(userProgress)
+        .sort((a, b) => b[1].completed - a[1].completed)
+        .slice(0, 5)
+        .map(([userId]) => userId);
+
+      if (topUserIds.length > 0) {
+        // Fetch user names
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, full_name")
+          .in("user_id", topUserIds);
+
+        const nameMap = new Map(profiles?.map(p => [p.user_id, p.full_name]) || []);
+
+        const chartData = topUserIds.map(userId => ({
+          name: nameMap.get(userId)?.split(' ')[0] || 'Aluno',
+          completed: userProgress[userId].completed,
+          inProgress: userProgress[userId].inProgress
+        }));
+
+        setStudentProgress(chartData);
+      } else {
+        setStudentProgress([]);
+      }
+    } else {
+      setStudentProgress([]);
     }
   };
 
@@ -313,6 +442,22 @@ const AdminDashboard = () => {
     }
   };
 
+  const PeriodSelector = ({ value, onChange }: { value: PeriodFilter; onChange: (v: PeriodFilter) => void }) => (
+    <Select value={value} onValueChange={(v) => onChange(v as PeriodFilter)}>
+      <SelectTrigger className="w-[120px] h-8 text-xs">
+        <Calendar className="w-3 h-3 mr-1" />
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {PERIOD_OPTIONS.map(opt => (
+          <SelectItem key={opt.value} value={opt.value} className="text-xs">
+            {opt.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+
   return (
     <AdminLayout>
       <div className="p-6 lg:p-8">
@@ -359,22 +504,26 @@ const AdminDashboard = () => {
             transition={{ delay: 0.3 }}
             className="card-elegant p-6"
           >
-            <h3 className="font-serif font-semibold text-foreground mb-4">
-              Matrículas (Últimos 6 meses)
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-serif font-semibold text-foreground">
+                Matrículas
+              </h3>
+              <PeriodSelector value={enrollmentPeriod} onChange={setEnrollmentPeriod} />
+            </div>
             <div className="h-64">
               {enrollmentTrends.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={enrollmentTrends}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis 
-                      dataKey="month" 
+                      dataKey="period" 
                       stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
+                      fontSize={10}
+                      tick={{ fontSize: 10 }}
                     />
                     <YAxis 
                       stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
+                      fontSize={10}
                     />
                     <Tooltip 
                       contentStyle={{
@@ -408,9 +557,12 @@ const AdminDashboard = () => {
             transition={{ delay: 0.4 }}
             className="card-elegant p-6"
           >
-            <h3 className="font-serif font-semibold text-foreground mb-4">
-              Leads por Status
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-serif font-semibold text-foreground">
+                Leads por Status
+              </h3>
+              <PeriodSelector value={leadsPeriod} onChange={setLeadsPeriod} />
+            </div>
             <div className="h-64">
               {leadsByStatus.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
@@ -440,12 +592,68 @@ const AdminDashboard = () => {
                 </ResponsiveContainer>
               ) : (
                 <div className="h-full flex items-center justify-center text-muted-foreground">
-                  Sem leads cadastrados
+                  Sem leads no período
                 </div>
               )}
             </div>
           </motion.div>
         </div>
+
+        {/* Student Progress Chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+          className="card-elegant p-6 mb-8"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-serif font-semibold text-foreground">
+              Top 5 Alunos Mais Ativos
+            </h3>
+            <PeriodSelector value={progressPeriod} onChange={setProgressPeriod} />
+          </div>
+          <div className="h-64">
+            {studentProgress.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={studentProgress} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                  <YAxis 
+                    dataKey="name" 
+                    type="category" 
+                    stroke="hsl(var(--muted-foreground))" 
+                    fontSize={11}
+                    width={80}
+                  />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend />
+                  <Bar 
+                    dataKey="completed" 
+                    fill="#10b981" 
+                    name="Concluídas"
+                    radius={[0, 4, 4, 0]}
+                  />
+                  <Bar 
+                    dataKey="inProgress" 
+                    fill="#f59e0b" 
+                    name="Em Progresso"
+                    radius={[0, 4, 4, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-muted-foreground">
+                Sem dados de progresso no período
+              </div>
+            )}
+          </div>
+        </motion.div>
 
         {/* Bottom Row */}
         <div className="grid lg:grid-cols-3 gap-6">
