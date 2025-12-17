@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import heroVariations from "@/assets/hero-variations.jpeg";
-import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import { SoberanaLogoMark } from "./SoberanaLogoMark";
 
 export const HeroSection = () => {
@@ -35,16 +34,6 @@ export const HeroSection = () => {
               rgba(0,0,0,0.95) 100%
             )
           `
-        }}
-      />
-      
-      {/* Circle Pattern - premium texture */}
-      <div 
-        className="absolute inset-0 z-[2] opacity-[0.06]"
-        style={{
-          backgroundImage: `url(${patternCirclesGold})`,
-          backgroundRepeat: 'repeat',
-          backgroundSize: '300px',
         }}
       />
 
