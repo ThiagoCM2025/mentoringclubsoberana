@@ -38,6 +38,8 @@ import { DiagnosticBanner } from "@/components/student/DiagnosticBanner";
 import { NotificationBell } from "@/components/student/NotificationBell";
 import StudyReminderButton from "@/components/student/StudyReminderButton";
 import { SoberanaLogo } from "@/components/brand/SoberanaLogo";
+import ProgramCard from "@/components/student/ProgramCard";
+import { programsList } from "@/data/programs";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import heroVariations from "@/assets/hero-variations.jpeg";
 
@@ -842,34 +844,57 @@ const StudentDashboard = () => {
           )}
         </section>
 
-        {/* Available Courses */}
-        {allCourses.filter(course => !enrollments.find(e => e.course_id === course.id)).length > 0 && (
-          <section className="mb-12">
-            <div className="flex items-center justify-between mb-6">
+        {/* A Jornada Soberana - Programas */}
+        <section className="mb-12">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex items-center justify-between mb-6"
+          >
+            <div>
               <h2 className="text-2xl font-serif font-bold text-cream">
-                Cursos Disponíveis
+                A Jornada Soberana
               </h2>
+              <p className="text-cream/50 text-sm mt-1">
+                Conheça nossos programas e evolua sua carreira
+              </p>
             </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="border-secondary/30 text-secondary hover:bg-secondary/10"
+              onClick={() => navigate('/#jornada')}
+            >
+              Ver no Site
+              <ExternalLink className="w-4 h-4 ml-2" />
+            </Button>
+          </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {allCourses
-                .filter(course => !enrollments.find(e => e.course_id === course.id))
-                .map((course, index) => (
-                  <CourseCard
-                    key={course.id}
-                    id={course.id}
-                    title={course.title}
-                    description={course.description}
-                    thumbnail={course.thumbnail_url}
-                    isLocked
-                    price={course.price}
-                    index={index}
-                    onPreview={() => setPreviewCourseId(course.id)}
-                  />
-                ))}
-            </div>
-          </section>
-        )}
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.12,
+                  delayChildren: 0.4
+                }
+              }
+            }}
+          >
+            {programsList.map((program, index) => (
+              <ProgramCard 
+                key={program.slug} 
+                program={program} 
+                index={index} 
+              />
+            ))}
+          </motion.div>
+        </section>
       </main>
 
       {/* Course Preview Modal */}
