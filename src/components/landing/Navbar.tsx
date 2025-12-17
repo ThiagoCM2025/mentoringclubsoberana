@@ -47,12 +47,15 @@ export const Navbar = () => {
         <div className="container-soberana px-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center">
+            <button 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="flex items-center cursor-pointer"
+            >
               <SoberanaLogoMark 
                 variant={isScrolled ? "scrolled" : "light"} 
                 size="md" 
               />
-            </Link>
+            </button>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-8">

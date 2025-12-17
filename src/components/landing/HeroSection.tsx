@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import heroVariations from "@/assets/hero-variations.jpeg";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
-import isotipoGold from "@/assets/brand/isotipo-gold.png";
 import { SoberanaLogoMark } from "./SoberanaLogoMark";
 
 export const HeroSection = () => {
@@ -48,16 +47,6 @@ export const HeroSection = () => {
           backgroundSize: '300px',
         }}
       />
-
-      {/* Isotipo Gold - decorative element bottom left */}
-      <div className="absolute bottom-32 left-8 z-[3] opacity-10 hidden lg:block">
-        <img src={isotipoGold} alt="" className="w-24 h-24" loading="lazy" width={96} height={96} />
-      </div>
-      
-      {/* Isotipo Gold - top right subtle */}
-      <div className="absolute top-24 right-8 z-[3] opacity-[0.06] hidden lg:block">
-        <img src={isotipoGold} alt="" className="w-32 h-32" loading="lazy" width={128} height={128} />
-      </div>
 
       {/* Content - positioned at bottom */}
       <div className="relative z-10 flex-1 flex flex-col justify-end pb-12 md:pb-16 pt-20 overflow-hidden">
