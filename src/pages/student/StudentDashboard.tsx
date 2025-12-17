@@ -68,7 +68,8 @@ interface ContinueItem {
 const StudentDashboard = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { stats: gamificationStats, calculateLevel, getCurrentLevelProgress } = useGamification();
+  const { stats: gamificationStats, calculateLevel, getCurrentLevelProgress, hasNearbyAchievement } = useGamification();
+  const showPulse = hasNearbyAchievement();
   const [enrollments, setEnrollments] = useState<EnrollmentWithCourse[]>([]);
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [progress, setProgress] = useState<Record<string, number>>({});
@@ -288,11 +289,17 @@ const StudentDashboard = () => {
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/10 border border-secondary/30 cursor-pointer hover:bg-secondary/20 transition-colors"
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/10 border border-secondary/30 cursor-pointer hover:bg-secondary/20 transition-colors ${showPulse ? 'animate-pulse-subtle' : ''}`}
               onClick={() => navigate("/student/achievements")}
             >
               <Star className="w-3.5 h-3.5 text-secondary" />
               <span className="text-xs font-medium text-cream">{gamificationStats?.xp || 0}</span>
+              {showPulse && (
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+                </span>
+              )}
             </motion.div>
             
             {/* Mini Streak Badge */}
@@ -300,7 +307,7 @@ const StudentDashboard = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 }}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 cursor-pointer hover:bg-orange-500/20 transition-colors"
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 cursor-pointer hover:bg-orange-500/20 transition-colors ${showPulse ? 'animate-pulse-subtle' : ''}`}
               onClick={() => navigate("/student/achievements")}
             >
               <Flame className="w-3.5 h-3.5 text-orange-400" />
@@ -359,18 +366,24 @@ const StudentDashboard = () => {
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/10 border border-secondary/30 cursor-pointer hover:bg-secondary/20 transition-colors"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/10 border border-secondary/30 cursor-pointer hover:bg-secondary/20 transition-colors ${showPulse ? 'animate-pulse-subtle' : ''}`}
                 onClick={() => { navigate("/student/achievements"); setMobileMenuOpen(false); }}
               >
                 <Star className="w-4 h-4 text-secondary" />
                 <span className="text-sm font-medium text-cream">{gamificationStats?.xp || 0} XP</span>
+                {showPulse && (
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+                  </span>
+                )}
               </motion.div>
               
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 cursor-pointer hover:bg-orange-500/20 transition-colors"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 cursor-pointer hover:bg-orange-500/20 transition-colors ${showPulse ? 'animate-pulse-subtle' : ''}`}
                 onClick={() => { navigate("/student/achievements"); setMobileMenuOpen(false); }}
               >
                 <Flame className="w-4 h-4 text-orange-400" />

@@ -160,6 +160,41 @@ export const useGamification = () => {
     return newBadgesToAward;
   };
 
+  // Check if user is close to earning a new badge (within 80% of requirement)
+  const hasNearbyAchievement = (): boolean => {
+    if (!stats || badges.length === 0) return false;
+    
+    const earnedBadgeIds = new Set(earnedBadges.map(b => b.badge_id));
+    
+    for (const badge of badges) {
+      if (earnedBadgeIds.has(badge.id)) continue;
+      
+      let progress = 0;
+      
+      switch (badge.requirement_type) {
+        case "lessons_completed":
+          progress = stats.total_lessons_completed / badge.requirement_value;
+          break;
+        case "streak_days":
+          progress = stats.streak_days / badge.requirement_value;
+          break;
+        case "xp":
+          progress = stats.xp / badge.requirement_value;
+          break;
+        case "study_minutes":
+          progress = stats.total_study_minutes / badge.requirement_value;
+          break;
+      }
+      
+      // If user is 80%+ to earning a badge, return true
+      if (progress >= 0.8 && progress < 1) {
+        return true;
+      }
+    }
+    
+    return false;
+  };
+
   const userRank = leaderboard.find(l => l.user_id === user?.id)?.rank || null;
 
   return {
@@ -172,6 +207,7 @@ export const useGamification = () => {
     getXpForNextLevel,
     getCurrentLevelProgress,
     checkAndAwardBadges,
+    hasNearbyAchievement,
     userRank,
     refresh: fetchGamificationData
   };
