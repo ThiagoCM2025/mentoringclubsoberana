@@ -109,14 +109,14 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
   return (
     <div className="space-y-8">
       {/* Section: Program Selector */}
-      <section className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700/50">
+      <section className="bg-card rounded-xl p-6 border border-border">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 rounded-lg bg-secondary/20">
             <Sparkles className="w-5 h-5 text-secondary" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-cream">Jornada Soberana</h3>
-            <p className="text-sm text-cream/60">
+            <h3 className="text-lg font-semibold text-foreground">Jornada Soberana</h3>
+            <p className="text-sm text-muted-foreground">
               Selecione um programa para pré-preencher automaticamente
             </p>
           </div>
@@ -136,14 +136,14 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
                 className={`p-4 rounded-xl border-2 transition-all text-left group relative overflow-hidden ${
                   isSelected 
                     ? "border-secondary bg-secondary/10 shadow-lg shadow-secondary/20" 
-                    : "border-zinc-700 hover:border-zinc-600 bg-zinc-900/50 hover:bg-zinc-800/50"
+                    : "border-border hover:border-muted-foreground bg-card hover:bg-muted"
                 }`}
               >
                 {isSelected && (
                   <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-secondary animate-pulse" />
                 )}
-                <IconComponent className={`w-7 h-7 mb-3 ${isSelected ? "text-secondary" : "text-cream/50 group-hover:text-secondary"} transition-colors`} />
-                <p className="text-sm font-semibold text-cream line-clamp-2 mb-2">
+                <IconComponent className={`w-7 h-7 mb-3 ${isSelected ? "text-secondary" : "text-muted-foreground group-hover:text-secondary"} transition-colors`} />
+                <p className="text-sm font-semibold text-foreground line-clamp-2 mb-2">
                   {program.subtitle}
                 </p>
                 <span className={`text-xs px-2 py-1 rounded-full border ${tier.color}`}>
@@ -165,7 +165,7 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
               {selectedProgramData.modules.map((m, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm text-cream/80">
+                <div key={i} className="flex items-center gap-2 text-sm text-foreground/80">
                   <span className="w-5 h-5 rounded-full bg-secondary/20 text-secondary text-xs flex items-center justify-center font-medium">
                     {i + 1}
                   </span>
@@ -178,14 +178,14 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
       </section>
 
       {/* Section: Basic Info */}
-      <section className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700/50">
+      <section className="bg-card rounded-xl p-6 border border-border">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2 rounded-lg bg-primary/20">
             <FileText className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-cream">Dados Básicos</h3>
-            <p className="text-sm text-cream/60">Informações principais do curso</p>
+            <h3 className="text-lg font-semibold text-foreground">Dados Básicos</h3>
+            <p className="text-sm text-muted-foreground">Informações principais do curso</p>
           </div>
         </div>
 
@@ -193,7 +193,7 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
           {/* Left Column */}
           <div className="space-y-5">
             <div>
-              <Label htmlFor="title" className="text-cream font-medium text-sm mb-2 block">
+              <Label htmlFor="title" className="text-foreground font-medium text-sm mb-2 block">
                 Título do Curso <span className="text-primary">*</span>
               </Label>
               <Input
@@ -201,12 +201,12 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
                 value={course.title || ""}
                 onChange={(e) => onChange({ ...course, title: e.target.value })}
                 placeholder="Ex: Mentoria Soberana Completa"
-                className="bg-zinc-900 border-zinc-600 text-cream placeholder:text-cream/40 focus:border-secondary focus:ring-secondary/20 h-11"
+                className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-secondary/20 h-11"
               />
             </div>
 
             <div>
-              <Label htmlFor="description" className="text-cream font-medium text-sm mb-2 block">
+              <Label htmlFor="description" className="text-foreground font-medium text-sm mb-2 block">
                 Descrição
               </Label>
               <Textarea
@@ -215,12 +215,12 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
                 onChange={(e) => onChange({ ...course, description: e.target.value })}
                 placeholder="Descreva o curso, seus benefícios e o que o aluno vai aprender..."
                 rows={6}
-                className="bg-zinc-900 border-zinc-600 text-cream placeholder:text-cream/40 focus:border-secondary focus:ring-secondary/20 resize-none"
+                className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-secondary/20 resize-none"
               />
             </div>
 
             <div>
-              <Label htmlFor="price" className="text-cream font-medium text-sm mb-2 block">
+              <Label htmlFor="price" className="text-foreground font-medium text-sm mb-2 block">
                 Preço (R$)
               </Label>
               <Input
@@ -233,9 +233,9 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
                   price: e.target.value ? parseFloat(e.target.value) : null 
                 })}
                 placeholder="0.00"
-                className="bg-zinc-900 border-zinc-600 text-cream placeholder:text-cream/40 focus:border-secondary focus:ring-secondary/20 h-11"
+                className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-secondary/20 h-11"
               />
-              <p className="text-xs text-cream/50 mt-1.5">
+              <p className="text-xs text-muted-foreground mt-1.5">
                 Deixe em branco para curso gratuito
               </p>
             </div>
@@ -243,7 +243,7 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
 
           {/* Right Column: Thumbnail */}
           <div>
-            <Label className="text-cream font-medium text-sm mb-2 block">
+            <Label className="text-foreground font-medium text-sm mb-2 block">
               Thumbnail do Curso
             </Label>
             <div className="space-y-3">
@@ -252,7 +252,7 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
                   <img
                     src={course.thumbnail_url}
                     alt="Thumbnail"
-                    className="w-full aspect-video object-cover rounded-xl border-2 border-zinc-700"
+                    className="w-full aspect-video object-cover rounded-xl border-2 border-border"
                   />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
                     <Button
@@ -267,7 +267,7 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
                   </div>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-zinc-600 rounded-xl cursor-pointer hover:border-secondary/50 bg-zinc-900/50 transition-all hover:bg-zinc-800/50 group">
+                <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-secondary/50 bg-muted/50 transition-all hover:bg-muted group">
                   <input
                     type="file"
                     accept="image/*"
@@ -279,13 +279,13 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
                     <div className="animate-spin w-10 h-10 border-3 border-secondary border-t-transparent rounded-full" />
                   ) : (
                     <>
-                      <div className="p-3 rounded-full bg-zinc-800 group-hover:bg-secondary/20 transition-colors mb-3">
-                        <Image className="w-8 h-8 text-cream/40 group-hover:text-secondary transition-colors" />
+                      <div className="p-3 rounded-full bg-muted group-hover:bg-secondary/20 transition-colors mb-3">
+                        <Image className="w-8 h-8 text-muted-foreground group-hover:text-secondary transition-colors" />
                       </div>
-                      <p className="text-sm font-medium text-cream/70 group-hover:text-cream transition-colors">
+                      <p className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                         Clique para enviar thumbnail
                       </p>
-                      <p className="text-xs text-cream/40 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         Recomendado: 1280x720px
                       </p>
                     </>
@@ -294,14 +294,14 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
               )}
 
               <div>
-                <p className="text-xs text-cream/50 mb-1.5">
+                <p className="text-xs text-muted-foreground mb-1.5">
                   Ou cole uma URL direta:
                 </p>
                 <Input
                   value={course.thumbnail_url || ""}
                   onChange={(e) => onChange({ ...course, thumbnail_url: e.target.value })}
                   placeholder="https://..."
-                  className="bg-zinc-900 border-zinc-600 text-cream placeholder:text-cream/40 focus:border-secondary focus:ring-secondary/20 h-10 text-sm"
+                  className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-secondary/20 h-10 text-sm"
                 />
               </div>
             </div>
@@ -310,22 +310,22 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
       </section>
 
       {/* Section: Settings */}
-      <section className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700/50">
+      <section className="bg-card rounded-xl p-6 border border-border">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2 rounded-lg bg-emerald-500/20">
             <Settings className="w-5 h-5 text-emerald-400" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-cream">Configurações</h3>
-            <p className="text-sm text-cream/60">Opções de acesso e visibilidade</p>
+            <h3 className="text-lg font-semibold text-foreground">Configurações</h3>
+            <p className="text-sm text-muted-foreground">Opções de acesso e visibilidade</p>
           </div>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <div className="flex items-center justify-between p-4 rounded-xl bg-zinc-900/50 border border-zinc-700/50">
+          <div className="flex items-center justify-between p-4 rounded-xl bg-muted/50 border border-border">
             <div>
-              <Label className="text-cream font-medium">Assinatura</Label>
-              <p className="text-xs text-cream/50 mt-0.5">
+              <Label className="text-foreground font-medium">Assinatura</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Acesso por período determinado
               </p>
             </div>
@@ -335,10 +335,10 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
             />
           </div>
 
-          <div className="flex items-center justify-between p-4 rounded-xl bg-zinc-900/50 border border-zinc-700/50">
+          <div className="flex items-center justify-between p-4 rounded-xl bg-muted/50 border border-border">
             <div>
-              <Label className="text-cream font-medium">Publicado</Label>
-              <p className="text-xs text-cream/50 mt-0.5">
+              <Label className="text-foreground font-medium">Publicado</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Visível para alunos
               </p>
             </div>
