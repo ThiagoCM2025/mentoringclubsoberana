@@ -354,6 +354,30 @@ const StudentDashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             className="md:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-sm border-t border-secondary/20 p-4"
           >
+            {/* Mini XP/Streak Badges - Mobile */}
+            <div className="flex items-center justify-center gap-3 pb-4 mb-4 border-b border-secondary/20">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/10 border border-secondary/30 cursor-pointer hover:bg-secondary/20 transition-colors"
+                onClick={() => { navigate("/student/achievements"); setMobileMenuOpen(false); }}
+              >
+                <Star className="w-4 h-4 text-secondary" />
+                <span className="text-sm font-medium text-cream">{gamificationStats?.xp || 0} XP</span>
+              </motion.div>
+              
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 cursor-pointer hover:bg-orange-500/20 transition-colors"
+                onClick={() => { navigate("/student/achievements"); setMobileMenuOpen(false); }}
+              >
+                <Flame className="w-4 h-4 text-orange-400" />
+                <span className="text-sm font-medium text-cream">{gamificationStats?.streak_days || 0} dias</span>
+              </motion.div>
+            </div>
+
             <nav className="flex flex-col gap-2">
               <Button
                 variant="ghost"
@@ -879,15 +903,20 @@ const StudentDashboard = () => {
                 Conheça nossos programas e evolua sua carreira
               </p>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="border-secondary/30 text-secondary hover:bg-secondary/10"
-              onClick={() => navigate('/#jornada')}
+            <a 
+              href="/#jornada"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              Ver no Site
-              <ExternalLink className="w-4 h-4 ml-2" />
-            </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="border-secondary/30 text-secondary hover:bg-secondary/10"
+              >
+                Ver no Site
+                <ExternalLink className="w-4 h-4 ml-2" />
+              </Button>
+            </a>
           </motion.div>
 
           <motion.div 
