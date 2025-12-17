@@ -22,7 +22,11 @@ import {
   Users,
   MessageCircle,
   Settings,
-  Search
+  Search,
+  Calendar,
+  FileText,
+  ExternalLink,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -456,48 +460,90 @@ const StudentDashboard = () => {
         {/* Diagnostic Banner */}
         <DiagnosticBanner />
 
-        {/* Bem Vinda Cards - Estilo MestresAI */}
+        {/* Bem Vinda Cards - Estilo MestresAI com Stagger */}
         <section className="mb-12">
-          <h2 className="text-2xl font-serif font-bold text-cream mb-6">
+          <motion.h2 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-2xl font-serif font-bold text-cream mb-6"
+          >
             Bem Vinda, {firstName}!
-          </h2>
+          </motion.h2>
           
-          <div className="grid md:grid-cols-3 gap-6">
+          <motion.div 
+            className="grid md:grid-cols-3 gap-6"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.15,
+                  delayChildren: 0.2
+                }
+              }
+            }}
+          >
             {/* Card 1 - Plataforma */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all hover:shadow-[0_0_40px_rgba(166,144,97,0.15)]"
+              variants={{
+                hidden: { opacity: 0, y: 30, scale: 0.95 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1,
+                  transition: { type: "spring", stiffness: 100, damping: 15 }
+                }
+              }}
+              whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.2 } }}
+              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all hover:shadow-[0_0_40px_rgba(166,144,97,0.2)]"
             >
               <div className="aspect-[4/3] relative">
                 <img 
                   src={heroVariations} 
                   alt="Plataforma"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                <div className="absolute top-3 left-3 bg-secondary text-black text-xs font-semibold px-3 py-1 rounded">
+                <motion.div 
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="absolute top-3 left-3 bg-secondary text-black text-xs font-semibold px-3 py-1 rounded"
+                >
                   BEM VINDA À PLATAFORMA
-                </div>
+                </motion.div>
                 <div className="absolute bottom-4 left-4">
-                  <span className="font-serif text-2xl text-secondary font-bold">SOBERANA</span>
+                  <span className="font-serif text-2xl text-secondary font-bold drop-shadow-lg">SOBERANA</span>
                 </div>
               </div>
             </motion.div>
 
             {/* Card 2 - Comunidade */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              variants={{
+                hidden: { opacity: 0, y: 30, scale: 0.95 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1,
+                  transition: { type: "spring", stiffness: 100, damping: 15 }
+                }
+              }}
+              whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.2 } }}
               onClick={() => navigate("/student/community")}
-              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all cursor-pointer hover:shadow-[0_0_40px_rgba(166,144,97,0.15)]"
+              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all cursor-pointer hover:shadow-[0_0_40px_rgba(166,144,97,0.2)]"
             >
               <div className="aspect-[4/3] relative bg-gradient-to-br from-zinc-800 to-zinc-900 flex flex-col items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-secondary/20 border border-secondary/40 flex items-center justify-center mb-4">
+                <motion.div 
+                  className="w-16 h-16 rounded-full bg-secondary/20 border border-secondary/40 flex items-center justify-center mb-4"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
                   <MessageCircle className="w-8 h-8 text-secondary" />
-                </div>
+                </motion.div>
                 <h3 className="text-lg font-semibold text-cream mb-1">Acesse a Comunidade</h3>
                 <p className="text-cream/50 text-sm">Conecte-se com outras Soberanas</p>
                 <div className="absolute top-3 left-3 bg-secondary/20 border border-secondary/40 text-secondary text-xs font-semibold px-3 py-1 rounded">
@@ -508,16 +554,27 @@ const StudentDashboard = () => {
 
             {/* Card 3 - Conquistas */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              variants={{
+                hidden: { opacity: 0, y: 30, scale: 0.95 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1,
+                  transition: { type: "spring", stiffness: 100, damping: 15 }
+                }
+              }}
+              whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.2 } }}
               onClick={() => navigate("/student/achievements")}
-              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all cursor-pointer hover:shadow-[0_0_40px_rgba(166,144,97,0.15)]"
+              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all cursor-pointer hover:shadow-[0_0_40px_rgba(166,144,97,0.2)]"
             >
               <div className="aspect-[4/3] relative bg-gradient-to-br from-zinc-800 to-zinc-900 flex flex-col items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-secondary/20 border border-secondary/40 flex items-center justify-center mb-4">
+                <motion.div 
+                  className="w-16 h-16 rounded-full bg-secondary/20 border border-secondary/40 flex items-center justify-center mb-4"
+                  whileHover={{ scale: 1.1, rotate: -5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
                   <Trophy className="w-8 h-8 text-secondary" />
-                </div>
+                </motion.div>
                 <h3 className="text-lg font-semibold text-cream mb-1">Suas Conquistas</h3>
                 <p className="text-cream/50 text-sm">Veja seu progresso e badges</p>
                 <div className="absolute top-3 left-3 bg-secondary/20 border border-secondary/40 text-secondary text-xs font-semibold px-3 py-1 rounded">
@@ -525,40 +582,219 @@ const StudentDashboard = () => {
                 </div>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         </section>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <StatsCard
-            icon={BookOpen}
-            label="Cursos Ativos"
-            value={enrollments.length}
-            color="primary"
-            index={0}
-          />
-          <StatsCard
-            icon={PlayCircle}
-            label="Aulas Concluídas"
-            value={totalCompleted}
-            color="green"
-            index={1}
-          />
-          <StatsCard
-            icon={Clock}
-            label="Horas de Estudo"
-            value={Math.round(totalCompleted * 0.25)}
-            color="secondary"
-            index={2}
-          />
-          <StatsCard
-            icon={Award}
-            label="Certificados"
-            value={Object.values(progress).filter(p => p === 100).length}
-            color="accent"
-            index={3}
-          />
-        </div>
+        {/* Quick Actions Section */}
+        <section className="mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex items-center gap-2 mb-6"
+          >
+            <Sparkles className="w-5 h-5 text-secondary" />
+            <h2 className="text-xl font-serif font-bold text-cream">Ações Rápidas</h2>
+          </motion.div>
+
+          <motion.div
+            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1,
+                  delayChildren: 0.5
+                }
+              }
+            }}
+          >
+            {/* WhatsApp Comunidade */}
+            <motion.a
+              href="https://wa.me/5511993563468?text=Olá! Sou aluna da plataforma Soberana e gostaria de entrar no grupo da comunidade."
+              target="_blank"
+              rel="noopener noreferrer"
+              variants={{
+                hidden: { opacity: 0, y: 20, scale: 0.9 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1,
+                  transition: { type: "spring", stiffness: 150, damping: 12 }
+                }
+              }}
+              whileHover={{ 
+                y: -5, 
+                scale: 1.03,
+                boxShadow: "0 0 30px rgba(37, 211, 102, 0.2)"
+              }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative p-5 bg-zinc-900 rounded-xl border border-green-500/20 hover:border-green-500/50 transition-all cursor-pointer overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <svg className="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  </svg>
+                </div>
+                <h3 className="font-semibold text-cream text-sm mb-1">WhatsApp</h3>
+                <p className="text-cream/50 text-xs">Grupo da Comunidade</p>
+                <ExternalLink className="absolute top-4 right-4 w-4 h-4 text-cream/30 group-hover:text-green-500 transition-colors" />
+              </div>
+            </motion.a>
+
+            {/* Agendar Mentoria */}
+            <motion.a
+              href="https://wa.me/5511993563468?text=Olá Fabiana! Sou aluna da plataforma e gostaria de agendar uma mentoria individual."
+              target="_blank"
+              rel="noopener noreferrer"
+              variants={{
+                hidden: { opacity: 0, y: 20, scale: 0.9 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1,
+                  transition: { type: "spring", stiffness: 150, damping: 12 }
+                }
+              }}
+              whileHover={{ 
+                y: -5, 
+                scale: 1.03,
+                boxShadow: "0 0 30px rgba(166, 144, 97, 0.2)"
+              }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative p-5 bg-zinc-900 rounded-xl border border-secondary/20 hover:border-secondary/50 transition-all cursor-pointer overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Calendar className="w-6 h-6 text-secondary" />
+                </div>
+                <h3 className="font-semibold text-cream text-sm mb-1">Agendar</h3>
+                <p className="text-cream/50 text-xs">Mentoria Individual</p>
+                <ExternalLink className="absolute top-4 right-4 w-4 h-4 text-cream/30 group-hover:text-secondary transition-colors" />
+              </div>
+            </motion.a>
+
+            {/* Materiais */}
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20, scale: 0.9 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1,
+                  transition: { type: "spring", stiffness: 150, damping: 12 }
+                }
+              }}
+              whileHover={{ 
+                y: -5, 
+                scale: 1.03,
+                boxShadow: "0 0 30px rgba(166, 144, 97, 0.2)"
+              }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate("/student/favorites")}
+              className="group relative p-5 bg-zinc-900 rounded-xl border border-secondary/20 hover:border-secondary/50 transition-all cursor-pointer overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <FileText className="w-6 h-6 text-secondary" />
+                </div>
+                <h3 className="font-semibold text-cream text-sm mb-1">Materiais</h3>
+                <p className="text-cream/50 text-xs">Aulas Favoritas</p>
+              </div>
+            </motion.div>
+
+            {/* Certificados */}
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20, scale: 0.9 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1,
+                  transition: { type: "spring", stiffness: 150, damping: 12 }
+                }
+              }}
+              whileHover={{ 
+                y: -5, 
+                scale: 1.03,
+                boxShadow: "0 0 30px rgba(166, 144, 97, 0.2)"
+              }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate("/student/certificates")}
+              className="group relative p-5 bg-zinc-900 rounded-xl border border-secondary/20 hover:border-secondary/50 transition-all cursor-pointer overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Medal className="w-6 h-6 text-secondary" />
+                </div>
+                <h3 className="font-semibold text-cream text-sm mb-1">Certificados</h3>
+                <p className="text-cream/50 text-xs">Seus Diplomas</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        </section>
+
+        {/* Stats com Stagger */}
+        <motion.div 
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.1,
+                delayChildren: 0.6
+              }
+            }
+          }}
+        >
+          <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+            <StatsCard
+              icon={BookOpen}
+              label="Cursos Ativos"
+              value={enrollments.length}
+              color="primary"
+              index={0}
+            />
+          </motion.div>
+          <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+            <StatsCard
+              icon={PlayCircle}
+              label="Aulas Concluídas"
+              value={totalCompleted}
+              color="green"
+              index={1}
+            />
+          </motion.div>
+          <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+            <StatsCard
+              icon={Clock}
+              label="Horas de Estudo"
+              value={Math.round(totalCompleted * 0.25)}
+              color="secondary"
+              index={2}
+            />
+          </motion.div>
+          <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+            <StatsCard
+              icon={Award}
+              label="Certificados"
+              value={Object.values(progress).filter(p => p === 100).length}
+              color="accent"
+              index={3}
+            />
+          </motion.div>
+        </motion.div>
 
         {/* Continue Watching */}
         <ContinueWatching items={continueWatching} />
