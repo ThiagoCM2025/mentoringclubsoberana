@@ -468,6 +468,42 @@ export type Database = {
           },
         ]
       }
+      notification_templates: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          message: string
+          name: string
+          title: string
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          message: string
+          name: string
+          title: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          message?: string
+          name?: string
+          title?: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string | null

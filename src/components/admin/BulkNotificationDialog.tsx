@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Send, Loader2, Megaphone, Users, Info, CheckCircle2, AlertTriangle, AlertCircle } from "lucide-react";
+import { TemplateSelector } from "./TemplateSelector";
 
 interface Course {
   id: string;
@@ -129,6 +130,16 @@ export function BulkNotificationDialog() {
     }
   };
 
+  const handleTemplateSelect = (template: { title: string; message: string; type: string } | null) => {
+    if (template) {
+      setFormData({
+        title: template.title,
+        message: template.message,
+        type: template.type,
+      });
+    }
+  };
+
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'success':
@@ -199,6 +210,8 @@ export function BulkNotificationDialog() {
               </p>
             )}
           </div>
+
+          <TemplateSelector onSelect={handleTemplateSelect} />
 
           <div className="space-y-2">
             <Label htmlFor="bulk-title">Título *</Label>
