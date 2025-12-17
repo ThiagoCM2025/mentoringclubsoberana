@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const navLinks = [
   { label: "Sobre", href: "#sobre" },
   { label: "Metodologia", href: "#metodologia" },
-  { label: "Produtos", href: "#produtos" },
+  { label: "A Jornada", href: "#jornada" },
   { label: "Depoimentos", href: "#depoimentos" },
   { label: "FAQ", href: "#faq" },
 ];
@@ -16,7 +16,7 @@ const SoberanaLogo = ({ isScrolled }: { isScrolled: boolean }) => (
   <div className="flex flex-col items-center leading-none">
     <span
       className={`text-[10px] tracking-[0.3em] font-light uppercase transition-colors ${
-        isScrolled ? "text-muted-foreground" : "text-primary-foreground/70"
+        isScrolled ? "text-foreground/70" : "text-primary-foreground/90"
       }`}
       style={{ fontFamily: "'Montserrat', sans-serif" }}
     >
@@ -84,7 +84,7 @@ export const Navbar = () => {
                   key={link.label}
                   onClick={() => scrollToSection(link.href)}
                   className={`text-sm font-medium tracking-wide transition-all duration-300 hover:text-secondary relative group ${
-                    isScrolled ? "text-muted-foreground" : "text-primary-foreground/80"
+                    isScrolled ? "text-foreground" : "text-primary-foreground"
                   }`}
                 >
                   {link.label}
@@ -98,7 +98,7 @@ export const Navbar = () => {
               <Button
                 variant="ghost"
                 asChild
-                className={`tracking-wide ${isScrolled ? "" : "text-primary-foreground hover:bg-primary-foreground/10"}`}
+                className={`tracking-wide font-medium ${isScrolled ? "text-foreground hover:text-secondary" : "text-primary-foreground hover:bg-primary-foreground/10"}`}
               >
                 <Link to="/auth">Área do Aluno</Link>
               </Button>
