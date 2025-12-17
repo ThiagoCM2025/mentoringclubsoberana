@@ -7,6 +7,7 @@ import { programsList, Program } from "@/data/programs";
 import mentorFabiana from "@/assets/mentor-fabiana.jpeg";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
+import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 
 interface ProgramCardProps {
   program: Program;
@@ -83,7 +84,7 @@ const ProgramCard = ({ program, index, isReversed }: ProgramCardProps) => {
 
         <Button
           asChild
-          className={`bg-foreground hover:bg-foreground/90 text-background px-8 py-5 text-sm font-medium tracking-wide transition-all duration-300 hover:shadow-lg ${
+          className={`cta-premium bg-foreground hover:bg-foreground/90 text-background px-8 py-5 text-sm font-medium tracking-wide transition-all duration-300 ${
             isReversed ? "md:ml-auto" : ""
           }`}
         >
@@ -151,9 +152,9 @@ export const JornadaSoberanaSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-20"
         >
-          {/* Isotipo decoration */}
+          {/* Isotipo S decoration */}
           <div className="flex justify-center mb-4">
-            <img src={isotipoGold} alt="" className="w-8 h-8 opacity-60" />
+            <img src={isotipoSGold} alt="" className="w-10 h-10 opacity-80" />
           </div>
           
           <span className="inline-block text-muted-foreground text-xs tracking-[0.25em] uppercase mb-6">

@@ -9,6 +9,7 @@ import { ArrowRight, Gift, CheckCircle, Loader2 } from "lucide-react";
 import { z } from "zod";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
+import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 
 const leadSchema = z.object({
   fullName: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").max(100),
@@ -119,6 +120,11 @@ export const LeadCaptureSection = () => {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6 }}
           >
+            {/* Isotipo S decoration */}
+            <div className="flex mb-4">
+              <img src={isotipoSGold} alt="" className="w-10 h-10 opacity-80" />
+            </div>
+            
             <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-secondary/30 bg-secondary/10 text-secondary">
               <Gift className="w-4 h-4" />
               <span className="text-sm font-medium">Material Exclusivo</span>
@@ -215,7 +221,7 @@ export const LeadCaptureSection = () => {
                     <Button
                       type="submit"
                       disabled={isLoading}
-                      className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground py-6 text-lg font-medium group"
+                      className="w-full cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground py-6 text-lg font-medium group"
                     >
                       {isLoading ? (
                         <Loader2 className="w-5 h-5 animate-spin" />

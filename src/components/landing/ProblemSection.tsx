@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { Target, Clock, DollarSign, Flame, ArrowRight } from "lucide-react";
 import patternCirclesMarsala from "@/assets/brand/pattern-circles-marsala.png";
 import isotipoMarsala from "@/assets/brand/isotipo-marsala.png";
+import isotipoSMarsala from "@/assets/brand/isotipo-s-marsala.png";
 
 const problems = [
   {
@@ -60,6 +61,11 @@ export const ProblemSection = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
+            {/* Isotipo S decoration */}
+            <div className="flex justify-center mb-4">
+              <img src={isotipoSMarsala} alt="" className="w-10 h-10 opacity-80" />
+            </div>
+            
             <span className="badge-gold mb-4">A Realidade</span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-6">
               Você é uma excelente advogada, mas o seu{" "}
@@ -121,7 +127,7 @@ export const ProblemSection = () => {
               className="mt-6 flex justify-center relative z-10"
             >
               <a
-                href="#programas"
+                href="#jornada"
                 className="inline-flex items-center gap-2 text-secondary font-semibold hover:gap-3 transition-all"
               >
                 Conhecer os Programas

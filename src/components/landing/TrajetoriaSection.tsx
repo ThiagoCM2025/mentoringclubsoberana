@@ -3,6 +3,7 @@ import { useRef } from "react";
 import mentorSobre from "@/assets/mentor-sobre.jpg";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
+import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 
 export const TrajetoriaSection = () => {
   const ref = useRef(null);
@@ -45,6 +46,11 @@ export const TrajetoriaSection = () => {
             transition={{ duration: 0.7 }}
             className="order-2 lg:order-1"
           >
+            {/* Isotipo S decoration */}
+            <div className="flex mb-4">
+              <img src={isotipoSGold} alt="" className="w-10 h-10 opacity-80" />
+            </div>
+            
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-medium text-cream mb-8 leading-tight">
               Comecei minha trajetória{" "}
               <em className="italic text-secondary">como muitas advogadas:</em>

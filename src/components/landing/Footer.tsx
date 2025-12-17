@@ -3,6 +3,7 @@ import { Instagram, Linkedin, Youtube, Mail, Phone, MapPin, Lock } from "lucide-
 import { Link } from "react-router-dom";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
+import { SoberanaLogoMark } from "./SoberanaLogoMark";
 
 const socialLinks = [
   { icon: Instagram, href: "https://instagram.com/fabianaduarte.adv", label: "Instagram" },
@@ -12,7 +13,7 @@ const socialLinks = [
 
 const quickLinks = [
   { label: "Sobre", href: "#sobre" },
-  { label: "Programas", href: "#programas" },
+  { label: "Programas", href: "#jornada" },
   { label: "Depoimentos", href: "#depoimentos" },
   { label: "FAQ", href: "#faq" },
 ];
@@ -22,24 +23,6 @@ const legalLinks = [
   { label: "Termos de Uso", href: "/termos" },
 ];
 
-const SoberanaLogo = () => (
-  <div className="flex flex-col items-center leading-none">
-    <span
-      className="text-[10px] tracking-[0.3em] font-light uppercase text-background/60"
-      style={{ fontFamily: "'Montserrat', sans-serif" }}
-    >
-      Mentoring Club
-    </span>
-    <span className="text-secondary text-[8px] my-0.5">✦</span>
-    <span
-      className="text-xl font-semibold tracking-wide text-background"
-      style={{ fontFamily: "'Cormorant Garamond', serif" }}
-    >
-      SOBERANA
-    </span>
-  </div>
-);
-
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -47,8 +30,8 @@ export const Footer = () => {
     <footer className="bg-foreground text-background relative overflow-hidden">
       {/* Top decorative golden border */}
       <div className="absolute top-0 left-0 w-full">
-        <div className="h-px bg-gradient-to-r from-transparent via-secondary/60 to-transparent" />
-        <div className="h-4 bg-gradient-to-b from-secondary/10 to-transparent" />
+        <div className="h-1 bg-gradient-to-r from-transparent via-secondary to-transparent" />
+        <div className="h-6 bg-gradient-to-b from-secondary/15 to-transparent" />
       </div>
       
       {/* Circle Pattern - top area */}
@@ -74,7 +57,7 @@ export const Footer = () => {
           {/* Brand Column */}
           <div className="lg:col-span-1">
             <div className="mb-6">
-              <SoberanaLogo />
+              <SoberanaLogoMark variant="light" size="md" />
             </div>
             <p className="text-background/70 mb-6 text-sm leading-relaxed">
               Transformando advogadas em CEOs dos seus próprios negócios através 

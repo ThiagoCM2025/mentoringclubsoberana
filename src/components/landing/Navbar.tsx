@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { SoberanaLogoMark } from "./SoberanaLogoMark";
 
 const navLinks = [
   { label: "Sobre", href: "#sobre" },
@@ -12,34 +13,6 @@ const navLinks = [
   { label: "Depoimentos", href: "#depoimentos" },
   { label: "FAQ", href: "#faq" },
 ];
-
-const SoberanaLogo = ({ isScrolled }: { isScrolled: boolean }) => (
-  <div className="flex flex-col items-center leading-none">
-    <span
-      className={`text-[10px] tracking-[0.3em] font-light uppercase transition-colors ${
-        isScrolled ? "text-foreground/70" : "text-primary-foreground/90"
-      }`}
-      style={{ fontFamily: "'Montserrat', sans-serif" }}
-    >
-      Mentoring Club
-    </span>
-    <span
-      className={`text-[8px] my-0.5 transition-colors ${
-        isScrolled ? "text-secondary" : "text-secondary"
-      }`}
-    >
-      ✦
-    </span>
-    <span
-      className={`text-xl font-semibold tracking-wide transition-colors ${
-        isScrolled ? "text-foreground" : "text-primary-foreground"
-      }`}
-      style={{ fontFamily: "'Cormorant Garamond', serif" }}
-    >
-      SOBERANA
-    </span>
-  </div>
-);
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -75,7 +48,10 @@ export const Navbar = () => {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center">
-              <SoberanaLogo isScrolled={isScrolled} />
+              <SoberanaLogoMark 
+                variant={isScrolled ? "scrolled" : "light"} 
+                size="md" 
+              />
             </Link>
 
             {/* Desktop Navigation */}
@@ -97,15 +73,19 @@ export const Navbar = () => {
             {/* CTA Buttons */}
             <div className="hidden lg:flex items-center gap-4">
               <Button
-                variant="ghost"
+                variant="outline"
                 asChild
-                className={`tracking-wide font-medium ${isScrolled ? "text-foreground hover:text-secondary" : "text-primary-foreground hover:bg-primary-foreground/10"}`}
+                className={`tracking-wide font-medium transition-all duration-300 ${
+                  isScrolled 
+                    ? "border-foreground/30 text-foreground hover:border-secondary hover:text-secondary hover:bg-secondary/5" 
+                    : "border-cream/40 text-cream hover:bg-cream/10 hover:border-cream/60 hover:text-cream"
+                }`}
               >
                 <Link to="/auth">Área do Aluno</Link>
               </Button>
               <Button
                 asChild
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground tracking-wide"
+                className="cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground tracking-wide"
               >
                 <a href="#captura">Quero Ser Soberana</a>
               </Button>
@@ -136,7 +116,7 @@ export const Navbar = () => {
             <div className="container-soberana px-4 py-8">
               {/* Mobile Logo */}
               <div className="flex justify-center mb-8">
-                <SoberanaLogo isScrolled={true} />
+                <SoberanaLogoMark variant="dark" size="lg" />
               </div>
               
               <div className="flex flex-col gap-4">
@@ -150,13 +130,13 @@ export const Navbar = () => {
                   </button>
                 ))}
                 <div className="flex flex-col gap-3 mt-6">
-                  <Button variant="outline" asChild className="w-full">
+                  <Button variant="outline" asChild className="w-full border-foreground/30">
                     <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
                       Área do Aluno
                     </Link>
                   </Button>
                   <Button
-                    className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+                    className="w-full cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground"
                     onClick={() => scrollToSection("#captura")}
                   >
                     Quero Ser Soberana

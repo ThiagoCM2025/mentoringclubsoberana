@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { ProblemSection } from "@/components/landing/ProblemSection";
+import { BeforeAfterSection } from "@/components/landing/BeforeAfterSection";
 import { MentorSection } from "@/components/landing/MentorSection";
 import { JornadaSoberanaSection } from "@/components/landing/JornadaSoberanaSection";
 import { TrajetoriaSection } from "@/components/landing/TrajetoriaSection";
@@ -32,6 +33,7 @@ const Index = () => {
       <section id="sobre">
         <ProblemSection />
       </section>
+      <BeforeAfterSection />
       <section id="metodologia">
         <MentorSection />
       </section>

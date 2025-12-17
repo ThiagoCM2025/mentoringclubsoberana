@@ -10,6 +10,7 @@ import {
 import patternCirclesBlack from "@/assets/brand/pattern-circles-black.png";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
 import isotipoBlack from "@/assets/brand/isotipo-black.png";
+import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 
 const faqs = [
   {
@@ -90,6 +91,11 @@ export const FAQSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
+          {/* Isotipo S decoration */}
+          <div className="flex justify-center mb-4">
+            <img src={isotipoSGold} alt="" className="w-10 h-10 opacity-80" />
+          </div>
+          
           <span className="badge-gold mb-4">FAQ</span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-6">
             Perguntas <span className="text-primary">Frequentes</span>

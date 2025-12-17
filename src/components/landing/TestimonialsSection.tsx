@@ -5,6 +5,7 @@ import { Quote, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import patternCirclesWhite from "@/assets/brand/pattern-circles-white.png";
 import isotipoWhite from "@/assets/brand/isotipo-white.png";
+import isotipoSWhite from "@/assets/brand/isotipo-s-white.png";
 
 const testimonials = [
   {
@@ -84,6 +85,11 @@ export const TestimonialsSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
+          {/* Isotipo S decoration */}
+          <div className="flex justify-center mb-4">
+            <img src={isotipoSWhite} alt="" className="w-10 h-10 opacity-80" />
+          </div>
+          
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-secondary/20 text-secondary border border-secondary/30 mb-4">
             Depoimentos
           </span>

@@ -2,13 +2,13 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import heroVariations from "@/assets/hero-variations.jpeg";
-import isotipo from "@/assets/brand/isotipo.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
+import { SoberanaLogoMark } from "./SoberanaLogoMark";
 
 export const HeroSection = () => {
-  const scrollToPrograms = () => {
-    document.getElementById("programas")?.scrollIntoView({ behavior: "smooth" });
+  const scrollToJornada = () => {
+    document.getElementById("jornada")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -63,22 +63,14 @@ export const HeroSection = () => {
       <div className="relative z-10 flex-1 flex flex-col justify-end pb-12 md:pb-16 pt-20">
         <div className="container-soberana px-4 md:px-8">
           <div className="text-center max-w-4xl mx-auto">
-            {/* Logo with Isotipo */}
+            {/* Logo with Star */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex items-center justify-center gap-3 mb-6"
             >
-              <img 
-                src={isotipo} 
-                alt="Soberana" 
-                className="w-8 h-8 md:w-10 md:h-10"
-              />
-              <div className="text-cream">
-                <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-medium">Mentoring Club</p>
-                <p className="text-lg md:text-xl font-serif font-semibold tracking-wider">SOBERANA</p>
-              </div>
+              <SoberanaLogoMark variant="light" size="lg" />
             </motion.div>
 
             {/* Main Headline */}
@@ -105,29 +97,21 @@ export const HeroSection = () => {
               <strong className="text-secondary">CEO</strong> da sua própria história.
             </motion.p>
 
-            {/* CTA */}
+            {/* CTA - Only main button */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
+              className="flex justify-center mb-8"
             >
               <Button
-                onClick={scrollToPrograms}
+                onClick={scrollToJornada}
                 size="lg"
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 md:px-12 py-6 md:py-7 text-base md:text-lg font-semibold uppercase tracking-wider group shadow-lg hover:shadow-xl transition-all duration-300"
+                className="cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 md:px-12 py-6 md:py-7 text-base md:text-lg font-semibold uppercase tracking-wider group"
               >
                 Quero Transformar Meu Negócio
                 <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-
-              <a 
-                href="/auth" 
-                className="text-cream/70 hover:text-cream text-sm tracking-wide transition-colors inline-flex items-center gap-2"
-              >
-                <span className="w-1 h-1 rounded-full bg-secondary" />
-                Área do Aluno
-              </a>
             </motion.div>
 
             {/* Trust Indicators */}
