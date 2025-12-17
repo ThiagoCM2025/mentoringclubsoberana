@@ -20,8 +20,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { Search, Users, UserPlus, Loader2, Eye, EyeOff } from "lucide-react";
+import { Search, Users, UserPlus, Loader2, Eye, EyeOff, GraduationCap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Student {
@@ -32,11 +39,21 @@ interface Student {
   created_at: string;
 }
 
+interface Course {
+  id: string;
+  title: string;
+  is_published: boolean;
+}
+
 const AdminStudents = () => {
   const [students, setStudents] = useState<Student[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEnrollDialogOpen, setIsEnrollDialogOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedCourseId, setSelectedCourseId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -49,6 +66,7 @@ const AdminStudents = () => {
 
   useEffect(() => {
     fetchStudents();
+    fetchCourses();
   }, []);
 
   const fetchStudents = async () => {
@@ -71,13 +89,20 @@ const AdminStudents = () => {
     setLoading(false);
   };
 
+  const fetchCourses = async () => {
+    const { data } = await supabase
+      .from("courses")
+      .select("id, title, is_published")
+      .order("title");
+    
+    if (data) setCourses(data);
+  };
+
   const handleCreateStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
       const response = await supabase.functions.invoke('create-student', {
         body: {
           email: formData.email,
@@ -108,6 +133,60 @@ const AdminStudents = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleEnrollStudent = async () => {
+    if (!selectedStudent || !selectedCourseId) return;
+    
+    setIsSubmitting(true);
+
+    try {
+      // Check if already enrolled
+      const { data: existing } = await supabase
+        .from("enrollments")
+        .select("id")
+        .eq("user_id", selectedStudent.user_id)
+        .eq("course_id", selectedCourseId)
+        .maybeSingle();
+
+      if (existing) {
+        toast({ 
+          title: "Aviso", 
+          description: "Esta aluna já está matriculada neste curso.", 
+          variant: "destructive" 
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from("enrollments")
+        .insert({
+          user_id: selectedStudent.user_id,
+          course_id: selectedCourseId,
+          payment_source: "admin_manual",
+        });
+
+      if (error) throw error;
+
+      toast({ title: "Sucesso!", description: "Aluna matriculada com sucesso." });
+      setIsEnrollDialogOpen(false);
+      setSelectedStudent(null);
+      setSelectedCourseId("");
+    } catch (error: any) {
+      toast({ 
+        title: "Erro", 
+        description: error.message || "Não foi possível matricular a aluna.", 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const openEnrollDialog = (student: Student) => {
+    setSelectedStudent(student);
+    setSelectedCourseId("");
+    setIsEnrollDialogOpen(true);
   };
 
   const filteredStudents = students.filter(
@@ -225,6 +304,58 @@ const AdminStudents = () => {
           </Dialog>
         </motion.div>
 
+        {/* Enroll Dialog */}
+        <Dialog open={isEnrollDialogOpen} onOpenChange={setIsEnrollDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Matricular Aluna</DialogTitle>
+              <DialogDescription>
+                Matriculando: <strong>{selectedStudent?.full_name || "Aluna"}</strong>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label>Selecione o curso</Label>
+                <Select value={selectedCourseId} onValueChange={setSelectedCourseId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Escolha um curso..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {courses.map((course) => (
+                      <SelectItem key={course.id} value={course.id}>
+                        {course.title} {!course.is_published && "(Rascunho)"}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-end gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEnrollDialogOpen(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={handleEnrollStudent} 
+                  disabled={isSubmitting || !selectedCourseId}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Matriculando...
+                    </>
+                  ) : (
+                    "Confirmar Matrícula"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Search */}
         <div className="relative mb-6">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -244,18 +375,19 @@ const AdminStudents = () => {
                 <TableHead>Aluno</TableHead>
                 <TableHead>Telefone</TableHead>
                 <TableHead>Cadastrado em</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-center py-8">
+                  <TableCell colSpan={4} className="text-center py-8">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredStudents.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-center py-8">
+                  <TableCell colSpan={4} className="text-center py-8">
                     <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                     <p className="text-muted-foreground">Nenhum aluno encontrado</p>
                   </TableCell>
@@ -279,6 +411,17 @@ const AdminStudents = () => {
                     <TableCell>{student.phone || "-"}</TableCell>
                     <TableCell>
                       {new Date(student.created_at).toLocaleDateString("pt-BR")}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openEnrollDialog(student)}
+                        className="gap-2"
+                      >
+                        <GraduationCap className="w-4 h-4" />
+                        Matricular
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
