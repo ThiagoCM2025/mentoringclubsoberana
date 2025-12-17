@@ -24,6 +24,7 @@ import { Progress } from "@/components/ui/progress";
 import StatsCard from "@/components/student/StatsCard";
 import CourseCard from "@/components/student/CourseCard";
 import ContinueWatching from "@/components/student/ContinueWatching";
+import CoursePreviewModal from "@/components/student/CoursePreviewModal";
 import brandLogo from "@/assets/brand-logo.png";
 
 interface Course {
@@ -61,6 +62,7 @@ const StudentDashboard = () => {
   const [continueWatching, setContinueWatching] = useState<ContinueItem[]>([]);
   const [totalCompleted, setTotalCompleted] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [previewCourseId, setPreviewCourseId] = useState<string | null>(null);
 
   const level = gamificationStats ? calculateLevel(gamificationStats.xp) : 1;
   const levelProgress = gamificationStats ? getCurrentLevelProgress(gamificationStats.xp) : 0;
@@ -513,6 +515,7 @@ const StudentDashboard = () => {
                     isLocked={true}
                     price={course.price}
                     index={index}
+                    onPreview={() => setPreviewCourseId(course.id)}
                   />
                 ))}
               </div>
@@ -520,6 +523,13 @@ const StudentDashboard = () => {
           );
         })()}
       </main>
+
+      {/* Course Preview Modal */}
+      <CoursePreviewModal
+        courseId={previewCourseId}
+        isOpen={!!previewCourseId}
+        onClose={() => setPreviewCourseId(null)}
+      />
     </div>
   );
 };

@@ -15,6 +15,7 @@ interface CourseCardProps {
   index?: number;
   isLocked?: boolean;
   price?: number | null;
+  onPreview?: () => void;
 }
 
 const CourseCard = ({
@@ -27,13 +28,15 @@ const CourseCard = ({
   completedLessons = 0,
   index = 0,
   isLocked = false,
-  price = null
+  price = null,
+  onPreview
 }: CourseCardProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    if (isLocked) {
-      // Redirect to landing page products section
+    if (isLocked && onPreview) {
+      onPreview();
+    } else if (isLocked) {
       window.location.href = "/#produtos";
     } else {
       navigate(`/student/course/${id}`);
