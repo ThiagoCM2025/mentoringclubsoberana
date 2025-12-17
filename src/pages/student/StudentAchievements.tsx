@@ -20,7 +20,7 @@ import {
   Medal
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import brandLogo from "@/assets/brand-logo.png";
+import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 
 const iconMap: Record<string, any> = {
   "play-circle": PlayCircle,
@@ -54,29 +54,29 @@ const StudentAchievements = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-secondary border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground py-4 px-4 sticky top-0 z-50">
+      <header className="bg-black/95 backdrop-blur-sm border-b border-secondary/20 py-4 px-4 sticky top-0 z-50">
         <div className="container-soberana flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate("/student")}
-              className="text-primary-foreground hover:bg-primary-foreground/10"
+              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-3">
-              <img src={brandLogo} alt="Soberana" className="w-8 h-8 object-contain" />
-              <span className="font-serif font-bold">Conquistas</span>
+              <img src={isotipoGold} alt="Soberana" className="w-8 h-8 object-contain" />
+              <span className="font-serif font-bold text-secondary">Conquistas</span>
             </div>
           </div>
         </div>
@@ -90,41 +90,41 @@ const StudentAchievements = () => {
           className="grid md:grid-cols-3 gap-6 mb-10"
         >
           {/* XP & Level Card */}
-          <div className="bg-gradient-to-br from-primary to-marsala-light rounded-2xl p-6 text-primary-foreground col-span-2">
+          <div className="bg-gradient-to-br from-zinc-900 via-black to-zinc-900 rounded-2xl p-6 text-cream col-span-2 border border-secondary/20 glow-gold-subtle">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-16 h-16 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center animate-pulse-glow-gold">
                   <Star className="w-8 h-8 text-secondary" />
                 </div>
                 <div>
-                  <p className="text-primary-foreground/70 text-sm">Nível</p>
+                  <p className="text-cream/60 text-sm">Nível</p>
                   <p className="text-4xl font-bold">{level}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-primary-foreground/70 text-sm">Total XP</p>
-                <p className="text-3xl font-bold">{stats?.xp || 0}</p>
+                <p className="text-cream/60 text-sm">Total XP</p>
+                <p className="text-3xl font-bold text-secondary">{stats?.xp || 0}</p>
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Progresso para o nível {level + 1}</span>
-                <span>{levelProgress}%</span>
+                <span className="text-cream/60">Progresso para o nível {level + 1}</span>
+                <span className="text-secondary">{levelProgress}%</span>
               </div>
-              <Progress value={levelProgress} className="h-3 bg-primary-foreground/20" />
+              <Progress value={levelProgress} className="h-3 bg-secondary/20" />
             </div>
           </div>
 
           {/* Streak Card */}
-          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white">
+          <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/10 rounded-2xl p-6 text-cream border border-orange-500/30">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                <Flame className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
+                <Flame className="w-6 h-6 text-orange-400" />
               </div>
-              <p className="font-medium">Streak</p>
+              <p className="font-medium text-orange-400">Streak</p>
             </div>
             <p className="text-5xl font-bold mb-1">{stats?.streak_days || 0}</p>
-            <p className="text-white/70">dias consecutivos</p>
+            <p className="text-cream/60">dias consecutivos</p>
           </div>
         </motion.div>
 
@@ -135,47 +135,47 @@ const StudentAchievements = () => {
           transition={{ delay: 0.1 }}
           className="mb-10"
         >
-          <h2 className="text-2xl font-serif font-bold text-foreground mb-4 flex items-center gap-2">
+          <h2 className="text-2xl font-serif font-bold text-cream mb-4 flex items-center gap-2">
             <Trophy className="w-6 h-6 text-secondary" />
             Ranking
           </h2>
           
-          <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+          <div className="bg-zinc-900 rounded-xl border border-secondary/10 overflow-hidden">
             {leaderboard.map((entry, index) => {
               const isCurrentUser = entry.user_id === user?.id;
               return (
                 <div
                   key={entry.user_id}
                   className={cn(
-                    "flex items-center gap-4 p-4 border-b border-border/50 last:border-b-0",
-                    isCurrentUser && "bg-primary/5"
+                    "flex items-center gap-4 p-4 border-b border-secondary/10 last:border-b-0",
+                    isCurrentUser && "bg-secondary/10"
                   )}
                 >
                   <div className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center font-bold",
-                    index === 0 && "bg-yellow-500/20 text-yellow-600",
-                    index === 1 && "bg-gray-300/30 text-gray-500",
-                    index === 2 && "bg-orange-500/20 text-orange-600",
-                    index > 2 && "bg-muted text-muted-foreground"
+                    index === 0 && "bg-yellow-500/20 text-yellow-500",
+                    index === 1 && "bg-gray-400/20 text-gray-400",
+                    index === 2 && "bg-orange-500/20 text-orange-500",
+                    index > 2 && "bg-zinc-800 text-cream/60"
                   )}>
                     {index === 0 ? <Crown className="w-5 h-5" /> : entry.rank}
                   </div>
                   <div className="flex-1">
                     <p className={cn(
                       "font-medium",
-                      isCurrentUser ? "text-primary" : "text-foreground"
+                      isCurrentUser ? "text-secondary" : "text-cream"
                     )}>
                       {entry.full_name || "Estudante"}
                       {isCurrentUser && " (você)"}
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-cream/50">
                       Nível {calculateLevel(entry.xp)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-foreground">{entry.xp} XP</p>
-                    <p className="text-xs text-muted-foreground flex items-center gap-1 justify-end">
-                      <Flame className="w-3 h-3 text-orange-500" />
+                    <p className="font-bold text-cream">{entry.xp} XP</p>
+                    <p className="text-xs text-cream/50 flex items-center gap-1 justify-end">
+                      <Flame className="w-3 h-3 text-orange-400" />
                       {entry.streak_days} dias
                     </p>
                   </div>
@@ -191,12 +191,12 @@ const StudentAchievements = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h2 className="text-2xl font-serif font-bold text-foreground mb-4 flex items-center gap-2">
+          <h2 className="text-2xl font-serif font-bold text-cream mb-4 flex items-center gap-2">
             <Medal className="w-6 h-6 text-secondary" />
             Conquistas
           </h2>
           
-          <p className="text-muted-foreground mb-6">
+          <p className="text-cream/50 mb-6">
             {earnedBadges.length} de {badges.length} conquistas desbloqueadas
           </p>
 
@@ -212,17 +212,17 @@ const StudentAchievements = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.05 }}
                   className={cn(
-                    "relative bg-card rounded-xl p-4 border text-center transition-all",
+                    "relative bg-zinc-900 rounded-xl p-4 border text-center transition-all",
                     isEarned
-                      ? "border-secondary/50 shadow-lg"
-                      : "border-border/50 opacity-60"
+                      ? "border-secondary/50 glow-gold-subtle"
+                      : "border-secondary/10 opacity-60"
                   )}
                 >
                   <div className={cn(
                     "w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center",
                     isEarned
                       ? "bg-secondary/20 text-secondary"
-                      : "bg-muted text-muted-foreground"
+                      : "bg-zinc-800 text-cream/40"
                   )}>
                     {isEarned ? (
                       <IconComponent className="w-8 h-8" />
@@ -233,20 +233,20 @@ const StudentAchievements = () => {
                   
                   <h3 className={cn(
                     "font-semibold text-sm mb-1",
-                    isEarned ? "text-foreground" : "text-muted-foreground"
+                    isEarned ? "text-cream" : "text-cream/50"
                   )}>
                     {badge.name}
                   </h3>
                   
-                  <p className="text-xs text-muted-foreground mb-2">
+                  <p className="text-xs text-cream/40 mb-2">
                     {badge.description}
                   </p>
                   
                   <span className={cn(
                     "text-xs font-medium px-2 py-1 rounded-full",
                     isEarned
-                      ? "bg-secondary/10 text-secondary"
-                      : "bg-muted text-muted-foreground"
+                      ? "bg-secondary/20 text-secondary"
+                      : "bg-zinc-800 text-cream/40"
                   )}>
                     +{badge.xp_reward} XP
                   </span>

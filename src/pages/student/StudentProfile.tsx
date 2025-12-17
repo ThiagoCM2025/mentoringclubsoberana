@@ -23,7 +23,7 @@ import {
   BookOpen,
   Loader2
 } from "lucide-react";
-import brandLogo from "@/assets/brand-logo.png";
+import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import StudyReminderDialog from "@/components/student/StudyReminderDialog";
 
 interface Profile {
@@ -70,7 +70,6 @@ const StudentProfile = () => {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [reminderDialogOpen, setReminderDialogOpen] = useState(false);
 
-  // Form state
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [emailReminders, setEmailReminders] = useState(true);
@@ -127,7 +126,6 @@ const StudentProfile = () => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       toast({
         title: "Erro",
@@ -137,7 +135,6 @@ const StudentProfile = () => {
       return;
     }
 
-    // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       toast({
         title: "Erro",
@@ -153,39 +150,25 @@ const StudentProfile = () => {
       const fileExt = file.name.split(".").pop();
       const fileName = `${user.id}/avatar.${fileExt}`;
 
-      console.log("Uploading avatar:", fileName);
-
-      // Upload to storage
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(fileName, file, { upsert: true });
 
-      if (uploadError) {
-        console.error("Upload error:", uploadError);
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
-      // Get public URL with cache-busting timestamp
       const { data: { publicUrl } } = supabase.storage
         .from("avatars")
         .getPublicUrl(fileName);
 
-      // Add cache-busting timestamp to URL
       const publicUrlWithTimestamp = `${publicUrl}?t=${Date.now()}`;
-      console.log("Public URL with timestamp:", publicUrlWithTimestamp);
 
-      // Update profile with new URL
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ avatar_url: publicUrlWithTimestamp })
         .eq("user_id", user.id);
 
-      if (updateError) {
-        console.error("Update error:", updateError);
-        throw updateError;
-      }
+      if (updateError) throw updateError;
 
-      // Force state update
       setProfile(prev => prev ? { ...prev, avatar_url: publicUrlWithTimestamp } : null);
 
       toast({
@@ -193,10 +176,8 @@ const StudentProfile = () => {
         description: "Sua foto de perfil foi alterada com sucesso.",
       });
 
-      // Refresh profile data to ensure sync
       await fetchProfile();
     } catch (error) {
-      console.error("Error uploading avatar:", error);
       toast({
         title: "Erro",
         description: "Não foi possível atualizar a foto.",
@@ -279,48 +260,48 @@ const StudentProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-secondary border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground py-4 px-4 sticky top-0 z-50">
+      <header className="bg-black/95 backdrop-blur-sm border-b border-secondary/20 py-4 px-4 sticky top-0 z-50">
         <div className="container-soberana flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate("/student")}
-              className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-3">
-              <img src={brandLogo} alt="Soberana" className="w-10 h-10 object-contain" />
-              <span className="font-serif font-bold text-xl">Meu Perfil</span>
+              <img src={isotipoGold} alt="Soberana" className="w-10 h-10 object-contain" />
+              <span className="font-serif font-bold text-xl text-secondary">Meu Perfil</span>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="container-soberana py-8 max-w-2xl">
+      <main className="container-soberana py-8 max-w-2xl px-4">
         {/* Avatar Section */}
         <div className="flex flex-col items-center mb-8">
           <div className="relative">
-            <Avatar className="w-24 h-24 border-4 border-secondary">
+            <Avatar className="w-24 h-24 border-4 border-secondary glow-gold">
               <AvatarImage src={profile?.avatar_url || undefined} />
-              <AvatarFallback className="bg-primary/10 text-primary text-2xl">
+              <AvatarFallback className="bg-zinc-800 text-secondary text-2xl">
                 {authorInitials}
               </AvatarFallback>
             </Avatar>
             <button
               onClick={handleAvatarClick}
               disabled={uploadingAvatar}
-              className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center hover:bg-secondary/90 transition-colors disabled:opacity-50"
+              className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-secondary text-black flex items-center justify-center hover:bg-secondary/90 transition-colors disabled:opacity-50 glow-gold-subtle"
             >
               {uploadingAvatar ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -336,53 +317,55 @@ const StudentProfile = () => {
               className="hidden"
             />
           </div>
-          <h2 className="text-xl font-semibold mt-4">{authorName}</h2>
-          <p className="text-muted-foreground text-sm">{user?.email}</p>
+          <h2 className="text-xl font-semibold mt-4 text-cream">{authorName}</h2>
+          <p className="text-cream/50 text-sm">{user?.email}</p>
         </div>
 
         {/* Personal Data */}
-        <div className="bg-card rounded-xl border p-6 mb-6">
+        <div className="bg-zinc-900 rounded-xl border border-secondary/10 p-6 mb-6 card-glow-gold">
           <div className="flex items-center gap-2 mb-4">
-            <User className="w-5 h-5 text-primary" />
-            <h3 className="font-semibold text-lg">Dados Pessoais</h3>
+            <User className="w-5 h-5 text-secondary" />
+            <h3 className="font-semibold text-lg text-cream">Dados Pessoais</h3>
           </div>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="fullName">Nome completo</Label>
+              <Label htmlFor="fullName" className="text-cream/70">Nome completo</Label>
               <Input
                 id="fullName"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Seu nome completo"
+                className="bg-zinc-800 border-secondary/20 text-cream focus:border-secondary"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Telefone</Label>
+              <Label htmlFor="phone" className="text-cream/70">Telefone</Label>
               <Input
                 id="phone"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="(00) 00000-0000"
+                className="bg-zinc-800 border-secondary/20 text-cream focus:border-secondary"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-cream/70">Email</Label>
               <Input
                 id="email"
                 value={user?.email || ""}
                 disabled
-                className="bg-muted"
+                className="bg-zinc-800/50 border-secondary/10 text-cream/50"
               />
-              <p className="text-xs text-muted-foreground">O email não pode ser alterado.</p>
+              <p className="text-xs text-cream/40">O email não pode ser alterado.</p>
             </div>
 
             <Button 
               onClick={handleSaveProfile} 
               disabled={saving}
-              className="w-full bg-secondary hover:bg-secondary/90"
+              className="w-full bg-secondary hover:bg-secondary/90 text-black btn-glow-gold"
             >
               {saving ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -395,17 +378,17 @@ const StudentProfile = () => {
         </div>
 
         {/* Notification Preferences */}
-        <div className="bg-card rounded-xl border p-6 mb-6">
+        <div className="bg-zinc-900 rounded-xl border border-secondary/10 p-6 mb-6 card-glow-gold">
           <div className="flex items-center gap-2 mb-4">
-            <Bell className="w-5 h-5 text-primary" />
-            <h3 className="font-semibold text-lg">Preferências de Notificação</h3>
+            <Bell className="w-5 h-5 text-secondary" />
+            <h3 className="font-semibold text-lg text-cream">Preferências de Notificação</h3>
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Lembretes de estudo</Label>
-                <p className="text-sm text-muted-foreground">
+                <Label className="text-cream">Lembretes de estudo</Label>
+                <p className="text-sm text-cream/50">
                   Receber lembretes por email nos horários configurados
                 </p>
               </div>
@@ -415,12 +398,12 @@ const StudentProfile = () => {
               />
             </div>
 
-            <Separator />
+            <Separator className="bg-secondary/10" />
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Novas aulas</Label>
-                <p className="text-sm text-muted-foreground">
+                <Label className="text-cream">Novas aulas</Label>
+                <p className="text-sm text-cream/50">
                   Ser notificada quando novos conteúdos forem publicados
                 </p>
               </div>
@@ -430,12 +413,12 @@ const StudentProfile = () => {
               />
             </div>
 
-            <Separator />
+            <Separator className="bg-secondary/10" />
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Atualizações da comunidade</Label>
-                <p className="text-sm text-muted-foreground">
+                <Label className="text-cream">Atualizações da comunidade</Label>
+                <p className="text-sm text-cream/50">
                   Receber notificações de atividade na comunidade
                 </p>
               </div>
@@ -448,23 +431,24 @@ const StudentProfile = () => {
         </div>
 
         {/* Study Reminders */}
-        <div className="bg-card rounded-xl border p-6 mb-6">
+        <div className="bg-zinc-900 rounded-xl border border-secondary/10 p-6 mb-6 card-glow-gold">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-primary" />
-              <h3 className="font-semibold text-lg">Meus Lembretes de Estudo</h3>
+              <Clock className="w-5 h-5 text-secondary" />
+              <h3 className="font-semibold text-lg text-cream">Meus Lembretes de Estudo</h3>
             </div>
             <Button
               size="sm"
               variant="outline"
               onClick={() => setReminderDialogOpen(true)}
+              className="border-secondary/30 text-secondary hover:bg-secondary/10"
             >
               + Novo
             </Button>
           </div>
 
           {reminders.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
+            <p className="text-cream/50 text-center py-4">
               Você ainda não tem lembretes configurados.
             </p>
           ) : (
@@ -472,11 +456,11 @@ const StudentProfile = () => {
               {reminders.map((reminder) => (
                 <div 
                   key={reminder.id} 
-                  className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                  className="flex items-center justify-between p-3 bg-zinc-800 rounded-lg border border-secondary/10"
                 >
                   <div className="flex-1">
-                    <p className="font-medium text-sm">{reminder.title}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="font-medium text-sm text-cream">{reminder.title}</p>
+                    <p className="text-xs text-cream/50">
                       {reminder.reminder_days.map(d => DAYS_MAP[d] || d).join(", ")} às{" "}
                       {reminder.reminder_time}
                     </p>
@@ -490,7 +474,7 @@ const StudentProfile = () => {
                       variant="ghost"
                       size="icon"
                       onClick={() => handleDeleteReminder(reminder.id)}
-                      className="text-destructive hover:text-destructive"
+                      className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -501,24 +485,28 @@ const StudentProfile = () => {
           )}
         </div>
 
-        {/* Stats */}
-        <div className="bg-card rounded-xl border p-6">
-          <h3 className="font-semibold text-lg mb-4">Minhas Estatísticas</h3>
+        {/* Gamification Stats */}
+        <div className="bg-zinc-900 rounded-xl border border-secondary/10 p-6 card-glow-gold">
+          <div className="flex items-center gap-2 mb-4">
+            <Zap className="w-5 h-5 text-secondary" />
+            <h3 className="font-semibold text-lg text-cream">Estatísticas</h3>
+          </div>
+
           <div className="grid grid-cols-3 gap-4 text-center">
-            <div className="p-4 bg-secondary/10 rounded-lg">
+            <div className="p-4 bg-zinc-800 rounded-lg border border-secondary/10">
               <Zap className="w-6 h-6 text-secondary mx-auto mb-2" />
-              <p className="text-2xl font-bold text-secondary">{gamification?.xp || 0}</p>
-              <p className="text-xs text-muted-foreground">XP Total</p>
+              <p className="text-2xl font-bold text-cream">{gamification?.xp || 0}</p>
+              <p className="text-xs text-cream/50">XP Total</p>
             </div>
-            <div className="p-4 bg-orange-500/10 rounded-lg">
-              <Flame className="w-6 h-6 text-orange-500 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-orange-500">{gamification?.streak_days || 0}</p>
-              <p className="text-xs text-muted-foreground">Dias de Streak</p>
+            <div className="p-4 bg-zinc-800 rounded-lg border border-orange-500/20">
+              <Flame className="w-6 h-6 text-orange-400 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-cream">{gamification?.streak_days || 0}</p>
+              <p className="text-xs text-cream/50">Dias de Streak</p>
             </div>
-            <div className="p-4 bg-primary/10 rounded-lg">
-              <BookOpen className="w-6 h-6 text-primary mx-auto mb-2" />
-              <p className="text-2xl font-bold text-primary">{gamification?.total_lessons_completed || 0}</p>
-              <p className="text-xs text-muted-foreground">Aulas</p>
+            <div className="p-4 bg-zinc-800 rounded-lg border border-secondary/10">
+              <BookOpen className="w-6 h-6 text-secondary mx-auto mb-2" />
+              <p className="text-2xl font-bold text-cream">{gamification?.total_lessons_completed || 0}</p>
+              <p className="text-xs text-cream/50">Aulas</p>
             </div>
           </div>
         </div>
