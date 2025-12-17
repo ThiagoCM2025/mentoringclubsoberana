@@ -79,6 +79,12 @@ export const programs: Record<string, Program> = {
     ctaText: "Saiba Mais Sobre o Workshop",
     icon: Bot,
     tier: "entry",
+    modules: [
+      { title: "Introdução às IAs para Advocacia", description: "Entenda como a IA pode revolucionar sua rotina jurídica" },
+      { title: "Prompts Exclusivos", description: "Domine os prompts para produtividade jurídica" },
+      { title: "Automações para Rotina", description: "Configure automações para tarefas repetitivas" },
+      { title: "Estratégias de Conteúdo", description: "Use IA para produzir conteúdo de qualidade" }
+    ],
     testimonials: [
       {
         name: "Dra. Amanda Ferreira",
@@ -138,6 +144,11 @@ export const programs: Record<string, Program> = {
     ctaText: "Ver Próximas Datas em SP",
     icon: Calendar,
     tier: "entry",
+    modules: [
+      { title: "Destravando sua Visão", description: "Clareza sobre seu negócio jurídico e objetivos" },
+      { title: "Networking Estratégico", description: "Construa conexões de valor com outras advogadas" },
+      { title: "Plano de Ação", description: "Saia com passos concretos para implementar" }
+    ],
     testimonials: [
       {
         name: "Dra. Mariana Costa",
@@ -271,6 +282,13 @@ export const programs: Record<string, Program> = {
     icon: Star,
     tier: "mid",
     featured: true,
+    modules: [
+      { title: "Diagnóstico do Negócio", description: "Análise completa da sua situação atual" },
+      { title: "Estratégia de Posicionamento", description: "Defina seu diferencial premium no mercado" },
+      { title: "Setup de Tráfego Pago", description: "Configuração das campanhas de anúncios" },
+      { title: "Autoridade Digital", description: "Construa presença online de impacto" },
+      { title: "Escala e Crescimento", description: "Estratégias para crescer de forma sustentável" }
+    ],
     testimonials: [
       {
         name: "Dra. Fernanda Rocha",
@@ -332,6 +350,13 @@ export const programs: Record<string, Program> = {
     icon: Crown,
     tier: "elite",
     featured: true,
+    modules: [
+      { title: "Conselho Consultivo", description: "Reuniões mensais de estratégia e resolução de desafios" },
+      { title: "Gestão de Equipe", description: "Lidere associados com excelência e eficiência" },
+      { title: "Cultura Empresarial", description: "Construa um escritório com valores e propósito" },
+      { title: "Escala Avançada", description: "Estratégias de alto crescimento sustentável" },
+      { title: "Retiro Soberano", description: "Imersão VIP de planejamento estratégico" }
+    ],
     testimonials: [
       {
         name: "Dra. Gabriela Nunes",
