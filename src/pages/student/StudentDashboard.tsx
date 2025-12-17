@@ -25,6 +25,7 @@ import StatsCard from "@/components/student/StatsCard";
 import CourseCard from "@/components/student/CourseCard";
 import ContinueWatching from "@/components/student/ContinueWatching";
 import CoursePreviewModal from "@/components/student/CoursePreviewModal";
+import { DiagnosticBanner } from "@/components/student/DiagnosticBanner";
 import brandLogo from "@/assets/brand-logo.png";
 
 interface Course {
@@ -395,6 +396,9 @@ const StudentDashboard = () => {
           <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-secondary/20 rounded-full blur-3xl" />
           <div className="absolute right-20 top-0 w-20 h-20 bg-accent/20 rounded-full blur-2xl" />
         </motion.div>
+
+        {/* Diagnostic Banner */}
+        <DiagnosticBanner />
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
