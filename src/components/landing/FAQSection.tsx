@@ -7,7 +7,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import isotipo from "@/assets/brand/isotipo.png";
+import patternCirclesBlack from "@/assets/brand/pattern-circles-black.png";
+import isotipoGold from "@/assets/brand/isotipo-gold.png";
+import isotipoBlack from "@/assets/brand/isotipo-black.png";
 
 const faqs = [
   {
@@ -58,13 +60,28 @@ export const FAQSection = () => {
 
   return (
     <section ref={ref} id="faq" className="section-padding bg-cream relative overflow-hidden">
-      {/* Isotipo decorations */}
-      <div className="absolute top-20 left-10 opacity-5">
-        <img src={isotipo} alt="" className="w-32 h-32" />
+      {/* Circle Pattern Background - Black (subtle) */}
+      <div 
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `url(${patternCirclesBlack})`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '280px',
+        }}
+      />
+
+      {/* Isotipo Gold - top left */}
+      <div className="absolute top-20 left-12 opacity-[0.07] hidden lg:block">
+        <img src={isotipoGold} alt="" className="w-28 h-28" />
       </div>
-      <div className="absolute bottom-20 right-10 opacity-5">
-        <img src={isotipo} alt="" className="w-24 h-24" />
+      
+      {/* Isotipo Black - bottom right */}
+      <div className="absolute bottom-20 right-12 opacity-[0.05] hidden lg:block">
+        <img src={isotipoBlack} alt="" className="w-24 h-24" />
       </div>
+
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-cream via-transparent to-white/80" />
 
       <div className="container-soberana relative z-10">
         <motion.div

@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { Instagram, Linkedin, Youtube, Mail, Phone, MapPin, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
+import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
+import isotipoGold from "@/assets/brand/isotipo-gold.png";
 
 const socialLinks = [
   { icon: Instagram, href: "https://instagram.com/fabianaduarte.adv", label: "Instagram" },
@@ -42,9 +44,26 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-foreground text-background">
+    <footer className="bg-foreground text-background relative overflow-hidden">
+      {/* Circle Pattern - top only */}
+      <div 
+        className="absolute top-0 left-0 w-full h-48 opacity-[0.04]"
+        style={{
+          backgroundImage: `url(${patternCirclesGold})`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '280px',
+          maskImage: 'linear-gradient(to bottom, black, transparent)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black, transparent)',
+        }}
+      />
+
+      {/* Isotipo Gold - watermark center */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03]">
+        <img src={isotipoGold} alt="" className="w-64 h-64" />
+      </div>
+
       {/* Main Footer */}
-      <div className="container-soberana section-padding pb-12">
+      <div className="container-soberana section-padding pb-12 relative z-10">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-1">
@@ -150,7 +169,7 @@ export const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-background/10">
+      <div className="border-t border-background/10 relative z-10">
         <div className="container-soberana py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-background/50">
             <p className="tracking-wide">

@@ -5,8 +5,8 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { programsList, Program } from "@/data/programs";
 import mentorFabiana from "@/assets/mentor-fabiana.jpeg";
-import patternGold from "@/assets/brand/pattern-gold.png";
-import isotipo from "@/assets/brand/isotipo.png";
+import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
+import isotipoGold from "@/assets/brand/isotipo-gold.png";
 
 interface ProgramCardProps {
   program: Program;
@@ -110,27 +110,35 @@ export const JornadaSoberanaSection = () => {
 
   return (
     <section id="jornada" className="py-20 md:py-32 bg-cream relative overflow-hidden">
-      {/* Pattern decoration in corners */}
+      {/* Circle Pattern decoration - corners */}
       <div 
-        className="absolute top-0 right-0 w-96 h-96 opacity-[0.04]"
+        className="absolute top-0 right-0 w-[500px] h-[500px] opacity-[0.05]"
         style={{
-          backgroundImage: `url(${patternGold})`,
+          backgroundImage: `url(${patternCirclesGold})`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'contain',
           backgroundPosition: 'top right',
         }}
       />
       <div 
-        className="absolute bottom-0 left-0 w-96 h-96 opacity-[0.04]"
+        className="absolute bottom-0 left-0 w-[500px] h-[500px] opacity-[0.05]"
         style={{
-          backgroundImage: `url(${patternGold})`,
+          backgroundImage: `url(${patternCirclesGold})`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'contain',
           backgroundPosition: 'bottom left',
         }}
       />
 
-      {/* Subtle decorative elements */}
+      {/* Isotipo Gold - decorative */}
+      <div className="absolute top-1/4 left-8 opacity-[0.08] hidden lg:block">
+        <img src={isotipoGold} alt="" className="w-20 h-20" />
+      </div>
+      <div className="absolute bottom-1/4 right-8 opacity-[0.08] hidden lg:block">
+        <img src={isotipoGold} alt="" className="w-24 h-24" />
+      </div>
+
+      {/* Subtle decorative lines */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
 
@@ -145,7 +153,7 @@ export const JornadaSoberanaSection = () => {
         >
           {/* Isotipo decoration */}
           <div className="flex justify-center mb-4">
-            <img src={isotipo} alt="" className="w-8 h-8 opacity-60" />
+            <img src={isotipoGold} alt="" className="w-8 h-8 opacity-60" />
           </div>
           
           <span className="inline-block text-muted-foreground text-xs tracking-[0.25em] uppercase mb-6">

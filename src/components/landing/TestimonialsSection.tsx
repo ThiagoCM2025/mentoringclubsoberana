@@ -3,7 +3,8 @@ import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Quote, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import patternWhite from "@/assets/brand/pattern-white.png";
+import patternCirclesWhite from "@/assets/brand/pattern-circles-white.png";
+import isotipoWhite from "@/assets/brand/isotipo-white.png";
 
 const testimonials = [
   {
@@ -55,15 +56,26 @@ export const TestimonialsSection = () => {
 
   return (
     <section ref={ref} className="section-padding bg-primary relative overflow-hidden">
-      {/* Pattern Background */}
+      {/* Circle Pattern Background - White */}
       <div 
-        className="absolute inset-0 opacity-[0.05]"
+        className="absolute inset-0 opacity-[0.06]"
         style={{
-          backgroundImage: `url(${patternWhite})`,
+          backgroundImage: `url(${patternCirclesWhite})`,
           backgroundRepeat: 'repeat',
-          backgroundSize: '180px',
+          backgroundSize: '280px',
         }}
       />
+
+      {/* Isotipo White - corners */}
+      <div className="absolute top-16 left-12 opacity-10 hidden lg:block">
+        <img src={isotipoWhite} alt="" className="w-24 h-24" />
+      </div>
+      <div className="absolute bottom-16 right-12 opacity-10 hidden lg:block">
+        <img src={isotipoWhite} alt="" className="w-20 h-20" />
+      </div>
+
+      {/* Vignette for depth */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_50%,_rgba(0,0,0,0.2)_100%)]" />
 
       <div className="container-soberana relative z-10">
         <motion.div

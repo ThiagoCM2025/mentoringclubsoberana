@@ -1,7 +1,8 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import mentorSobre from "@/assets/mentor-sobre.jpg";
-import patternGold from "@/assets/brand/pattern-gold.png";
+import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
+import isotipoGold from "@/assets/brand/isotipo-gold.png";
 
 export const TrajetoriaSection = () => {
   const ref = useRef(null);
@@ -9,18 +10,31 @@ export const TrajetoriaSection = () => {
 
   return (
     <section className="py-20 md:py-32 bg-brand-black relative overflow-hidden">
-      {/* Pattern Background */}
+      {/* Circle Pattern Background */}
       <div 
         className="absolute inset-0 opacity-[0.05]"
         style={{
-          backgroundImage: `url(${patternGold})`,
+          backgroundImage: `url(${patternCirclesGold})`,
           backgroundRepeat: 'repeat',
-          backgroundSize: '200px',
+          backgroundSize: '280px',
         }}
       />
       
+      {/* Isotipo Gold - right side decorative */}
+      <div className="absolute top-1/4 right-8 opacity-[0.12] hidden lg:block">
+        <img src={isotipoGold} alt="" className="w-28 h-28" />
+      </div>
+      
+      {/* Isotipo Gold - bottom left */}
+      <div className="absolute bottom-20 left-12 opacity-[0.08] hidden lg:block">
+        <img src={isotipoGold} alt="" className="w-20 h-20" />
+      </div>
+      
       {/* Subtle decorative lines */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
+      
+      {/* Golden glow behind image */}
+      <div className="absolute top-1/2 right-1/4 w-96 h-96 rounded-full bg-secondary/5 blur-3xl hidden lg:block" />
       
       <div className="container-soberana relative z-10">
         <div ref={ref} className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">

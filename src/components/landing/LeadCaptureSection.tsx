@@ -7,7 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowRight, Gift, CheckCircle, Loader2 } from "lucide-react";
 import { z } from "zod";
-import patternGold from "@/assets/brand/pattern-gold.png";
+import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
+import isotipoGold from "@/assets/brand/isotipo-gold.png";
 
 const leadSchema = z.object({
   fullName: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").max(100),
@@ -85,15 +86,23 @@ export const LeadCaptureSection = () => {
 
   return (
     <section ref={ref} id="captura" className="section-padding bg-brand-black text-cream relative overflow-hidden">
-      {/* Pattern Background */}
+      {/* Circle Pattern Background */}
       <div 
-        className="absolute inset-0 opacity-[0.06]"
+        className="absolute inset-0 opacity-[0.07]"
         style={{
-          backgroundImage: `url(${patternGold})`,
+          backgroundImage: `url(${patternCirclesGold})`,
           backgroundRepeat: 'repeat',
-          backgroundSize: '200px',
+          backgroundSize: '280px',
         }}
       />
+
+      {/* Isotipo Gold - corners */}
+      <div className="absolute top-16 right-12 opacity-10 hidden lg:block">
+        <img src={isotipoGold} alt="" className="w-24 h-24" />
+      </div>
+      <div className="absolute bottom-16 left-12 opacity-10 hidden lg:block">
+        <img src={isotipoGold} alt="" className="w-20 h-20" />
+      </div>
 
       {/* Decorative glows */}
       <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-secondary/10 blur-3xl" />

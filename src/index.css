@@ -266,6 +266,28 @@
     opacity: 0.03;
     pointer-events: none;
   }
+
+  /* ============ NEW CIRCLE PATTERNS ============ */
+  
+  .pattern-circles-gold {
+    background-image: url('/src/assets/brand/pattern-circles-gold.png');
+    background-repeat: repeat;
+  }
+  
+  .pattern-circles-marsala {
+    background-image: url('/src/assets/brand/pattern-circles-marsala.png');
+    background-repeat: repeat;
+  }
+  
+  .pattern-circles-white {
+    background-image: url('/src/assets/brand/pattern-circles-white.png');
+    background-repeat: repeat;
+  }
+  
+  .pattern-circles-black {
+    background-image: url('/src/assets/brand/pattern-circles-black.png');
+    background-repeat: repeat;
+  }
 }
 
 @layer utilities {

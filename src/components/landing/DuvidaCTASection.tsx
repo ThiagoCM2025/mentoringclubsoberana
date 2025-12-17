@@ -3,14 +3,34 @@ import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, ArrowRight } from "lucide-react";
+import patternCirclesWhite from "@/assets/brand/pattern-circles-white.png";
+import isotipoWhite from "@/assets/brand/isotipo-white.png";
 
 export const DuvidaCTASection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="section-padding bg-primary">
-      <div className="container-soberana">
+    <section ref={ref} className="section-padding bg-primary relative overflow-hidden">
+      {/* Circle Pattern Background - White */}
+      <div 
+        className="absolute inset-0 opacity-[0.06]"
+        style={{
+          backgroundImage: `url(${patternCirclesWhite})`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '280px',
+        }}
+      />
+
+      {/* Isotipo White - centered behind text */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.12]">
+        <img src={isotipoWhite} alt="" className="w-48 h-48" />
+      </div>
+
+      {/* Glow around button area */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-white/5 blur-3xl rounded-full" />
+
+      <div className="container-soberana relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -31,7 +51,7 @@ export const DuvidaCTASection = () => {
             className="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 py-6 text-lg group"
           >
             <a
-              href="https://wa.me/5511999999999?text=Olá! Estou em dúvida sobre qual programa escolher e gostaria de uma orientação."
+              href="https://wa.me/5511993563468?text=Olá! Estou em dúvida sobre qual programa escolher e gostaria de uma orientação."
               target="_blank"
               rel="noopener noreferrer"
             >
