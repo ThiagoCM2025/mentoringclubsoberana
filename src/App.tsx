@@ -23,6 +23,7 @@ import AdminStudents from "./pages/admin/AdminStudents";
 import AdminStudentProfile from "./pages/admin/AdminStudentProfile";
 import AdminEnrollments from "./pages/admin/AdminEnrollments";
 import AdminLeads from "./pages/admin/AdminLeads";
+import AdminEbooks from "./pages/admin/AdminEbooks";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import AdminCommunity from "./pages/admin/AdminCommunity";
@@ -163,6 +164,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin>
                   <AdminLeads />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/ebooks"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminEbooks />
                 </ProtectedRoute>
               }
             />

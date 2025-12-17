@@ -28,7 +28,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2 } from "lucide-react";
+import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle } from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import type { Database } from "@/integrations/supabase/types";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
@@ -45,6 +47,19 @@ interface Lead {
   score: number | null;
   notes: string | null;
   created_at: string;
+  messages_sent: number | null;
+  nurturing_step: number | null;
+  nurturing_active: boolean | null;
+  last_contact_at: string | null;
+}
+
+interface CommunicationHistory {
+  id: string;
+  channel: string;
+  subject: string | null;
+  message: string;
+  status: string | null;
+  sent_at: string;
 }
 
 const temperatureConfig = {
@@ -61,6 +76,15 @@ const statusConfig = {
   lost: { label: "Perdido", color: "bg-gray-100 text-gray-700" },
 };
 
+const getNurturingColor = (step: number) => {
+  if (step === 0) return "bg-muted text-muted-foreground";
+  if (step <= 1) return "bg-blue-100 text-blue-700";
+  if (step <= 2) return "bg-yellow-100 text-yellow-700";
+  if (step <= 3) return "bg-orange-100 text-orange-700";
+  if (step <= 4) return "bg-red-100 text-red-700";
+  return "bg-green-100 text-green-700";
+};
+
 const AdminLeads = () => {
   const { toast } = useToast();
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -70,6 +94,8 @@ const AdminLeads = () => {
   const [filterTemp, setFilterTemp] = useState<string>("all");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [communicationHistory, setCommunicationHistory] = useState<CommunicationHistory[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => {
     fetchLeads();
@@ -127,9 +153,31 @@ const AdminLeads = () => {
     return matchesSearch && matchesStatus && matchesTemp;
   });
 
+  const fetchCommunicationHistory = async (leadId: string) => {
+    setLoadingHistory(true);
+    const { data } = await supabase
+      .from("communication_history")
+      .select("id, channel, subject, message, status, sent_at")
+      .eq("recipient_id", leadId)
+      .order("sent_at", { ascending: false })
+      .limit(10);
+    
+    setCommunicationHistory(data || []);
+    setLoadingHistory(false);
+  };
+
   const openLeadDetails = (lead: Lead) => {
     setSelectedLead(lead);
     setDialogOpen(true);
+    fetchCommunicationHistory(lead.id);
+  };
+
+  const getChannelIcon = (channel: string) => {
+    switch (channel) {
+      case "email": return <Mail className="w-3 h-3" />;
+      case "whatsapp": return <MessageCircle className="w-3 h-3" />;
+      default: return <Mail className="w-3 h-3" />;
+    }
   };
 
   return (
@@ -220,6 +268,7 @@ const AdminLeads = () => {
               <TableRow>
                 <TableHead>Lead</TableHead>
                 <TableHead>Contato</TableHead>
+                <TableHead className="text-center">Nurturing</TableHead>
                 <TableHead>Temperatura</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Data</TableHead>
@@ -229,13 +278,13 @@ const AdminLeads = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={7} className="text-center py-8">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredLeads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={7} className="text-center py-8">
                     <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                     <p className="text-muted-foreground">Nenhum lead encontrado</p>
                   </TableCell>
@@ -295,26 +344,56 @@ const AdminLeads = () => {
         </div>
 
         {/* Lead Details Dialog */}
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="max-w-lg">
+        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setCommunicationHistory([]); }}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Detalhes do Lead</DialogTitle>
             </DialogHeader>
             {selectedLead && (
-              <div className="space-y-4 pt-4">
+              <div className="space-y-6 pt-4">
+                {/* Header */}
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                     <span className="text-2xl text-primary font-bold">
                       {selectedLead.full_name.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h3 className="text-lg font-semibold">{selectedLead.full_name}</h3>
                     <p className="text-sm text-muted-foreground">{selectedLead.email}</p>
                     {selectedLead.phone && <p className="text-sm text-muted-foreground">{selectedLead.phone}</p>}
                   </div>
                 </div>
 
+                {/* Tracking Indicators */}
+                <div className="grid grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 text-2xl font-bold text-foreground">
+                      <Mail className="w-5 h-5 text-primary" />
+                      {selectedLead.messages_sent || 0}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Mensagens</p>
+                  </div>
+                  <div className="text-center">
+                    <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-lg font-bold ${getNurturingColor(selectedLead.nurturing_step || 0)}`}>
+                      <Zap className="w-4 h-4" />
+                      {selectedLead.nurturing_step || 0}/5
+                    </div>
+                    <p className="text-xs text-muted-foreground">Nurturing</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 text-sm font-medium text-foreground">
+                      <Clock className="w-4 h-4 text-muted-foreground" />
+                      {selectedLead.last_contact_at 
+                        ? formatDistanceToNow(new Date(selectedLead.last_contact_at), { addSuffix: true, locale: ptBR })
+                        : "Nunca"
+                      }
+                    </div>
+                    <p className="text-xs text-muted-foreground">Último contato</p>
+                  </div>
+                </div>
+
+                {/* Status and Temperature */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Status</Label>
@@ -354,6 +433,7 @@ const AdminLeads = () => {
                   </div>
                 </div>
 
+                {/* Notes */}
                 <div>
                   <Label>Notas</Label>
                   <Textarea
@@ -365,6 +445,35 @@ const AdminLeads = () => {
                   />
                 </div>
 
+                {/* Communication History */}
+                <div className="border-t pt-4">
+                  <Label className="flex items-center gap-2 mb-3">
+                    <MessageCircle className="w-4 h-4" />
+                    Histórico de Comunicações
+                  </Label>
+                  {loadingHistory ? (
+                    <p className="text-sm text-muted-foreground">Carregando...</p>
+                  ) : communicationHistory.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">Nenhuma comunicação registrada</p>
+                  ) : (
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {communicationHistory.map((comm) => (
+                        <div key={comm.id} className="flex items-start gap-2 p-2 bg-muted/30 rounded-lg text-sm">
+                          {getChannelIcon(comm.channel)}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{comm.subject || "Sem assunto"}</p>
+                            <p className="text-xs text-muted-foreground truncate">{comm.message}</p>
+                          </div>
+                          <div className="text-xs text-muted-foreground whitespace-nowrap">
+                            {format(new Date(comm.sent_at), "dd/MM HH:mm")}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer */}
                 <div className="flex items-center justify-between pt-4 border-t">
                   <div className="text-sm text-muted-foreground">
                     Capturado em {new Date(selectedLead.created_at).toLocaleDateString("pt-BR", {

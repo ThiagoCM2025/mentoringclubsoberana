@@ -23,9 +23,10 @@ import {
   Award,
   FileText,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  MessageCircle
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 interface StudentProfile {
@@ -84,6 +85,15 @@ interface ActivityItem {
   type: 'lesson' | 'badge' | 'enrollment' | 'account';
   description: string;
   date: string;
+}
+
+interface CommunicationItem {
+  id: string;
+  channel: string;
+  subject: string | null;
+  message: string;
+  status: string | null;
+  sent_at: string;
 }
 
 const YEARS_LABELS: Record<string, string> = {
@@ -172,6 +182,7 @@ export default function AdminStudentProfile() {
   const [diagnostic, setDiagnostic] = useState<Diagnostic | null>(null);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [communications, setCommunications] = useState<CommunicationItem[]>([]);
 
   useEffect(() => {
     if (userId) {
@@ -293,6 +304,18 @@ export default function AdminStudentProfile() {
       
       if (diagnosticData) setDiagnostic(diagnosticData as Diagnostic);
 
+      // Fetch communication history
+      const { data: commData } = await supabase
+        .from("communication_history")
+        .select("id, channel, subject, message, status, sent_at")
+        .eq("recipient_id", userId)
+        .order("sent_at", { ascending: false })
+        .limit(10);
+      
+      if (commData) setCommunications(commData);
+      
+      if (diagnosticData) setDiagnostic(diagnosticData as Diagnostic);
+
       // Build activity timeline
       const activityList: ActivityItem[] = [];
 
@@ -358,6 +381,24 @@ export default function AdminStudentProfile() {
     if (days === 0) return "Hoje";
     if (days === 1) return "Ontem";
     return `Há ${days} dias`;
+  };
+
+  const getChannelIcon = (channel: string) => {
+    switch (channel) {
+      case "email": return <Mail className="w-4 h-4" />;
+      case "whatsapp": return <MessageCircle className="w-4 h-4" />;
+      case "in_app": return <Mail className="w-4 h-4" />;
+      default: return <Mail className="w-4 h-4" />;
+    }
+  };
+
+  const getChannelLabel = (channel: string) => {
+    switch (channel) {
+      case "email": return "Email";
+      case "whatsapp": return "WhatsApp";
+      case "in_app": return "Notificação";
+      default: return channel;
+    }
   };
 
   if (loading) {
@@ -551,6 +592,50 @@ export default function AdminStudentProfile() {
                     <span className="mr-1">{badge.icon}</span>
                     {badge.name}
                   </Badge>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Communication History */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageCircle className="h-5 w-5" />
+              Histórico de Comunicações ({communications.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {communications.length === 0 ? (
+              <p className="text-muted-foreground text-center py-4">
+                Nenhuma comunicação registrada
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {communications.map((comm) => (
+                  <div key={comm.id} className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
+                    <div className="p-2 rounded-full bg-primary/10 text-primary">
+                      {getChannelIcon(comm.channel)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-muted-foreground">
+                          {getChannelLabel(comm.channel)}
+                        </span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                          comm.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                        }`}>
+                          {comm.status === 'sent' ? 'Enviado' : comm.status}
+                        </span>
+                      </div>
+                      <p className="font-medium text-sm mt-1">{comm.subject || "Sem assunto"}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-2">{comm.message}</p>
+                    </div>
+                    <div className="text-xs text-muted-foreground whitespace-nowrap">
+                      {formatDistanceToNow(new Date(comm.sent_at), { addSuffix: true, locale: ptBR })}
+                    </div>
+                  </div>
                 ))}
               </div>
             )}

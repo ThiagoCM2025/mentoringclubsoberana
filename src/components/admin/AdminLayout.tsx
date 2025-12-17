@@ -29,6 +29,7 @@ const menuItems = [
   { icon: Users, label: "Alunos", href: "/admin/students" },
   { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments" },
   { icon: Target, label: "Leads", href: "/admin/leads" },
+  { icon: BookOpen, label: "E-books", href: "/admin/ebooks" },
   { icon: Mail, label: "Comunicação", href: "/admin/messaging" },
   { icon: Bell, label: "Notificações", href: "/admin/notifications" },
   { icon: Users, label: "Comunidade", href: "/admin/community" },

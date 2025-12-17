@@ -42,17 +42,29 @@ export const LeadCaptureSection = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.from("leads").insert({
-        full_name: formData.fullName,
-        email: formData.email,
-        phone: formData.phone || null,
-        source: "landing_page",
-        status: "new",
-        temperature: "warm",
-        score: 10,
-      });
+      // Insert lead
+      const { data: newLead, error: leadError } = await supabase
+        .from("leads")
+        .insert({
+          full_name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone || null,
+          source: "landing_page_ebook",
+          status: "new",
+          temperature: "warm",
+          score: 10,
+        })
+        .select("id")
+        .single();
 
-      if (error) throw error;
+      if (leadError) throw leadError;
+
+      // Register ebook download
+      await supabase.from("ebook_downloads").insert({
+        lead_id: newLead.id,
+        email: formData.email,
+        ebook_name: "7 Erros que Travam seu Escritório",
+      });
 
       setIsSuccess(true);
       toast({
