@@ -39,9 +39,14 @@ export const DuvidaCTASection = () => {
           className="max-w-3xl mx-auto text-center"
         >
           {/* Isotipo S decoration */}
-          <div className="flex justify-center mb-4">
-            <img src={isotipoSWhite} alt="" className="w-10 h-10 opacity-80" />
-          </div>
+          <motion.div 
+            className="flex justify-center mb-4"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            <img src={isotipoSWhite} alt="" className="w-10 h-10 isotipo-glow-white" />
+          </motion.div>
           
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-primary-foreground mb-6">
             Ainda está em dúvida sobre qual o{" "}

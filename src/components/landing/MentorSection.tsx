@@ -93,9 +93,14 @@ export const MentorSection = () => {
             className="order-1 lg:order-2"
           >
             {/* Isotipo S decoration */}
-            <div className="flex mb-4">
-              <img src={isotipoSGold} alt="" className="w-10 h-10 opacity-80" />
-            </div>
+            <motion.div 
+              className="flex mb-4"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <img src={isotipoSGold} alt="" className="w-10 h-10 isotipo-glow" />
+            </motion.div>
             
             <span className="inline-block text-secondary text-xs tracking-[0.25em] uppercase mb-6">
               A Metodologia

@@ -47,9 +47,14 @@ export const TrajetoriaSection = () => {
             className="order-2 lg:order-1"
           >
             {/* Isotipo S decoration */}
-            <div className="flex mb-4">
-              <img src={isotipoSGold} alt="" className="w-10 h-10 opacity-80" />
-            </div>
+            <motion.div 
+              className="flex mb-4"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <img src={isotipoSGold} alt="" className="w-10 h-10 isotipo-glow" />
+            </motion.div>
             
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-medium text-cream mb-8 leading-tight">
               Comecei minha trajetória{" "}
