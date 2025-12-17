@@ -59,7 +59,14 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
       <div className="lg:hidden fixed top-0 left-0 right-0 bg-black/95 backdrop-blur-sm border-b border-secondary/20 p-4 z-50 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img src={isotipoGold} alt="Soberana" className="w-8 h-8" />
-          <span className="font-admin font-bold text-secondary">Admin</span>
+          <div className="flex flex-col">
+            <span className="text-secondary/60 text-[7px] tracking-[0.2em] uppercase leading-tight">
+              Mentoring Club
+            </span>
+            <span className="font-serif font-bold text-secondary text-sm tracking-wider">
+              SOBERANA
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <AdminNotificationBell />
@@ -126,7 +133,16 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         <div className="relative p-4 flex items-center justify-between border-b border-secondary/20">
           <div className={cn("flex items-center gap-3", !isSidebarOpen && "justify-center w-full")}>
             <img src={isotipoGold} alt="Soberana" className="w-10 h-10 drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
-            {isSidebarOpen && <span className="font-admin font-bold text-lg text-secondary">Admin</span>}
+            {isSidebarOpen && (
+              <div className="flex flex-col">
+                <span className="text-secondary/60 text-[8px] tracking-[0.2em] uppercase leading-tight">
+                  Mentoring Club
+                </span>
+                <span className="font-serif font-bold text-secondary text-base tracking-wider">
+                  SOBERANA
+                </span>
+              </div>
+            )}
           </div>
           <div className={cn("flex items-center gap-1", !isSidebarOpen && "hidden")}>
             <AdminNotificationBell />
