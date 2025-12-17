@@ -60,7 +60,7 @@ export const MethodologySection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="section-padding bg-primary text-primary-foreground overflow-hidden">
+    <section id="metodologia" ref={ref} className="section-padding bg-primary text-primary-foreground overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-1/4 left-0 w-64 h-64 rounded-full bg-secondary blur-3xl" />
