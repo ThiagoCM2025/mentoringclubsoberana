@@ -198,19 +198,19 @@ const AdminEbooks = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-serif font-bold text-foreground mb-2">
+              <h1 className="text-3xl font-serif font-bold text-cream title-premium mb-2">
                 📚 Leads E-book
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-cream/80">
                 Gestão dos downloads do e-book e sistema de nurturing
               </p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={fetchDownloads}>
+              <Button variant="outline" size="sm" onClick={fetchDownloads} className="border-secondary/30 text-cream hover:bg-secondary/10 hover:border-secondary/50">
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Atualizar
               </Button>
-              <Button variant="outline" size="sm" onClick={exportCSV}>
+              <Button variant="outline" size="sm" onClick={exportCSV} className="border-secondary/30 text-cream hover:bg-secondary/10 hover:border-secondary/50">
                 <FileDown className="w-4 h-4 mr-2" />
                 Exportar CSV
               </Button>
@@ -220,63 +220,63 @@ const AdminEbooks = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
-          <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-            <CardContent className="p-4 text-center">
-              <Download className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
-              <p className="text-xs text-muted-foreground">Downloads</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <Users className="w-6 h-6 mx-auto mb-2 text-blue-500" />
-              <p className="text-2xl font-bold text-foreground">{stats.new}</p>
-              <p className="text-xs text-muted-foreground">Novos</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <MessageCircle className="w-6 h-6 mx-auto mb-2 text-purple-500" />
-              <p className="text-2xl font-bold text-foreground">{stats.contacted}</p>
-              <p className="text-xs text-muted-foreground">Contatados</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <CheckCircle className="w-6 h-6 mx-auto mb-2 text-green-500" />
-              <p className="text-2xl font-bold text-foreground">{stats.converted}</p>
-              <p className="text-xs text-muted-foreground">Convertidos</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <Flame className="w-6 h-6 mx-auto mb-2 text-orange-500" />
-              <p className="text-2xl font-bold text-foreground">{stats.nurturingActive}</p>
-              <p className="text-xs text-muted-foreground">Nurturing Ativo</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <Pause className="w-6 h-6 mx-auto mb-2 text-gray-500" />
-              <p className="text-2xl font-bold text-foreground">{stats.paused}</p>
-              <p className="text-xs text-muted-foreground">Pausados</p>
-            </CardContent>
-          </Card>
+          <div className="admin-stat-card p-4 text-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
+              <Download className="w-6 h-6 text-white" />
+            </div>
+            <p className="text-2xl font-bold text-cream">{stats.total}</p>
+            <p className="text-xs text-cream/75">Downloads</p>
+          </div>
+          <div className="admin-stat-card p-4 text-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-400 flex items-center justify-center">
+              <Users className="w-6 h-6 text-white" />
+            </div>
+            <p className="text-2xl font-bold text-cream">{stats.new}</p>
+            <p className="text-xs text-cream/75">Novos</p>
+          </div>
+          <div className="admin-stat-card p-4 text-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-400 flex items-center justify-center">
+              <MessageCircle className="w-6 h-6 text-white" />
+            </div>
+            <p className="text-2xl font-bold text-cream">{stats.contacted}</p>
+            <p className="text-xs text-cream/75">Contatados</p>
+          </div>
+          <div className="admin-stat-card p-4 text-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-white" />
+            </div>
+            <p className="text-2xl font-bold text-cream">{stats.converted}</p>
+            <p className="text-xs text-cream/75">Convertidos</p>
+          </div>
+          <div className="admin-stat-card p-4 text-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center">
+              <Flame className="w-6 h-6 text-white" />
+            </div>
+            <p className="text-2xl font-bold text-cream">{stats.nurturingActive}</p>
+            <p className="text-xs text-cream/75">Nurturing Ativo</p>
+          </div>
+          <div className="admin-stat-card p-4 text-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-zinc-500 to-zinc-400 flex items-center justify-center">
+              <Pause className="w-6 h-6 text-white" />
+            </div>
+            <p className="text-2xl font-bold text-cream">{stats.paused}</p>
+            <p className="text-xs text-cream/75">Pausados</p>
+          </div>
         </div>
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cream/50" />
             <Input
               placeholder="Buscar por nome, email ou telefone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
+              className="pl-10 admin-input"
             />
           </div>
           <Select value={filterNurturing} onValueChange={setFilterNurturing}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] admin-input">
               <SelectValue placeholder="Nurturing" />
             </SelectTrigger>
             <SelectContent>
@@ -289,7 +289,7 @@ const AdminEbooks = () => {
         </div>
 
         {/* Table */}
-        <Card>
+        <div className="admin-table-container">
           <Table>
             <TableHeader>
               <TableRow>
@@ -305,15 +305,15 @@ const AdminEbooks = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={7} className="text-center py-8 text-cream/70">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredDownloads.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8">
-                    <Download className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">Nenhum download encontrado</p>
+                    <Download className="w-12 h-12 text-cream/40 mx-auto mb-3" />
+                    <p className="text-cream/70">Nenhum download encontrado</p>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -327,17 +327,17 @@ const AdminEbooks = () => {
                     <TableRow key={download.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                            <span className="text-primary font-medium">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-secondary-light flex items-center justify-center">
+                            <span className="text-black font-semibold">
                               {(download.lead?.full_name || download.email).charAt(0).toUpperCase()}
                             </span>
                           </div>
                           <div>
-                            <p className="font-medium">
+                            <p className="font-medium text-cream">
                               {download.lead?.full_name || "Sem nome"}
                             </p>
                             {download.lead?.messages_sent && download.lead.messages_sent > 0 && (
-                              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <p className="text-xs text-cream/60 flex items-center gap-1">
                                 <Mail className="w-3 h-3" />
                                 {download.lead.messages_sent} mensagens
                               </p>
@@ -346,16 +346,16 @@ const AdminEbooks = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <p className="text-sm">{download.email}</p>
+                        <p className="text-sm text-cream/90">{download.email}</p>
                         {download.lead?.phone && (
-                          <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <p className="text-xs text-cream/60 flex items-center gap-1">
                             <Phone className="w-3 h-3" />
                             {download.lead.phone}
                           </p>
                         )}
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm truncate max-w-[200px] block">
+                        <span className="text-sm text-cream/90 truncate max-w-[200px] block">
                           {download.ebook_name}
                         </span>
                       </TableCell>
@@ -372,7 +372,7 @@ const AdminEbooks = () => {
                           </span>
                         )}
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className="text-sm text-cream/70">
                         {format(new Date(download.downloaded_at), "dd/MM/yy HH:mm", { locale: ptBR })}
                       </TableCell>
                       <TableCell className="text-center">
@@ -389,7 +389,7 @@ const AdminEbooks = () => {
               )}
             </TableBody>
           </Table>
-        </Card>
+        </div>
       </div>
     </AdminLayout>
   );

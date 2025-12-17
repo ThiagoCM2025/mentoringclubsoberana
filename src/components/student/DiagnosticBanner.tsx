@@ -93,29 +93,35 @@ export function DiagnosticBanner() {
 
   return (
     <>
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-lg p-4 mb-6">
+      <div className="bg-gradient-to-r from-zinc-900 via-zinc-900 to-black border border-secondary/30 rounded-xl p-5 mb-6 hover:border-secondary/50 transition-all duration-300 shadow-lg shadow-black/20">
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-start gap-3 flex-1">
-            <AlertCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+          <div className="flex items-start gap-4 flex-1">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-secondary-light flex items-center justify-center flex-shrink-0">
+              <AlertCircle className="h-5 w-5 text-black" />
+            </div>
             <div className="flex-1">
-              <h4 className="font-medium text-foreground">
+              <h4 className="font-semibold text-cream text-lg">
                 Complete seu perfil para uma experiência personalizada!
               </h4>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-cream/80 mt-1">
                 {progressPercent === 0 
                   ? "Responda algumas perguntas rápidas para personalizarmos sua jornada."
                   : `Você já preencheu ${progressPercent}% do diagnóstico. Leva apenas 2 minutos para finalizar.`
                 }
               </p>
               
-              <div className="mt-3 space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <Progress value={progressPercent} className="h-2 flex-1 max-w-xs" />
-                  <span className="text-muted-foreground">{progressPercent}% completo</span>
+              <div className="mt-4 space-y-3">
+                <div className="flex items-center gap-3 text-sm">
+                  <Progress value={progressPercent} className="h-2 flex-1 max-w-xs bg-zinc-800" />
+                  <span className="text-secondary font-medium">{progressPercent}%</span>
                 </div>
                 
-                <Button size="sm" onClick={() => setShowForm(true)}>
-                  {progressPercent === 0 ? "Começar" : "Continuar"}
+                <Button 
+                  size="sm" 
+                  onClick={() => setShowForm(true)}
+                  className="bg-secondary hover:bg-secondary-light text-black font-semibold btn-glow-gold"
+                >
+                  {progressPercent === 0 ? "Começar Diagnóstico" : "Continuar Diagnóstico"}
                 </Button>
               </div>
             </div>
@@ -124,7 +130,7 @@ export function DiagnosticBanner() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 flex-shrink-0"
+            className="h-8 w-8 flex-shrink-0 text-cream/60 hover:text-cream hover:bg-zinc-800"
             onClick={handleDismiss}
           >
             <X className="h-4 w-4" />

@@ -257,37 +257,37 @@ const AdminLeads = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-serif font-bold text-cream mb-2">
+          <h1 className="text-3xl font-serif font-bold text-cream title-premium mb-2">
             Leads
           </h1>
-          <p className="text-cream/60">
+          <p className="text-cream/80">
             Gerencie os leads capturados pela landing page
           </p>
         </motion.div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="admin-stat-card">
+          <div className="admin-stat-card p-5">
             <p className="text-2xl font-bold text-cream">{leads.length}</p>
-            <p className="text-sm text-cream/60">Total</p>
+            <p className="text-sm text-cream/75 font-medium">Total</p>
           </div>
-          <div className="admin-stat-card">
+          <div className="admin-stat-card p-5">
             <p className="text-2xl font-bold text-secondary">
               {leads.filter((l) => l.status === "new").length}
             </p>
-            <p className="text-sm text-cream/60">Novos</p>
+            <p className="text-sm text-cream/75 font-medium">Novos</p>
           </div>
-          <div className="admin-stat-card">
+          <div className="admin-stat-card p-5">
             <p className="text-2xl font-bold text-red-400">
               {leads.filter((l) => l.temperature === "hot").length}
             </p>
-            <p className="text-sm text-cream/60">Quentes</p>
+            <p className="text-sm text-cream/75 font-medium">Quentes</p>
           </div>
-          <div className="admin-stat-card">
+          <div className="admin-stat-card p-5">
             <p className="text-2xl font-bold text-emerald-400">
               {leads.filter((l) => l.status === "converted").length}
             </p>
-            <p className="text-sm text-cream/60">Convertidos</p>
+            <p className="text-sm text-cream/75 font-medium">Convertidos</p>
           </div>
         </div>
 

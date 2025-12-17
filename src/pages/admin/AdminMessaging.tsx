@@ -18,12 +18,12 @@ export default function AdminMessaging() {
         description="Envie mensagens para alunos e leads"
       />
 
-      <div className="p-6 space-y-6">
+      <div className="p-6 lg:p-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-foreground">
+          <h1 className="text-3xl font-serif font-bold text-cream title-premium">
             Central de Comunicação
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-cream/80 mt-1">
             Envie emails, WhatsApp e notificações para alunos e leads
           </p>
         </div>

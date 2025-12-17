@@ -947,6 +947,30 @@
     background: linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(0, 0%, 5%) 100%);
   }
   
+  /* Premium text classes with proper contrast */
+  .text-premium {
+    color: hsl(30 10% 94%);
+  }
+  
+  .text-premium-muted {
+    color: hsl(30 10% 75%);
+  }
+  
+  .text-premium-subtle {
+    color: hsl(30 10% 60%);
+  }
+  
+  /* Premium title with glow effect */
+  .title-premium {
+    color: hsl(30 10% 94%);
+    text-shadow: 0 0 30px hsla(38, 30%, 51%, 0.3);
+  }
+  
+  .title-gold {
+    color: hsl(38 40% 65%);
+    text-shadow: 0 0 20px hsla(38, 30%, 51%, 0.4);
+  }
+  
   .admin-card {
     @apply bg-zinc-900/90 border border-secondary/20 rounded-xl backdrop-blur-sm;
     transition: all 0.3s ease;
@@ -958,38 +982,83 @@
   }
   
   .admin-stat-card {
-    @apply relative overflow-hidden bg-zinc-900/80 border border-secondary/20 rounded-xl p-6;
+    @apply relative overflow-hidden rounded-xl;
+    background: linear-gradient(145deg, hsl(0 0% 10%), hsl(0 0% 7%));
+    border: 1px solid hsla(38, 30%, 51%, 0.2);
     transition: all 0.3s ease;
   }
   
+  .admin-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, hsl(38 30% 51%), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
   .admin-stat-card:hover {
-    @apply border-secondary/40;
-    box-shadow: 0 0 25px hsla(38, 30%, 51%, 0.15);
+    border-color: hsla(38, 30%, 51%, 0.4);
     transform: translateY(-2px);
+    box-shadow: 0 10px 30px hsla(0, 0%, 0%, 0.3), 0 0 20px hsla(38, 30%, 51%, 0.1);
+  }
+  
+  .admin-stat-card:hover::before {
+    opacity: 1;
   }
   
   .admin-table-container {
     @apply bg-zinc-900/80 border border-secondary/20 rounded-xl overflow-hidden;
   }
   
+  .admin-table-container thead {
+    background: hsla(38, 30%, 51%, 0.08);
+  }
+  
+  .admin-table-container th {
+    color: hsl(38 40% 65%) !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+  
+  .admin-table-container td {
+    color: hsl(30 10% 85%) !important;
+    border-bottom: 1px solid hsla(38, 30%, 51%, 0.08);
+  }
+  
+  .admin-table-container tr:hover td {
+    background: hsla(38, 30%, 51%, 0.05);
+  }
+  
   .admin-input {
-    @apply bg-zinc-800/80 border-secondary/30 text-cream placeholder:text-cream/40;
+    @apply bg-zinc-800/80 border-secondary/30 text-cream placeholder:text-cream/50;
   }
   
   .admin-input:focus {
     @apply border-secondary/60 ring-1 ring-secondary/20;
   }
   
-  /* Admin text colors */
+  /* Admin text colors - FIXED CONTRAST */
   .admin-area .text-foreground,
   .admin-area h1,
   .admin-area h2,
-  .admin-area h3 {
+  .admin-area h3,
+  .admin-area h4 {
     color: hsl(var(--cream));
   }
   
   .admin-area .text-muted-foreground {
-    color: hsla(var(--cream), 0.6);
+    color: hsla(30, 10%, 75%, 1);
+  }
+  
+  /* Student area text colors - FIXED CONTRAST */
+  .student-area .text-muted-foreground {
+    color: hsla(30, 10%, 75%, 1);
   }
   
   /* Respect reduced motion preferences */
@@ -1003,8 +1072,10 @@
     .isotipo-glow-white,
     .isotipo-glow-marsala,
     .animate-pulse-glow-gold,
-    .animate-border-glow-gold {
+    .animate-border-glow-gold,
+    .admin-stat-card:hover {
       animation: none !important;
+      transform: none !important;
     }
     
     .golden-particle {
