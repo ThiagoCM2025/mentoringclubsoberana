@@ -72,16 +72,16 @@ const ProgramCard = ({ program, index, isReversed, isInView }: ProgramCardProps)
         animate={cardInView ? { opacity: 1, x: 0 } : {}}
         transition={{ duration: 0.7, delay: 0.3 }}
       >
-        <span className="inline-flex items-center gap-2 text-secondary text-xs tracking-[0.25em] uppercase mb-4 font-medium">
-          <Star className="w-3 h-3" />
+        <span className="inline-flex items-center gap-2 text-secondary text-sm md:text-base tracking-[0.3em] uppercase mb-4 font-semibold drop-shadow-[0_0_8px_rgba(166,144,97,0.5)]">
+          <Star className="w-4 h-4" />
           {program.subtitle}
         </span>
         
-        <h3 className="text-2xl md:text-3xl lg:text-4xl font-serif font-medium text-foreground mb-4 leading-tight">
+        <h3 className="text-3xl md:text-4xl lg:text-5xl font-serif font-medium text-foreground mb-4 leading-tight group-hover:scale-[1.01] transition-transform duration-300">
           {program.titleHighlight ? (
             <>
               {program.title.split(program.titleHighlight)[0]}
-              <em className="italic text-secondary">{program.titleHighlight}</em>
+              <em className="italic text-shimmer-gold not-italic">{program.titleHighlight}</em>
               {program.title.split(program.titleHighlight)[1]}
             </>
           ) : (
