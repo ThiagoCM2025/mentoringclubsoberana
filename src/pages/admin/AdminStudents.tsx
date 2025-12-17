@@ -37,6 +37,7 @@ interface Student {
   full_name: string | null;
   phone: string | null;
   created_at: string;
+  enrollment_count?: number;
 }
 
 interface Course {
@@ -82,8 +83,19 @@ const AdminStudents = () => {
       .select(`id, user_id, full_name, phone, created_at`)
       .order("created_at", { ascending: false });
 
+    const { data: enrollments } = await supabase
+      .from("enrollments")
+      .select("user_id");
+
+    const enrollmentCounts: Record<string, number> = {};
+    enrollments?.forEach(e => {
+      enrollmentCounts[e.user_id] = (enrollmentCounts[e.user_id] || 0) + 1;
+    });
+
     if (profiles) {
-      const studentsOnly = profiles.filter(p => !adminUserIds.includes(p.user_id));
+      const studentsOnly = profiles
+        .filter(p => !adminUserIds.includes(p.user_id))
+        .map(p => ({ ...p, enrollment_count: enrollmentCounts[p.user_id] || 0 }));
       setStudents(studentsOnly);
     }
     setLoading(false);
@@ -374,6 +386,7 @@ const AdminStudents = () => {
               <TableRow>
                 <TableHead>Aluno</TableHead>
                 <TableHead>Telefone</TableHead>
+                <TableHead>Cursos</TableHead>
                 <TableHead>Cadastrado em</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -381,13 +394,13 @@ const AdminStudents = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center py-8">
+                  <TableCell colSpan={5} className="text-center py-8">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredStudents.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center py-8">
+                  <TableCell colSpan={5} className="text-center py-8">
                     <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                     <p className="text-muted-foreground">Nenhum aluno encontrado</p>
                   </TableCell>
@@ -409,6 +422,13 @@ const AdminStudents = () => {
                       </div>
                     </TableCell>
                     <TableCell>{student.phone || "-"}</TableCell>
+                    <TableCell>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        student.enrollment_count ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                      }`}>
+                        {student.enrollment_count || 0}
+                      </span>
+                    </TableCell>
                     <TableCell>
                       {new Date(student.created_at).toLocaleDateString("pt-BR")}
                     </TableCell>
