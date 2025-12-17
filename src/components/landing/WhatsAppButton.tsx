@@ -9,28 +9,16 @@ export const WhatsAppButton = () => {
       rel="noopener noreferrer"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      transition={{ delay: 1, type: "spring", stiffness: 200 }}
-      whileHover={{ scale: 1.1 }}
+      transition={{ delay: 1.5, type: "spring", stiffness: 200 }}
+      whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#25D366] text-white px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-shadow group"
+      className="fixed bottom-4 right-4 z-50 flex items-center justify-center gap-2 bg-[#25D366] text-white p-3 rounded-full shadow-md hover:shadow-lg transition-all duration-300 group"
       aria-label="Falar com Suporte Soberana no WhatsApp"
     >
-      <MessageCircle className="w-6 h-6" />
-      <span className="font-medium hidden sm:inline group-hover:inline transition-all">
-        Falar com Suporte
+      <MessageCircle className="w-5 h-5" />
+      <span className="font-medium text-sm max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-[120px] transition-all duration-300">
+        Suporte
       </span>
-      
-      {/* Pulse Animation */}
-      <motion.span
-        className="absolute inset-0 rounded-full bg-[#25D366]"
-        initial={{ scale: 1, opacity: 0.5 }}
-        animate={{ scale: 1.5, opacity: 0 }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          repeatType: "loop",
-        }}
-      />
     </motion.a>
   );
 };

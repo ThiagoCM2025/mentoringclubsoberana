@@ -46,7 +46,7 @@ export const ProgramHero = ({ program }: ProgramHeroProps) => {
             <span className="text-secondary font-medium tracking-wide uppercase text-sm">
               {program.tier === "entry" && "Programa de Entrada"}
               {program.tier === "mid" && "Mentoria"}
-              {program.tier === "presencial" && "Evento Presencial"}
+              {program.tier === "elite" && "Mastermind Exclusivo"}
             </span>
           </motion.div>
 
