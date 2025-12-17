@@ -466,10 +466,10 @@ const AdminDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-serif font-bold text-foreground mb-2">
+          <h1 className="text-3xl font-admin font-bold text-foreground mb-2">
             Dashboard
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground font-admin">
             Visão geral do seu ecossistema de cursos
           </p>
         </motion.div>

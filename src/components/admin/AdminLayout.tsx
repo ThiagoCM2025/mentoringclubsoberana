@@ -49,12 +49,12 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-muted/30 font-admin">
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 bg-primary text-primary-foreground p-4 z-50 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img src={brandLogo} alt="Soberana" className="w-8 h-8" />
-          <span className="font-serif font-bold">Admin</span>
+          <span className="font-admin font-bold">Admin</span>
         </div>
         <Button
           variant="ghost"
@@ -108,7 +108,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         <div className="p-4 flex items-center justify-between border-b border-primary-foreground/10">
           <div className={cn("flex items-center gap-3", !isSidebarOpen && "justify-center w-full")}>
             <img src={brandLogo} alt="Soberana" className="w-10 h-10" />
-            {isSidebarOpen && <span className="font-serif font-bold text-lg">Admin</span>}
+            {isSidebarOpen && <span className="font-admin font-bold text-lg">Admin</span>}
           </div>
           <Button
             variant="ghost"
