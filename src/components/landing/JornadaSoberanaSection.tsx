@@ -285,32 +285,50 @@ export const JornadaSoberanaSection = () => {
               <span className="text-muted-foreground text-base font-sans">Receba uma orientação personalizada</span>
             </p>
             
-            <motion.a
-              href="https://wa.me/5511993563468?text=Olá! Quero ajuda para escolher o programa ideal para mim"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative inline-flex items-center gap-3 px-12 py-6 rounded-xl font-semibold text-lg tracking-wide overflow-hidden"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {/* Button background with animated gradient */}
-              <span className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary to-gold-light" />
+            <div className="relative inline-block">
+              {/* Pulsing rings */}
+              <span className="absolute inset-0 -m-2 rounded-2xl bg-secondary/40 animate-[pulse_2s_ease-in-out_infinite]" />
+              <span className="absolute inset-0 -m-4 rounded-2xl bg-secondary/20 animate-[pulse_2s_ease-in-out_infinite_0.5s]" />
+              <span className="absolute inset-0 -m-6 rounded-3xl bg-secondary/10 animate-[pulse_2s_ease-in-out_infinite_1s]" />
               
-              {/* Shimmer overlay */}
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-              
-              {/* Glow effect */}
-              <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-secondary blur-xl -z-10" />
-              
-              {/* Border glow */}
-              <span className="absolute inset-0 rounded-xl border-2 border-secondary/50 group-hover:border-secondary transition-colors duration-300" />
-              
-              <span className="relative z-10 text-secondary-foreground flex items-center gap-3">
-                <Sparkles className="w-5 h-5" />
-                Falar com Equipe Soberana
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
-              </span>
-            </motion.a>
+              <motion.a
+                href="https://wa.me/5511993563468?text=Olá! Quero ajuda para escolher o programa ideal para mim"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative inline-flex items-center gap-3 px-12 py-6 rounded-xl font-semibold text-lg tracking-wide overflow-hidden"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                animate={{ 
+                  boxShadow: [
+                    "0 0 20px rgba(166,144,97,0.4)",
+                    "0 0 40px rgba(166,144,97,0.6)",
+                    "0 0 20px rgba(166,144,97,0.4)"
+                  ]
+                }}
+                transition={{ 
+                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                }}
+              >
+                {/* Button background with animated gradient */}
+                <span className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary to-gold-light" />
+                
+                {/* Shimmer overlay - continuous animation */}
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-[shimmer_2s_infinite]" 
+                  style={{ backgroundSize: "200% 100%" }} />
+                
+                {/* Extra glow on hover */}
+                <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-secondary blur-xl -z-10" />
+                
+                {/* Border glow */}
+                <span className="absolute inset-0 rounded-xl border-2 border-white/30 group-hover:border-white/50 transition-colors duration-300" />
+                
+                <span className="relative z-10 text-secondary-foreground flex items-center gap-3">
+                  <Sparkles className="w-5 h-5 animate-pulse" />
+                  Falar com Equipe Soberana
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                </span>
+              </motion.a>
+            </div>
 
             {/* Trust indicators */}
             <motion.div
