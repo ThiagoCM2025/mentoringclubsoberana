@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowRight, Gift, CheckCircle, Loader2 } from "lucide-react";
 import { z } from "zod";
+import patternGold from "@/assets/brand/pattern-gold.png";
 
 const leadSchema = z.object({
   fullName: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").max(100),
@@ -83,14 +84,22 @@ export const LeadCaptureSection = () => {
   };
 
   return (
-    <section ref={ref} id="captura" className="section-padding bg-primary text-primary-foreground relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-secondary blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-secondary blur-3xl" />
-      </div>
+    <section ref={ref} id="captura" className="section-padding bg-brand-black text-cream relative overflow-hidden">
+      {/* Pattern Background */}
+      <div 
+        className="absolute inset-0 opacity-[0.06]"
+        style={{
+          backgroundImage: `url(${patternGold})`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '200px',
+        }}
+      />
 
-      <div className="container-soberana relative">
+      {/* Decorative glows */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-secondary/10 blur-3xl" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 rounded-full bg-secondary/10 blur-3xl" />
+
+      <div className="container-soberana relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
           <motion.div
@@ -108,9 +117,9 @@ export const LeadCaptureSection = () => {
               <span className="text-secondary">Primeiro Passo?</span>
             </h2>
 
-            <p className="text-lg text-primary-foreground/80 mb-8">
+            <p className="text-lg text-cream/80 mb-8">
               Cadastre-se e receba gratuitamente nosso guia exclusivo com os 
-              <strong> 7 erros que estão travando o crescimento do seu escritório</strong> 
+              <strong className="text-cream"> 7 erros que estão travando o crescimento do seu escritório</strong> 
               e como evitá-los.
             </p>
 
@@ -126,7 +135,7 @@ export const LeadCaptureSection = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={isInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
-                  className="flex items-center gap-3 text-primary-foreground/90"
+                  className="flex items-center gap-3 text-cream/90"
                 >
                   <CheckCircle className="w-5 h-5 text-secondary" />
                   {item}
@@ -141,7 +150,7 @@ export const LeadCaptureSection = () => {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className="bg-background text-foreground rounded-2xl p-8 shadow-2xl">
+            <div className="bg-cream text-foreground rounded-2xl p-8 shadow-2xl">
               {isSuccess ? (
                 <div className="text-center py-8">
                   <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
@@ -194,7 +203,7 @@ export const LeadCaptureSection = () => {
                     <Button
                       type="submit"
                       disabled={isLoading}
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg font-medium group"
+                      className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground py-6 text-lg font-medium group"
                     >
                       {isLoading ? (
                         <Loader2 className="w-5 h-5 animate-spin" />

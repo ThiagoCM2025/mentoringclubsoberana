@@ -5,6 +5,8 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { programsList, Program } from "@/data/programs";
 import mentorFabiana from "@/assets/mentor-fabiana.jpeg";
+import patternGold from "@/assets/brand/pattern-gold.png";
+import isotipo from "@/assets/brand/isotipo.png";
 
 interface ProgramCardProps {
   program: Program;
@@ -108,9 +110,29 @@ export const JornadaSoberanaSection = () => {
 
   return (
     <section id="jornada" className="py-20 md:py-32 bg-cream relative overflow-hidden">
+      {/* Pattern decoration in corners */}
+      <div 
+        className="absolute top-0 right-0 w-96 h-96 opacity-[0.04]"
+        style={{
+          backgroundImage: `url(${patternGold})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'contain',
+          backgroundPosition: 'top right',
+        }}
+      />
+      <div 
+        className="absolute bottom-0 left-0 w-96 h-96 opacity-[0.04]"
+        style={{
+          backgroundImage: `url(${patternGold})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'contain',
+          backgroundPosition: 'bottom left',
+        }}
+      />
+
       {/* Subtle decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
 
       <div className="container-soberana relative z-10">
         {/* Header */}
@@ -121,6 +143,11 @@ export const JornadaSoberanaSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-20"
         >
+          {/* Isotipo decoration */}
+          <div className="flex justify-center mb-4">
+            <img src={isotipo} alt="" className="w-8 h-8 opacity-60" />
+          </div>
+          
           <span className="inline-block text-muted-foreground text-xs tracking-[0.25em] uppercase mb-6">
             A Jornada Soberana
           </span>

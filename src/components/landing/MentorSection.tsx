@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 import mentorSobre from "@/assets/mentor-sobre.jpg";
+import isotipo from "@/assets/brand/isotipo.png";
 
 export const MentorSection = () => {
   const ref = useRef(null);
@@ -10,9 +11,14 @@ export const MentorSection = () => {
   return (
     <section ref={ref} id="sobre" className="py-20 md:py-32 bg-background relative overflow-hidden">
       {/* Subtle top border */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent" />
       
-      <div className="container-soberana">
+      {/* Isotipo decorations */}
+      <div className="absolute top-10 right-10 opacity-5">
+        <img src={isotipo} alt="" className="w-20 h-20" />
+      </div>
+      
+      <div className="container-soberana relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Image with Golden Frame and Signature */}
           <motion.div
@@ -96,7 +102,7 @@ export const MentorSection = () => {
             </div>
 
             {/* Mission */}
-            <div className="mt-10 pt-8 border-t border-border">
+            <div className="mt-10 pt-8 border-t border-secondary/20">
               <span className="inline-block text-muted-foreground text-xs tracking-[0.2em] uppercase mb-4">
                 Missão de <em className="italic normal-case text-sm">Fabiana Duarte</em>
               </span>

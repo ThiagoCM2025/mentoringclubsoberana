@@ -63,7 +63,7 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Soberana Brand Colors
+        // Soberana Brand Colors - Official Palette
         marsala: {
           DEFAULT: "hsl(var(--marsala))",
           light: "hsl(var(--marsala-light))",
@@ -77,6 +77,9 @@ export default {
         cream: {
           DEFAULT: "hsl(var(--cream))",
           dark: "hsl(var(--cream-dark))",
+        },
+        brand: {
+          black: "hsl(var(--brand-black))",
         },
       },
       borderRadius: {
@@ -121,6 +124,10 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "pattern-scroll": {
+          "0%": { backgroundPosition: "0 0" },
+          "100%": { backgroundPosition: "300px 300px" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -132,6 +139,7 @@ export default {
         "slide-in-right": "slide-in-right 0.5s ease-out forwards",
         float: "float 3s ease-in-out infinite",
         shimmer: "shimmer 2s linear infinite",
+        "pattern-scroll": "pattern-scroll 60s linear infinite",
       },
       backgroundImage: {
         "gradient-marsala": "var(--gradient-marsala)",

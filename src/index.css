@@ -4,13 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design System Soberana Mentoring Club */
+/* Design System Soberana Mentoring Club - Official Brand Palette */
 
 @layer base {
   :root {
-    /* Soberana Brand Colors - Elegant & Sophisticated */
+    /* Official Soberana Brand Colors */
     --background: 30 10% 94%; /* Branco Soberana #F2F1EF */
-    --foreground: 0 0% 0%; /* Preto */
+    --foreground: 0 0% 0%; /* Preto #000000 */
 
     --card: 30 10% 96%;
     --card-foreground: 0 0% 0%;
@@ -18,18 +18,18 @@
     --popover: 30 10% 96%;
     --popover-foreground: 0 0% 0%;
 
-    /* Marsala - Primary Brand Color */
-    --primary: 350 100% 20%; /* #64001C Marsala */
+    /* Marsala - Primary Brand Color #8B0027 / #64001C */
+    --primary: 350 100% 27%; /* #8B0027 Marsala */
     --primary-foreground: 30 10% 94%;
 
-    /* Gold - Accent Color */
+    /* Gold - Secondary Color #A69061 */
     --secondary: 38 30% 51%; /* #A69061 Dourado */
     --secondary-foreground: 0 0% 0%;
 
     --muted: 30 10% 90%;
     --muted-foreground: 0 0% 30%;
 
-    /* Gold Accent */
+    /* Gold Light Accent #FFDFA6 */
     --accent: 43 100% 83%; /* #FFDFA6 Dourado Claro */
     --accent-foreground: 0 0% 0%;
 
@@ -38,39 +38,40 @@
 
     --border: 38 20% 80%;
     --input: 38 20% 85%;
-    --ring: 350 100% 20%;
+    --ring: 350 100% 27%;
 
     --radius: 0.5rem;
 
-    /* Custom Soberana Tokens */
-    --marsala: 350 100% 20%;
-    --marsala-light: 350 80% 27%;
-    --marsala-dark: 350 100% 15%;
-    --gold: 38 30% 51%;
-    --gold-light: 43 100% 83%;
-    --gold-dark: 38 40% 35%;
-    --cream: 30 10% 94%;
+    /* Custom Soberana Tokens - Official Palette */
+    --marsala: 350 100% 27%; /* #8B0027 */
+    --marsala-light: 350 80% 33%; /* #A61C3C */
+    --marsala-dark: 350 100% 20%; /* #64001C */
+    --gold: 38 30% 51%; /* #A69061 */
+    --gold-light: 43 100% 83%; /* #FFDFA6 */
+    --gold-dark: 38 40% 43%; /* #8B7A4F */
+    --cream: 30 10% 94%; /* #F2F1EF */
     --cream-dark: 30 10% 88%;
+    --brand-black: 0 0% 0%; /* #000000 */
 
     /* Gradients */
-    --gradient-marsala: linear-gradient(135deg, hsl(350, 100%, 20%) 0%, hsl(350, 80%, 27%) 100%);
+    --gradient-marsala: linear-gradient(135deg, hsl(350, 100%, 27%) 0%, hsl(350, 80%, 33%) 100%);
     --gradient-gold: linear-gradient(135deg, hsl(38, 30%, 51%) 0%, hsl(43, 100%, 83%) 100%);
     --gradient-elegant: linear-gradient(180deg, hsl(30, 10%, 94%) 0%, hsl(30, 10%, 88%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(350, 100%, 15%) 0%, hsl(350, 100%, 20%) 50%, hsl(350, 80%, 27%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(350, 100%, 20%) 0%, hsl(350, 100%, 27%) 50%, hsl(350, 80%, 33%) 100%);
 
     /* Shadows */
-    --shadow-elegant: 0 10px 40px -10px hsla(350, 100%, 20%, 0.2);
+    --shadow-elegant: 0 10px 40px -10px hsla(350, 100%, 27%, 0.2);
     --shadow-gold: 0 10px 30px -10px hsla(38, 30%, 51%, 0.3);
     --shadow-card: 0 4px 20px -4px hsla(0, 0%, 0%, 0.1);
 
     /* Sidebar */
-    --sidebar-background: 350 100% 18%;
+    --sidebar-background: 350 100% 22%;
     --sidebar-foreground: 30 10% 94%;
     --sidebar-primary: 43 100% 83%;
     --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 350 80% 25%;
+    --sidebar-accent: 350 80% 30%;
     --sidebar-accent-foreground: 30 10% 94%;
-    --sidebar-border: 350 60% 25%;
+    --sidebar-border: 350 60% 28%;
     --sidebar-ring: 43 100% 83%;
   }
 
@@ -84,7 +85,7 @@
     --popover: 0 0% 8%;
     --popover-foreground: 30 10% 94%;
 
-    --primary: 350 100% 25%;
+    --primary: 350 100% 30%;
     --primary-foreground: 30 10% 94%;
 
     --secondary: 38 30% 51%;
@@ -101,7 +102,7 @@
 
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 350 100% 25%;
+    --ring: 350 100% 30%;
 
     --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 30 10% 94%;
@@ -203,6 +204,68 @@
     @apply bg-card rounded-lg border border-border/50 shadow-md 
            transition-all duration-300 hover:shadow-lg;
   }
+
+  /* ============ SECTION PATTERN BACKGROUNDS ============ */
+  
+  .section-pattern-gold {
+    position: relative;
+  }
+  
+  .section-pattern-gold::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/src/assets/brand/pattern-gold.png');
+    background-repeat: repeat;
+    background-size: 200px;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  .section-pattern-marsala {
+    position: relative;
+  }
+  
+  .section-pattern-marsala::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/src/assets/brand/pattern-marsala.png');
+    background-repeat: repeat;
+    background-size: 200px;
+    opacity: 0.04;
+    pointer-events: none;
+  }
+
+  .section-pattern-white {
+    position: relative;
+  }
+  
+  .section-pattern-white::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/src/assets/brand/pattern-white.png');
+    background-repeat: repeat;
+    background-size: 200px;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  .section-pattern-black {
+    position: relative;
+  }
+  
+  .section-pattern-black::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/src/assets/brand/pattern-black.png');
+    background-repeat: repeat;
+    background-size: 200px;
+    opacity: 0.03;
+    pointer-events: none;
+  }
 }
 
 @layer utilities {
@@ -254,7 +317,7 @@
   }
 
   .marsala-glow {
-    box-shadow: 0 0 40px hsla(350, 100%, 20%, 0.3);
+    box-shadow: 0 0 40px hsla(350, 100%, 27%, 0.3);
   }
 
   .scrollbar-hide {
@@ -269,6 +332,27 @@
   /* Elegant decorative line */
   .decorative-line {
     @apply h-px bg-gradient-to-r from-transparent via-secondary/40 to-transparent;
+  }
+
+  /* Text shimmer gold effect */
+  .text-shimmer-gold {
+    background: linear-gradient(90deg, 
+      hsl(38, 30%, 51%) 0%, 
+      hsl(43, 100%, 83%) 25%, 
+      hsl(38, 30%, 51%) 50%,
+      hsl(43, 100%, 83%) 75%,
+      hsl(38, 30%, 51%) 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: textShimmer 4s linear infinite;
+  }
+
+  @keyframes textShimmer {
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
   }
 
   /* Shimmer effect */
@@ -300,6 +384,33 @@
   /* Elegant text shadow */
   .text-elegant-shadow {
     text-shadow: 0 2px 10px hsla(0, 0%, 0%, 0.3);
+  }
+
+  /* Card luxury effect */
+  .card-luxury {
+    @apply transition-all duration-500;
+  }
+
+  .card-luxury:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 25px 50px hsla(38, 30%, 51%, 0.2);
+  }
+
+  /* Border gold animated */
+  .border-gold-animated {
+    position: relative;
+  }
+
+  .border-gold-animated::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid transparent;
+    border-radius: inherit;
+    background: linear-gradient(90deg, hsl(38, 30%, 51%), hsl(43, 100%, 83%), hsl(38, 30%, 51%)) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
   }
 
   /* ============ GOLDEN FRAME EFFECTS ============ */
@@ -468,5 +579,26 @@
       hsla(38, 30%, 20%, 0.15) 100%
     );
     pointer-events: none;
+  }
+
+  /* Hero photo fade effect */
+  .hero-photo-fade {
+    -webkit-mask-image: 
+      linear-gradient(to bottom, white 40%, transparent 100%),
+      linear-gradient(to left, white 60%, transparent 100%);
+    -webkit-mask-composite: destination-in;
+    mask-composite: intersect;
+  }
+
+  /* Isotipo decoration */
+  .isotipo-decoration {
+    opacity: 0.1;
+    filter: grayscale(100%);
+    transition: all 0.3s ease;
+  }
+
+  .isotipo-decoration:hover {
+    opacity: 0.2;
+    filter: grayscale(0%);
   }
 }
