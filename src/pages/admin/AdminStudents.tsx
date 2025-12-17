@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import { BulkNotificationDialog } from "@/components/admin/BulkNotificationDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -241,14 +242,17 @@ const AdminStudents = () => {
             </p>
           </div>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2">
-                <UserPlus className="w-4 h-4" />
-                Nova Aluna
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
+          <div className="flex items-center gap-3">
+            <BulkNotificationDialog />
+            
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="gap-2">
+                  <UserPlus className="w-4 h-4" />
+                  Nova Aluna
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
               <DialogHeader>
                 <DialogTitle>Cadastrar Nova Aluna</DialogTitle>
                 <DialogDescription>
@@ -331,6 +335,7 @@ const AdminStudents = () => {
               </form>
             </DialogContent>
           </Dialog>
+          </div>
         </motion.div>
 
         {/* Enroll Dialog */}
