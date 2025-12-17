@@ -348,17 +348,17 @@ const AdminCommunity = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 lg:p-8">
+      <div className="p-6 lg:p-8 admin-area">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Users className="w-6 h-6 text-primary" />
+          <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
+            <Users className="w-6 h-6 text-secondary" />
           </div>
           <div>
-            <h1 className="text-2xl font-serif font-bold text-foreground">
+            <h1 className="text-2xl font-serif font-bold text-cream">
               Moderação da Comunidade
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-cream/60">
               Gerencie publicações, fixe conteúdos e destaque histórias de sucesso
             </p>
           </div>
@@ -366,27 +366,27 @@ const AdminCommunity = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-card rounded-lg border p-4">
-            <p className="text-2xl font-bold text-foreground">{posts.length}</p>
-            <p className="text-sm text-muted-foreground">Total de posts</p>
+          <div className="admin-stat-card">
+            <p className="text-2xl font-bold text-cream">{posts.length}</p>
+            <p className="text-sm text-cream/60">Total de posts</p>
           </div>
-          <div className="bg-card rounded-lg border p-4">
+          <div className="admin-stat-card">
             <p className="text-2xl font-bold text-secondary">{posts.filter(p => p.is_pinned).length}</p>
-            <p className="text-sm text-muted-foreground">Fixados</p>
+            <p className="text-sm text-cream/60">Fixados</p>
           </div>
-          <div className="bg-card rounded-lg border p-4">
-            <p className="text-2xl font-bold text-green-500">{posts.filter(p => p.is_highlighted).length}</p>
-            <p className="text-sm text-muted-foreground">Destacados</p>
+          <div className="admin-stat-card">
+            <p className="text-2xl font-bold text-emerald-400">{posts.filter(p => p.is_highlighted).length}</p>
+            <p className="text-sm text-cream/60">Destacados</p>
           </div>
-          <div className="bg-card rounded-lg border p-4">
-            <p className="text-2xl font-bold text-destructive">{posts.filter(p => p.is_hidden).length}</p>
-            <p className="text-sm text-muted-foreground">Ocultos</p>
+          <div className="admin-stat-card">
+            <p className="text-2xl font-bold text-red-400">{posts.filter(p => p.is_hidden).length}</p>
+            <p className="text-sm text-cream/60">Ocultos</p>
           </div>
         </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList>
+          <TabsList className="bg-zinc-900 border border-secondary/20">
             <TabsTrigger value="all">Todos</TabsTrigger>
             <TabsTrigger value="pinned">Fixados</TabsTrigger>
             <TabsTrigger value="highlighted">Destacados</TabsTrigger>
@@ -396,10 +396,10 @@ const AdminCommunity = () => {
           <TabsContent value={activeTab}>
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+                <div className="animate-spin w-8 h-8 border-2 border-secondary border-t-transparent rounded-full" />
               </div>
             ) : filteredPosts.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
+              <div className="text-center py-12 text-cream/60">
                 Nenhuma publicação nesta categoria.
               </div>
             ) : (

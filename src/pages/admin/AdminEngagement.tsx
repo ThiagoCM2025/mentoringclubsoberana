@@ -256,13 +256,13 @@ export default function AdminEngagement() {
 
   const SummaryCard = ({ icon: Icon, label, value, color, suffix = '' }: any) => (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="relative overflow-hidden border-0 shadow-md">
+      <Card className="relative overflow-hidden admin-stat-card border-0">
         <div className={`absolute inset-0 ${color} opacity-10`} />
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">{label}</p>
-              <p className="text-3xl font-bold mt-1">{value}{suffix}</p>
+              <p className="text-sm text-cream/60">{label}</p>
+              <p className="text-3xl font-bold text-cream mt-1">{value}{suffix}</p>
             </div>
             <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center`}>
               <Icon className="w-6 h-6 text-white" />
@@ -283,15 +283,15 @@ export default function AdminEngagement() {
           className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8"
         >
           <div>
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-3xl font-bold text-cream">
               Engajamento dos Alunos
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-cream/60 mt-1">
               Métricas de tempo de estudo, frequência e padrões de uso
             </p>
           </div>
           <Select value={period} onValueChange={(v) => setPeriod(v as PeriodFilter)}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[140px] bg-zinc-900 border-secondary/30 text-cream">
               <Calendar className="w-4 h-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
@@ -337,13 +337,13 @@ export default function AdminEngagement() {
         <div className="grid lg:grid-cols-2 gap-6 mb-6">
           {/* Activity Trend */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card className="border-0 shadow-md">
+            <Card className="admin-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-blue-600" />
+                <CardTitle className="text-lg flex items-center gap-2 text-cream">
+                  <TrendingUp className="w-5 h-5 text-secondary" />
                   Evolução de Atividades
                 </CardTitle>
-                <CardDescription>Atividades e conclusões por período</CardDescription>
+                <CardDescription className="text-cream/60">Atividades e conclusões por período</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-72">
@@ -370,7 +370,7 @@ export default function AdminEngagement() {
                       </AreaChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                    <div className="h-full flex items-center justify-center text-cream/60">
                       Sem dados no período
                     </div>
                   )}
@@ -381,13 +381,13 @@ export default function AdminEngagement() {
 
           {/* Activity by Day */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="border-0 shadow-md">
+            <Card className="admin-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-violet-600" />
+                <CardTitle className="text-lg flex items-center gap-2 text-cream">
+                  <Calendar className="w-5 h-5 text-secondary" />
                   Atividade por Dia da Semana
                 </CardTitle>
-                <CardDescription>Distribuição de atividades</CardDescription>
+                <CardDescription className="text-cream/60">Distribuição de atividades</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-72">
@@ -406,7 +406,7 @@ export default function AdminEngagement() {
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                    <div className="h-full flex items-center justify-center text-cream/60">
                       Sem dados
                     </div>
                   )}

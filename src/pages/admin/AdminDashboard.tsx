@@ -482,22 +482,22 @@ const AdminDashboard = () => {
       icon: BookOpen, 
       label: "Cursos Ativos", 
       value: stats.totalCourses, 
-      gradient: "from-blue-500 to-blue-600",
-      bgLight: "bg-blue-50"
+      gradient: "from-secondary to-secondary-light",
+      bgLight: "bg-secondary/10"
     },
     { 
       icon: Users, 
       label: "Alunos", 
       value: stats.totalStudents, 
-      gradient: "from-emerald-500 to-emerald-600",
-      bgLight: "bg-emerald-50"
+      gradient: "from-emerald-600 to-emerald-500",
+      bgLight: "bg-emerald-500/10"
     },
     { 
       icon: UserCheck, 
       label: "Matrículas", 
       value: stats.totalEnrollments, 
-      gradient: "from-violet-500 to-violet-600",
-      bgLight: "bg-violet-50"
+      gradient: "from-violet-600 to-violet-500",
+      bgLight: "bg-violet-500/10"
     },
     { 
       icon: TrendingUp, 

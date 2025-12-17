@@ -251,57 +251,57 @@ const AdminLeads = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 lg:p-8">
+      <div className="p-6 lg:p-8 admin-area">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-serif font-bold text-foreground mb-2">
+          <h1 className="text-3xl font-serif font-bold text-cream mb-2">
             Leads
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-cream/60">
             Gerencie os leads capturados pela landing page
           </p>
         </motion.div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="card-elegant p-4">
-            <p className="text-2xl font-bold text-foreground">{leads.length}</p>
-            <p className="text-sm text-muted-foreground">Total</p>
+          <div className="admin-stat-card">
+            <p className="text-2xl font-bold text-cream">{leads.length}</p>
+            <p className="text-sm text-cream/60">Total</p>
           </div>
-          <div className="card-elegant p-4">
-            <p className="text-2xl font-bold text-blue-600">
+          <div className="admin-stat-card">
+            <p className="text-2xl font-bold text-secondary">
               {leads.filter((l) => l.status === "new").length}
             </p>
-            <p className="text-sm text-muted-foreground">Novos</p>
+            <p className="text-sm text-cream/60">Novos</p>
           </div>
-          <div className="card-elegant p-4">
-            <p className="text-2xl font-bold text-red-600">
+          <div className="admin-stat-card">
+            <p className="text-2xl font-bold text-red-400">
               {leads.filter((l) => l.temperature === "hot").length}
             </p>
-            <p className="text-sm text-muted-foreground">Quentes</p>
+            <p className="text-sm text-cream/60">Quentes</p>
           </div>
-          <div className="card-elegant p-4">
-            <p className="text-2xl font-bold text-green-600">
+          <div className="admin-stat-card">
+            <p className="text-2xl font-bold text-emerald-400">
               {leads.filter((l) => l.status === "converted").length}
             </p>
-            <p className="text-sm text-muted-foreground">Convertidos</p>
+            <p className="text-sm text-cream/60">Convertidos</p>
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2 mb-6">
-          <Button onClick={() => setNewLeadDialogOpen(true)}>
+          <Button onClick={() => setNewLeadDialogOpen(true)} className="bg-secondary hover:bg-secondary/90 text-black btn-glow-gold">
             <Plus className="w-4 h-4 mr-2" />
             Novo Lead
           </Button>
-          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+          <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="border-secondary/40 text-cream hover:bg-secondary/10">
             <Upload className="w-4 h-4 mr-2" />
             Importar CSV
           </Button>
-          <Button variant="outline" onClick={handleExport}>
+          <Button variant="outline" onClick={handleExport} className="border-secondary/40 text-cream hover:bg-secondary/10">
             <Download className="w-4 h-4 mr-2" />
             Exportar CSV
           </Button>
@@ -317,16 +317,16 @@ const AdminLeads = () => {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cream/40" />
             <Input
               placeholder="Buscar por nome, email ou telefone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
             />
           </div>
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-[160px] bg-zinc-900 border-secondary/30 text-cream">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -339,7 +339,7 @@ const AdminLeads = () => {
             </SelectContent>
           </Select>
           <Select value={filterTemp} onValueChange={setFilterTemp}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-[160px] bg-zinc-900 border-secondary/30 text-cream">
               <SelectValue placeholder="Temperatura" />
             </SelectTrigger>
             <SelectContent>
@@ -354,10 +354,10 @@ const AdminLeads = () => {
         </div>
 
         {/* Table */}
-        <div className="card-elegant overflow-hidden">
+        <div className="admin-card overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="border-secondary/20 hover:bg-zinc-800/50">
                 <TableHead>Lead</TableHead>
                 <TableHead>Contato</TableHead>
                 <TableHead className="text-center">Nurturing</TableHead>
