@@ -35,7 +35,7 @@ const App = () => (
             <Route
               path="/student"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireStudent>
                   <StudentDashboard />
                 </ProtectedRoute>
               }
@@ -43,7 +43,7 @@ const App = () => (
             <Route
               path="/student/course/:courseId"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireStudent>
                   <CourseDetail />
                 </ProtectedRoute>
               }
@@ -51,7 +51,7 @@ const App = () => (
             <Route
               path="/student/lesson/:lessonId"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireStudent>
                   <LessonPlayer />
                 </ProtectedRoute>
               }
