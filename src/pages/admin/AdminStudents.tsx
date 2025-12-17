@@ -33,7 +33,15 @@ const AdminStudents = () => {
   }, []);
 
   const fetchStudents = async () => {
-    // Fetch profiles with student role
+    // First get all admin user_ids to exclude them
+    const { data: adminRoles } = await supabase
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "admin");
+    
+    const adminUserIds = adminRoles?.map(r => r.user_id) || [];
+
+    // Fetch profiles excluding admins
     const { data: profiles } = await supabase
       .from("profiles")
       .select(`
@@ -46,7 +54,9 @@ const AdminStudents = () => {
       .order("created_at", { ascending: false });
 
     if (profiles) {
-      setStudents(profiles);
+      // Filter out admin users
+      const studentsOnly = profiles.filter(p => !adminUserIds.includes(p.user_id));
+      setStudents(studentsOnly);
     }
     setLoading(false);
   };
