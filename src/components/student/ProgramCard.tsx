@@ -106,27 +106,25 @@ export const ProgramCard = ({ program, index = 0 }: ProgramCardProps) => {
             </div>
           </div>
           
-          {/* Info Section */}
-          <div className="p-5 space-y-3">
+          {/* Info Section - Fixed Height */}
+          <div className="p-5 h-[180px] flex flex-col">
             {/* Impact Phrase */}
-            {program.impactPhrase && (
-              <p className="text-secondary text-xs font-medium tracking-wide uppercase">
-                {program.impactPhrase}
-              </p>
-            )}
+            <p className="text-secondary text-xs font-medium tracking-wide uppercase h-4 mb-2">
+              {program.impactPhrase || '\u00A0'}
+            </p>
             
             {/* Title */}
-            <h3 className="font-serif text-lg text-cream group-hover:text-secondary transition-colors line-clamp-2">
+            <h3 className="font-serif text-lg text-cream group-hover:text-secondary transition-colors line-clamp-2 min-h-[56px] mb-2">
               {program.subtitle}
             </h3>
             
             {/* Description */}
-            <p className="text-cream/50 text-sm line-clamp-2 leading-relaxed">
+            <p className="text-cream/50 text-sm line-clamp-2 leading-relaxed flex-grow">
               {program.description}
             </p>
             
             {/* Footer */}
-            <div className="flex items-center justify-between pt-3 border-t border-secondary/10">
+            <div className="flex items-center justify-between pt-3 border-t border-secondary/10 mt-auto">
               {program.price ? (
                 <span className="text-secondary font-bold">{program.price}</span>
               ) : (
