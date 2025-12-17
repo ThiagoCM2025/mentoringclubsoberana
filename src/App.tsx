@@ -26,6 +26,7 @@ import AdminLeads from "./pages/admin/AdminLeads";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import AdminCommunity from "./pages/admin/AdminCommunity";
+import AdminMessaging from "./pages/admin/AdminMessaging";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
