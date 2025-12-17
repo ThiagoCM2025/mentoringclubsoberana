@@ -103,7 +103,7 @@ export const MentorSection = () => {
             </motion.div>
             
             <span className="inline-block text-secondary text-xs tracking-[0.25em] uppercase mb-6">
-              A Metodologia
+              Sobre
             </span>
             
             <h2 className="text-4xl md:text-5xl font-serif font-medium text-cream mb-8">
