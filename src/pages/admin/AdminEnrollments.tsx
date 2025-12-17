@@ -181,23 +181,23 @@ const AdminEnrollments = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 lg:p-8">
+      <div className="p-6 lg:p-8 admin-area">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
         >
           <div>
-            <h1 className="text-3xl font-serif font-bold text-foreground mb-2">
+            <h1 className="text-3xl font-serif font-bold text-cream mb-2">
               Matrículas
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-cream/60">
               Gerencie as matrículas dos alunos
             </p>
           </div>
           <Button
             onClick={() => setDialogOpen(true)}
-            className="bg-primary hover:bg-primary/90"
+            className="bg-secondary hover:bg-secondary/90 text-black btn-glow-gold"
           >
             <Plus className="w-4 h-4 mr-2" />
             Nova Matrícula
@@ -206,17 +206,17 @@ const AdminEnrollments = () => {
 
         {/* Search */}
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cream/40" />
           <Input
             placeholder="Buscar matrículas..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
+            className="pl-10 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
           />
         </div>
 
         {/* Table */}
-        <div className="card-elegant overflow-hidden">
+        <div className="admin-card overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>

@@ -306,13 +306,13 @@ const AdminReports = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <Card className="relative overflow-hidden">
+      <Card className="relative overflow-hidden admin-stat-card border-0">
         <div className={`absolute inset-0 ${color} opacity-10`} />
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">{label}</p>
-              <p className="text-3xl font-bold mt-1">{value}{suffix}</p>
+              <p className="text-sm text-cream/60">{label}</p>
+              <p className="text-3xl font-bold text-cream mt-1">{value}{suffix}</p>
             </div>
             <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center`}>
               <Icon className="w-6 h-6 text-white" />
@@ -333,10 +333,10 @@ const AdminReports = () => {
           className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8"
         >
           <div>
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-3xl font-bold text-cream">
               Relatórios
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-cream/60 mt-1">
               Métricas detalhadas do seu ecossistema
             </p>
           </div>
@@ -345,6 +345,7 @@ const AdminReports = () => {
             <Button
               variant="outline"
               onClick={() => exportToCSV([...enrollmentData, ...leadData], 'relatorio_completo')}
+              className="border-secondary/40 text-cream hover:bg-secondary/10"
             >
               <Download className="w-4 h-4 mr-2" />
               Exportar CSV
@@ -396,14 +397,14 @@ const AdminReports = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card>
+            <Card className="admin-card">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-blue-600" />
+                  <CardTitle className="text-lg flex items-center gap-2 text-cream">
+                    <BarChart3 className="w-5 h-5 text-secondary" />
                     Matrículas por Período
                   </CardTitle>
-                  <CardDescription>Evolução de novas matrículas</CardDescription>
+                  <CardDescription className="text-cream/60">Evolução de novas matrículas</CardDescription>
                 </div>
                 <Button 
                   variant="ghost" 
@@ -445,7 +446,7 @@ const AdminReports = () => {
                       </AreaChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                    <div className="h-full flex items-center justify-center text-cream/60">
                       Sem dados no período
                     </div>
                   )}

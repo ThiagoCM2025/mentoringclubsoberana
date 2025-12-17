@@ -187,13 +187,13 @@ export default function AdminNotifications() {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6 admin-area">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Bell className="h-8 w-8 text-primary" />
+            <Bell className="h-8 w-8 text-secondary" />
             <div>
-              <h1 className="text-2xl font-bold">Histórico de Notificações</h1>
-              <p className="text-muted-foreground">
+              <h1 className="text-2xl font-bold text-cream">Histórico de Notificações</h1>
+              <p className="text-cream/60">
                 Visualize todas as notificações enviadas para os alunos
               </p>
             </div>
@@ -201,9 +201,9 @@ export default function AdminNotifications() {
         </div>
 
         {/* Filters */}
-        <Card>
+        <Card className="admin-card">
           <CardHeader>
-            <CardTitle className="text-lg">Filtros</CardTitle>
+            <CardTitle className="text-lg text-cream">Filtros</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -270,16 +270,16 @@ export default function AdminNotifications() {
         </Card>
 
         {/* Results */}
-        <Card>
+        <Card className="admin-card">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center justify-between">
+            <CardTitle className="text-lg flex items-center justify-between text-cream">
               <span>Notificações Enviadas</span>
-              <Badge variant="secondary">{filteredNotifications.length} resultados</Badge>
+              <Badge variant="secondary" className="bg-secondary/20 text-secondary">{filteredNotifications.length} resultados</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-cream/60">
                 Carregando notificações...
               </div>
             ) : filteredNotifications.length === 0 ? (

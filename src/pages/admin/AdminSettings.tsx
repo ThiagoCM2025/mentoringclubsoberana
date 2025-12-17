@@ -206,42 +206,42 @@ export default function AdminSettings() {
 
   return (
     <AdminLayout>
-      <div className="p-6 lg:p-8 space-y-6">
+      <div className="p-6 lg:p-8 space-y-6 admin-area">
         <div className="flex items-center gap-3">
-          <Settings className="w-8 h-8 text-primary" />
-          <h1 className="text-3xl font-serif font-bold">Configurações</h1>
+          <Settings className="w-8 h-8 text-secondary" />
+          <h1 className="text-3xl font-serif font-bold text-cream">Configurações</h1>
         </div>
 
         <Tabs defaultValue="admins" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="admins" className="flex items-center gap-2">
+          <TabsList className="bg-zinc-900 border border-secondary/20">
+            <TabsTrigger value="admins" className="flex items-center gap-2 data-[state=active]:bg-secondary data-[state=active]:text-black">
               <Users className="w-4 h-4" />
               Administradores
             </TabsTrigger>
-            <TabsTrigger value="templates" className="flex items-center gap-2">
+            <TabsTrigger value="templates" className="flex items-center gap-2 data-[state=active]:bg-secondary data-[state=active]:text-black">
               <FileText className="w-4 h-4" />
               Templates
             </TabsTrigger>
-            <TabsTrigger value="general" className="flex items-center gap-2">
+            <TabsTrigger value="general" className="flex items-center gap-2 data-[state=active]:bg-secondary data-[state=active]:text-black">
               <Settings className="w-4 h-4" />
               Geral
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="admins" className="space-y-4">
-            <Card>
+            <Card className="admin-card">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <ShieldCheck className="w-5 h-5" />
+                  <CardTitle className="flex items-center gap-2 text-cream">
+                    <ShieldCheck className="w-5 h-5 text-secondary" />
                     Administradores do Sistema
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-cream/60">
                     Gerencie quem tem acesso ao painel administrativo e suas permissões
                   </CardDescription>
                 </div>
                 {canManageAdmins && (
-                  <Button onClick={() => setShowNewAdminDialog(true)}>
+                  <Button onClick={() => setShowNewAdminDialog(true)} className="bg-secondary hover:bg-secondary/90 text-black btn-glow-gold">
                     <Plus className="w-4 h-4 mr-2" />
                     Novo Administrador
                   </Button>
@@ -371,15 +371,15 @@ export default function AdminSettings() {
           </TabsContent>
 
           <TabsContent value="general">
-            <Card>
+            <Card className="admin-card">
               <CardHeader>
-                <CardTitle>Configurações Gerais</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-cream">Configurações Gerais</CardTitle>
+                <CardDescription className="text-cream/60">
                   Configurações gerais da plataforma (em breve)
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground text-center py-8">
+                <p className="text-cream/60 text-center py-8">
                   Funcionalidades adicionais serão adicionadas em breve.
                 </p>
               </CardContent>

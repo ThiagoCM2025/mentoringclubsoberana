@@ -227,17 +227,17 @@ const AdminStudents = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 lg:p-8">
+      <div className="p-6 lg:p-8 admin-area">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
         >
           <div>
-            <h1 className="text-3xl font-serif font-bold text-foreground mb-2">
+            <h1 className="text-3xl font-serif font-bold text-cream mb-2">
               Alunos
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-cream/60">
               Gerencie todos os alunos cadastrados
             </p>
           </div>
@@ -247,7 +247,7 @@ const AdminStudents = () => {
             
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2">
+                <Button className="gap-2 bg-secondary hover:bg-secondary/90 text-black btn-glow-gold">
                   <UserPlus className="w-4 h-4" />
                   Nova Aluna
                 </Button>
@@ -392,20 +392,20 @@ const AdminStudents = () => {
 
         {/* Search */}
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cream/40" />
           <Input
             placeholder="Buscar alunos..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
+            className="pl-10 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
           />
         </div>
 
         {/* Table */}
-        <div className="card-elegant overflow-hidden">
+        <div className="admin-card overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="border-secondary/20 hover:bg-zinc-800/50">
                 <TableHead>Aluno</TableHead>
                 <TableHead>Telefone</TableHead>
                 <TableHead>Cursos</TableHead>
