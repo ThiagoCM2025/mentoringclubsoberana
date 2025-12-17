@@ -219,47 +219,47 @@ const AdminEnrollments = () => {
         <div className="admin-card overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Aluno</TableHead>
-                <TableHead>Curso</TableHead>
-                <TableHead>Origem</TableHead>
-                <TableHead>Data</TableHead>
+              <TableRow className="border-secondary/20 hover:bg-zinc-800/50">
+                <TableHead className="text-cream/80">Aluno</TableHead>
+                <TableHead className="text-cream/80">Curso</TableHead>
+                <TableHead className="text-cream/80">Origem</TableHead>
+                <TableHead className="text-cream/80">Data</TableHead>
                 <TableHead className="w-[70px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
+                  <TableCell colSpan={5} className="text-center py-8 text-cream/70">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredEnrollments.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8">
-                    <UserCheck className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">Nenhuma matrícula encontrada</p>
+                    <UserCheck className="w-12 h-12 text-cream/40 mx-auto mb-3" />
+                    <p className="text-cream/70">Nenhuma matrícula encontrada</p>
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredEnrollments.map((enrollment) => (
-                  <TableRow key={enrollment.id}>
+                  <TableRow key={enrollment.id} className="border-secondary/10">
                     <TableCell>
-                      <p className="font-medium">
+                      <p className="font-medium text-cream">
                         {enrollment.profiles?.full_name || "Sem nome"}
                       </p>
                     </TableCell>
-                    <TableCell>{enrollment.courses?.title || "-"}</TableCell>
+                    <TableCell className="text-cream/80">{enrollment.courses?.title || "-"}</TableCell>
                     <TableCell>
                       <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                         enrollment.payment_source === "manual"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-green-100 text-green-700"
+                          ? "bg-blue-500/20 text-blue-400"
+                          : "bg-green-500/20 text-green-400"
                       }`}>
                         {enrollment.payment_source === "manual" ? "Manual" : enrollment.payment_source || "Automático"}
                       </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-cream/70">
                       {new Date(enrollment.enrolled_at).toLocaleDateString("pt-BR")}
                     </TableCell>
                     <TableCell>
@@ -267,7 +267,7 @@ const AdminEnrollments = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => deleteEnrollment(enrollment.id)}
-                        className="text-destructive hover:text-destructive"
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>

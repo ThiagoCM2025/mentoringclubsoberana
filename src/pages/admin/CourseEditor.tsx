@@ -207,15 +207,15 @@ const CourseEditor = () => {
           transition={{ delay: 0.1 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full justify-start mb-6 bg-muted/50 p-1 h-auto flex-wrap">
-              <TabsTrigger value="basic" className="gap-2 data-[state=active]:bg-background">
+            <TabsList className="w-full justify-start mb-6 bg-zinc-900 border border-secondary/20 p-1 h-auto flex-wrap">
+              <TabsTrigger value="basic" className="gap-2 text-cream/70 data-[state=active]:bg-secondary data-[state=active]:text-black">
                 <Settings className="w-4 h-4" />
                 <span className="hidden sm:inline">Informações</span>
                 <span className="sm:hidden">Info</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="modules" 
-                className="gap-2 data-[state=active]:bg-background"
+                className="gap-2 text-cream/70 data-[state=active]:bg-secondary data-[state=active]:text-black"
                 disabled={isNew}
               >
                 <Layers className="w-4 h-4" />
@@ -224,7 +224,7 @@ const CourseEditor = () => {
               </TabsTrigger>
               <TabsTrigger 
                 value="materials" 
-                className="gap-2 data-[state=active]:bg-background"
+                className="gap-2 text-cream/70 data-[state=active]:bg-secondary data-[state=active]:text-black"
                 disabled={isNew}
               >
                 <FileText className="w-4 h-4" />
@@ -232,7 +232,7 @@ const CourseEditor = () => {
               </TabsTrigger>
               <TabsTrigger 
                 value="preview" 
-                className="gap-2 data-[state=active]:bg-background"
+                className="gap-2 text-cream/70 data-[state=active]:bg-secondary data-[state=active]:text-black"
                 disabled={isNew}
               >
                 <Eye className="w-4 h-4" />

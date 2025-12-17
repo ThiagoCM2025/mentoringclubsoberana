@@ -343,9 +343,8 @@ const AdminReports = () => {
           <div className="flex items-center gap-3">
             <PeriodSelector />
             <Button
-              variant="outline"
               onClick={() => exportToCSV([...enrollmentData, ...leadData], 'relatorio_completo')}
-              className="border-secondary/40 text-cream hover:bg-secondary/10"
+              className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary"
             >
               <Download className="w-4 h-4 mr-2" />
               Exportar CSV

@@ -480,10 +480,9 @@ const AdminStudents = () => {
                           Ver Perfil
                         </Button>
                         <Button
-                          variant="outline"
                           size="sm"
                           onClick={() => openEnrollDialog(student)}
-                          className="gap-2 border-secondary/30 text-cream hover:bg-secondary/10 hover:border-secondary/50"
+                          className="gap-2 bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary"
                         >
                           <GraduationCap className="w-4 h-4" />
                           Matricular

@@ -209,23 +209,23 @@ export default function AdminNotifications() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               {/* Search */}
               <div className="space-y-2">
-                <Label>Buscar</Label>
+                <Label className="text-cream">Buscar</Label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-cream/40" />
                   <Input
                     placeholder="Título, mensagem ou aluno..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9"
+                    className="pl-9 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
                   />
                 </div>
               </div>
 
               {/* Type filter */}
               <div className="space-y-2">
-                <Label>Tipo</Label>
+                <Label className="text-cream">Tipo</Label>
                 <Select value={selectedType} onValueChange={setSelectedType}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-zinc-900 border-secondary/30 text-cream">
                     <SelectValue placeholder="Todos os tipos" />
                   </SelectTrigger>
                   <SelectContent>
@@ -240,28 +240,30 @@ export default function AdminNotifications() {
 
               {/* Date from */}
               <div className="space-y-2">
-                <Label>Data inicial</Label>
+                <Label className="text-cream">Data inicial</Label>
                 <Input
                   type="date"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
+                  className="bg-zinc-900 border-secondary/30 text-cream"
                 />
               </div>
 
               {/* Date to */}
               <div className="space-y-2">
-                <Label>Data final</Label>
+                <Label className="text-cream">Data final</Label>
                 <Input
                   type="date"
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
+                  className="bg-zinc-900 border-secondary/30 text-cream"
                 />
               </div>
 
               {/* Clear filters */}
               <div className="space-y-2">
                 <Label className="invisible">Ação</Label>
-                <Button variant="outline" onClick={clearFilters} className="w-full">
+                <Button onClick={clearFilters} className="w-full bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary">
                   Limpar filtros
                 </Button>
               </div>
@@ -291,34 +293,34 @@ export default function AdminNotifications() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[180px]">Data</TableHead>
-                      <TableHead>Título</TableHead>
-                      <TableHead>Aluno</TableHead>
-                      <TableHead className="w-[100px]">Tipo</TableHead>
-                      <TableHead className="w-[100px]">Status</TableHead>
+                    <TableRow className="border-secondary/20 hover:bg-zinc-800/50">
+                      <TableHead className="w-[180px] text-cream/80">Data</TableHead>
+                      <TableHead className="text-cream/80">Título</TableHead>
+                      <TableHead className="text-cream/80">Aluno</TableHead>
+                      <TableHead className="w-[100px] text-cream/80">Tipo</TableHead>
+                      <TableHead className="w-[100px] text-cream/80">Status</TableHead>
                       <TableHead className="w-[80px]">Ação</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredNotifications.map((notification) => (
-                      <TableRow key={notification.id}>
-                        <TableCell className="text-sm text-muted-foreground">
+                      <TableRow key={notification.id} className="border-secondary/10">
+                        <TableCell className="text-sm text-cream/70">
                           {formatDate(notification.created_at)}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             {getIcon(notification.type)}
-                            <span className="font-medium truncate max-w-[200px]">
+                            <span className="font-medium truncate max-w-[200px] text-cream">
                               {notification.title}
                             </span>
                           </div>
                         </TableCell>
-                        <TableCell>{notification.student_name}</TableCell>
+                        <TableCell className="text-cream/80">{notification.student_name}</TableCell>
                         <TableCell>{getTypeBadge(notification.type)}</TableCell>
                         <TableCell>
                           {notification.read ? (
-                            <Badge variant="outline" className="bg-muted">Lida</Badge>
+                            <Badge variant="outline" className="bg-zinc-800 text-cream/60 border-secondary/30">Lida</Badge>
                           ) : (
                             <Badge variant="default" className="bg-primary">Não lida</Badge>
                           )}
@@ -328,6 +330,7 @@ export default function AdminNotifications() {
                             variant="ghost"
                             size="icon"
                             onClick={() => setSelectedNotification(notification)}
+                            className="text-cream/70 hover:text-cream hover:bg-zinc-800"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>

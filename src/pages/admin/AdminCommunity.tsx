@@ -197,7 +197,7 @@ const AdminCommunity = () => {
       <div 
         key={post.id} 
         className={cn(
-          "bg-card rounded-xl border p-5",
+          "bg-zinc-900 rounded-xl border border-secondary/20 p-5",
           post.is_hidden && "opacity-60 border-destructive/50",
           post.is_pinned && "border-secondary",
           post.is_highlighted && "border-green-500"
@@ -226,15 +226,15 @@ const AdminCommunity = () => {
         <div className="flex items-start gap-3 mb-4">
           <Avatar className="w-10 h-10">
             <AvatarImage src={post.profiles?.avatar_url || undefined} />
-            <AvatarFallback className="bg-primary/10 text-primary">
+            <AvatarFallback className="bg-secondary/20 text-secondary">
               {authorInitials}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-medium text-foreground">{authorName}</span>
-              <span className="text-muted-foreground text-sm">•</span>
-              <span className="text-muted-foreground text-sm">
+              <span className="font-medium text-cream">{authorName}</span>
+              <span className="text-cream/50 text-sm">•</span>
+              <span className="text-cream/50 text-sm">
                 {formatDistanceToNow(new Date(post.created_at), { 
                   addSuffix: true, 
                   locale: ptBR 
@@ -248,11 +248,11 @@ const AdminCommunity = () => {
         </div>
 
         {/* Content */}
-        <h3 className="font-semibold text-lg text-foreground mb-2">{post.title}</h3>
-        <p className="text-muted-foreground whitespace-pre-wrap line-clamp-3">{post.content}</p>
+        <h3 className="font-semibold text-lg text-cream mb-2">{post.title}</h3>
+        <p className="text-cream/70 whitespace-pre-wrap line-clamp-3">{post.content}</p>
 
         {/* Stats */}
-        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border text-sm text-muted-foreground">
+        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-secondary/20 text-sm text-cream/60">
           <span className="flex items-center gap-1">
             <Heart className="w-4 h-4" /> {post.likes_count}
           </span>
@@ -262,19 +262,19 @@ const AdminCommunity = () => {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border">
+        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-secondary/20">
           {post.is_pinned ? (
             <Button
-              variant="outline"
               size="sm"
+              className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary"
               onClick={() => handleModeration(post.id, "unpin")}
             >
               <PinOff className="w-4 h-4 mr-2" /> Desafixar
             </Button>
           ) : (
             <Button
-              variant="outline"
               size="sm"
+              className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary"
               onClick={() => handleModeration(post.id, "pin")}
             >
               <Pin className="w-4 h-4 mr-2" /> Fixar
@@ -283,16 +283,16 @@ const AdminCommunity = () => {
 
           {post.is_highlighted ? (
             <Button
-              variant="outline"
               size="sm"
+              className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary"
               onClick={() => handleModeration(post.id, "unhighlight")}
             >
               <StarOff className="w-4 h-4 mr-2" /> Remover destaque
             </Button>
           ) : (
             <Button
-              variant="outline"
               size="sm"
+              className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary"
               onClick={() => handleModeration(post.id, "highlight")}
             >
               <Star className="w-4 h-4 mr-2" /> Destacar
@@ -301,16 +301,16 @@ const AdminCommunity = () => {
 
           {post.is_hidden ? (
             <Button
-              variant="outline"
               size="sm"
+              className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary"
               onClick={() => handleModeration(post.id, "unhide")}
             >
               <Eye className="w-4 h-4 mr-2" /> Restaurar
             </Button>
           ) : (
             <Button
-              variant="outline"
               size="sm"
+              className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary"
               onClick={() => handleModeration(post.id, "hide")}
             >
               <EyeOff className="w-4 h-4 mr-2" /> Ocultar

@@ -297,11 +297,11 @@ const AdminLeads = () => {
             <Plus className="w-4 h-4 mr-2" />
             Novo Lead
           </Button>
-          <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="border-secondary/40 text-cream hover:bg-secondary/10">
+          <Button onClick={() => fileInputRef.current?.click()} className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary">
             <Upload className="w-4 h-4 mr-2" />
             Importar CSV
           </Button>
-          <Button variant="outline" onClick={handleExport} className="border-secondary/40 text-cream hover:bg-secondary/10">
+          <Button onClick={handleExport} className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary">
             <Download className="w-4 h-4 mr-2" />
             Exportar CSV
           </Button>
