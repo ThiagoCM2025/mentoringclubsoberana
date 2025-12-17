@@ -17,6 +17,7 @@ export default {
         serif: ["Playfair Display", "Georgia", "serif"],
         sans: ["Inter", "system-ui", "sans-serif"],
         admin: ["Inter", "system-ui", "sans-serif"],
+        signature: ["Great Vibes", "cursive"],
       },
       colors: {
         border: "hsl(var(--border))",
