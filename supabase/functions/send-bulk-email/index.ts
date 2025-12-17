@@ -33,6 +33,116 @@ function replaceVariables(text: string, recipient: Recipient): string {
     .replace(/{telefone}/g, recipient.phone || "");
 }
 
+function generateEmailTemplate(
+  recipientName: string,
+  subject: string,
+  content: string,
+  recipientType: "student" | "lead"
+): string {
+  const ctaText = recipientType === "student" ? "Acessar Plataforma" : "Conhecer a Mentoria";
+  const ctaUrl = recipientType === "student" 
+    ? "https://soberanamentoria.com.br/student" 
+    : "https://soberanamentoria.com.br";
+
+  const formattedContent = content.replace(/\n/g, "<br>");
+
+  return `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5;">
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f5f5f5;">
+    <tr>
+      <td style="padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: 0 auto; max-width: 600px;">
+          
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #64001C 0%, #8B0027 100%); padding: 40px 30px; text-align: center; border-radius: 12px 12px 0 0;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td style="text-align: center;">
+                    <p style="margin: 0 0 8px 0; font-size: 14px; letter-spacing: 3px; color: #FFDFA6; text-transform: uppercase;">✨ Mentoria ✨</p>
+                    <h1 style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 32px; font-weight: normal; color: #FFDFA6; letter-spacing: 2px;">SOBERANA</h1>
+                    <p style="margin: 12px 0 0 0; font-size: 14px; color: #ffffff; opacity: 0.9;">Fabiana Duarte</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td style="background-color: #F2F1EF; padding: 40px 30px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td>
+                    <p style="margin: 0 0 20px 0; font-size: 20px; color: #64001C; font-family: Georgia, 'Times New Roman', serif;">
+                      Olá, <strong>${recipientName}</strong>!
+                    </p>
+                    <div style="margin: 0 0 30px 0; font-size: 16px; line-height: 1.7; color: #333333;">
+                      ${formattedContent}
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- CTA Button -->
+                <tr>
+                  <td style="text-align: center; padding: 10px 0 30px 0;">
+                    <a href="${ctaUrl}" style="display: inline-block; background: linear-gradient(135deg, #A69061 0%, #FFDFA6 100%); color: #64001C; font-size: 16px; font-weight: bold; text-decoration: none; padding: 16px 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(166, 144, 97, 0.4);">
+                      ${ctaText}
+                    </a>
+                  </td>
+                </tr>
+                
+                <!-- Decorative Line -->
+                <tr>
+                  <td style="padding: 20px 0;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                      <tr>
+                        <td style="border-top: 2px solid #A69061; height: 1px;"></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Signature -->
+                <tr>
+                  <td style="text-align: center; padding-top: 10px;">
+                    <p style="margin: 0 0 5px 0; font-size: 14px; color: #666666;">Com carinho,</p>
+                    <p style="margin: 0 0 5px 0; font-size: 18px; color: #64001C; font-family: Georgia, 'Times New Roman', serif; font-weight: bold;">Fabiana Duarte</p>
+                    <p style="margin: 0; font-size: 13px; color: #A69061; letter-spacing: 1px;">Mentoria Soberana</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #64001C; padding: 25px 30px; text-align: center; border-radius: 0 0 12px 12px;">
+              <p style="margin: 0 0 10px 0; font-size: 12px; color: #FFDFA6;">
+                © ${new Date().getFullYear()} Mentoria Soberana | Todos os direitos reservados
+              </p>
+              <p style="margin: 0; font-size: 11px; color: #ffffff; opacity: 0.7;">
+                Transformando advogadas em empresárias de sucesso
+              </p>
+            </td>
+          </tr>
+          
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
+}
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -71,12 +181,20 @@ const handler = async (req: Request): Promise<Response> => {
 
       try {
         if (channel === "email") {
+          // Generate elegant HTML template
+          const htmlContent = generateEmailTemplate(
+            recipient.name || "Querida",
+            personalizedSubject,
+            personalizedMessage,
+            recipient.type
+          );
+
           // Send email via Resend
           const emailResponse = await resend.emails.send({
             from: "Fabiana - Mentoria Soberana <contato@soberanamentoria.com.br>",
             to: [recipient.email],
             subject: personalizedSubject,
-            html: personalizedMessage.replace(/\n/g, "<br>"),
+            html: htmlContent,
           });
 
           console.log(`Email sent to ${recipient.email}:`, emailResponse);
