@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { ProblemSection } from "@/components/landing/ProblemSection";
@@ -14,6 +15,7 @@ import { Footer } from "@/components/landing/Footer";
 import { WhatsAppButton } from "@/components/landing/WhatsAppButton";
 import { ExitIntentPopup } from "@/components/landing/ExitIntentPopup";
 import SEO, { createFAQSchema } from "@/components/SEO";
+import { SplashScreen } from "@/components/SplashScreen";
 
 const faqItems = [
   { question: "Qual programa é ideal para quem está começando?", answer: "Se você está começando, recomendo o Workshop Soberana IA ou o Experience Start." },
@@ -22,6 +24,21 @@ const faqItems = [
 ];
 
 const Index = () => {
+  const [showSplash, setShowSplash] = useState(() => {
+    // Only show splash on first visit (per session)
+    const hasVisited = sessionStorage.getItem("soberana_visited");
+    return !hasVisited;
+  });
+
+  useEffect(() => {
+    if (!showSplash) return;
+    sessionStorage.setItem("soberana_visited", "true");
+  }, [showSplash]);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+
   return (
     <main className="min-h-screen">
       <SEO 
@@ -30,6 +47,11 @@ const Index = () => {
         keywords="mentoria jurídica, advogada empresária, carreira jurídica, advocacia feminina, gestão de escritório, tráfego pago para advogadas, IA jurídica"
         schema={createFAQSchema(faqItems)}
       />
+      
+      {showSplash && (
+        <SplashScreen onComplete={handleSplashComplete} duration={2500} />
+      )}
+      
       <Navbar />
       <HeroSection />
       <ProblemSection />
