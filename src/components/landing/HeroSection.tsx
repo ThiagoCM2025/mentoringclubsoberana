@@ -22,20 +22,35 @@ export const HeroSection = () => {
         }}
       />
       
-      {/* Photo - Centered and 100% Visible */}
+      {/* Photo - Centered with gradient blend */}
       <div className="relative z-10 flex justify-center items-center pt-20 md:pt-24 px-4">
-        <motion.img
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
-          src={heroVariations}
-          alt="Fabiana Duarte - Mentoring Club Soberana"
-          className="max-h-[45vh] md:max-h-[55vh] w-auto object-contain"
-        />
+          className="relative"
+        >
+          <img
+            src={heroVariations}
+            alt="Fabiana Duarte - Mentoring Club Soberana"
+            className="max-h-[50vh] md:max-h-[60vh] w-auto object-contain"
+          />
+          {/* Gradient fade to blend with background */}
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `
+                linear-gradient(to bottom, transparent 0%, transparent 60%, #000000 100%),
+                linear-gradient(to left, transparent 70%, #000000 100%),
+                linear-gradient(to right, transparent 70%, #000000 100%)
+              `
+            }}
+          />
+        </motion.div>
       </div>
 
       {/* Content Below Photo */}
-      <div className="container-soberana relative z-10 px-4 md:px-8 py-8 md:py-12 flex-1 flex flex-col justify-center">
+      <div className="container-soberana relative z-10 px-4 md:px-8 py-8 md:py-12 flex-1 flex flex-col justify-center -mt-8">
         <div className="text-center max-w-4xl mx-auto">
           {/* Logo with Isotipo */}
           <motion.div
