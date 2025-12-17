@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ProgramDetail from "./pages/ProgramDetail";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import CourseDetail from "./pages/student/CourseDetail";
 import LessonPlayer from "./pages/student/LessonPlayer";
@@ -44,6 +45,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/programa/:slug" element={<ProgramDetail />} />
             <Route path="/auth" element={<Auth />} />
             
             {/* Student Routes */}
