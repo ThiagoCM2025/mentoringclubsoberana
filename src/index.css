@@ -422,6 +422,11 @@
     100% { background-position: -200% 0; }
   }
 
+  /* Animate shimmer for card borders */
+  .animate-shimmer {
+    animation: shimmer 3s infinite linear;
+  }
+
   /* Hover glow effect */
   .hover-glow {
     @apply transition-all duration-500;

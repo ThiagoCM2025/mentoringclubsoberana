@@ -396,6 +396,31 @@ const StudentDashboard = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
         
+        {/* Floating Golden Particles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(15)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 rounded-full bg-secondary/50"
+              initial={{ 
+                x: `${Math.random() * 100}%`, 
+                y: "110%", 
+                opacity: 0 
+              }}
+              animate={{ 
+                y: "-10%", 
+                opacity: [0, 0.8, 0],
+              }}
+              transition={{
+                duration: 4 + Math.random() * 3,
+                repeat: Infinity,
+                delay: Math.random() * 5,
+                ease: "linear"
+              }}
+            />
+          ))}
+        </div>
+        
         {/* Content */}
         <div className="relative z-10 h-full flex items-center container-soberana px-4">
           <motion.div 
@@ -428,37 +453,6 @@ const StudentDashboard = () => {
       </section>
 
       <main className="container-soberana py-8 px-4">
-        {/* XP e Streak Badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="flex flex-wrap items-center gap-4 mb-8 -mt-16 relative z-20"
-        >
-          <div 
-            className="bg-black/90 backdrop-blur-sm border border-secondary/30 rounded-xl p-4 cursor-pointer hover:border-secondary/60 transition-all shadow-[0_0_30px_rgba(166,144,97,0.15)]"
-            onClick={() => navigate("/student/achievements")}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <Star className="w-5 h-5 text-secondary" />
-              <span className="text-sm text-cream/60">Nível {level}</span>
-            </div>
-            <p className="text-2xl font-bold text-cream">{gamificationStats?.xp || 0} XP</p>
-            <Progress value={levelProgress} className="h-1.5 mt-2 bg-secondary/20" />
-          </div>
-          
-          <div 
-            className="bg-black/90 backdrop-blur-sm border border-orange-500/30 rounded-xl p-4 cursor-pointer hover:border-orange-500/60 transition-all shadow-[0_0_30px_rgba(249,115,22,0.1)]"
-            onClick={() => navigate("/student/achievements")}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <Flame className="w-5 h-5 text-orange-400" />
-              <span className="text-sm text-cream/60">Streak</span>
-            </div>
-            <p className="text-2xl font-bold text-cream">{gamificationStats?.streak_days || 0} dias</p>
-          </div>
-        </motion.div>
-
         {/* Diagnostic Banner */}
         <DiagnosticBanner />
 
