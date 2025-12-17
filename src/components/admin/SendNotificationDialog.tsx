@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -11,7 +14,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -20,9 +22,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { toast } from "sonner";
 import { Send, Loader2, Bell, Info, CheckCircle2, AlertTriangle, AlertCircle } from "lucide-react";
 import { TemplateSelector } from "./TemplateSelector";
+
+const formSchema = z.object({
+  title: z.string().min(2, "Título deve ter pelo menos 2 caracteres").max(200),
+  message: z.string().min(5, "Mensagem deve ter pelo menos 5 caracteres").max(1000),
+  type: z.enum(["info", "success", "warning", "alert"]),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 interface SendNotificationDialogProps {
   studentId: string;
@@ -33,34 +51,43 @@ export function SendNotificationDialog({ studentId, studentName }: SendNotificat
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [sending, setSending] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    message: "",
-    type: "info"
+  const [success, setSuccess] = useState(false);
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      message: "",
+      type: "info",
+    },
   });
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: FormData) => {
     if (!user) return;
 
     setSending(true);
+    setSuccess(false);
 
     try {
       const { error } = await supabase
         .from("notifications")
         .insert({
           user_id: studentId,
-          title: formData.title,
-          message: formData.message,
-          type: formData.type,
+          title: data.title,
+          message: data.message,
+          type: data.type,
           created_by: user.id
         });
 
       if (error) throw error;
 
+      setSuccess(true);
       toast.success("Notificação enviada com sucesso!");
-      setOpen(false);
-      setFormData({ title: "", message: "", type: "info" });
+      setTimeout(() => {
+        setOpen(false);
+        form.reset();
+        setSuccess(false);
+      }, 500);
     } catch (error: any) {
       console.error("Error sending notification:", error);
       toast.error("Erro ao enviar notificação");
@@ -71,11 +98,9 @@ export function SendNotificationDialog({ studentId, studentName }: SendNotificat
 
   const handleTemplateSelect = (template: { title: string; message: string; type: string } | null) => {
     if (template) {
-      setFormData({
-        title: template.title,
-        message: template.message,
-        type: template.type,
-      });
+      form.setValue("title", template.title);
+      form.setValue("message", template.message);
+      form.setValue("type", template.type as FormData["type"]);
     }
   };
 
@@ -108,94 +133,116 @@ export function SendNotificationDialog({ studentId, studentName }: SendNotificat
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSend} className="space-y-4 mt-4">
-          <TemplateSelector onSelect={handleTemplateSelect} />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+            <TemplateSelector onSelect={handleTemplateSelect} />
 
-          <div className="space-y-2">
-            <Label htmlFor="title">Título *</Label>
-            <Input
-              id="title"
-              placeholder="Ex: Novidade no curso!"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="message">Mensagem *</Label>
-            <Textarea
-              id="message"
-              placeholder="Escreva sua mensagem aqui..."
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              rows={4}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Tipo de Notificação</Label>
-            <Select
-              value={formData.type}
-              onValueChange={(value) => setFormData({ ...formData, type: value })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="info">
-                  <div className="flex items-center gap-2">
-                    {getTypeIcon('info')}
-                    <span>Informação</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="success">
-                  <div className="flex items-center gap-2">
-                    {getTypeIcon('success')}
-                    <span>Sucesso</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="warning">
-                  <div className="flex items-center gap-2">
-                    {getTypeIcon('warning')}
-                    <span>Aviso</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="alert">
-                  <div className="flex items-center gap-2">
-                    {getTypeIcon('alert')}
-                    <span>Alerta</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={sending}
-            >
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={sending}>
-              {sending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Enviando...
-                </>
-              ) : (
-                <>
-                  <Send className="h-4 w-4 mr-2" />
-                  Enviar Notificação
-                </>
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Título *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: Novidade no curso!" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </Button>
-          </div>
-        </form>
+            />
+
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Mensagem *</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Escreva sua mensagem aqui..."
+                      rows={4}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo de Notificação</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="info">
+                        <div className="flex items-center gap-2">
+                          {getTypeIcon('info')}
+                          <span>Informação</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="success">
+                        <div className="flex items-center gap-2">
+                          {getTypeIcon('success')}
+                          <span>Sucesso</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="warning">
+                        <div className="flex items-center gap-2">
+                          {getTypeIcon('warning')}
+                          <span>Aviso</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="alert">
+                        <div className="flex items-center gap-2">
+                          {getTypeIcon('alert')}
+                          <span>Alerta</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-end gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={sending}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={sending} className="min-w-[160px]">
+                {sending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Enviando...
+                  </>
+                ) : success ? (
+                  <>
+                    <CheckCircle2 className="h-4 w-4 mr-2 text-emerald-500" />
+                    Enviado!
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4 mr-2" />
+                    Enviar Notificação
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

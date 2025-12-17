@@ -47,6 +47,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { format, subDays, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import {
+  ChartSkeleton,
+  StatsCardSkeleton,
+  EngagementTableSkeleton,
+} from "@/components/admin/skeletons/AdminSkeletons";
 
 type PeriodFilter = '7d' | '30d' | '6m' | '1y';
 
@@ -305,32 +310,38 @@ export default function AdminEngagement() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <SummaryCard
-            icon={Clock}
-            label="Tempo Total de Estudo"
-            value={formatMinutes(summary.totalStudyMinutes)}
-            color="bg-blue-600"
-          />
-          <SummaryCard
-            icon={Users}
-            label="Alunos Ativos Hoje"
-            value={summary.activeStudents}
-            color="bg-emerald-600"
-          />
-          <SummaryCard
-            icon={Target}
-            label="Taxa de Conclusão"
-            value={summary.avgCompletionRate}
-            suffix="%"
-            color="bg-violet-600"
-          />
-          <SummaryCard
-            icon={Flame}
-            label="Maior Streak"
-            value={summary.maxStreak}
-            suffix=" dias"
-            color="bg-orange-600"
-          />
+          {loading ? (
+            <StatsCardSkeleton count={4} />
+          ) : (
+            <>
+              <SummaryCard
+                icon={Clock}
+                label="Tempo Total de Estudo"
+                value={formatMinutes(summary.totalStudyMinutes)}
+                color="bg-blue-600"
+              />
+              <SummaryCard
+                icon={Users}
+                label="Alunos Ativos Hoje"
+                value={summary.activeStudents}
+                color="bg-emerald-600"
+              />
+              <SummaryCard
+                icon={Target}
+                label="Taxa de Conclusão"
+                value={summary.avgCompletionRate}
+                suffix="%"
+                color="bg-violet-600"
+              />
+              <SummaryCard
+                icon={Flame}
+                label="Maior Streak"
+                value={summary.maxStreak}
+                suffix=" dias"
+                color="bg-orange-600"
+              />
+            </>
+          )}
         </div>
 
         {/* Charts Row 1 */}
@@ -347,7 +358,9 @@ export default function AdminEngagement() {
               </CardHeader>
               <CardContent>
                 <div className="h-72">
-                  {activityTrend.length > 0 ? (
+                  {loading ? (
+                    <ChartSkeleton height={288} variant="area" />
+                  ) : activityTrend.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={activityTrend}>
                         <defs>
@@ -391,7 +404,9 @@ export default function AdminEngagement() {
               </CardHeader>
               <CardContent>
                 <div className="h-72">
-                  {activityByDay.length > 0 ? (
+                  {loading ? (
+                    <ChartSkeleton height={288} variant="bar" />
+                  ) : activityByDay.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={activityByDay}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -471,73 +486,77 @@ export default function AdminEngagement() {
               </Select>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">#</TableHead>
-                      <TableHead>Aluno</TableHead>
-                      <TableHead className="text-center">Level</TableHead>
-                      <TableHead className="text-center">XP</TableHead>
-                      <TableHead className="text-center">Streak</TableHead>
-                      <TableHead className="text-center">Aulas</TableHead>
-                      <TableHead className="text-center">Tempo</TableHead>
-                      <TableHead className="text-center">Última Atividade</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {sortedStudents.slice(0, 20).map((student, index) => (
-                      <TableRow key={student.user_id}>
-                        <TableCell className="font-medium">
-                          {index < 3 ? (
-                            <Badge variant={index === 0 ? "default" : "secondary"} className={index === 0 ? "bg-yellow-500" : index === 1 ? "bg-gray-400" : "bg-amber-700"}>
-                              {index + 1}º
-                            </Badge>
-                          ) : (
-                            <span className="text-muted-foreground">{index + 1}</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                              <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                                {student.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="font-medium">{student.full_name}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="outline">{student.level}</Badge>
-                        </TableCell>
-                        <TableCell className="text-center font-medium text-primary">
-                          {student.xp.toLocaleString()}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <span className="flex items-center justify-center gap-1">
-                            <Flame className="w-4 h-4 text-orange-500" />
-                            {student.streak_days}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-center">{student.total_lessons_completed}</TableCell>
-                        <TableCell className="text-center text-muted-foreground text-sm">
-                          {formatMinutes(student.total_study_minutes)}
-                        </TableCell>
-                        <TableCell className="text-center text-muted-foreground text-sm">
-                          {student.last_activity_date
-                            ? format(new Date(student.last_activity_date), 'dd/MM/yyyy', { locale: ptBR })
-                            : '-'}
-                        </TableCell>
+              {loading ? (
+                <EngagementTableSkeleton />
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12">#</TableHead>
+                        <TableHead>Aluno</TableHead>
+                        <TableHead className="text-center">Level</TableHead>
+                        <TableHead className="text-center">XP</TableHead>
+                        <TableHead className="text-center">Streak</TableHead>
+                        <TableHead className="text-center">Aulas</TableHead>
+                        <TableHead className="text-center">Tempo</TableHead>
+                        <TableHead className="text-center">Última Atividade</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                {students.length === 0 && (
-                  <div className="py-8 text-center text-muted-foreground">
-                    Nenhum dado de engajamento encontrado
-                  </div>
-                )}
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {sortedStudents.slice(0, 20).map((student, index) => (
+                        <TableRow key={student.user_id}>
+                          <TableCell className="font-medium">
+                            {index < 3 ? (
+                              <Badge variant={index === 0 ? "default" : "secondary"} className={index === 0 ? "bg-yellow-500" : index === 1 ? "bg-gray-400" : "bg-amber-700"}>
+                                {index + 1}º
+                              </Badge>
+                            ) : (
+                              <span className="text-muted-foreground">{index + 1}</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-8 w-8">
+                                <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                                  {student.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="font-medium">{student.full_name}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge variant="outline">{student.level}</Badge>
+                          </TableCell>
+                          <TableCell className="text-center font-medium text-primary">
+                            {student.xp.toLocaleString()}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <span className="flex items-center justify-center gap-1">
+                              <Flame className="w-4 h-4 text-orange-500" />
+                              {student.streak_days}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-center">{student.total_lessons_completed}</TableCell>
+                          <TableCell className="text-center text-muted-foreground text-sm">
+                            {formatMinutes(student.total_study_minutes)}
+                          </TableCell>
+                          <TableCell className="text-center text-muted-foreground text-sm">
+                            {student.last_activity_date
+                              ? format(new Date(student.last_activity_date), 'dd/MM/yyyy', { locale: ptBR })
+                              : '-'}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  {students.length === 0 && (
+                    <div className="py-8 text-center text-muted-foreground">
+                      Nenhum dado de engajamento encontrado
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
