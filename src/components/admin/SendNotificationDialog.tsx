@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Send, Loader2, Bell, Info, CheckCircle2, AlertTriangle, AlertCircle } from "lucide-react";
+import { TemplateSelector } from "./TemplateSelector";
 
 interface SendNotificationDialogProps {
   studentId: string;
@@ -68,6 +69,16 @@ export function SendNotificationDialog({ studentId, studentName }: SendNotificat
     }
   };
 
+  const handleTemplateSelect = (template: { title: string; message: string; type: string } | null) => {
+    if (template) {
+      setFormData({
+        title: template.title,
+        message: template.message,
+        type: template.type,
+      });
+    }
+  };
+
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'success':
@@ -98,6 +109,8 @@ export function SendNotificationDialog({ studentId, studentName }: SendNotificat
         </DialogHeader>
 
         <form onSubmit={handleSend} className="space-y-4 mt-4">
+          <TemplateSelector onSelect={handleTemplateSelect} />
+
           <div className="space-y-2">
             <Label htmlFor="title">Título *</Label>
             <Input

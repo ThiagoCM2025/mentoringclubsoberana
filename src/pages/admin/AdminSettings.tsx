@@ -18,7 +18,9 @@ import {
   Loader2,
   Trash2,
   Save,
+  FileText,
 } from "lucide-react";
+import { NotificationTemplatesTab } from "@/components/admin/NotificationTemplatesTab";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -216,6 +218,10 @@ export default function AdminSettings() {
               <Users className="w-4 h-4" />
               Administradores
             </TabsTrigger>
+            <TabsTrigger value="templates" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Templates
+            </TabsTrigger>
             <TabsTrigger value="general" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
               Geral
@@ -358,6 +364,10 @@ export default function AdminSettings() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="templates">
+            <NotificationTemplatesTab />
           </TabsContent>
 
           <TabsContent value="general">
