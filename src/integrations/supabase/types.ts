@@ -765,6 +765,42 @@ export type Database = {
         }
         Relationships: []
       }
+      nurturing_sequences: {
+        Row: {
+          created_at: string
+          delay_hours: number
+          email_body: string
+          email_subject: string
+          id: string
+          is_active: boolean
+          name: string
+          step_number: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          delay_hours?: number
+          email_body: string
+          email_subject: string
+          id?: string
+          is_active?: boolean
+          name: string
+          step_number: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          delay_hours?: number
+          email_body?: string
+          email_subject?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          step_number?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
