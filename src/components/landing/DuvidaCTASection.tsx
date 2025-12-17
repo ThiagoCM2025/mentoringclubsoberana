@@ -14,7 +14,7 @@ export const DuvidaCTASection = () => {
     <section ref={ref} className="section-padding bg-primary relative overflow-hidden">
       {/* Circle Pattern Background - White */}
       <div 
-        className="absolute inset-0 opacity-[0.06]"
+        className="absolute inset-0 opacity-[0.12]"
         style={{
           backgroundImage: `url(${patternCirclesWhite})`,
           backgroundRepeat: 'repeat',
@@ -23,12 +23,12 @@ export const DuvidaCTASection = () => {
       />
 
       {/* Isotipo White - centered behind text */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.12]">
-        <img src={isotipoWhite} alt="" className="w-48 h-48" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.20] animate-pulse-slow">
+        <img src={isotipoWhite} alt="" className="w-56 h-56" />
       </div>
 
       {/* Glow around button area */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-white/5 blur-3xl rounded-full" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-white/8 blur-3xl rounded-full" />
 
       <div className="container-soberana relative z-10">
         <motion.div

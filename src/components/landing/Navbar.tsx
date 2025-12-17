@@ -8,6 +8,7 @@ const navLinks = [
   { label: "Sobre", href: "#sobre" },
   { label: "Metodologia", href: "#metodologia" },
   { label: "A Jornada", href: "#jornada" },
+  { label: "Trajetória", href: "#trajetoria" },
   { label: "Depoimentos", href: "#depoimentos" },
   { label: "FAQ", href: "#faq" },
 ];

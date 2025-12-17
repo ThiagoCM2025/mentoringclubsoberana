@@ -59,10 +59,10 @@ export const FAQSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} id="faq" className="section-padding bg-cream relative overflow-hidden">
+    <section ref={ref} className="section-padding bg-cream relative overflow-hidden">
       {/* Circle Pattern Background - Black (subtle) */}
       <div 
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.06]"
         style={{
           backgroundImage: `url(${patternCirclesBlack})`,
           backgroundRepeat: 'repeat',
@@ -71,17 +71,17 @@ export const FAQSection = () => {
       />
 
       {/* Isotipo Gold - top left */}
-      <div className="absolute top-20 left-12 opacity-[0.07] hidden lg:block">
-        <img src={isotipoGold} alt="" className="w-28 h-28" />
+      <div className="absolute top-20 left-12 opacity-[0.14] hidden lg:block animate-float-slow">
+        <img src={isotipoGold} alt="" className="w-32 h-32" />
       </div>
       
       {/* Isotipo Black - bottom right */}
-      <div className="absolute bottom-20 right-12 opacity-[0.05] hidden lg:block">
-        <img src={isotipoBlack} alt="" className="w-24 h-24" />
+      <div className="absolute bottom-20 right-12 opacity-[0.10] hidden lg:block animate-float-slow animation-delay-1000">
+        <img src={isotipoBlack} alt="" className="w-28 h-28" />
       </div>
 
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-cream via-transparent to-white/80" />
+      <div className="absolute inset-0 bg-gradient-to-b from-cream via-transparent to-white/60" />
 
       <div className="container-soberana relative z-10">
         <motion.div

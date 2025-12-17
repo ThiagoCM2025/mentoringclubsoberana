@@ -45,9 +45,15 @@ export const Footer = () => {
 
   return (
     <footer className="bg-foreground text-background relative overflow-hidden">
-      {/* Circle Pattern - top only */}
+      {/* Top decorative golden border */}
+      <div className="absolute top-0 left-0 w-full">
+        <div className="h-px bg-gradient-to-r from-transparent via-secondary/60 to-transparent" />
+        <div className="h-4 bg-gradient-to-b from-secondary/10 to-transparent" />
+      </div>
+      
+      {/* Circle Pattern - top area */}
       <div 
-        className="absolute top-0 left-0 w-full h-48 opacity-[0.04]"
+        className="absolute top-0 left-0 w-full h-64 opacity-[0.08]"
         style={{
           backgroundImage: `url(${patternCirclesGold})`,
           backgroundRepeat: 'repeat',
@@ -58,8 +64,8 @@ export const Footer = () => {
       />
 
       {/* Isotipo Gold - watermark center */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03]">
-        <img src={isotipoGold} alt="" className="w-64 h-64" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.06]">
+        <img src={isotipoGold} alt="" className="w-72 h-72" />
       </div>
 
       {/* Main Footer */}

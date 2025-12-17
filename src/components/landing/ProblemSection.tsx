@@ -32,7 +32,7 @@ export const ProblemSection = () => {
     <section ref={ref} className="section-padding bg-cream relative overflow-hidden">
       {/* Circle Pattern Background - Marsala */}
       <div 
-        className="absolute inset-0 opacity-[0.06]"
+        className="absolute inset-0 opacity-[0.12]"
         style={{
           backgroundImage: `url(${patternCirclesMarsala})`,
           backgroundRepeat: 'repeat',
@@ -41,15 +41,15 @@ export const ProblemSection = () => {
       />
 
       {/* Isotipo Marsala - decorative */}
-      <div className="absolute top-20 right-12 opacity-[0.08] hidden lg:block">
-        <img src={isotipoMarsala} alt="" className="w-24 h-24" />
+      <div className="absolute top-20 right-12 opacity-[0.15] hidden lg:block animate-float-slow">
+        <img src={isotipoMarsala} alt="" className="w-28 h-28" />
       </div>
-      <div className="absolute bottom-20 left-12 opacity-[0.08] hidden lg:block">
-        <img src={isotipoMarsala} alt="" className="w-20 h-20" />
+      <div className="absolute bottom-20 left-12 opacity-[0.15] hidden lg:block animate-float-slow animation-delay-1000">
+        <img src={isotipoMarsala} alt="" className="w-24 h-24" />
       </div>
 
       {/* Gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-b from-cream via-transparent to-white/50" />
+      <div className="absolute inset-0 bg-gradient-to-b from-cream via-transparent to-white/30" />
 
       <div className="container-soberana relative z-10">
         <div className="max-w-4xl mx-auto">
