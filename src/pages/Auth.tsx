@@ -199,7 +199,7 @@ const Auth = () => {
           </Link>
 
           {/* Mobile logo */}
-          <div className="lg:hidden mb-8 flex justify-center">
+          <div className="lg:hidden mb-8 flex flex-col items-center">
             <div className="relative">
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-24 h-24 rounded-full bg-secondary/10 blur-xl" />
@@ -209,6 +209,15 @@ const Auth = () => {
                 alt="Soberana" 
                 className="w-20 h-20 relative z-10" 
               />
+            </div>
+            {/* Brand text below S - Mobile */}
+            <div className="text-center mt-3">
+              <p className="text-muted-foreground/60 text-[10px] tracking-[0.3em] uppercase mb-0.5">
+                Mentoring Club
+              </p>
+              <p className="text-secondary text-lg font-serif tracking-[0.15em]">
+                SOBERANA
+              </p>
             </div>
           </div>
 
