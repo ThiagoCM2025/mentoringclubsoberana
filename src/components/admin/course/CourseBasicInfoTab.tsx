@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Image, X } from "lucide-react";
+import { Image, X } from "lucide-react";
+import { programsList, Program } from "@/data/programs";
 
 interface Course {
   id?: string;
@@ -23,9 +24,40 @@ interface CourseBasicInfoTabProps {
   onChange: (course: Partial<Course>) => void;
 }
 
+const tierConfig = {
+  entry: { label: "Entry", color: "text-emerald-500" },
+  mid: { label: "Premium", color: "text-secondary" },
+  elite: { label: "Elite", color: "text-primary" },
+};
+
 const CourseBasicInfoTab = ({ course, onChange }: CourseBasicInfoTabProps) => {
   const { toast } = useToast();
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+  const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
+
+  const fillFromProgram = (program: Program) => {
+    // Parse price if available (e.g., "R$ 299" -> 299)
+    let priceValue: number | null = null;
+    if (program.price) {
+      const numericPrice = program.price.replace(/[^\d,]/g, '').replace(',', '.');
+      priceValue = numericPrice ? parseFloat(numericPrice) : null;
+    }
+
+    onChange({
+      ...course,
+      title: program.subtitle,
+      description: program.fullDescription,
+      thumbnail_url: program.image || null,
+      price: priceValue,
+    });
+
+    setSelectedProgram(program.slug);
+
+    toast({
+      title: `Dados do "${program.subtitle}" carregados!`,
+      description: "Você pode editar os campos conforme necessário.",
+    });
+  };
 
   const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -68,6 +100,43 @@ const CourseBasicInfoTab = ({ course, onChange }: CourseBasicInfoTabProps) => {
 
   return (
     <div className="space-y-6">
+      {/* Program Selector */}
+      <div className="bg-zinc-900/50 border border-secondary/20 rounded-lg p-4">
+        <Label className="text-cream">Selecionar Programa da Jornada Soberana</Label>
+        <p className="text-xs text-cream/60 mb-3">
+          Escolha um programa oficial para pré-preencher os dados automaticamente
+        </p>
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+          {programsList.map((program) => {
+            const IconComponent = program.icon;
+            const tier = tierConfig[program.tier];
+            const isSelected = selectedProgram === program.slug;
+            
+            return (
+              <button
+                key={program.slug}
+                type="button"
+                onClick={() => fillFromProgram(program)}
+                className={`p-3 rounded-lg border transition-all text-left group ${
+                  isSelected 
+                    ? "border-secondary bg-secondary/10" 
+                    : "border-secondary/30 hover:border-secondary/60 bg-zinc-900 hover:bg-zinc-800"
+                }`}
+              >
+                <IconComponent className={`w-6 h-6 mb-2 ${isSelected ? "text-secondary" : "text-cream/60 group-hover:text-secondary"}`} />
+                <p className="text-sm font-medium text-cream line-clamp-2 mb-1">
+                  {program.subtitle}
+                </p>
+                <span className={`text-xs ${tier.color}`}>
+                  {tier.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="grid md:grid-cols-2 gap-6">
         {/* Left Column */}
         <div className="space-y-4">
