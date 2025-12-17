@@ -51,12 +51,12 @@ export const HeroSection = () => {
 
       {/* Isotipo Gold - decorative element bottom left */}
       <div className="absolute bottom-32 left-8 z-[3] opacity-10 hidden lg:block">
-        <img src={isotipoGold} alt="" className="w-24 h-24" />
+        <img src={isotipoGold} alt="" className="w-24 h-24" loading="lazy" width={96} height={96} />
       </div>
       
       {/* Isotipo Gold - top right subtle */}
       <div className="absolute top-24 right-8 z-[3] opacity-[0.06] hidden lg:block">
-        <img src={isotipoGold} alt="" className="w-32 h-32" />
+        <img src={isotipoGold} alt="" className="w-32 h-32" loading="lazy" width={128} height={128} />
       </div>
 
       {/* Content - positioned at bottom */}
