@@ -123,18 +123,18 @@ export function NotificationTemplatesTab() {
   };
 
   return (
-    <Card>
+    <Card className="admin-card">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-cream">
             <FileText className="w-5 h-5" />
             Templates de Notificações
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-cream/60">
             Crie e gerencie templates pré-configurados para envio rápido de notificações
           </CardDescription>
         </div>
-        <Button onClick={() => setShowFormDialog(true)}>
+        <Button onClick={() => setShowFormDialog(true)} className="bg-secondary hover:bg-secondary/90 text-black">
           <Plus className="w-4 h-4 mr-2" />
           Novo Template
         </Button>
@@ -142,10 +142,10 @@ export function NotificationTemplatesTab() {
       <CardContent>
         {loading ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin" />
+            <Loader2 className="w-6 h-6 animate-spin text-secondary" />
           </div>
         ) : templates.length === 0 ? (
-          <p className="text-center text-muted-foreground py-8">
+          <p className="text-center text-cream/60 py-8">
             Nenhum template cadastrado
           </p>
         ) : (
@@ -153,30 +153,30 @@ export function NotificationTemplatesTab() {
             {templates.map((template) => (
               <div
                 key={template.id}
-                className="border rounded-lg p-4 space-y-3 hover:bg-muted/30 transition-colors"
+                className="border border-secondary/20 rounded-lg p-4 space-y-3 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="font-medium">{template.name}</h4>
+                      <h4 className="font-medium text-cream">{template.name}</h4>
                       {template.is_default && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs border-secondary/40 text-cream/70">
                           Padrão
                         </Badge>
                       )}
                       {getTypeBadge(template.type)}
                     </div>
-                    <p className="text-sm font-medium text-muted-foreground mt-1">
+                    <p className="text-sm font-medium text-cream/70 mt-1">
                       "{template.title}"
                     </p>
-                    <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                    <p className="text-sm text-cream/60 mt-2 line-clamp-2">
                       {template.message}
                     </p>
                   </div>
                   <div className="flex gap-2 shrink-0">
                     <Button
                       size="sm"
-                      variant="outline"
+                      className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary"
                       onClick={() => handleEdit(template)}
                     >
                       <Edit className="w-4 h-4" />

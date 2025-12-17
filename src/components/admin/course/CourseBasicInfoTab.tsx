@@ -72,30 +72,30 @@ const CourseBasicInfoTab = ({ course, onChange }: CourseBasicInfoTabProps) => {
         {/* Left Column */}
         <div className="space-y-4">
           <div>
-            <Label htmlFor="title">Título do Curso *</Label>
+            <Label htmlFor="title" className="text-cream">Título do Curso *</Label>
             <Input
               id="title"
               value={course.title || ""}
               onChange={(e) => onChange({ ...course, title: e.target.value })}
               placeholder="Ex: Mentoria Soberana Completa"
-              className="mt-1"
+              className="mt-1 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
             />
           </div>
 
           <div>
-            <Label htmlFor="description">Descrição</Label>
+            <Label htmlFor="description" className="text-cream">Descrição</Label>
             <Textarea
               id="description"
               value={course.description || ""}
               onChange={(e) => onChange({ ...course, description: e.target.value })}
               placeholder="Descreva o curso, seus benefícios e o que o aluno vai aprender..."
               rows={6}
-              className="mt-1"
+              className="mt-1 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
             />
           </div>
 
           <div>
-            <Label htmlFor="price">Preço (R$)</Label>
+            <Label htmlFor="price" className="text-cream">Preço (R$)</Label>
             <Input
               id="price"
               type="number"
@@ -106,9 +106,9 @@ const CourseBasicInfoTab = ({ course, onChange }: CourseBasicInfoTabProps) => {
                 price: e.target.value ? parseFloat(e.target.value) : null 
               })}
               placeholder="0.00 (deixe vazio para gratuito)"
-              className="mt-1"
+              className="mt-1 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
             />
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-cream/60 mt-1">
               Deixe em branco para curso gratuito
             </p>
           </div>
@@ -118,14 +118,14 @@ const CourseBasicInfoTab = ({ course, onChange }: CourseBasicInfoTabProps) => {
         <div className="space-y-4">
           {/* Thumbnail */}
           <div>
-            <Label>Thumbnail do Curso</Label>
+            <Label className="text-cream">Thumbnail do Curso</Label>
             <div className="mt-1">
               {course.thumbnail_url ? (
                 <div className="relative group">
                   <img
                     src={course.thumbnail_url}
                     alt="Thumbnail"
-                    className="w-full aspect-video object-cover rounded-lg border"
+                    className="w-full aspect-video object-cover rounded-lg border border-secondary/30"
                   />
                   <Button
                     variant="destructive"
@@ -137,7 +137,7 @@ const CourseBasicInfoTab = ({ course, onChange }: CourseBasicInfoTabProps) => {
                   </Button>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-lg cursor-pointer hover:border-secondary/50 transition-colors">
+                <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-secondary/30 rounded-lg cursor-pointer hover:border-secondary/50 bg-zinc-900/50 transition-colors">
                   <input
                     type="file"
                     accept="image/*"
@@ -149,11 +149,11 @@ const CourseBasicInfoTab = ({ course, onChange }: CourseBasicInfoTabProps) => {
                     <div className="animate-spin w-8 h-8 border-2 border-secondary border-t-transparent rounded-full" />
                   ) : (
                     <>
-                      <Image className="w-12 h-12 text-muted-foreground mb-2" />
-                      <p className="text-sm text-muted-foreground">
+                      <Image className="w-12 h-12 text-cream/40 mb-2" />
+                      <p className="text-sm text-cream/60">
                         Clique para enviar thumbnail
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-cream/40">
                         Recomendado: 1280x720px
                       </p>
                     </>
@@ -161,23 +161,23 @@ const CourseBasicInfoTab = ({ course, onChange }: CourseBasicInfoTabProps) => {
                 </label>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-xs text-cream/60 mt-2">
               Ou cole uma URL direta:
             </p>
             <Input
               value={course.thumbnail_url || ""}
               onChange={(e) => onChange({ ...course, thumbnail_url: e.target.value })}
               placeholder="https://..."
-              className="mt-1"
+              className="mt-1 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
             />
           </div>
 
           {/* Switches */}
-          <div className="card-elegant p-4 space-y-4">
+          <div className="bg-zinc-900/50 border border-secondary/20 rounded-lg p-4 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <Label>Assinatura</Label>
-                <p className="text-xs text-muted-foreground">
+                <Label className="text-cream">Assinatura</Label>
+                <p className="text-xs text-cream/60">
                   Acesso por período determinado
                 </p>
               </div>
@@ -187,10 +187,10 @@ const CourseBasicInfoTab = ({ course, onChange }: CourseBasicInfoTabProps) => {
               />
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t">
+            <div className="flex items-center justify-between pt-4 border-t border-secondary/20">
               <div>
-                <Label>Publicado</Label>
-                <p className="text-xs text-muted-foreground">
+                <Label className="text-cream">Publicado</Label>
+                <p className="text-xs text-cream/60">
                   Visível para alunos
                 </p>
               </div>
