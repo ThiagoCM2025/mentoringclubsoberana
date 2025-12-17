@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -10,6 +11,7 @@ import Auth from "./pages/Auth";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import CourseDetail from "./pages/student/CourseDetail";
 import LessonPlayer from "./pages/student/LessonPlayer";
+import StudentAchievements from "./pages/student/StudentAchievements";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCourses from "./pages/admin/AdminCourses";
 import CourseEditor from "./pages/admin/CourseEditor";
@@ -21,11 +23,12 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
+  <HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
@@ -53,6 +56,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireStudent>
                   <LessonPlayer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/student/achievements"
+              element={
+                <ProtectedRoute requireStudent>
+                  <StudentAchievements />
                 </ProtectedRoute>
               }
             />
@@ -114,6 +125,7 @@ const App = () => (
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;
