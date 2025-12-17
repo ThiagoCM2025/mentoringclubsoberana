@@ -153,32 +153,48 @@ const StudentProfile = () => {
       const fileExt = file.name.split(".").pop();
       const fileName = `${user.id}/avatar.${fileExt}`;
 
+      console.log("Uploading avatar:", fileName);
+
       // Upload to storage
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(fileName, file, { upsert: true });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        throw uploadError;
+      }
 
-      // Get public URL
+      // Get public URL with cache-busting timestamp
       const { data: { publicUrl } } = supabase.storage
         .from("avatars")
         .getPublicUrl(fileName);
 
-      // Update profile
+      // Add cache-busting timestamp to URL
+      const publicUrlWithTimestamp = `${publicUrl}?t=${Date.now()}`;
+      console.log("Public URL with timestamp:", publicUrlWithTimestamp);
+
+      // Update profile with new URL
       const { error: updateError } = await supabase
         .from("profiles")
-        .update({ avatar_url: publicUrl })
+        .update({ avatar_url: publicUrlWithTimestamp })
         .eq("user_id", user.id);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error("Update error:", updateError);
+        throw updateError;
+      }
 
-      setProfile(prev => prev ? { ...prev, avatar_url: publicUrl } : null);
+      // Force state update
+      setProfile(prev => prev ? { ...prev, avatar_url: publicUrlWithTimestamp } : null);
 
       toast({
         title: "Foto atualizada!",
         description: "Sua foto de perfil foi alterada com sucesso.",
       });
+
+      // Refresh profile data to ensure sync
+      await fetchProfile();
     } catch (error) {
       console.error("Error uploading avatar:", error);
       toast({

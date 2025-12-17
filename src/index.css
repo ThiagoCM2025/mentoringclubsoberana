@@ -120,11 +120,28 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-admin antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  /* Landing page uses serif for headlines */
+  .landing-page h1, 
+  .landing-page h2, 
+  .landing-page h3, 
+  .landing-page h4, 
+  .landing-page h5, 
+  .landing-page h6 {
     @apply font-serif;
+  }
+
+  /* Admin and Student areas use Inter throughout */
+  .admin-area,
+  .student-area {
+    @apply font-admin;
+  }
+
+  .admin-area *,
+  .student-area * {
+    font-family: 'Inter', system-ui, sans-serif;
   }
 }
 
