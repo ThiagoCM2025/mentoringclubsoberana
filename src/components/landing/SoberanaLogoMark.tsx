@@ -26,21 +26,21 @@ export const SoberanaLogoMark = ({
       container: "gap-0.5",
       mentoring: "text-[8px] tracking-[0.25em]",
       soberana: "text-base",
-      star: "w-2 h-2",
+      star: "w-1.5 h-1.5",
       oLetter: "w-[0.65em]",
     },
     md: {
       container: "gap-0.5",
       mentoring: "text-[10px] tracking-[0.3em]",
       soberana: "text-xl",
-      star: "w-2.5 h-2.5",
+      star: "w-2 h-2",
       oLetter: "w-[0.7em]",
     },
     lg: {
       container: "gap-1",
       mentoring: "text-xs tracking-[0.35em]",
       soberana: "text-2xl",
-      star: "w-3 h-3",
+      star: "w-2.5 h-2.5",
       oLetter: "w-[0.75em]",
     },
   };
@@ -67,7 +67,7 @@ export const SoberanaLogoMark = ({
   const colors = colorClasses[variant];
 
   return (
-    <div className={cn("flex flex-col items-center leading-none", sizes.container, className)}>
+    <div className={cn("flex flex-col items-center leading-none group", sizes.container, className)}>
       <span
         className={cn("font-light uppercase", sizes.mentoring, colors.mentoring)}
         style={{ fontFamily: "'Montserrat', sans-serif" }}
@@ -81,8 +81,12 @@ export const SoberanaLogoMark = ({
         S
         <span className={cn("relative inline-flex items-center justify-center", sizes.oLetter)}>
           <span className="opacity-90">O</span>
-          <span className={cn("absolute inset-0 flex items-center justify-center", colors.star)}>
-            <FourPointStar className={sizes.star} />
+          <span className={cn(
+            "absolute inset-0 flex items-center justify-center transition-all duration-300",
+            "group-hover:drop-shadow-[0_0_6px_rgba(166,144,97,0.8)]",
+            colors.star
+          )}>
+            <FourPointStar className={cn(sizes.star, "transition-transform duration-300 group-hover:scale-110")} />
           </span>
         </span>
         BERANA
