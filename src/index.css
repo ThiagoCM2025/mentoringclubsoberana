@@ -27,7 +27,7 @@
     --secondary-foreground: 0 0% 0%;
 
     --muted: 30 10% 90%;
-    --muted-foreground: 0 0% 40%;
+    --muted-foreground: 0 0% 30%;
 
     /* Gold Accent */
     --accent: 43 100% 83%; /* #FFDFA6 Dourado Claro */
@@ -167,6 +167,24 @@
   .badge-gold {
     @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
            bg-secondary/10 text-secondary border border-secondary/20;
+  }
+
+  /* Admin Area - Better Readability */
+  .admin-title {
+    @apply font-admin font-semibold tracking-tight;
+  }
+
+  .admin-text {
+    @apply font-admin;
+  }
+
+  .admin-label {
+    @apply font-admin font-medium text-foreground;
+  }
+
+  .admin-card {
+    @apply bg-card rounded-lg border border-border/50 shadow-md 
+           transition-all duration-300 hover:shadow-lg;
   }
 }
 
