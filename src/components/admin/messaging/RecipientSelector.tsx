@@ -60,7 +60,7 @@ export function RecipientSelector() {
   async function fetchStudents() {
     setLoading(true);
     try {
-      // Get profiles with user_roles that are students
+      // Get profiles
       const { data: profiles, error } = await supabase
         .from("profiles")
         .select("user_id, full_name, phone")
@@ -68,21 +68,44 @@ export function RecipientSelector() {
 
       if (error) throw error;
 
-      // Get emails from auth (we'll use user_id as a proxy)
-      // For now, we need to get user data another way
-      const { data: roles } = await supabase
+      // Get student roles
+      const { data: studentRoles } = await supabase
         .from("user_roles")
         .select("user_id")
         .eq("role", "student");
 
-      const studentUserIds = new Set(roles?.map(r => r.user_id) || []);
+      // Get admin roles to exclude them
+      const { data: adminRoles } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "admin");
+
+      const studentUserIds = new Set(studentRoles?.map(r => r.user_id) || []);
+      const adminUserIds = new Set(adminRoles?.map(r => r.user_id) || []);
       
-      const studentProfiles = (profiles || [])
-        .filter(p => studentUserIds.has(p.user_id))
-        .map(p => ({
-          ...p,
-          email: `user-${p.user_id.slice(0, 8)}@email.com` // Placeholder - we'll get real email from auth
-        }));
+      // Filter: must be student AND not admin
+      const filteredProfiles = (profiles || [])
+        .filter(p => studentUserIds.has(p.user_id) && !adminUserIds.has(p.user_id));
+
+      // Get real emails from edge function
+      const userIds = filteredProfiles.map(p => p.user_id);
+      let emailMap: Record<string, string> = {};
+      
+      if (userIds.length > 0) {
+        const { data: emailData, error: emailError } = await supabase.functions.invoke(
+          "get-user-emails",
+          { body: { userIds } }
+        );
+        
+        if (!emailError && emailData?.emails) {
+          emailMap = emailData.emails;
+        }
+      }
+
+      const studentProfiles = filteredProfiles.map(p => ({
+        ...p,
+        email: emailMap[p.user_id] || `user-${p.user_id.slice(0, 8)}@email.com`
+      }));
 
       setStudents(studentProfiles);
     } catch (error) {
