@@ -30,7 +30,8 @@ import CoursePreviewModal from "@/components/student/CoursePreviewModal";
 import { DiagnosticBanner } from "@/components/student/DiagnosticBanner";
 import { NotificationBell } from "@/components/student/NotificationBell";
 import StudyReminderButton from "@/components/student/StudyReminderButton";
-import brandLogo from "@/assets/brand-logo.png";
+import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
+import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 
 interface Course {
   id: string;
@@ -81,7 +82,6 @@ const StudentDashboard = () => {
   const fetchData = async () => {
     if (!user) return;
 
-    // Fetch profile
     const { data: profileData } = await supabase
       .from("profiles")
       .select("full_name")
@@ -90,7 +90,6 @@ const StudentDashboard = () => {
     
     if (profileData) setProfile(profileData);
 
-    // Fetch all published courses
     const { data: coursesData } = await supabase
       .from("courses")
       .select("id, title, description, thumbnail_url, price")
@@ -100,7 +99,6 @@ const StudentDashboard = () => {
       setAllCourses(coursesData);
     }
 
-    // Fetch enrollments with courses
     const { data: enrollmentData } = await supabase
       .from("enrollments")
       .select(`
@@ -118,16 +116,13 @@ const StudentDashboard = () => {
     if (enrollmentData) {
       setEnrollments(enrollmentData as unknown as EnrollmentWithCourse[]);
       
-      // Fetch progress for each course
       for (const enrollment of enrollmentData) {
         await fetchCourseProgress(enrollment.course_id);
       }
 
-      // Fetch continue watching
       await fetchContinueWatching(enrollmentData as unknown as EnrollmentWithCourse[]);
     }
 
-    // Fetch total completed lessons
     const { count } = await supabase
       .from("progress")
       .select("*", { count: "exact", head: true })
@@ -187,7 +182,6 @@ const StudentDashboard = () => {
     const items: ContinueItem[] = [];
 
     for (const enrollment of enrollments) {
-      // Get modules for this course
       const { data: modules } = await supabase
         .from("modules")
         .select("id")
@@ -197,7 +191,6 @@ const StudentDashboard = () => {
 
       const moduleIds = modules.map(m => m.id);
 
-      // Get lessons
       const { data: lessons } = await supabase
         .from("lessons")
         .select("id, title, duration_minutes")
@@ -206,7 +199,6 @@ const StudentDashboard = () => {
 
       if (!lessons || lessons.length === 0) continue;
 
-      // Get progress
       const lessonIds = lessons.map(l => l.id);
       const { data: progressData } = await supabase
         .from("progress")
@@ -214,7 +206,6 @@ const StudentDashboard = () => {
         .eq("user_id", user.id)
         .in("lesson_id", lessonIds);
 
-      // Find lessons in progress (started but not completed)
       for (const lesson of lessons) {
         const lessonProgress = progressData?.find(p => p.lesson_id === lesson.id);
         if (lessonProgress && !lessonProgress.completed && lessonProgress.progress_seconds > 0) {
@@ -246,13 +237,13 @@ const StudentDashboard = () => {
   const firstName = profile.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "Aluna";
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-primary text-primary-foreground py-4 px-4 sticky top-0 z-50">
+    <div className="min-h-screen bg-black">
+      {/* Header - Premium Black with Gold accents */}
+      <header className="bg-black/95 backdrop-blur-sm border-b border-secondary/20 py-4 px-4 sticky top-0 z-50">
         <div className="container-soberana flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={brandLogo} alt="Soberana" className="w-10 h-10 object-contain" />
-            <span className="font-serif font-bold text-xl hidden sm:block">Área do Aluno</span>
+            <img src={isotipoGold} alt="Soberana" className="w-10 h-10 object-contain" />
+            <span className="font-serif font-bold text-xl hidden sm:block text-secondary">Área do Aluno</span>
           </div>
           
           {/* Desktop Nav */}
@@ -262,7 +253,7 @@ const StudentDashboard = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate("/student/favorites")}
-                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <Heart className="w-4 h-4 mr-2" />
                 Favoritos
@@ -271,7 +262,7 @@ const StudentDashboard = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate("/student/community")}
-                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <Users className="w-4 h-4 mr-2" />
                 Comunidade
@@ -280,7 +271,7 @@ const StudentDashboard = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate("/student/achievements")}
-                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <Trophy className="w-4 h-4 mr-2" />
                 Conquistas
@@ -289,7 +280,7 @@ const StudentDashboard = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate("/student/certificates")}
-                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <Medal className="w-4 h-4 mr-2" />
                 Certificados
@@ -301,7 +292,7 @@ const StudentDashboard = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
                 onClick={() => navigate("/student/profile")}
               >
                 <User className="w-5 h-5" />
@@ -310,7 +301,7 @@ const StudentDashboard = () => {
                 variant="ghost"
                 size="icon"
                 onClick={handleSignOut}
-                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="text-cream/70 hover:text-red-400 hover:bg-red-400/10"
               >
                 <LogOut className="w-5 h-5" />
               </Button>
@@ -321,7 +312,7 @@ const StudentDashboard = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden text-primary-foreground"
+            className="md:hidden text-cream"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -333,13 +324,13 @@ const StudentDashboard = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:hidden absolute top-full left-0 right-0 bg-primary border-t border-primary-foreground/10 p-4"
+            className="md:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-sm border-t border-secondary/20 p-4"
           >
             <nav className="flex flex-col gap-2">
               <Button
                 variant="ghost"
                 onClick={() => { navigate("/student/favorites"); setMobileMenuOpen(false); }}
-                className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="justify-start text-cream/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <Heart className="w-4 h-4 mr-2" />
                 Favoritos
@@ -347,7 +338,7 @@ const StudentDashboard = () => {
               <Button
                 variant="ghost"
                 onClick={() => { navigate("/student/community"); setMobileMenuOpen(false); }}
-                className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="justify-start text-cream/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <Users className="w-4 h-4 mr-2" />
                 Comunidade
@@ -355,7 +346,7 @@ const StudentDashboard = () => {
               <Button
                 variant="ghost"
                 onClick={() => { navigate("/student/achievements"); setMobileMenuOpen(false); }}
-                className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="justify-start text-cream/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <Trophy className="w-4 h-4 mr-2" />
                 Conquistas
@@ -363,14 +354,14 @@ const StudentDashboard = () => {
               <Button
                 variant="ghost"
                 onClick={() => { navigate("/student/certificates"); setMobileMenuOpen(false); }}
-                className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="justify-start text-cream/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <Medal className="w-4 h-4 mr-2" />
                 Certificados
               </Button>
               <Button
                 variant="ghost"
-                className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="justify-start text-cream/70 hover:text-secondary hover:bg-secondary/10"
                 onClick={() => { navigate("/student/profile"); setMobileMenuOpen(false); }}
               >
                 <User className="w-4 h-4 mr-2" />
@@ -379,7 +370,7 @@ const StudentDashboard = () => {
               <Button
                 variant="ghost"
                 onClick={handleSignOut}
-                className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="justify-start text-cream/70 hover:text-red-400 hover:bg-red-400/10"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Sair
@@ -390,19 +381,28 @@ const StudentDashboard = () => {
       </header>
 
       <main className="container-soberana py-8 px-4">
-        {/* Welcome Banner with XP */}
+        {/* Welcome Banner with XP - Premium Black/Gold */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-marsala-light to-primary p-6 md:p-8 mb-8"
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-900 via-black to-zinc-900 p-6 md:p-8 mb-8 border border-secondary/20"
         >
-          <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
+          {/* Decorative pattern */}
+          <div 
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: `url(${patternCirclesGold})`,
+              backgroundRepeat: 'repeat',
+              backgroundSize: '200px',
+            }}
+          />
+          
           <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
-              <h1 className="text-2xl md:text-4xl font-serif font-bold text-primary-foreground mb-2">
+              <h1 className="text-2xl md:text-4xl font-serif font-bold text-cream mb-2">
                 Olá, {firstName}! 👋
               </h1>
-              <p className="text-primary-foreground/80 max-w-xl">
+              <p className="text-cream/60 max-w-xl">
                 Continue sua jornada para se tornar uma advogada soberana.
               </p>
             </div>
@@ -410,33 +410,33 @@ const StudentDashboard = () => {
             {/* XP and Streak */}
             <div className="flex items-center gap-4">
               <div 
-                className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 cursor-pointer hover:bg-primary-foreground/20 transition-colors"
+                className="bg-secondary/10 border border-secondary/20 backdrop-blur-sm rounded-xl p-4 cursor-pointer hover:bg-secondary/20 transition-colors"
                 onClick={() => navigate("/student/achievements")}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Star className="w-5 h-5 text-secondary" />
-                  <span className="text-sm text-primary-foreground/70">Nível {level}</span>
+                  <span className="text-sm text-cream/60">Nível {level}</span>
                 </div>
-                <p className="text-2xl font-bold text-primary-foreground">{gamificationStats?.xp || 0} XP</p>
-                <Progress value={levelProgress} className="h-1.5 mt-2 bg-primary-foreground/20" />
+                <p className="text-2xl font-bold text-cream">{gamificationStats?.xp || 0} XP</p>
+                <Progress value={levelProgress} className="h-1.5 mt-2 bg-secondary/20" />
               </div>
               
               <div 
-                className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 cursor-pointer hover:bg-primary-foreground/20 transition-colors"
+                className="bg-orange-500/10 border border-orange-500/20 backdrop-blur-sm rounded-xl p-4 cursor-pointer hover:bg-orange-500/20 transition-colors"
                 onClick={() => navigate("/student/achievements")}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Flame className="w-5 h-5 text-orange-400" />
-                  <span className="text-sm text-primary-foreground/70">Streak</span>
+                  <span className="text-sm text-cream/60">Streak</span>
                 </div>
-                <p className="text-2xl font-bold text-primary-foreground">{gamificationStats?.streak_days || 0} dias</p>
+                <p className="text-2xl font-bold text-cream">{gamificationStats?.streak_days || 0} dias</p>
               </div>
             </div>
           </div>
           
-          {/* Decorative elements */}
-          <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-secondary/20 rounded-full blur-3xl" />
-          <div className="absolute right-20 top-0 w-20 h-20 bg-accent/20 rounded-full blur-2xl" />
+          {/* Decorative glow elements */}
+          <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl" />
+          <div className="absolute right-20 top-0 w-20 h-20 bg-secondary/5 rounded-full blur-2xl" />
         </motion.div>
 
         {/* Diagnostic Banner */}
@@ -480,7 +480,7 @@ const StudentDashboard = () => {
         {/* My Courses */}
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-serif font-bold text-foreground">
+            <h2 className="text-2xl font-serif font-bold text-cream">
               Meus Cursos
             </h2>
           </div>
@@ -489,9 +489,9 @@ const StudentDashboard = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="aspect-[16/10] rounded-xl bg-muted mb-4" />
-                  <div className="h-6 bg-muted rounded w-3/4 mb-2" />
-                  <div className="h-4 bg-muted rounded w-1/2" />
+                  <div className="aspect-[16/10] rounded-xl bg-zinc-800 mb-4" />
+                  <div className="h-6 bg-zinc-800 rounded w-3/4 mb-2" />
+                  <div className="h-4 bg-zinc-800 rounded w-1/2" />
                 </div>
               ))}
             </div>
@@ -499,15 +499,15 @@ const StudentDashboard = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-card rounded-2xl p-8 text-center border border-border/50"
+              className="bg-zinc-900 rounded-2xl p-8 text-center border border-secondary/10"
             >
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-8 h-8 text-muted-foreground" />
+              <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center mx-auto mb-4">
+                <BookOpen className="w-8 h-8 text-cream/40" />
               </div>
-              <h3 className="text-lg font-serif font-semibold text-foreground mb-2">
+              <h3 className="text-lg font-serif font-semibold text-cream mb-2">
                 Nenhum curso ainda
               </h3>
-              <p className="text-muted-foreground text-sm max-w-md mx-auto">
+              <p className="text-cream/50 text-sm max-w-md mx-auto">
                 Você ainda não está matriculada em nenhum curso. Explore os cursos disponíveis abaixo!
               </p>
             </motion.div>
@@ -541,10 +541,10 @@ const StudentDashboard = () => {
             <section>
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-2xl font-serif font-bold text-foreground">
+                  <h2 className="text-2xl font-serif font-bold text-cream">
                     Cursos Disponíveis
                   </h2>
-                  <p className="text-muted-foreground text-sm mt-1">
+                  <p className="text-cream/50 text-sm mt-1">
                     Expanda seu conhecimento com nossos outros cursos
                   </p>
                 </div>

@@ -58,27 +58,27 @@ const CourseCard = ({
       onClick={handleClick}
       className="group cursor-pointer"
     >
-      <div className="relative aspect-[16/10] rounded-xl overflow-hidden mb-4 bg-gradient-to-br from-primary to-marsala-light">
+      <div className="relative aspect-[16/10] rounded-xl overflow-hidden mb-4 bg-gradient-to-br from-zinc-800 to-zinc-900 border border-secondary/10 group-hover:border-secondary/30 transition-colors">
         {thumbnail ? (
           <img
             src={thumbnail}
             alt={title}
-            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${isLocked ? 'grayscale' : ''}`}
+            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${isLocked ? 'grayscale opacity-50' : ''}`}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <BookOpen className={`w-20 h-20 ${isLocked ? 'text-primary-foreground/20' : 'text-primary-foreground/30'}`} />
+            <BookOpen className={`w-20 h-20 ${isLocked ? 'text-cream/10' : 'text-cream/20'}`} />
           </div>
         )}
 
         {/* Locked Overlay */}
         {isLocked && (
-          <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex flex-col items-center justify-center">
-            <div className="w-14 h-14 rounded-full bg-primary/90 flex items-center justify-center mb-3">
-              <Lock className="w-7 h-7 text-primary-foreground" />
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center">
+            <div className="w-14 h-14 rounded-full bg-zinc-800 border border-secondary/30 flex items-center justify-center mb-3">
+              <Lock className="w-7 h-7 text-secondary" />
             </div>
             {price !== null && (
-              <span className="px-4 py-1.5 bg-secondary rounded-full text-sm font-bold text-secondary-foreground">
+              <span className="px-4 py-1.5 bg-secondary rounded-full text-sm font-bold text-black">
                 {formatPrice(price)}
               </span>
             )}
@@ -87,7 +87,7 @@ const CourseCard = ({
 
         {/* Overlay gradient for unlocked */}
         {!isLocked && (
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         )}
 
         {/* Play button for unlocked */}
@@ -96,9 +96,9 @@ const CourseCard = ({
             <motion.div
               initial={{ scale: 0.8 }}
               whileHover={{ scale: 1.1 }}
-              className="w-16 h-16 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-2xl"
+              className="w-16 h-16 rounded-full bg-secondary/90 backdrop-blur-sm flex items-center justify-center shadow-2xl shadow-secondary/30"
             >
-              <Play className="w-7 h-7 text-primary-foreground ml-1" />
+              <Play className="w-7 h-7 text-black ml-1" />
             </motion.div>
           </div>
         )}
@@ -106,7 +106,7 @@ const CourseCard = ({
         {/* Progress indicator for unlocked */}
         {!isLocked && progress > 0 && (
           <div className="absolute bottom-0 left-0 right-0">
-            <Progress value={progress} className="h-1.5 rounded-none bg-background/30" />
+            <Progress value={progress} className="h-1.5 rounded-none bg-zinc-800" />
           </div>
         )}
 
@@ -119,12 +119,12 @@ const CourseCard = ({
       </div>
 
       <div className="space-y-2">
-        <h3 className="font-serif font-semibold text-lg text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+        <h3 className="font-serif font-semibold text-lg text-cream line-clamp-2 group-hover:text-secondary transition-colors">
           {title}
         </h3>
         
         {description && (
-          <p className="text-sm text-muted-foreground line-clamp-2">
+          <p className="text-sm text-cream/50 line-clamp-2">
             {description}
           </p>
         )}
@@ -132,13 +132,13 @@ const CourseCard = ({
         <div className="flex items-center justify-between pt-2">
           {isLocked ? (
             <>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-cream/40">
                 {price === 0 ? "Curso gratuito" : "Curso disponível"}
               </span>
               <Button 
                 variant="secondary" 
                 size="sm" 
-                className="gap-1.5"
+                className="gap-1.5 bg-secondary text-black hover:bg-secondary/90"
                 onClick={(e) => {
                   e.stopPropagation();
                   window.location.href = "/#produtos";
@@ -150,7 +150,7 @@ const CourseCard = ({
             </>
           ) : (
             <>
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <div className="flex items-center gap-4 text-xs text-cream/40">
                 {totalLessons > 0 && (
                   <span className="flex items-center gap-1">
                     <BookOpen className="w-3.5 h-3.5" />

@@ -253,6 +253,15 @@ const Auth = () => {
             </Button>
           </form>
 
+          <div className="mt-4 text-center">
+            <Link 
+              to="/forgot-password" 
+              className="text-sm text-muted-foreground hover:text-secondary transition-colors"
+            >
+              Esqueceu a senha?
+            </Link>
+          </div>
+
           {/* Footer text */}
           <div className="mt-8 pt-6 border-t border-border/30">
             <p className="text-center text-muted-foreground text-sm">

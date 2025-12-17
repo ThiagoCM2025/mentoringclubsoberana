@@ -12,11 +12,11 @@ interface StatsCardProps {
 }
 
 const colorClasses = {
-  primary: "bg-primary/10 text-primary",
+  primary: "bg-secondary/10 text-secondary",
   secondary: "bg-secondary/10 text-secondary",
-  accent: "bg-accent/30 text-accent-foreground",
-  green: "bg-green-500/10 text-green-500",
-  orange: "bg-orange-500/10 text-orange-500",
+  accent: "bg-secondary/10 text-secondary",
+  green: "bg-green-500/10 text-green-400",
+  orange: "bg-orange-500/10 text-orange-400",
 };
 
 const StatsCard = ({
@@ -33,7 +33,7 @@ const StatsCard = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="bg-card rounded-xl p-5 border border-border/50 hover:border-secondary/30 transition-all duration-300 hover:shadow-lg"
+      className="bg-zinc-900 rounded-xl p-5 border border-secondary/10 hover:border-secondary/30 transition-all duration-300 hover:shadow-lg hover:shadow-secondary/5"
     >
       <div className={cn(
         "w-12 h-12 rounded-xl flex items-center justify-center mb-4",
@@ -44,12 +44,12 @@ const StatsCard = ({
       
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-3xl font-bold text-foreground">{value}</p>
-          <p className="text-sm text-muted-foreground mt-1">{label}</p>
+          <p className="text-3xl font-bold text-cream">{value}</p>
+          <p className="text-sm text-cream/50 mt-1">{label}</p>
         </div>
         
         {trend && (
-          <span className="text-xs text-green-500 font-medium bg-green-500/10 px-2 py-1 rounded-full">
+          <span className="text-xs text-green-400 font-medium bg-green-500/10 px-2 py-1 rounded-full">
             {trend}
           </span>
         )}

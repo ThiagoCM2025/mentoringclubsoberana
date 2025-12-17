@@ -6,7 +6,6 @@ import {
   BookOpen,
   Award,
   User,
-  Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -16,7 +15,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import brandLogo from "@/assets/brand-logo.png";
+import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
+import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 
 interface StudentSidebarProps {
   onSignOut: () => void;
@@ -41,15 +41,25 @@ const StudentSidebar = ({ onSignOut, studentName, xp = 0, streak = 0 }: StudentS
     <motion.aside
       initial={false}
       animate={{ width: collapsed ? 80 : 280 }}
-      className="fixed left-0 top-0 h-screen bg-sidebar-background border-r border-sidebar-border z-50 flex flex-col"
+      className="fixed left-0 top-0 h-screen bg-black border-r border-secondary/20 z-50 flex flex-col overflow-hidden"
     >
+      {/* Background pattern */}
+      <div 
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `url(${patternCirclesGold})`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '150px',
+        }}
+      />
+
       {/* Header */}
-      <div className="p-4 border-b border-sidebar-border">
+      <div className="relative p-4 border-b border-secondary/20">
         <div className="flex items-center gap-3">
           <img 
-            src={brandLogo} 
+            src={isotipoGold} 
             alt="Soberana" 
-            className="w-10 h-10 object-contain"
+            className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]"
           />
           <AnimatePresence>
             {!collapsed && (
@@ -57,7 +67,7 @@ const StudentSidebar = ({ onSignOut, studentName, xp = 0, streak = 0 }: StudentS
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="font-serif font-bold text-sidebar-foreground text-lg"
+                className="font-serif font-bold text-secondary text-lg"
               >
                 Soberana
               </motion.span>
@@ -73,13 +83,13 @@ const StudentSidebar = ({ onSignOut, studentName, xp = 0, streak = 0 }: StudentS
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="p-4 border-b border-sidebar-border"
+            className="relative p-4 border-b border-secondary/20"
           >
-            <p className="text-sidebar-foreground font-medium truncate">
+            <p className="text-cream font-medium truncate">
               {studentName}
             </p>
             <div className="flex items-center gap-4 mt-2">
-              <div className="flex items-center gap-1 text-sidebar-primary">
+              <div className="flex items-center gap-1 text-secondary">
                 <Star className="w-4 h-4" />
                 <span className="text-sm font-medium">{xp} XP</span>
               </div>
@@ -93,7 +103,7 @@ const StudentSidebar = ({ onSignOut, studentName, xp = 0, streak = 0 }: StudentS
       </AnimatePresence>
 
       {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+      <nav className="relative flex-1 p-3 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
@@ -103,11 +113,11 @@ const StudentSidebar = ({ onSignOut, studentName, xp = 0, streak = 0 }: StudentS
               className={cn(
                 "flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200",
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-primary"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                  ? "bg-secondary/20 text-secondary border border-secondary/30"
+                  : "text-cream/60 hover:bg-secondary/10 hover:text-cream"
               )}
             >
-              <item.icon className="w-5 h-5 flex-shrink-0" />
+              <item.icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-secondary")} />
               <AnimatePresence>
                 {!collapsed && (
                   <motion.span
@@ -126,12 +136,12 @@ const StudentSidebar = ({ onSignOut, studentName, xp = 0, streak = 0 }: StudentS
       </nav>
 
       {/* Footer */}
-      <div className="p-3 border-t border-sidebar-border space-y-1">
+      <div className="relative p-3 border-t border-secondary/20 space-y-1">
         <button
           onClick={onSignOut}
           className={cn(
             "flex items-center gap-3 px-3 py-3 rounded-lg w-full transition-all duration-200",
-            "text-sidebar-foreground/70 hover:bg-destructive/20 hover:text-destructive"
+            "text-cream/60 hover:bg-red-500/10 hover:text-red-400"
           )}
         >
           <LogOut className="w-5 h-5 flex-shrink-0" />
@@ -155,7 +165,7 @@ const StudentSidebar = ({ onSignOut, studentName, xp = 0, streak = 0 }: StudentS
         variant="ghost"
         size="icon"
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-sidebar-accent border border-sidebar-border text-sidebar-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground"
+        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-zinc-900 border border-secondary/30 text-secondary hover:bg-secondary hover:text-black"
       >
         {collapsed ? (
           <ChevronRight className="w-4 h-4" />
