@@ -4,9 +4,10 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, Settings, Layers, FileText, Eye } from "lucide-react";
+import { ArrowLeft, Save, Settings, Layers, FileText, Eye, AlertCircle } from "lucide-react";
 import { Program } from "@/data/programs";
 
 // Tab Components
@@ -247,98 +248,142 @@ const CourseEditor = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full justify-start mb-6 bg-zinc-900 border border-secondary/20 p-1 h-auto flex-wrap">
-              <TabsTrigger value="basic" className="gap-2 text-cream/70 data-[state=active]:bg-secondary data-[state=active]:text-black">
-                <Settings className="w-4 h-4" />
-                <span className="hidden sm:inline">Informações</span>
-                <span className="sm:hidden">Info</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="modules" 
-                className="gap-2 text-cream/70 data-[state=active]:bg-secondary data-[state=active]:text-black"
-                disabled={isNew}
-              >
-                <Layers className="w-4 h-4" />
-                <span className="hidden sm:inline">Módulos e Aulas</span>
-                <span className="sm:hidden">Módulos</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="materials" 
-                className="gap-2 text-cream/70 data-[state=active]:bg-secondary data-[state=active]:text-black"
-                disabled={isNew}
-              >
-                <FileText className="w-4 h-4" />
-                Materiais
-              </TabsTrigger>
-              <TabsTrigger 
-                value="preview" 
-                className="gap-2 text-cream/70 data-[state=active]:bg-secondary data-[state=active]:text-black"
-                disabled={isNew}
-              >
-                <Eye className="w-4 h-4" />
-                Preview
-              </TabsTrigger>
-            </TabsList>
+          <TooltipProvider>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="w-full justify-start mb-6 bg-card border border-border p-1 h-auto flex-wrap">
+                <TabsTrigger value="basic" className="gap-2 text-foreground data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
+                  <Settings className="w-4 h-4" />
+                  <span className="hidden sm:inline">Informações</span>
+                  <span className="sm:hidden">Info</span>
+                </TabsTrigger>
+                
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <TabsTrigger 
+                        value="modules" 
+                        className="gap-2 text-foreground data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isNew}
+                      >
+                        <Layers className="w-4 h-4" />
+                        <span className="hidden sm:inline">Módulos e Aulas</span>
+                        <span className="sm:hidden">Módulos</span>
+                      </TabsTrigger>
+                    </span>
+                  </TooltipTrigger>
+                  {isNew && (
+                    <TooltipContent side="bottom">
+                      <p>Salve o curso primeiro para adicionar módulos</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+                
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <TabsTrigger 
+                        value="materials" 
+                        className="gap-2 text-foreground data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isNew}
+                      >
+                        <FileText className="w-4 h-4" />
+                        Materiais
+                      </TabsTrigger>
+                    </span>
+                  </TooltipTrigger>
+                  {isNew && (
+                    <TooltipContent side="bottom">
+                      <p>Salve o curso primeiro para adicionar materiais</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+                
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <TabsTrigger 
+                        value="preview" 
+                        className="gap-2 text-foreground data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isNew}
+                      >
+                        <Eye className="w-4 h-4" />
+                        Preview
+                      </TabsTrigger>
+                    </span>
+                  </TooltipTrigger>
+                  {isNew && (
+                    <TooltipContent side="bottom">
+                      <p>Salve o curso primeiro para ver o preview</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TabsList>
 
-            {/* Tab: Basic Info */}
-            <TabsContent value="basic" className="mt-0">
-              <div className="card-elegant p-6">
-                <CourseBasicInfoTab
-                  course={course}
-                  onChange={setCourse}
-                  onProgramSelected={handleProgramSelected}
-                />
-              </div>
-            </TabsContent>
-
-            {/* Tab: Modules & Lessons */}
-            <TabsContent value="modules" className="mt-0">
-              <div className="card-elegant p-6">
-                {courseId && courseId !== "new" && (
-                  <ModuleManager
-                    courseId={courseId}
-                    modules={modules}
-                    onRefresh={fetchCourse}
+              {/* Tab: Basic Info */}
+              <TabsContent value="basic" className="mt-0">
+                <div className="card-elegant p-6">
+                  <CourseBasicInfoTab
+                    course={course}
+                    onChange={setCourse}
+                    onProgramSelected={handleProgramSelected}
                   />
-                )}
-              </div>
-            </TabsContent>
+                </div>
+              </TabsContent>
 
-            {/* Tab: Materials */}
-            <TabsContent value="materials" className="mt-0">
-              <div className="card-elegant p-6">
-                <CourseMaterialsTab modules={modules} />
-              </div>
-            </TabsContent>
+              {/* Tab: Modules & Lessons */}
+              <TabsContent value="modules" className="mt-0">
+                <div className="card-elegant p-6">
+                  {courseId && courseId !== "new" && (
+                    <ModuleManager
+                      courseId={courseId}
+                      modules={modules}
+                      onRefresh={fetchCourse}
+                    />
+                  )}
+                </div>
+              </TabsContent>
 
-            {/* Tab: Preview */}
-            <TabsContent value="preview" className="mt-0">
-              <CoursePreviewTab
-                course={{
-                  title: course.title || "",
-                  description: course.description || null,
-                  thumbnail_url: course.thumbnail_url || null,
-                  price: course.price || null,
-                  is_published: course.is_published || false,
-                  is_subscription: course.is_subscription || false,
-                }}
-                modules={modules}
-              />
-            </TabsContent>
-          </Tabs>
+              {/* Tab: Materials */}
+              <TabsContent value="materials" className="mt-0">
+                <div className="card-elegant p-6">
+                  <CourseMaterialsTab modules={modules} />
+                </div>
+              </TabsContent>
 
-          {/* Hint for new courses */}
+              {/* Tab: Preview */}
+              <TabsContent value="preview" className="mt-0">
+                <CoursePreviewTab
+                  course={{
+                    title: course.title || "",
+                    description: course.description || null,
+                    thumbnail_url: course.thumbnail_url || null,
+                    price: course.price || null,
+                    is_published: course.is_published || false,
+                    is_subscription: course.is_subscription || false,
+                  }}
+                  modules={modules}
+                />
+              </TabsContent>
+            </Tabs>
+          </TooltipProvider>
+
+          {/* Hint for new courses - More prominent */}
           {isNew && (
-            <div className="mt-6 p-4 rounded-lg bg-secondary/10 border border-secondary/20">
-              <p className="text-sm text-secondary">
-                💡 Salve o curso primeiro para poder adicionar módulos, aulas e materiais.
-                {pendingModules.length > 0 && (
-                  <span className="block mt-1">
-                    <strong>{pendingModules.length} módulos</strong> serão criados automaticamente ao salvar.
-                  </span>
-                )}
-              </p>
+            <div className="mt-6 p-4 rounded-lg bg-primary/10 border-2 border-primary/30 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Salve o curso primeiro para desbloquear todas as abas
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Após salvar, você poderá adicionar módulos, aulas e materiais.
+                  {pendingModules.length > 0 && (
+                    <span className="block mt-1 text-secondary font-medium">
+                      {pendingModules.length} módulos serão criados automaticamente ao salvar.
+                    </span>
+                  )}
+                </p>
+              </div>
             </div>
           )}
         </motion.div>
