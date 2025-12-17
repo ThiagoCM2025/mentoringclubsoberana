@@ -5,3 +5,9 @@ verify_jwt = true
 
 [functions.send-study-reminder]
 verify_jwt = false
+
+[functions.send-bulk-email]
+verify_jwt = true
+
+[functions.get-user-emails]
+verify_jwt = true
