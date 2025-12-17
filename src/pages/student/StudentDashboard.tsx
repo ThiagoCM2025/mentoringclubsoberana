@@ -283,7 +283,32 @@ const StudentDashboard = () => {
           </nav>
 
           {/* Desktop Icons - Direita */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-2">
+            {/* Mini XP Badge */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/10 border border-secondary/30 cursor-pointer hover:bg-secondary/20 transition-colors"
+              onClick={() => navigate("/student/achievements")}
+            >
+              <Star className="w-3.5 h-3.5 text-secondary" />
+              <span className="text-xs font-medium text-cream">{gamificationStats?.xp || 0}</span>
+            </motion.div>
+            
+            {/* Mini Streak Badge */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 cursor-pointer hover:bg-orange-500/20 transition-colors"
+              onClick={() => navigate("/student/achievements")}
+            >
+              <Flame className="w-3.5 h-3.5 text-orange-400" />
+              <span className="text-xs font-medium text-cream">{gamificationStats?.streak_days || 0}</span>
+            </motion.div>
+
+            <div className="w-px h-5 bg-secondary/20 mx-1" />
+            
             <Button
               variant="ghost"
               size="icon"
