@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_notification_preferences: {
+        Row: {
+          created_at: string | null
+          email_notifications: boolean | null
+          id: string
+          notify_community_posts: boolean | null
+          notify_course_completions: boolean | null
+          notify_new_enrollments: boolean | null
+          notify_new_leads: boolean | null
+          notify_new_students: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_notifications?: boolean | null
+          id?: string
+          notify_community_posts?: boolean | null
+          notify_course_completions?: boolean | null
+          notify_new_enrollments?: boolean | null
+          notify_new_leads?: boolean | null
+          notify_new_students?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email_notifications?: boolean | null
+          id?: string
+          notify_community_posts?: boolean | null
+          notify_course_completions?: boolean | null
+          notify_new_enrollments?: boolean | null
+          notify_new_leads?: boolean | null
+          notify_new_students?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      admin_notifications: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          message: string
+          metadata: Json | null
+          read: boolean | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          message: string
+          metadata?: Json | null
+          read?: boolean | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          message?: string
+          metadata?: Json | null
+          read?: boolean | null
+          title?: string
+        }
+        Relationships: []
+      }
       admin_permissions: {
         Row: {
           can_manage_admins: boolean | null
@@ -1103,6 +1172,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_admin_notification: {
+        Args: {
+          p_event_type: string
+          p_message: string
+          p_metadata?: Json
+          p_title: string
+        }
+        Returns: undefined
+      }
       generate_certificate: {
         Args: {
           p_course_id: string
