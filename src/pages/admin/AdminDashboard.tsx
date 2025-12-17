@@ -614,10 +614,10 @@ const AdminDashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Card className="border-0 shadow-md">
+            <Card className="admin-card border-0 shadow-md">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-primary" />
+                <CardTitle className="text-base font-semibold flex items-center gap-2 text-cream">
+                  <BarChart3 className="w-4 h-4 text-secondary" />
                   Evolução de Matrículas
                 </CardTitle>
                 <PeriodSelector value={enrollmentPeriod} onChange={setEnrollmentPeriod} />
@@ -629,20 +629,20 @@ const AdminDashboard = () => {
                       <AreaChart data={enrollmentTrends}>
                         <defs>
                           <linearGradient id="colorEnrollments" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                            <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0}/>
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--secondary) / 0.2)" vertical={false} />
                         <XAxis 
                           dataKey="period" 
-                          stroke="hsl(var(--muted-foreground))"
+                          stroke="hsl(var(--cream) / 0.6)"
                           fontSize={11}
                           tickLine={false}
                           axisLine={false}
                         />
                         <YAxis 
-                          stroke="hsl(var(--muted-foreground))"
+                          stroke="hsl(var(--cream) / 0.6)"
                           fontSize={11}
                           tickLine={false}
                           axisLine={false}
@@ -650,15 +650,15 @@ const AdminDashboard = () => {
                         <Tooltip 
                           contentStyle={{
                             backgroundColor: 'hsl(var(--card))',
-                            border: '1px solid hsl(var(--border))',
+                            border: '1px solid hsl(var(--secondary) / 0.3)',
                             borderRadius: '12px',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
                           }}
                         />
                         <Area 
                           type="monotone" 
                           dataKey="enrollments" 
-                          stroke="hsl(var(--primary))" 
+                          stroke="hsl(var(--secondary))" 
                           strokeWidth={2}
                           fill="url(#colorEnrollments)"
                           name="Matrículas"
@@ -666,7 +666,7 @@ const AdminDashboard = () => {
                       </AreaChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                    <div className="h-full flex items-center justify-center text-cream/60">
                       Sem dados de matrículas
                     </div>
                   )}
@@ -681,10 +681,10 @@ const AdminDashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <Card className="border-0 shadow-md">
+            <Card className="admin-card border-0 shadow-md">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
-                  <Target className="w-4 h-4 text-pink-500" />
+                <CardTitle className="text-base font-semibold flex items-center gap-2 text-cream">
+                  <Target className="w-4 h-4 text-pink-400" />
                   Leads por Status
                 </CardTitle>
                 <PeriodSelector value={leadsPeriod} onChange={setLeadsPeriod} />
@@ -710,19 +710,19 @@ const AdminDashboard = () => {
                         <Tooltip 
                           contentStyle={{
                             backgroundColor: 'hsl(var(--card))',
-                            border: '1px solid hsl(var(--border))',
+                            border: '1px solid hsl(var(--secondary) / 0.3)',
                             borderRadius: '12px'
                           }}
                         />
                         <Legend 
                           verticalAlign="bottom"
                           height={36}
-                          formatter={(value) => <span className="text-xs text-foreground">{value}</span>}
+                          formatter={(value) => <span className="text-xs text-cream">{value}</span>}
                         />
                       </PieChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                    <div className="h-full flex items-center justify-center text-cream/60">
                       Sem leads no período
                     </div>
                   )}
@@ -739,10 +739,10 @@ const AdminDashboard = () => {
           transition={{ delay: 0.45 }}
           className="mb-8"
         >
-          <Card className="border-0 shadow-md">
+          <Card className="admin-card border-0 shadow-md">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-emerald-500" />
+              <CardTitle className="text-base font-semibold flex items-center gap-2 text-cream">
+                <GraduationCap className="w-4 h-4 text-emerald-400" />
                 Top 5 Alunos Mais Ativos
               </CardTitle>
               <PeriodSelector value={progressPeriod} onChange={setProgressPeriod} />
@@ -752,12 +752,12 @@ const AdminDashboard = () => {
                 {studentProgress.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={studentProgress} layout="vertical" barGap={8}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--secondary) / 0.2)" horizontal={false} />
+                      <XAxis type="number" stroke="hsl(var(--cream) / 0.6)" fontSize={11} tickLine={false} axisLine={false} />
                       <YAxis 
                         dataKey="name" 
                         type="category" 
-                        stroke="hsl(var(--muted-foreground))" 
+                        stroke="hsl(var(--cream) / 0.6)" 
                         fontSize={11}
                         width={80}
                         tickLine={false}
@@ -766,14 +766,14 @@ const AdminDashboard = () => {
                       <Tooltip 
                         contentStyle={{
                           backgroundColor: 'hsl(var(--card))',
-                          border: '1px solid hsl(var(--border))',
+                          border: '1px solid hsl(var(--secondary) / 0.3)',
                           borderRadius: '12px'
                         }}
                       />
                       <Legend 
                         verticalAlign="top"
                         height={36}
-                        formatter={(value) => <span className="text-xs">{value}</span>}
+                        formatter={(value) => <span className="text-xs text-cream">{value}</span>}
                       />
                       <Bar 
                         dataKey="completed" 
@@ -790,7 +790,7 @@ const AdminDashboard = () => {
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-full flex items-center justify-center text-muted-foreground">
+                  <div className="h-full flex items-center justify-center text-cream/60">
                     Sem dados de progresso no período
                   </div>
                 )}
@@ -808,10 +808,10 @@ const AdminDashboard = () => {
             transition={{ delay: 0.5 }}
             className="lg:col-span-2"
           >
-            <Card className="border-0 shadow-md">
+            <Card className="admin-card border-0 shadow-md">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-violet-500" />
+                <CardTitle className="text-base font-semibold flex items-center gap-2 text-cream">
+                  <Activity className="w-4 h-4 text-violet-400" />
                   Atividades Recentes
                 </CardTitle>
               </CardHeader>
@@ -821,20 +821,20 @@ const AdminDashboard = () => {
                     {recentActivities.map((activity) => (
                       <div 
                         key={activity.id}
-                        className="flex items-center gap-4 p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
+                        className="flex items-center gap-4 p-3 rounded-xl bg-zinc-800/50 hover:bg-zinc-800 transition-colors"
                       >
                         <div className={`w-9 h-9 rounded-full flex items-center justify-center ${getActivityColor(activity.type)}`}>
                           {getActivityIcon(activity.type)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">
+                          <p className="text-sm font-medium text-cream truncate">
                             {activity.userName}
                           </p>
-                          <p className="text-xs text-muted-foreground truncate">
+                          <p className="text-xs text-cream/60 truncate">
                             {activity.description}
                           </p>
                         </div>
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        <span className="text-xs text-cream/50 whitespace-nowrap">
                           {new Date(activity.date).toLocaleDateString("pt-BR", { 
                             day: '2-digit',
                             month: 'short'
@@ -844,7 +844,7 @@ const AdminDashboard = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="py-8 text-center text-muted-foreground">
+                  <div className="py-8 text-center text-cream/60">
                     Nenhuma atividade recente
                   </div>
                 )}
@@ -858,70 +858,70 @@ const AdminDashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <Card className="border-0 shadow-md">
+            <Card className="admin-card border-0 shadow-md">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold">
+                <CardTitle className="text-base font-semibold text-cream">
                   Ações Rápidas
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 <Link 
                   to="/admin/courses/new" 
-                  className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100/50 hover:from-blue-100 hover:to-blue-100 transition-all group"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 transition-all group border border-blue-500/20"
                 >
                   <div className="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center">
                     <BookOpen className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground group-hover:text-blue-600 transition-colors">
+                    <p className="text-sm font-medium text-cream group-hover:text-blue-400 transition-colors">
                       Novo Curso
                     </p>
-                    <p className="text-xs text-muted-foreground">Criar novo curso</p>
+                    <p className="text-xs text-cream/60">Criar novo curso</p>
                   </div>
                 </Link>
                 
                 <Link 
                   to="/admin/students" 
-                  className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-emerald-100/50 hover:from-emerald-100 hover:to-emerald-100 transition-all group"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 transition-all group border border-emerald-500/20"
                 >
                   <div className="w-9 h-9 rounded-lg bg-emerald-500 flex items-center justify-center">
                     <Users className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground group-hover:text-emerald-600 transition-colors">
+                    <p className="text-sm font-medium text-cream group-hover:text-emerald-400 transition-colors">
                       Alunos
                     </p>
-                    <p className="text-xs text-muted-foreground">Gerenciar alunos</p>
+                    <p className="text-xs text-cream/60">Gerenciar alunos</p>
                   </div>
                 </Link>
                 
                 <Link 
                   to="/admin/leads" 
-                  className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-pink-50 to-pink-100/50 hover:from-pink-100 hover:to-pink-100 transition-all group"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-pink-500/10 hover:bg-pink-500/20 transition-all group border border-pink-500/20"
                 >
                   <div className="w-9 h-9 rounded-lg bg-pink-500 flex items-center justify-center">
                     <Target className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground group-hover:text-pink-600 transition-colors">
+                    <p className="text-sm font-medium text-cream group-hover:text-pink-400 transition-colors">
                       Leads
                     </p>
-                    <p className="text-xs text-muted-foreground">Gerenciar leads</p>
+                    <p className="text-xs text-cream/60">Gerenciar leads</p>
                   </div>
                 </Link>
                 
                 <Link 
                   to="/admin/reports" 
-                  className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-violet-50 to-violet-100/50 hover:from-violet-100 hover:to-violet-100 transition-all group"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-violet-500/10 hover:bg-violet-500/20 transition-all group border border-violet-500/20"
                 >
                   <div className="w-9 h-9 rounded-lg bg-violet-500 flex items-center justify-center">
                     <BarChart3 className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground group-hover:text-violet-600 transition-colors">
+                    <p className="text-sm font-medium text-cream group-hover:text-violet-400 transition-colors">
                       Relatórios
                     </p>
-                    <p className="text-xs text-muted-foreground">Ver métricas</p>
+                    <p className="text-xs text-cream/60">Ver métricas</p>
                   </div>
                 </Link>
               </CardContent>

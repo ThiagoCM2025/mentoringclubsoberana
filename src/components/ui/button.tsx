@@ -15,6 +15,10 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // Premium variant for admin area - high contrast on dark backgrounds
+        premium: "bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary transition-all",
+        // Gold variant - prominent CTA buttons
+        gold: "bg-secondary hover:bg-secondary/90 text-black font-semibold shadow-lg hover:shadow-secondary/25",
       },
       size: {
         default: "h-10 px-4 py-2",
