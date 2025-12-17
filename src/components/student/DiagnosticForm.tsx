@@ -153,7 +153,28 @@ export function DiagnosticForm({ onComplete, onClose, initialStep = 1 }: Diagnos
     }));
   };
 
-  const progressPercent = (currentStep / TOTAL_STEPS) * 100;
+  // Calcular progresso baseado em campos preenchidos, não em steps
+  const calculateProgressPercent = (): number => {
+    let filled = 0;
+    const totalFields = 12;
+
+    if (data.years_practicing) filled++;
+    if (data.practice_area) filled++;
+    if (data.has_office !== null) filled++;
+    if (data.office_size) filled++;
+    if (data.monthly_revenue) filled++;
+    if (data.revenue_goal) filled++;
+    if (data.main_challenges.length > 0) filled++;
+    if (data.main_goals.length > 0) filled++;
+    if (data.marketing_knowledge) filled++;
+    if (data.digital_presence) filled++;
+    if (data.referral_source) filled++;
+    if (data.weekly_study_hours) filled++;
+
+    return Math.round((filled / totalFields) * 100);
+  };
+
+  const progressPercent = calculateProgressPercent();
 
   const renderStep = () => {
     switch (currentStep) {
@@ -506,7 +527,12 @@ export function DiagnosticForm({ onComplete, onClose, initialStep = 1 }: Diagnos
         <CardHeader className="space-y-4">
           <div className="flex items-center justify-between">
             <CardTitle>Diagnóstico Inicial</CardTitle>
-            <Button variant="ghost" size="sm" onClick={onClose}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onClose}
+              className="text-muted-foreground hover:text-foreground border-muted-foreground/30"
+            >
               Preencher depois
             </Button>
           </div>

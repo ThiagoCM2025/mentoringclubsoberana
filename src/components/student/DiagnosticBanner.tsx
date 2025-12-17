@@ -6,11 +6,48 @@ import { Progress } from "@/components/ui/progress";
 import { AlertCircle, X } from "lucide-react";
 import { DiagnosticForm } from "./DiagnosticForm";
 
+// Total de campos do diagnóstico
+const TOTAL_DIAGNOSTIC_FIELDS = 12;
+
+// Função para calcular progresso baseado em campos preenchidos
+function calculateProgress(data: {
+  years_practicing?: string | null;
+  practice_area?: string | null;
+  has_office?: boolean | null;
+  office_size?: string | null;
+  monthly_revenue?: string | null;
+  revenue_goal?: string | null;
+  main_challenges?: string[] | null;
+  main_goals?: string[] | null;
+  marketing_knowledge?: string | null;
+  digital_presence?: string | null;
+  referral_source?: string | null;
+  weekly_study_hours?: string | null;
+}): number {
+  let filled = 0;
+
+  if (data.years_practicing) filled++;
+  if (data.practice_area) filled++;
+  if (data.has_office !== null && data.has_office !== undefined) filled++;
+  if (data.office_size) filled++;
+  if (data.monthly_revenue) filled++;
+  if (data.revenue_goal) filled++;
+  if (data.main_challenges && data.main_challenges.length > 0) filled++;
+  if (data.main_goals && data.main_goals.length > 0) filled++;
+  if (data.marketing_knowledge) filled++;
+  if (data.digital_presence) filled++;
+  if (data.referral_source) filled++;
+  if (data.weekly_study_hours) filled++;
+
+  return Math.round((filled / TOTAL_DIAGNOSTIC_FIELDS) * 100);
+}
+
 export function DiagnosticBanner() {
   const { user } = useAuth();
   const [showBanner, setShowBanner] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [progressPercent, setProgressPercent] = useState(0);
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
@@ -24,7 +61,7 @@ export function DiagnosticBanner() {
 
     const { data } = await supabase
       .from("student_diagnostics")
-      .select("completed, current_step")
+      .select("*")
       .eq("user_id", user.id)
       .maybeSingle();
 
@@ -32,10 +69,12 @@ export function DiagnosticBanner() {
       // No diagnostic started
       setShowBanner(true);
       setCurrentStep(1);
+      setProgressPercent(0);
     } else if (!data.completed) {
-      // Diagnostic started but not completed
+      // Diagnostic started but not completed - calculate real progress
       setShowBanner(true);
       setCurrentStep(data.current_step || 1);
+      setProgressPercent(calculateProgress(data));
     } else {
       setShowBanner(false);
     }
@@ -52,8 +91,6 @@ export function DiagnosticBanner() {
 
   if (!showBanner || dismissed) return null;
 
-  const progressPercent = ((currentStep - 1) / 5) * 100;
-
   return (
     <>
       <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-lg p-4 mb-6">
@@ -65,20 +102,20 @@ export function DiagnosticBanner() {
                 Complete seu perfil para uma experiência personalizada!
               </h4>
               <p className="text-sm text-muted-foreground mt-1">
-                {currentStep === 1 
+                {progressPercent === 0 
                   ? "Responda algumas perguntas rápidas para personalizarmos sua jornada."
-                  : `Você parou na etapa ${currentStep}. Leva apenas 2 minutos para finalizar.`
+                  : `Você já preencheu ${progressPercent}% do diagnóstico. Leva apenas 2 minutos para finalizar.`
                 }
               </p>
               
               <div className="mt-3 space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <Progress value={progressPercent} className="h-2 flex-1 max-w-xs" />
-                  <span className="text-muted-foreground">{Math.round(progressPercent)}% completo</span>
+                  <span className="text-muted-foreground">{progressPercent}% completo</span>
                 </div>
                 
                 <Button size="sm" onClick={() => setShowForm(true)}>
-                  {currentStep === 1 ? "Começar" : "Continuar"}
+                  {progressPercent === 0 ? "Começar" : "Continuar"}
                 </Button>
               </div>
             </div>

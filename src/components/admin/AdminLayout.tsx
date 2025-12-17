@@ -13,7 +13,8 @@ import {
   LogOut,
   ChevronLeft,
   Menu,
-  Target
+  Target,
+  Bell
 } from "lucide-react";
 import brandLogo from "@/assets/brand-logo.png";
 
@@ -27,6 +28,7 @@ const menuItems = [
   { icon: Users, label: "Alunos", href: "/admin/students" },
   { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments" },
   { icon: Target, label: "Leads", href: "/admin/leads" },
+  { icon: Bell, label: "Notificações", href: "/admin/notifications" },
   { icon: BarChart3, label: "Relatórios", href: "/admin/reports" },
   { icon: Settings, label: "Configurações", href: "/admin/settings" },
 ];
