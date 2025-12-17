@@ -10,6 +10,11 @@ import Auth from "./pages/Auth";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import CourseDetail from "./pages/student/CourseDetail";
 import LessonPlayer from "./pages/student/LessonPlayer";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminCourses from "./pages/admin/AdminCourses";
+import CourseEditor from "./pages/admin/CourseEditor";
+import AdminStudents from "./pages/admin/AdminStudents";
+import AdminEnrollments from "./pages/admin/AdminEnrollments";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +52,48 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <LessonPlayer />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin Routes */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/courses"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminCourses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/courses/:courseId"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <CourseEditor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/students"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminStudents />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/enrollments"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminEnrollments />
                 </ProtectedRoute>
               }
             />
