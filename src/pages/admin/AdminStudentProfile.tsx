@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import { SendNotificationDialog } from "@/components/admin/SendNotificationDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -426,7 +427,7 @@ export default function AdminStudentProfile() {
                   </span>
                 </div>
 
-                <div className="mt-3">
+                <div className="flex items-center gap-3 mt-3">
                   {diagnostic?.completed ? (
                     <Badge variant="default" className="bg-green-500/10 text-green-600 border-green-500/20">
                       <CheckCircle2 className="h-3 w-3 mr-1" />
@@ -438,6 +439,11 @@ export default function AdminStudentProfile() {
                       Diagnóstico Pendente
                     </Badge>
                   )}
+                  
+                  <SendNotificationDialog 
+                    studentId={profile.user_id} 
+                    studentName={profile.full_name || "Aluno"} 
+                  />
                 </div>
               </div>
             </div>
