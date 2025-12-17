@@ -29,8 +29,9 @@ import brandLogo from "@/assets/brand-logo.png";
 interface Course {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   thumbnail_url: string | null;
+  price: number | null;
 }
 
 interface EnrollmentWithCourse {
@@ -52,6 +53,7 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
   const { stats: gamificationStats, calculateLevel, getCurrentLevelProgress } = useGamification();
   const [enrollments, setEnrollments] = useState<EnrollmentWithCourse[]>([]);
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [courseStats, setCourseStats] = useState<Record<string, { total: number; completed: number }>>({});
   const [profile, setProfile] = useState<{ full_name: string | null }>({ full_name: null });
@@ -81,6 +83,16 @@ const StudentDashboard = () => {
     
     if (profileData) setProfile(profileData);
 
+    // Fetch all published courses
+    const { data: coursesData } = await supabase
+      .from("courses")
+      .select("id, title, description, thumbnail_url, price")
+      .eq("is_published", true);
+
+    if (coursesData) {
+      setAllCourses(coursesData);
+    }
+
     // Fetch enrollments with courses
     const { data: enrollmentData } = await supabase
       .from("enrollments")
@@ -90,7 +102,8 @@ const StudentDashboard = () => {
           id,
           title,
           description,
-          thumbnail_url
+          thumbnail_url,
+          price
         )
       `)
       .eq("user_id", user.id);
@@ -416,8 +429,8 @@ const StudentDashboard = () => {
         {/* Continue Watching */}
         <ContinueWatching items={continueWatching} />
 
-        {/* Courses */}
-        <section>
+        {/* My Courses */}
+        <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-serif font-bold text-foreground">
               Meus Cursos
@@ -438,21 +451,17 @@ const StudentDashboard = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-card rounded-2xl p-12 text-center border border-border/50"
+              className="bg-card rounded-2xl p-8 text-center border border-border/50"
             >
-              <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
-                <BookOpen className="w-10 h-10 text-muted-foreground" />
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                <BookOpen className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="text-xl font-serif font-semibold text-foreground mb-2">
+              <h3 className="text-lg font-serif font-semibold text-foreground mb-2">
                 Nenhum curso ainda
               </h3>
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                Você ainda não está matriculada em nenhum curso. 
-                Explore nossos programas e comece sua transformação!
+              <p className="text-muted-foreground text-sm max-w-md mx-auto">
+                Você ainda não está matriculada em nenhum curso. Explore os cursos disponíveis abaixo!
               </p>
-              <Button asChild className="bg-primary hover:bg-primary/90">
-                <a href="/#produtos">Conhecer Cursos</a>
-              </Button>
             </motion.div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -472,6 +481,44 @@ const StudentDashboard = () => {
             </div>
           )}
         </section>
+
+        {/* Available Courses (Locked) */}
+        {(() => {
+          const enrolledIds = new Set(enrollments.map(e => e.course_id));
+          const lockedCourses = allCourses.filter(c => !enrolledIds.has(c.id));
+          
+          if (lockedCourses.length === 0) return null;
+          
+          return (
+            <section>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-serif font-bold text-foreground">
+                    Cursos Disponíveis
+                  </h2>
+                  <p className="text-muted-foreground text-sm mt-1">
+                    Expanda seu conhecimento com nossos outros cursos
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {lockedCourses.map((course, index) => (
+                  <CourseCard
+                    key={course.id}
+                    id={course.id}
+                    title={course.title}
+                    description={course.description}
+                    thumbnail={course.thumbnail_url}
+                    isLocked={true}
+                    price={course.price}
+                    index={index}
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        })()}
       </main>
     </div>
   );
