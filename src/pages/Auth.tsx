@@ -17,10 +17,8 @@ const authSchema = z.object({
 });
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -29,7 +27,6 @@ const Auth = () => {
 
   useEffect(() => {
     if (!loading && user) {
-      // Redirect based on role
       navigate(isAdmin ? "/admin" : "/student");
     }
   }, [user, isAdmin, loading, navigate]);
@@ -50,29 +47,12 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast({ title: "Bem-vinda de volta!" });
-        // Redirect will happen automatically via useEffect when user/isAdmin updates
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth`,
-            data: { full_name: fullName },
-          },
-        });
-        if (error) throw error;
-        toast({ title: "Conta criada!", description: "Você já pode acessar a plataforma." });
-        // Redirect will happen automatically via useEffect when user updates
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast({ title: "Bem-vinda de volta!" });
     } catch (error: any) {
       const message = error.message === "Invalid login credentials" 
         ? "Email ou senha incorretos" 
-        : error.message === "User already registered"
-        ? "Este email já está cadastrado"
         : error.message;
       toast({ title: "Erro", description: message, variant: "destructive" });
     } finally {
@@ -115,22 +95,13 @@ const Auth = () => {
           </div>
 
           <h2 className="text-3xl font-serif font-bold text-foreground mb-2">
-            {isLogin ? "Entrar" : "Criar Conta"}
+            Entrar
           </h2>
           <p className="text-muted-foreground mb-8">
-            {isLogin ? "Acesse sua conta para continuar" : "Crie sua conta para começar"}
+            Acesse sua conta para continuar
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
-              <Input
-                placeholder="Seu nome completo"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="input-elegant"
-                required
-              />
-            )}
             <Input
               type="email"
               placeholder="Seu email"
@@ -162,18 +133,12 @@ const Auth = () => {
               disabled={isLoading}
               className="w-full bg-primary hover:bg-primary/90 py-6"
             >
-              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : isLogin ? "Entrar" : "Criar Conta"}
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Entrar"}
             </Button>
           </form>
 
-          <p className="text-center mt-6 text-muted-foreground">
-            {isLogin ? "Não tem uma conta?" : "Já tem uma conta?"}{" "}
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-secondary hover:underline font-medium"
-            >
-              {isLogin ? "Criar conta" : "Fazer login"}
-            </button>
+          <p className="text-center mt-6 text-muted-foreground text-sm">
+            Acesso exclusivo para alunas matriculadas
           </p>
         </motion.div>
       </div>
