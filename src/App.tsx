@@ -13,6 +13,8 @@ import CourseDetail from "./pages/student/CourseDetail";
 import LessonPlayer from "./pages/student/LessonPlayer";
 import StudentAchievements from "./pages/student/StudentAchievements";
 import StudentCertificates from "./pages/student/StudentCertificates";
+import StudentFavorites from "./pages/student/StudentFavorites";
+import StudentCommunity from "./pages/student/StudentCommunity";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCourses from "./pages/admin/AdminCourses";
 import CourseEditor from "./pages/admin/CourseEditor";
@@ -76,6 +78,22 @@ const App = () => (
               element={
                 <ProtectedRoute requireStudent>
                   <StudentCertificates />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/student/favorites"
+              element={
+                <ProtectedRoute requireStudent>
+                  <StudentFavorites />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/student/community"
+              element={
+                <ProtectedRoute requireStudent>
+                  <StudentCommunity />
                 </ProtectedRoute>
               }
             />

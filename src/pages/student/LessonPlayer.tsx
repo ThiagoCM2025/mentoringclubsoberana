@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LessonSidebar from "@/components/student/LessonSidebar";
+import FavoriteButton from "@/components/student/FavoriteButton";
 import {
   ArrowLeft,
   CheckCircle,
@@ -345,6 +346,12 @@ const LessonPlayer = () => {
           </div>
           
           <div className="flex items-center gap-2">
+            {lessonId && (
+              <FavoriteButton 
+                lessonId={lessonId} 
+                className="text-background/80 hover:text-red-400 hover:bg-background/10"
+              />
+            )}
             <Button
               variant="ghost"
               size="icon"

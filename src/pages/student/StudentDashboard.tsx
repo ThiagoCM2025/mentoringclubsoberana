@@ -17,7 +17,9 @@ import {
   LogOut,
   User,
   Medal,
-  ChevronRight
+  ChevronRight,
+  Heart,
+  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -27,6 +29,7 @@ import ContinueWatching from "@/components/student/ContinueWatching";
 import CoursePreviewModal from "@/components/student/CoursePreviewModal";
 import { DiagnosticBanner } from "@/components/student/DiagnosticBanner";
 import { NotificationBell } from "@/components/student/NotificationBell";
+import StudyReminderButton from "@/components/student/StudyReminderButton";
 import brandLogo from "@/assets/brand-logo.png";
 
 interface Course {
@@ -254,7 +257,25 @@ const StudentDashboard = () => {
           
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-6">
-            <nav className="flex items-center gap-2">
+            <nav className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/student/favorites")}
+                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <Heart className="w-4 h-4 mr-2" />
+                Favoritos
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/student/community")}
+                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <Users className="w-4 h-4 mr-2" />
+                Comunidade
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -273,25 +294,26 @@ const StudentDashboard = () => {
                 <Medal className="w-4 h-4 mr-2" />
                 Certificados
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
-              >
-                <User className="w-4 h-4 mr-2" />
-                Perfil
-              </Button>
+            </nav>
+            <div className="flex items-center gap-1">
+              <StudyReminderButton />
               <NotificationBell />
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
+                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <User className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={handleSignOut}
                 className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
               >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sair
+                <LogOut className="w-5 h-5" />
               </Button>
-            </nav>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -313,6 +335,22 @@ const StudentDashboard = () => {
             className="md:hidden absolute top-full left-0 right-0 bg-primary border-t border-primary-foreground/10 p-4"
           >
             <nav className="flex flex-col gap-2">
+              <Button
+                variant="ghost"
+                onClick={() => { navigate("/student/favorites"); setMobileMenuOpen(false); }}
+                className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <Heart className="w-4 h-4 mr-2" />
+                Favoritos
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => { navigate("/student/community"); setMobileMenuOpen(false); }}
+                className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <Users className="w-4 h-4 mr-2" />
+                Comunidade
+              </Button>
               <Button
                 variant="ghost"
                 onClick={() => { navigate("/student/achievements"); setMobileMenuOpen(false); }}
