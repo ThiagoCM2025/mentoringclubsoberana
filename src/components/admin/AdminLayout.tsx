@@ -58,12 +58,15 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 bg-black/95 backdrop-blur-sm border-b border-secondary/20 p-4 z-50 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <img src={isotipoGold} alt="Soberana" className="w-8 h-8" />
-          <div className="flex flex-col">
-            <span className="text-secondary/60 text-[7px] tracking-[0.2em] uppercase leading-tight">
-              Mentoring Club
+          <img src={isotipoGold} alt="Soberana" className="w-8 h-8 drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
+          <div className="flex flex-col leading-tight">
+            <span className="text-cream/70 text-[7px] tracking-[0.15em] uppercase">
+              Mentoring
             </span>
-            <span className="font-serif font-bold text-secondary text-sm tracking-wider">
+            <span className="text-cream/70 text-[7px] tracking-[0.15em] uppercase -mt-0.5">
+              Club
+            </span>
+            <span className="font-serif font-bold text-secondary text-xs tracking-wider mt-0.5">
               SOBERANA
             </span>
           </div>
@@ -134,11 +137,14 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
           <div className={cn("flex items-center gap-3", !isSidebarOpen && "justify-center w-full")}>
             <img src={isotipoGold} alt="Soberana" className="w-10 h-10 drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
             {isSidebarOpen && (
-              <div className="flex flex-col">
-                <span className="text-secondary/60 text-[8px] tracking-[0.2em] uppercase leading-tight">
-                  Mentoring Club
+              <div className="flex flex-col leading-tight">
+                <span className="text-cream/70 text-[9px] tracking-[0.15em] uppercase">
+                  Mentoring
                 </span>
-                <span className="font-serif font-bold text-secondary text-base tracking-wider">
+                <span className="text-cream/70 text-[9px] tracking-[0.15em] uppercase -mt-0.5">
+                  Club
+                </span>
+                <span className="font-serif font-bold text-secondary text-sm tracking-wider mt-0.5">
                   SOBERANA
                 </span>
               </div>

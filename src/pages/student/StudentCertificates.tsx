@@ -175,8 +175,18 @@ const StudentCertificates = () => {
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-3">
-              <img src={isotipoGold} alt="Soberana" className="w-8 h-8 object-contain" />
-              <span className="font-serif font-bold text-secondary">Certificados</span>
+              <img src={isotipoGold} alt="Soberana" className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
+              <div className="flex flex-col leading-tight">
+                <span className="text-cream/70 text-[9px] tracking-[0.15em] uppercase">
+                  Mentoring
+                </span>
+                <span className="text-cream/70 text-[9px] tracking-[0.15em] uppercase -mt-0.5">
+                  Club
+                </span>
+                <span className="font-serif font-bold text-secondary text-sm tracking-wider mt-0.5">
+                  SOBERANA
+                </span>
+              </div>
             </div>
           </div>
         </div>

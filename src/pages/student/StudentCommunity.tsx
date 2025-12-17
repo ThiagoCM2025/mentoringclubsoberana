@@ -33,7 +33,7 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import brandLogo from "@/assets/brand-logo.png";
+import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import CommunityPost from "@/components/student/CommunityPost";
 
 interface Post {
@@ -197,22 +197,32 @@ const StudentCommunity = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground py-4 px-4 sticky top-0 z-50">
+      <header className="bg-black border-b border-secondary/20 py-4 px-4 sticky top-0 z-50">
         <div className="container-soberana flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate("/student")}
-              className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-3">
-              <img src={brandLogo} alt="Soberana" className="w-10 h-10 object-contain" />
-              <span className="font-serif font-bold text-xl">Comunidade</span>
+              <img src={isotipoGold} alt="Soberana" className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
+              <div className="flex flex-col leading-tight">
+                <span className="text-cream/70 text-[9px] tracking-[0.15em] uppercase">
+                  Mentoring
+                </span>
+                <span className="text-cream/70 text-[9px] tracking-[0.15em] uppercase -mt-0.5">
+                  Club
+                </span>
+                <span className="font-serif font-bold text-secondary text-sm tracking-wider mt-0.5">
+                  SOBERANA
+                </span>
+              </div>
             </div>
           </div>
 
@@ -286,12 +296,12 @@ const StudentCommunity = () => {
       <main className="container-soberana py-8">
         {/* Header section */}
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Users className="w-6 h-6 text-primary" />
+          <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
+            <Users className="w-6 h-6 text-secondary" />
           </div>
           <div>
-            <h1 className="text-2xl font-serif font-bold text-foreground">Comunidade Soberana</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl font-serif font-bold text-cream">Comunidade Soberana</h1>
+            <p className="text-cream/60">
               Conecte-se com outras alunas, tire dúvidas e compartilhe experiências
             </p>
           </div>
@@ -299,15 +309,15 @@ const StudentCommunity = () => {
 
         {/* Category Filter */}
         <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-          <Filter className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <Filter className="w-4 h-4 text-cream/50 flex-shrink-0" />
           {CATEGORIES.map((cat) => (
             <button
               key={cat.value}
               onClick={() => setSelectedCategory(cat.value)}
               className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                 selectedCategory === cat.value
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  ? "bg-secondary text-black"
+                  : "bg-zinc-800 text-cream/70 hover:bg-zinc-700"
               }`}
             >
               {cat.label}
@@ -318,22 +328,22 @@ const StudentCommunity = () => {
         {/* Posts */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-2 border-secondary border-t-transparent rounded-full" />
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-16 px-4">
-            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-              <MessageCircle className="w-10 h-10 text-muted-foreground" />
+            <div className="w-20 h-20 rounded-full bg-zinc-900 flex items-center justify-center mx-auto mb-4">
+              <MessageCircle className="w-10 h-10 text-cream/40" />
             </div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">
+            <h3 className="text-xl font-semibold text-cream mb-2">
               Nenhuma publicação ainda
             </h3>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+            <p className="text-cream/50 mb-6 max-w-md mx-auto">
               Seja a primeira a compartilhar algo com a comunidade!
             </p>
             <Button 
               onClick={() => setCreateDialogOpen(true)}
-              className="bg-secondary hover:bg-secondary/90"
+              className="bg-secondary hover:bg-secondary/90 text-black"
             >
               <Plus className="w-4 h-4 mr-2" />
               Criar primeira publicação
