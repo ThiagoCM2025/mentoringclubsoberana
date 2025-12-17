@@ -12,7 +12,9 @@ import {
   MessageCircle, 
   Send,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Pin,
+  Star
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -38,6 +40,9 @@ interface Post {
   likes_count: number;
   comments_count: number;
   created_at: string;
+  is_pinned: boolean;
+  is_highlighted: boolean;
+  is_hidden: boolean;
   profiles?: {
     full_name: string | null;
     avatar_url: string | null;
@@ -166,8 +171,28 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ delay: index * 0.05 }}
-      className="bg-card rounded-xl border border-border p-5 shadow-sm"
+      className={cn(
+        "bg-card rounded-xl border border-border p-5 shadow-sm",
+        post.is_pinned && "border-secondary",
+        post.is_highlighted && "border-green-500 bg-green-500/5"
+      )}
     >
+      {/* Status Badges */}
+      {(post.is_pinned || post.is_highlighted) && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {post.is_pinned && (
+            <Badge className="bg-secondary text-secondary-foreground text-xs">
+              <Pin className="w-3 h-3 mr-1" /> Fixado
+            </Badge>
+          )}
+          {post.is_highlighted && (
+            <Badge className="bg-green-500 text-white text-xs">
+              <Star className="w-3 h-3 mr-1" /> História de Sucesso
+            </Badge>
+          )}
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-start gap-3 mb-4">
         <Avatar className="w-10 h-10">

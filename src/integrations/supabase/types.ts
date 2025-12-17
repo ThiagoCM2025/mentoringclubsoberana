@@ -201,7 +201,12 @@ export type Database = {
           content: string
           created_at: string | null
           id: string
+          is_hidden: boolean | null
+          is_highlighted: boolean | null
+          is_pinned: boolean | null
           likes_count: number | null
+          moderated_at: string | null
+          moderated_by: string | null
           title: string
           updated_at: string | null
           user_id: string
@@ -212,7 +217,12 @@ export type Database = {
           content: string
           created_at?: string | null
           id?: string
+          is_hidden?: boolean | null
+          is_highlighted?: boolean | null
+          is_pinned?: boolean | null
           likes_count?: number | null
+          moderated_at?: string | null
+          moderated_by?: string | null
           title: string
           updated_at?: string | null
           user_id: string
@@ -223,7 +233,12 @@ export type Database = {
           content?: string
           created_at?: string | null
           id?: string
+          is_hidden?: boolean | null
+          is_highlighted?: boolean | null
+          is_pinned?: boolean | null
           likes_count?: number | null
+          moderated_at?: string | null
+          moderated_by?: string | null
           title?: string
           updated_at?: string | null
           user_id?: string
@@ -638,6 +653,9 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          email_community: boolean | null
+          email_new_lessons: boolean | null
+          email_reminders: boolean | null
           full_name: string | null
           id: string
           phone: string | null
@@ -647,6 +665,9 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          email_community?: boolean | null
+          email_new_lessons?: boolean | null
+          email_reminders?: boolean | null
           full_name?: string | null
           id?: string
           phone?: string | null
@@ -656,6 +677,9 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          email_community?: boolean | null
+          email_new_lessons?: boolean | null
+          email_reminders?: boolean | null
           full_name?: string | null
           id?: string
           phone?: string | null
