@@ -301,4 +301,172 @@
   .text-elegant-shadow {
     text-shadow: 0 2px 10px hsla(0, 0%, 0%, 0.3);
   }
+
+  /* ============ GOLDEN FRAME EFFECTS ============ */
+  
+  /* Main golden frame container */
+  .golden-frame {
+    position: relative;
+    padding: 5px;
+    background: linear-gradient(
+      135deg, 
+      hsl(38, 50%, 55%) 0%, 
+      hsl(43, 100%, 80%) 20%, 
+      hsl(38, 40%, 48%) 40%,
+      hsl(43, 100%, 85%) 60%, 
+      hsl(38, 45%, 50%) 80%,
+      hsl(43, 100%, 80%) 100%
+    );
+    border-radius: 0.75rem;
+    box-shadow: 
+      0 0 30px hsla(43, 100%, 83%, 0.25),
+      0 10px 40px hsla(0, 0%, 0%, 0.15),
+      inset 0 1px 1px hsla(43, 100%, 90%, 0.5);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Inner border effect */
+  .golden-frame::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: transparent;
+    border-radius: 0.6rem;
+    border: 1px solid hsla(43, 100%, 85%, 0.6);
+    pointer-events: none;
+  }
+
+  /* Shimmer animation overlay */
+  .golden-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      hsla(43, 100%, 95%, 0.4) 50%,
+      transparent 70%
+    );
+    background-size: 250% 100%;
+    animation: golden-shimmer 4s infinite ease-in-out;
+    border-radius: 0.75rem;
+    pointer-events: none;
+  }
+
+  @keyframes golden-shimmer {
+    0%, 100% { background-position: 250% 0; }
+    50% { background-position: -250% 0; }
+  }
+
+  /* Image container inside frame */
+  .golden-frame-inner {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Hover effect with enhanced glow */
+  .golden-frame:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+      0 0 50px hsla(43, 100%, 83%, 0.4),
+      0 20px 60px hsla(0, 0%, 0%, 0.2),
+      inset 0 1px 1px hsla(43, 100%, 90%, 0.6);
+  }
+
+  /* Decorative corner accents */
+  .golden-corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: hsl(43, 100%, 85%);
+    border-style: solid;
+    z-index: 10;
+    filter: drop-shadow(0 0 4px hsla(43, 100%, 83%, 0.6));
+  }
+
+  .golden-corner-tl { 
+    top: -3px; 
+    left: -3px; 
+    border-width: 3px 0 0 3px;
+    border-top-left-radius: 4px;
+  }
+  
+  .golden-corner-tr { 
+    top: -3px; 
+    right: -3px; 
+    border-width: 3px 3px 0 0;
+    border-top-right-radius: 4px;
+  }
+  
+  .golden-corner-bl { 
+    bottom: -3px; 
+    left: -3px; 
+    border-width: 0 0 3px 3px;
+    border-bottom-left-radius: 4px;
+  }
+  
+  .golden-corner-br { 
+    bottom: -3px; 
+    right: -3px; 
+    border-width: 0 3px 3px 0;
+    border-bottom-right-radius: 4px;
+  }
+
+  /* Floating particles */
+  .golden-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, hsl(43, 100%, 83%), hsl(38, 50%, 60%));
+    box-shadow: 0 0 10px hsla(43, 100%, 83%, 0.6);
+    animation: particle-float 3s ease-in-out infinite;
+  }
+
+  .golden-particle-1 {
+    width: 8px;
+    height: 8px;
+    top: -4px;
+    right: 10%;
+    animation-delay: 0s;
+  }
+
+  .golden-particle-2 {
+    width: 6px;
+    height: 6px;
+    bottom: 10%;
+    left: -3px;
+    animation-delay: 0.5s;
+  }
+
+  .golden-particle-3 {
+    width: 5px;
+    height: 5px;
+    top: 30%;
+    right: -2px;
+    animation-delay: 1s;
+  }
+
+  @keyframes particle-float {
+    0%, 100% { 
+      transform: translateY(0) scale(1);
+      opacity: 0.8;
+    }
+    50% { 
+      transform: translateY(-6px) scale(1.1);
+      opacity: 1;
+    }
+  }
+
+  /* Vignette overlay for images */
+  .golden-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 50%,
+      hsla(38, 30%, 20%, 0.15) 100%
+    );
+    pointer-events: none;
+  }
 }
