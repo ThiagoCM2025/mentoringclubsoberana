@@ -100,7 +100,7 @@ export const CourseSplashScreen = ({
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="relative mb-8"
+              className="relative mb-6"
             >
               {/* Pulsing rings based on progress */}
               <motion.div
@@ -133,6 +133,21 @@ export const CourseSplashScreen = ({
                   ease: "easeInOut"
                 }}
               />
+            </motion.div>
+
+            {/* Brand text */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.4 }}
+              className="text-center mb-6"
+            >
+              <p className="text-secondary/70 text-[10px] tracking-[0.3em] uppercase mb-1">
+                Mentoring Club
+              </p>
+              <h1 className="text-secondary text-xl font-serif tracking-widest">
+                SOBERANA
+              </h1>
             </motion.div>
 
             {/* Course title */}

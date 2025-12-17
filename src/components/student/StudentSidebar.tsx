@@ -63,14 +63,19 @@ const StudentSidebar = ({ onSignOut, studentName, xp = 0, streak = 0 }: StudentS
           />
           <AnimatePresence>
             {!collapsed && (
-              <motion.span
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="font-serif font-bold text-secondary text-lg"
+                className="flex flex-col"
               >
-                Soberana
-              </motion.span>
+                <span className="text-secondary/60 text-[8px] tracking-[0.2em] uppercase leading-tight">
+                  Mentoring Club
+                </span>
+                <span className="font-serif font-bold text-secondary text-base tracking-wider">
+                  SOBERANA
+                </span>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
