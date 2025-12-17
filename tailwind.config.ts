@@ -128,6 +128,10 @@ export default {
           "0%": { backgroundPosition: "0 0" },
           "100%": { backgroundPosition: "300px 300px" },
         },
+        "pulse-subtle": {
+          "0%, 100%": { opacity: "1", transform: "scale(1)" },
+          "50%": { opacity: "0.85", transform: "scale(1.02)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -140,6 +144,7 @@ export default {
         float: "float 3s ease-in-out infinite",
         shimmer: "shimmer 2s linear infinite",
         "pattern-scroll": "pattern-scroll 60s linear infinite",
+        "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
       },
       backgroundImage: {
         "gradient-marsala": "var(--gradient-marsala)",
