@@ -2,27 +2,28 @@ import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { ProblemSection } from "@/components/landing/ProblemSection";
 import { MentorSection } from "@/components/landing/MentorSection";
-import { MethodologySection } from "@/components/landing/MethodologySection";
-import { ProductsSection } from "@/components/landing/ProductsSection";
+import { JornadaSoberanaSection } from "@/components/landing/JornadaSoberanaSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FAQSection } from "@/components/landing/FAQSection";
+import { DuvidaCTASection } from "@/components/landing/DuvidaCTASection";
 import { LeadCaptureSection } from "@/components/landing/LeadCaptureSection";
 import { Footer } from "@/components/landing/Footer";
+import { WhatsAppButton } from "@/components/landing/WhatsAppButton";
 import SEO, { createFAQSchema } from "@/components/SEO";
 
 const faqItems = [
-  { question: "O que é o Soberana Mentoring Club?", answer: "É um programa de mentoria exclusivo para advogadas que desejam construir uma carreira jurídica de sucesso." },
-  { question: "Para quem é indicado?", answer: "Para advogadas em qualquer estágio da carreira que buscam crescimento profissional e autonomia." },
-  { question: "Como funciona a mentoria?", answer: "Através de aulas gravadas, encontros ao vivo e acompanhamento personalizado." },
+  { question: "Qual programa é ideal para quem está começando?", answer: "Se você está começando, recomendo o Workshop Soberana IA ou o Experience Start." },
+  { question: "Preciso ter experiência em marketing digital?", answer: "Não! A metodologia foi criada pensando em advogadas que são excelentes tecnicamente mas não dominam gestão e marketing." },
+  { question: "Funciona para qualquer área do Direito?", answer: "Sim! A metodologia é sobre gestão de negócios jurídicos e funciona para advogadas de todas as áreas." },
 ];
 
 const Index = () => {
   return (
     <main className="min-h-screen">
       <SEO 
-        title="Soberana Mentoring Club - Transforme sua Carreira Jurídica"
-        description="Programa de mentoria exclusivo para advogadas que desejam construir uma carreira jurídica de sucesso, com autonomia e excelência. Mais de 500 advogadas transformadas."
-        keywords="mentoria jurídica, advogada, carreira jurídica, advocacia feminina, desenvolvimento profissional, curso para advogadas"
+        title="Soberana Mentoring Club - Mentoria para Advogadas Empresárias"
+        description="Conduzo advogadas a transformarem técnica jurídica em faturamento real através de posicionamento premium, gestão empresarial, tráfego pago e inteligência artificial. Conheça nossos programas."
+        keywords="mentoria jurídica, advogada empresária, carreira jurídica, advocacia feminina, gestão de escritório, tráfego pago para advogadas, IA jurídica"
         schema={createFAQSchema(faqItems)}
       />
       <Navbar />
@@ -31,20 +32,17 @@ const Index = () => {
         <ProblemSection />
         <MentorSection />
       </section>
-      <section id="metodologia">
-        <MethodologySection />
-      </section>
-      <section id="produtos">
-        <ProductsSection />
-      </section>
+      <JornadaSoberanaSection />
       <section id="depoimentos">
         <TestimonialsSection />
       </section>
       <section id="faq">
         <FAQSection />
       </section>
+      <DuvidaCTASection />
       <LeadCaptureSection />
       <Footer />
+      <WhatsAppButton />
     </main>
   );
 };

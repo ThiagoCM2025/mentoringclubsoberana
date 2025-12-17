@@ -10,36 +10,44 @@ import {
 
 const faqs = [
   {
-    question: "Para quem é a mentoria Soberana?",
-    answer: "A mentoria é para advogadas que desejam transformar sua advocacia técnica em um negócio estruturado e lucrativo. Se você quer sair da operação, aumentar seus honorários, ter mais tempo livre e construir um legado, este é o lugar certo.",
+    question: "Qual programa é ideal para quem está começando?",
+    answer:
+      "Se você está começando, recomendo o Workshop Soberana IA para ganhar produtividade com tecnologia, ou o Soberana Experience Start para uma imersão presencial em São Paulo. Ambos são ótimas portas de entrada para o ecossistema.",
   },
   {
-    question: "Quanto tempo dura o programa?",
-    answer: "A mentoria individual tem duração de 12 meses com encontros quinzenais. O curso completo pode ser feito no seu ritmo, com acesso vitalício ao conteúdo. O Small Group acontece em ciclos de 6 meses.",
+    question: "Preciso ter experiência em marketing digital?",
+    answer:
+      "Não! A metodologia foi criada pensando em advogadas que são excelentes tecnicamente mas não dominam gestão, marketing e vendas. Você aprenderá do zero, de forma prática e aplicada à advocacia.",
   },
   {
-    question: "Preciso ter muita experiência para participar?",
-    answer: "Não. A metodologia funciona tanto para advogadas em início de carreira quanto para profissionais experientes que querem estruturar melhor seus negócios. O importante é ter vontade de crescer.",
+    question: "Como funciona o Setup de Tráfego Pago na Mentoria 360°?",
+    answer:
+      "Na Mentoria 360° eu não apenas ensino sobre tráfego pago - eu configuro suas campanhas de anúncios junto com você. É um diferencial único onde implementamos juntas a estratégia de captação de clientes.",
   },
   {
-    question: "Qual o investimento?",
-    answer: "O investimento varia de acordo com o programa escolhido. Temos opções que cabem em diferentes orçamentos, desde materiais gratuitos até a mentoria individual premium. Entre em contato para conhecer os valores.",
+    question: "Posso participar da Elite sem ter feito a 360°?",
+    answer:
+      "O Soberana Elite é exclusivo para graduadas da Mentoria 360° ou escritórios já consolidados. Se você tem um escritório estruturado e busca escala, networking e mentoria de alto nível, pode se candidatar diretamente.",
   },
   {
-    question: "Existe garantia de resultados?",
-    answer: "Oferecemos garantia de 7 dias em todos os nossos programas. Se você aplicar a metodologia e não ficar satisfeita, devolvemos seu investimento integralmente.",
+    question: "As oficinas presenciais são apenas em São Paulo?",
+    answer:
+      "Atualmente o Soberana Experience Start acontece em São Paulo, mas planejamos expandir para outras capitais. Fique atenta às novidades nas nossas redes sociais!",
   },
   {
-    question: "Como funciona o suporte?",
-    answer: "Dependendo do programa, você terá acesso a suporte via comunidade exclusiva, WhatsApp direto com a mentora, ou ambos. Nenhuma dúvida fica sem resposta.",
-  },
-  {
-    question: "Posso parcelar o investimento?",
-    answer: "Sim! Oferecemos parcelamento em até 12x no cartão de crédito. Também temos condições especiais para pagamento à vista.",
+    question: "Qual o investimento dos programas?",
+    answer:
+      "O investimento varia de acordo com o programa. O Experience Start é R$ 299. Para os demais programas (Aceleração, 360° e Elite), entre em contato com nosso suporte para conhecer as condições.",
   },
   {
     question: "Funciona para qualquer área do Direito?",
-    answer: "Sim. A metodologia é sobre gestão de negócios jurídicos e não sobre técnica jurídica específica. Funciona para advogadas de todas as áreas: trabalhista, cível, tributário, família, previdenciário, etc.",
+    answer:
+      "Sim! A metodologia é sobre gestão de negócios jurídicos e não sobre técnica específica. Funciona para advogadas de todas as áreas: imobiliário, trabalhista, cível, tributário, família, previdenciário, etc.",
+  },
+  {
+    question: "Existe garantia de resultados?",
+    answer:
+      "Oferecemos garantia nos programas online. Mas mais importante: nosso ecossistema é desenhado para te acompanhar em cada fase da sua jornada, garantindo suporte contínuo para seus resultados.",
   },
 ];
 
@@ -48,7 +56,7 @@ export const FAQSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="section-padding bg-background">
+    <section ref={ref} id="faq" className="section-padding bg-background">
       <div className="container-soberana">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -58,11 +66,10 @@ export const FAQSection = () => {
         >
           <span className="badge-gold mb-4">FAQ</span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-6">
-            Perguntas{" "}
-            <span className="text-primary">Frequentes</span>
+            Perguntas <span className="text-primary">Frequentes</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Tire suas dúvidas sobre a metodologia e os programas Soberana.
+            Tire suas dúvidas sobre os programas do Ecossistema Soberana.
           </p>
         </motion.div>
 
@@ -99,7 +106,7 @@ export const FAQSection = () => {
           <p className="text-muted-foreground">
             Ainda tem dúvidas?{" "}
             <a
-              href="https://wa.me/5511999999999"
+              href="https://wa.me/5511999999999?text=Olá! Tenho uma dúvida sobre os programas Soberana"
               target="_blank"
               rel="noopener noreferrer"
               className="text-secondary hover:underline font-medium"
