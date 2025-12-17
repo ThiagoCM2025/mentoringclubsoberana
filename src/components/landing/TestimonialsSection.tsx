@@ -86,9 +86,14 @@ export const TestimonialsSection = () => {
           className="text-center mb-16"
         >
           {/* Isotipo S decoration */}
-          <div className="flex justify-center mb-4">
-            <img src={isotipoSWhite} alt="" className="w-10 h-10 opacity-80" />
-          </div>
+          <motion.div 
+            className="flex justify-center mb-4"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            <img src={isotipoSWhite} alt="" className="w-10 h-10 isotipo-glow-white" />
+          </motion.div>
           
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-secondary/20 text-secondary border border-secondary/30 mb-4">
             Depoimentos

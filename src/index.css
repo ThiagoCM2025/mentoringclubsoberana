@@ -662,6 +662,51 @@
     }
   }
   
+  @keyframes isotipoGlow {
+    0%, 100% {
+      filter: drop-shadow(0 0 0px transparent);
+      opacity: 0.8;
+    }
+    50% {
+      filter: drop-shadow(0 0 15px hsl(var(--gold) / 0.6));
+      opacity: 1;
+    }
+  }
+  
+  .isotipo-glow {
+    animation: isotipoGlow 2.5s ease-in-out infinite;
+  }
+  
+  .isotipo-glow-white {
+    animation: isotipoGlowWhite 2.5s ease-in-out infinite;
+  }
+  
+  @keyframes isotipoGlowWhite {
+    0%, 100% {
+      filter: drop-shadow(0 0 0px transparent);
+      opacity: 0.8;
+    }
+    50% {
+      filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+      opacity: 1;
+    }
+  }
+  
+  .isotipo-glow-marsala {
+    animation: isotipoGlowMarsala 2.5s ease-in-out infinite;
+  }
+  
+  @keyframes isotipoGlowMarsala {
+    0%, 100% {
+      filter: drop-shadow(0 0 0px transparent);
+      opacity: 0.8;
+    }
+    50% {
+      filter: drop-shadow(0 0 12px hsl(var(--primary) / 0.5));
+      opacity: 1;
+    }
+  }
+  
   /* Section transition gradients */
   .section-transition-top {
     position: relative;

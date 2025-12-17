@@ -121,9 +121,14 @@ export const LeadCaptureSection = () => {
             transition={{ duration: 0.6 }}
           >
             {/* Isotipo S decoration */}
-            <div className="flex mb-4">
-              <img src={isotipoSGold} alt="" className="w-10 h-10 opacity-80" />
-            </div>
+            <motion.div 
+              className="flex mb-4"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.5 }}
+            >
+              <img src={isotipoSGold} alt="" className="w-10 h-10 isotipo-glow" />
+            </motion.div>
             
             <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-secondary/30 bg-secondary/10 text-secondary">
               <Gift className="w-4 h-4" />
