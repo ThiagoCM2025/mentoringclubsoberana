@@ -33,22 +33,25 @@ const ProgramCard = ({ program, index, isReversed, isInView }: ProgramCardProps)
       {/* Image with Golden Frame */}
       <motion.div 
         className={`relative ${isReversed ? "md:col-start-2" : ""}`}
-        initial={{ opacity: 0, x: isReversed ? 50 : -50 }}
+        initial={{ opacity: 0, x: isReversed ? 30 : -30 }}
         animate={cardInView ? { opacity: 1, x: 0 } : {}}
-        transition={{ duration: 0.7, delay: 0.2 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
       >
         <div className="golden-frame group">
-          {/* Decorative corners */}
-          <div className="golden-corner golden-corner-tl" />
-          <div className="golden-corner golden-corner-tr" />
-          <div className="golden-corner golden-corner-bl" />
-          <div className="golden-corner golden-corner-br" />
+          {/* Decorative corners - hidden on mobile */}
+          <div className="golden-corner golden-corner-tl hidden sm:block" />
+          <div className="golden-corner golden-corner-tr hidden sm:block" />
+          <div className="golden-corner golden-corner-bl hidden sm:block" />
+          <div className="golden-corner golden-corner-br hidden sm:block" />
           
           <div className="golden-frame-inner aspect-[4/5] overflow-hidden">
             <img
               src={program.image || mentorFabiana}
               alt={program.title}
               className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+              loading="lazy"
+              width={400}
+              height={500}
             />
             {/* Elegant vignette overlay */}
             <div className="golden-vignette" />
@@ -56,21 +59,21 @@ const ProgramCard = ({ program, index, isReversed, isInView }: ProgramCardProps)
           </div>
         </div>
         
-        {/* Floating golden particles */}
-        <div className="golden-particle golden-particle-1" />
-        <div className="golden-particle golden-particle-2" />
-        <div className="golden-particle golden-particle-3" />
+        {/* Floating golden particles - hidden on mobile */}
+        <div className="golden-particle golden-particle-1 hidden md:block" />
+        <div className="golden-particle golden-particle-2 hidden md:block" />
+        <div className="golden-particle golden-particle-3 hidden md:block" />
 
-        {/* Glow behind frame */}
-        <div className="absolute inset-4 bg-secondary/20 blur-3xl -z-10 rounded-2xl" />
+        {/* Glow behind frame - reduced on mobile */}
+        <div className="absolute inset-4 bg-secondary/15 md:bg-secondary/20 blur-2xl md:blur-3xl -z-10 rounded-2xl" />
       </motion.div>
 
       {/* Content */}
       <motion.div 
         className={`${isReversed ? "md:col-start-1 md:text-right" : ""}`}
-        initial={{ opacity: 0, x: isReversed ? -50 : 50 }}
+        initial={{ opacity: 0, x: isReversed ? -30 : 30 }}
         animate={cardInView ? { opacity: 1, x: 0 } : {}}
-        transition={{ duration: 0.7, delay: 0.3 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
       >
         <span className="inline-flex items-center gap-2 text-secondary text-sm md:text-base tracking-[0.3em] uppercase mb-4 font-semibold drop-shadow-[0_0_8px_rgba(166,144,97,0.5)]">
           <Star className="w-4 h-4" />
@@ -162,18 +165,18 @@ export const JornadaSoberanaSection = () => {
         }}
       />
 
-      {/* Central glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-secondary/5 blur-3xl rounded-full" />
+      {/* Central glow - reduced on mobile */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] md:w-[1000px] h-[500px] md:h-[1000px] bg-secondary/3 md:bg-secondary/5 blur-2xl md:blur-3xl rounded-full" />
 
       {/* Isotipo Gold - decorative */}
       <div className="absolute top-1/4 left-8 opacity-[0.18] hidden lg:block animate-float-slow">
-        <img src={isotipoGold} alt="" className="w-32 h-32" />
+        <img src={isotipoGold} alt="" className="w-32 h-32" loading="lazy" width={128} height={128} />
       </div>
       <div className="absolute bottom-1/4 right-8 opacity-[0.18] hidden lg:block animate-float-slow animation-delay-1000">
-        <img src={isotipoGold} alt="" className="w-36 h-36" />
+        <img src={isotipoGold} alt="" className="w-36 h-36" loading="lazy" width={144} height={144} />
       </div>
       <div className="absolute top-1/2 left-1/4 opacity-[0.10] hidden xl:block animate-float-slow animation-delay-500">
-        <img src={isotipoGold} alt="" className="w-20 h-20" />
+        <img src={isotipoGold} alt="" className="w-20 h-20" loading="lazy" width={80} height={80} />
       </div>
 
       {/* Subtle decorative lines */}

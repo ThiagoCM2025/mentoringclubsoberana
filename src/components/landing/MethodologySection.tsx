@@ -82,16 +82,16 @@ export const MethodologySection = () => {
 
       {/* Isotipo White - decorative corners */}
       <div className="absolute top-16 left-12 opacity-[0.15] hidden lg:block animate-float-slow">
-        <img src={isotipoWhite} alt="" className="w-28 h-28" />
+        <img src={isotipoWhite} alt="" className="w-28 h-28" loading="lazy" width={112} height={112} />
       </div>
       <div className="absolute bottom-16 right-12 opacity-[0.15] hidden lg:block animate-float-slow animation-delay-1000">
-        <img src={isotipoWhite} alt="" className="w-24 h-24" />
+        <img src={isotipoWhite} alt="" className="w-24 h-24" loading="lazy" width={96} height={96} />
       </div>
 
-      {/* Golden glows */}
-      <div className="absolute top-1/4 left-0 w-96 h-96 rounded-full bg-secondary/15 blur-3xl" />
-      <div className="absolute bottom-1/4 right-0 w-96 h-96 rounded-full bg-secondary/15 blur-3xl" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-secondary/10 blur-3xl" />
+      {/* Golden glows - reduced on mobile */}
+      <div className="absolute top-1/4 left-0 w-64 md:w-96 h-64 md:h-96 rounded-full bg-secondary/10 md:bg-secondary/15 blur-2xl md:blur-3xl" />
+      <div className="absolute bottom-1/4 right-0 w-64 md:w-96 h-64 md:h-96 rounded-full bg-secondary/10 md:bg-secondary/15 blur-2xl md:blur-3xl" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[600px] h-[300px] md:h-[600px] rounded-full bg-secondary/5 md:bg-secondary/10 blur-2xl md:blur-3xl" />
 
       {/* Vignette for depth */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_rgba(0,0,0,0.2)_100%)]" />
@@ -134,28 +134,27 @@ export const MethodologySection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative flex justify-center items-center gap-4 md:gap-8 mb-12 py-8"
+          className="relative flex flex-wrap justify-center items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 mb-12 py-8"
         >
-          {/* Floating particles container */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {[...Array(20)].map((_, i) => (
+          {/* Floating particles container - reduced on mobile */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none hidden sm:block">
+            {[...Array(12)].map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-1.5 h-1.5 rounded-full bg-secondary/60"
+                className="absolute w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-secondary/60 will-change-transform"
                 style={{
-                  left: `${10 + Math.random() * 80}%`,
-                  top: `${10 + Math.random() * 80}%`,
+                  left: `${10 + (i * 7)}%`,
+                  top: `${20 + (i % 3) * 25}%`,
                 }}
                 animate={{
-                  y: [0, -30, 0],
-                  x: [0, Math.random() * 20 - 10, 0],
-                  opacity: [0.3, 0.8, 0.3],
-                  scale: [0.8, 1.2, 0.8],
+                  y: [0, -20, 0],
+                  opacity: [0.3, 0.7, 0.3],
+                  scale: [0.8, 1.1, 0.8],
                 }}
                 transition={{
-                  duration: 3 + Math.random() * 2,
+                  duration: 4 + (i % 3),
                   repeat: Infinity,
-                  delay: Math.random() * 2,
+                  delay: i * 0.3,
                   ease: "easeInOut",
                 }}
               />
@@ -166,19 +165,19 @@ export const MethodologySection = () => {
           {pillars.map((pillar, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30, scale: 0.5 }}
+              initial={{ opacity: 0, y: 20, scale: 0.8 }}
               animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.3 + index * 0.12, type: "spring", stiffness: 200 }}
+              transition={{ duration: 0.4, delay: 0.3 + index * 0.08, type: "spring", stiffness: 200 }}
               className="relative group"
             >
               <motion.span 
-                className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-b from-gold-light via-secondary to-secondary/80 drop-shadow-[0_0_15px_rgba(166,144,97,0.6)] cursor-default transition-all duration-300 group-hover:drop-shadow-[0_0_25px_rgba(166,144,97,0.9)]"
-                whileHover={{ scale: 1.1, y: -5 }}
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-b from-gold-light via-secondary to-secondary/80 drop-shadow-[0_0_12px_rgba(166,144,97,0.5)] cursor-default transition-all duration-300 group-hover:drop-shadow-[0_0_20px_rgba(166,144,97,0.8)]"
+                whileHover={{ scale: 1.08, y: -3 }}
               >
                 {pillar.letter}
               </motion.span>
-              {/* Individual letter glow */}
-              <div className="absolute inset-0 bg-secondary/20 blur-xl -z-10 group-hover:bg-secondary/40 transition-colors duration-300" />
+              {/* Individual letter glow - lighter on mobile */}
+              <div className="absolute inset-0 bg-secondary/15 blur-lg sm:blur-xl -z-10 group-hover:bg-secondary/30 transition-colors duration-300" />
             </motion.div>
           ))}
         </motion.div>
