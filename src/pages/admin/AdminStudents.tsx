@@ -234,10 +234,10 @@ const AdminStudents = () => {
           className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
         >
           <div>
-            <h1 className="text-3xl font-serif font-bold text-cream title-premium mb-2">
+            <h1 className="text-3xl font-serif font-bold text-foreground title-premium mb-2">
               Alunos
             </h1>
-            <p className="text-cream/80">
+            <p className="text-muted-foreground">
               Gerencie todos os alunos cadastrados na plataforma
             </p>
           </div>
@@ -392,12 +392,12 @@ const AdminStudents = () => {
 
         {/* Search */}
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cream/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Buscar alunos..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
+            className="pl-10 bg-card border-border text-foreground placeholder:text-muted-foreground"
           />
         </div>
 
@@ -417,15 +417,15 @@ const AdminStudents = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-cream/70">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredStudents.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
-                    <Users className="w-12 h-12 text-cream/40 mx-auto mb-3" />
-                    <p className="text-cream/70">Nenhum aluno encontrado</p>
+                    <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground">Nenhum aluno encontrado</p>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -439,15 +439,15 @@ const AdminStudents = () => {
                           </span>
                         </div>
                         <div>
-                          <p className="font-medium text-cream">{student.full_name || "Sem nome"}</p>
-                          <p className="text-xs text-cream/60">{student.user_id.slice(0, 8)}...</p>
+                          <p className="font-medium text-foreground">{student.full_name || "Sem nome"}</p>
+                          <p className="text-xs text-muted-foreground">{student.user_id.slice(0, 8)}...</p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-cream/80">{student.phone || "-"}</TableCell>
+                    <TableCell className="text-foreground">{student.phone || "-"}</TableCell>
                     <TableCell>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        student.enrollment_count ? 'bg-secondary/20 text-secondary' : 'bg-zinc-800 text-cream/60'
+                        student.enrollment_count ? 'bg-secondary/20 text-secondary' : 'bg-muted text-muted-foreground'
                       }`}>
                         {student.enrollment_count || 0}
                       </span>
@@ -465,7 +465,7 @@ const AdminStudents = () => {
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="text-cream/70">
+                    <TableCell className="text-muted-foreground">
                       {new Date(student.created_at).toLocaleDateString("pt-BR")}
                     </TableCell>
                     <TableCell className="text-right">
@@ -474,7 +474,7 @@ const AdminStudents = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => navigate(`/admin/students/${student.user_id}`)}
-                          className="gap-2 text-cream/80 hover:text-cream hover:bg-zinc-800"
+                          className="gap-2 text-muted-foreground hover:text-foreground hover:bg-muted"
                         >
                           <User className="w-4 h-4" />
                           Ver Perfil

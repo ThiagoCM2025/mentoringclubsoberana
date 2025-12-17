@@ -257,10 +257,10 @@ const AdminLeads = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-serif font-bold text-cream title-premium mb-2">
+          <h1 className="text-3xl font-serif font-bold text-foreground title-premium mb-2">
             Leads
           </h1>
-          <p className="text-cream/80">
+          <p className="text-muted-foreground">
             Gerencie os leads capturados pela landing page
           </p>
         </motion.div>
@@ -268,26 +268,26 @@ const AdminLeads = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="admin-stat-card p-5">
-            <p className="text-2xl font-bold text-cream">{leads.length}</p>
-            <p className="text-sm text-cream/75 font-medium">Total</p>
+            <p className="text-2xl font-bold text-foreground">{leads.length}</p>
+            <p className="text-sm text-muted-foreground font-medium">Total</p>
           </div>
           <div className="admin-stat-card p-5">
             <p className="text-2xl font-bold text-secondary">
               {leads.filter((l) => l.status === "new").length}
             </p>
-            <p className="text-sm text-cream/75 font-medium">Novos</p>
+            <p className="text-sm text-muted-foreground font-medium">Novos</p>
           </div>
           <div className="admin-stat-card p-5">
             <p className="text-2xl font-bold text-red-400">
               {leads.filter((l) => l.temperature === "hot").length}
             </p>
-            <p className="text-sm text-cream/75 font-medium">Quentes</p>
+            <p className="text-sm text-muted-foreground font-medium">Quentes</p>
           </div>
           <div className="admin-stat-card p-5">
             <p className="text-2xl font-bold text-emerald-400">
               {leads.filter((l) => l.status === "converted").length}
             </p>
-            <p className="text-sm text-cream/75 font-medium">Convertidos</p>
+            <p className="text-sm text-muted-foreground font-medium">Convertidos</p>
           </div>
         </div>
 
@@ -297,11 +297,11 @@ const AdminLeads = () => {
             <Plus className="w-4 h-4 mr-2" />
             Novo Lead
           </Button>
-          <Button onClick={() => fileInputRef.current?.click()} className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary">
+          <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="bg-card border-border text-foreground hover:bg-muted">
             <Upload className="w-4 h-4 mr-2" />
             Importar CSV
           </Button>
-          <Button onClick={handleExport} className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary">
+          <Button onClick={handleExport} variant="outline" className="bg-card border-border text-foreground hover:bg-muted">
             <Download className="w-4 h-4 mr-2" />
             Exportar CSV
           </Button>
@@ -317,16 +317,16 @@ const AdminLeads = () => {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cream/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Buscar por nome, email ou telefone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
+              className="pl-10 bg-card border-border text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-[160px] bg-zinc-900 border-secondary/30 text-cream">
+            <SelectTrigger className="w-[160px] bg-card border-border text-foreground">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -339,7 +339,7 @@ const AdminLeads = () => {
             </SelectContent>
           </Select>
           <Select value={filterTemp} onValueChange={setFilterTemp}>
-            <SelectTrigger className="w-[160px] bg-zinc-900 border-secondary/30 text-cream">
+            <SelectTrigger className="w-[160px] bg-card border-border text-foreground">
               <SelectValue placeholder="Temperatura" />
             </SelectTrigger>
             <SelectContent>

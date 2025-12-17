@@ -192,8 +192,8 @@ export default function AdminNotifications() {
           <div className="flex items-center gap-3">
             <Bell className="h-8 w-8 text-secondary" />
             <div>
-              <h1 className="text-2xl font-bold text-cream">Histórico de Notificações</h1>
-              <p className="text-cream/60">
+              <h1 className="text-2xl font-bold text-foreground">Histórico de Notificações</h1>
+              <p className="text-muted-foreground">
                 Visualize todas as notificações enviadas para os alunos
               </p>
             </div>
@@ -203,29 +203,29 @@ export default function AdminNotifications() {
         {/* Filters */}
         <Card className="admin-card">
           <CardHeader>
-            <CardTitle className="text-lg text-cream">Filtros</CardTitle>
+            <CardTitle className="text-lg text-foreground">Filtros</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               {/* Search */}
               <div className="space-y-2">
-                <Label className="text-cream">Buscar</Label>
+                <Label className="text-foreground">Buscar</Label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-cream/40" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Título, mensagem ou aluno..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
+                    className="pl-9 bg-card border-border text-foreground placeholder:text-muted-foreground"
                   />
                 </div>
               </div>
 
               {/* Type filter */}
               <div className="space-y-2">
-                <Label className="text-cream">Tipo</Label>
+                <Label className="text-foreground">Tipo</Label>
                 <Select value={selectedType} onValueChange={setSelectedType}>
-                  <SelectTrigger className="bg-zinc-900 border-secondary/30 text-cream">
+                  <SelectTrigger className="bg-card border-border text-foreground">
                     <SelectValue placeholder="Todos os tipos" />
                   </SelectTrigger>
                   <SelectContent>
@@ -240,30 +240,30 @@ export default function AdminNotifications() {
 
               {/* Date from */}
               <div className="space-y-2">
-                <Label className="text-cream">Data inicial</Label>
+                <Label className="text-foreground">Data inicial</Label>
                 <Input
                   type="date"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
-                  className="bg-zinc-900 border-secondary/30 text-cream"
+                  className="bg-card border-border text-foreground"
                 />
               </div>
 
               {/* Date to */}
               <div className="space-y-2">
-                <Label className="text-cream">Data final</Label>
+                <Label className="text-foreground">Data final</Label>
                 <Input
                   type="date"
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
-                  className="bg-zinc-900 border-secondary/30 text-cream"
+                  className="bg-card border-border text-foreground"
                 />
               </div>
 
               {/* Clear filters */}
               <div className="space-y-2">
                 <Label className="invisible">Ação</Label>
-                <Button onClick={clearFilters} className="w-full bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary">
+                <Button onClick={clearFilters} variant="outline" className="w-full bg-card border-border text-foreground hover:bg-muted">
                   Limpar filtros
                 </Button>
               </div>
@@ -274,14 +274,14 @@ export default function AdminNotifications() {
         {/* Results */}
         <Card className="admin-card">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center justify-between text-cream">
+            <CardTitle className="text-lg flex items-center justify-between text-foreground">
               <span>Notificações Enviadas</span>
               <Badge variant="secondary" className="bg-secondary/20 text-secondary">{filteredNotifications.length} resultados</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="text-center py-8 text-cream/60">
+              <div className="text-center py-8 text-muted-foreground">
                 Carregando notificações...
               </div>
             ) : filteredNotifications.length === 0 ? (
@@ -293,34 +293,34 @@ export default function AdminNotifications() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-secondary/20 hover:bg-zinc-800/50">
-                      <TableHead className="w-[180px] text-cream/80">Data</TableHead>
-                      <TableHead className="text-cream/80">Título</TableHead>
-                      <TableHead className="text-cream/80">Aluno</TableHead>
-                      <TableHead className="w-[100px] text-cream/80">Tipo</TableHead>
-                      <TableHead className="w-[100px] text-cream/80">Status</TableHead>
+                    <TableRow className="border-border hover:bg-muted/50">
+                      <TableHead className="w-[180px] text-muted-foreground">Data</TableHead>
+                      <TableHead className="text-muted-foreground">Título</TableHead>
+                      <TableHead className="text-muted-foreground">Aluno</TableHead>
+                      <TableHead className="w-[100px] text-muted-foreground">Tipo</TableHead>
+                      <TableHead className="w-[100px] text-muted-foreground">Status</TableHead>
                       <TableHead className="w-[80px]">Ação</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredNotifications.map((notification) => (
-                      <TableRow key={notification.id} className="border-secondary/10">
-                        <TableCell className="text-sm text-cream/70">
+                      <TableRow key={notification.id} className="border-border">
+                        <TableCell className="text-sm text-muted-foreground">
                           {formatDate(notification.created_at)}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             {getIcon(notification.type)}
-                            <span className="font-medium truncate max-w-[200px] text-cream">
+                            <span className="font-medium truncate max-w-[200px] text-foreground">
                               {notification.title}
                             </span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-cream/80">{notification.student_name}</TableCell>
+                        <TableCell className="text-foreground">{notification.student_name}</TableCell>
                         <TableCell>{getTypeBadge(notification.type)}</TableCell>
                         <TableCell>
                           {notification.read ? (
-                            <Badge variant="outline" className="bg-zinc-800 text-cream/60 border-secondary/30">Lida</Badge>
+                            <Badge variant="outline" className="bg-muted text-muted-foreground border-border">Lida</Badge>
                           ) : (
                             <Badge variant="default" className="bg-primary">Não lida</Badge>
                           )}
@@ -330,7 +330,7 @@ export default function AdminNotifications() {
                             variant="ghost"
                             size="icon"
                             onClick={() => setSelectedNotification(notification)}
-                            className="text-cream/70 hover:text-cream hover:bg-zinc-800"
+                            className="text-muted-foreground hover:text-foreground hover:bg-muted"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
