@@ -133,6 +133,65 @@ export type Database = {
           },
         ]
       }
+      communication_history: {
+        Row: {
+          channel: string
+          id: string
+          message: string
+          metadata: Json | null
+          recipient_email: string | null
+          recipient_id: string
+          recipient_name: string | null
+          recipient_phone: string | null
+          recipient_type: string
+          sent_at: string | null
+          sent_by: string | null
+          status: string | null
+          subject: string | null
+          template_id: string | null
+        }
+        Insert: {
+          channel: string
+          id?: string
+          message: string
+          metadata?: Json | null
+          recipient_email?: string | null
+          recipient_id: string
+          recipient_name?: string | null
+          recipient_phone?: string | null
+          recipient_type: string
+          sent_at?: string | null
+          sent_by?: string | null
+          status?: string | null
+          subject?: string | null
+          template_id?: string | null
+        }
+        Update: {
+          channel?: string
+          id?: string
+          message?: string
+          metadata?: Json | null
+          recipient_email?: string | null
+          recipient_id?: string
+          recipient_name?: string | null
+          recipient_phone?: string | null
+          recipient_type?: string
+          sent_at?: string | null
+          sent_by?: string | null
+          status?: string | null
+          subject?: string | null
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "communication_history_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_comments: {
         Row: {
           content: string
@@ -544,6 +603,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      message_templates: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          email_body: string | null
+          email_subject: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          target_audience: string
+          updated_at: string | null
+          whatsapp_message: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          email_body?: string | null
+          email_subject?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          target_audience?: string
+          updated_at?: string | null
+          whatsapp_message?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          email_body?: string | null
+          email_subject?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          target_audience?: string
+          updated_at?: string | null
+          whatsapp_message?: string | null
+        }
+        Relationships: []
       }
       modules: {
         Row: {

@@ -14,7 +14,8 @@ import {
   ChevronLeft,
   Menu,
   Target,
-  Bell
+  Bell,
+  Mail
 } from "lucide-react";
 import brandLogo from "@/assets/brand-logo.png";
 
@@ -28,6 +29,7 @@ const menuItems = [
   { icon: Users, label: "Alunos", href: "/admin/students" },
   { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments" },
   { icon: Target, label: "Leads", href: "/admin/leads" },
+  { icon: Mail, label: "Comunicação", href: "/admin/messaging" },
   { icon: Bell, label: "Notificações", href: "/admin/notifications" },
   { icon: Users, label: "Comunidade", href: "/admin/community" },
   { icon: BarChart3, label: "Relatórios", href: "/admin/reports" },
