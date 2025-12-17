@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { StatsCardSkeleton, ChartSkeleton, PieChartSkeleton, ActivityTimelineSkeleton } from "@/components/admin/skeletons/AdminSkeletons";
 import { 
   BookOpen, 
   Users, 
@@ -577,33 +578,70 @@ const AdminDashboard = () => {
 
         {/* Stats Grid - Modern Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-          {statCards.map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-            >
-              <div className="admin-stat-card p-5">
-                <div className={`absolute top-0 right-0 w-24 h-24 bg-secondary/5 rounded-bl-[100px] opacity-60`} />
-                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center mb-3 shadow-lg`}>
-                    <stat.icon className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex items-end gap-2">
-                    <p className="text-2xl font-bold text-foreground">
-                      {loading ? "-" : stat.value}
-                    </p>
-                    {stat.trend !== undefined && (
-                      <span className={`text-xs font-medium flex items-center ${stat.trendUp ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {stat.trendUp ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-                        {Math.abs(stat.trend)}%
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1 font-medium">{stat.label}</p>
-              </div>
-            </motion.div>
-          ))}
+          <AnimatePresence mode="wait">
+            {loading ? (
+              <motion.div
+                key="skeleton"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="col-span-full grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4"
+              >
+                <StatsCardSkeleton count={6} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="data"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="col-span-full grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4"
+              >
+                {statCards.map((stat, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ 
+                      delay: index * 0.08,
+                      duration: 0.4,
+                      ease: [0.25, 0.46, 0.45, 0.94]
+                    }}
+                  >
+                    <div className="admin-stat-card p-5">
+                      <div className={`absolute top-0 right-0 w-24 h-24 bg-secondary/5 rounded-bl-[100px] opacity-60`} />
+                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center mb-3 shadow-lg`}>
+                        <stat.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex items-end gap-2">
+                        <motion.p 
+                          className="text-2xl font-bold text-foreground"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: index * 0.08 + 0.2 }}
+                        >
+                          {stat.value}
+                        </motion.p>
+                        {stat.trend !== undefined && (
+                          <motion.span 
+                            className={`text-xs font-medium flex items-center ${stat.trendUp ? 'text-emerald-400' : 'text-red-400'}`}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.08 + 0.3 }}
+                          >
+                            {stat.trendUp ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                            {Math.abs(stat.trend)}%
+                          </motion.span>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1 font-medium">{stat.label}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Charts Row */}
@@ -624,52 +662,77 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="h-64">
-                  {enrollmentTrends.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={enrollmentTrends}>
-                        <defs>
-                          <linearGradient id="colorEnrollments" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--secondary) / 0.2)" vertical={false} />
-                        <XAxis 
-                          dataKey="period" 
-                          stroke="hsl(var(--muted-foreground))"
-                          fontSize={11}
-                          tickLine={false}
-                          axisLine={false}
-                        />
-                        <YAxis 
-                          stroke="hsl(var(--muted-foreground))"
-                          fontSize={11}
-                          tickLine={false}
-                          axisLine={false}
-                        />
-                        <Tooltip 
-                          contentStyle={{
-                            backgroundColor: 'hsl(var(--card))',
-                            border: '1px solid hsl(var(--secondary) / 0.3)',
-                            borderRadius: '12px',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-                          }}
-                        />
-                        <Area 
-                          type="monotone" 
-                          dataKey="enrollments" 
-                          stroke="hsl(var(--secondary))" 
-                          strokeWidth={2}
-                          fill="url(#colorEnrollments)"
-                          name="Matrículas"
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="h-full flex items-center justify-center text-muted-foreground">
-                      Sem dados de matrículas
-                    </div>
-                  )}
+                  <AnimatePresence mode="wait">
+                    {loading ? (
+                      <motion.div
+                        key="chart-skeleton"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="h-full"
+                      >
+                        <ChartSkeleton height={256} />
+                      </motion.div>
+                    ) : enrollmentTrends.length > 0 ? (
+                      <motion.div
+                        key="chart-data"
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
+                        className="h-full"
+                      >
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={enrollmentTrends}>
+                            <defs>
+                              <linearGradient id="colorEnrollments" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.3}/>
+                                <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0}/>
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--secondary) / 0.2)" vertical={false} />
+                            <XAxis 
+                              dataKey="period" 
+                              stroke="hsl(var(--muted-foreground))"
+                              fontSize={11}
+                              tickLine={false}
+                              axisLine={false}
+                            />
+                            <YAxis 
+                              stroke="hsl(var(--muted-foreground))"
+                              fontSize={11}
+                              tickLine={false}
+                              axisLine={false}
+                            />
+                            <Tooltip 
+                              contentStyle={{
+                                backgroundColor: 'hsl(var(--card))',
+                                border: '1px solid hsl(var(--secondary) / 0.3)',
+                                borderRadius: '12px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                              }}
+                            />
+                            <Area 
+                              type="monotone" 
+                              dataKey="enrollments" 
+                              stroke="hsl(var(--secondary))" 
+                              strokeWidth={2}
+                              fill="url(#colorEnrollments)"
+                              name="Matrículas"
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="no-data"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="h-full flex items-center justify-center text-muted-foreground"
+                      >
+                        Sem dados de matrículas
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </CardContent>
             </Card>
@@ -691,41 +754,66 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="h-64">
-                  {leadsByStatus.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={leadsByStatus}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={60}
-                          outerRadius={90}
-                          paddingAngle={4}
-                          dataKey="value"
-                        >
-                          {leadsByStatus.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip 
-                          contentStyle={{
-                            backgroundColor: 'hsl(var(--card))',
-                            border: '1px solid hsl(var(--secondary) / 0.3)',
-                            borderRadius: '12px'
-                          }}
-                        />
-                        <Legend 
-                          verticalAlign="bottom"
-                          height={36}
-                          formatter={(value) => <span className="text-xs text-foreground">{value}</span>}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="h-full flex items-center justify-center text-muted-foreground">
-                      Sem leads no período
-                    </div>
-                  )}
+                  <AnimatePresence mode="wait">
+                    {loading ? (
+                      <motion.div
+                        key="pie-skeleton"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="h-full flex items-center justify-center"
+                      >
+                        <PieChartSkeleton size={180} />
+                      </motion.div>
+                    ) : leadsByStatus.length > 0 ? (
+                      <motion.div
+                        key="pie-data"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
+                        className="h-full"
+                      >
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={leadsByStatus}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={60}
+                              outerRadius={90}
+                              paddingAngle={4}
+                              dataKey="value"
+                            >
+                              {leadsByStatus.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip 
+                              contentStyle={{
+                                backgroundColor: 'hsl(var(--card))',
+                                border: '1px solid hsl(var(--secondary) / 0.3)',
+                                borderRadius: '12px'
+                              }}
+                            />
+                            <Legend 
+                              verticalAlign="bottom"
+                              height={36}
+                              formatter={(value) => <span className="text-xs text-foreground">{value}</span>}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="no-leads"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="h-full flex items-center justify-center text-muted-foreground"
+                      >
+                        Sem leads no período
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </CardContent>
             </Card>
@@ -749,51 +837,76 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="h-64">
-                {studentProgress.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={studentProgress} layout="vertical" barGap={8}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--secondary) / 0.2)" horizontal={false} />
-                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} />
-                      <YAxis 
-                        dataKey="name" 
-                        type="category" 
-                        stroke="hsl(var(--muted-foreground))" 
-                        fontSize={11}
-                        width={80}
-                        tickLine={false}
-                        axisLine={false}
-                      />
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: 'hsl(var(--card))',
-                          border: '1px solid hsl(var(--secondary) / 0.3)',
-                          borderRadius: '12px'
-                        }}
-                      />
-                      <Legend 
-                        verticalAlign="top"
-                        height={36}
-                        formatter={(value) => <span className="text-xs text-foreground">{value}</span>}
-                      />
-                      <Bar 
-                        dataKey="completed" 
-                        fill="#10b981" 
-                        name="Concluídas"
-                        radius={[0, 6, 6, 0]}
-                      />
-                      <Bar 
-                        dataKey="inProgress" 
-                        fill="#f59e0b" 
-                        name="Em Progresso"
-                        radius={[0, 6, 6, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-full flex items-center justify-center text-muted-foreground">
-                    Sem dados de progresso no período
-                  </div>
-                )}
+                <AnimatePresence mode="wait">
+                  {loading ? (
+                    <motion.div
+                      key="progress-skeleton"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="h-full"
+                    >
+                      <ChartSkeleton height={256} />
+                    </motion.div>
+                  ) : studentProgress.length > 0 ? (
+                    <motion.div
+                      key="progress-data"
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      className="h-full"
+                    >
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={studentProgress} layout="vertical" barGap={8}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--secondary) / 0.2)" horizontal={false} />
+                          <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} />
+                          <YAxis 
+                            dataKey="name" 
+                            type="category" 
+                            stroke="hsl(var(--muted-foreground))" 
+                            fontSize={11}
+                            width={80}
+                            tickLine={false}
+                            axisLine={false}
+                          />
+                          <Tooltip 
+                            contentStyle={{
+                              backgroundColor: 'hsl(var(--card))',
+                              border: '1px solid hsl(var(--secondary) / 0.3)',
+                              borderRadius: '12px'
+                            }}
+                          />
+                          <Legend 
+                            verticalAlign="top"
+                            height={36}
+                            formatter={(value) => <span className="text-xs text-foreground">{value}</span>}
+                          />
+                          <Bar 
+                            dataKey="completed" 
+                            fill="#10b981" 
+                            name="Concluídas"
+                            radius={[0, 6, 6, 0]}
+                          />
+                          <Bar 
+                            dataKey="inProgress" 
+                            fill="#f59e0b" 
+                            name="Em Progresso"
+                            radius={[0, 6, 6, 0]}
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="no-progress"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="h-full flex items-center justify-center text-muted-foreground"
+                    >
+                      Sem dados de progresso no período
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </CardContent>
           </Card>
@@ -816,38 +929,62 @@ const AdminDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {recentActivities.length > 0 ? (
-                  <div className="space-y-3">
-                    {recentActivities.map((activity) => (
-                      <div 
-                        key={activity.id}
-                        className="flex items-center gap-4 p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
-                      >
-                        <div className={`w-9 h-9 rounded-full flex items-center justify-center ${getActivityColor(activity.type)}`}>
-                          {getActivityIcon(activity.type)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">
-                            {activity.userName}
-                          </p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {activity.description}
-                          </p>
-                        </div>
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">
-                          {new Date(activity.date).toLocaleDateString("pt-BR", { 
-                            day: '2-digit',
-                            month: 'short'
-                          })}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="py-8 text-center text-muted-foreground">
-                    Nenhuma atividade recente
-                  </div>
-                )}
+                <AnimatePresence mode="wait">
+                  {loading ? (
+                    <motion.div
+                      key="activity-skeleton"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <ActivityTimelineSkeleton count={5} />
+                    </motion.div>
+                  ) : recentActivities.length > 0 ? (
+                    <motion.div
+                      key="activity-data"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="space-y-3"
+                    >
+                      {recentActivities.map((activity, index) => (
+                        <motion.div 
+                          key={activity.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="flex items-center gap-4 p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+                        >
+                          <div className={`w-9 h-9 rounded-full flex items-center justify-center ${getActivityColor(activity.type)}`}>
+                            {getActivityIcon(activity.type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground truncate">
+                              {activity.userName}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {activity.description}
+                            </p>
+                          </div>
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">
+                            {new Date(activity.date).toLocaleDateString("pt-BR", { 
+                              day: '2-digit',
+                              month: 'short'
+                            })}
+                          </span>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="no-activity"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="py-8 text-center text-muted-foreground"
+                    >
+                      Nenhuma atividade recente
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </CardContent>
             </Card>
           </motion.div>

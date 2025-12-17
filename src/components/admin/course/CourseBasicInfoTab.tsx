@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,8 +9,20 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Image, X, FileText, Settings, Sparkles, Package } from "lucide-react";
+import { Image, X, FileText, Settings, Sparkles, Package, AlertCircle, CheckCircle2 } from "lucide-react";
 import { programsList, Program } from "@/data/programs";
+import { cn } from "@/lib/utils";
+
+const courseSchema = z.object({
+  title: z.string().min(1, "Título é obrigatório").max(200, "Título muito longo (máx. 200 caracteres)"),
+  description: z.string().optional().nullable(),
+  thumbnail_url: z.string().url("URL inválida").optional().or(z.literal("")).nullable(),
+  price: z.number().min(0, "Preço não pode ser negativo").optional().nullable(),
+  is_published: z.boolean(),
+  is_subscription: z.boolean(),
+});
+
+type CourseFormData = z.infer<typeof courseSchema>;
 
 interface Course {
   id?: string;
@@ -35,6 +50,57 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
   const { toast } = useToast();
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+
+  const {
+    register,
+    formState: { errors },
+    setValue,
+    watch,
+    trigger,
+  } = useForm<CourseFormData>({
+    resolver: zodResolver(courseSchema),
+    defaultValues: {
+      title: course.title || "",
+      description: course.description || "",
+      thumbnail_url: course.thumbnail_url || "",
+      price: course.price ?? undefined,
+      is_published: course.is_published || false,
+      is_subscription: course.is_subscription || false,
+    },
+    mode: "onBlur",
+  });
+
+  // Watch all values to sync with parent
+  const watchedValues = watch();
+
+  // Sync form values with parent onChange
+  useEffect(() => {
+    onChange({
+      ...course,
+      title: watchedValues.title,
+      description: watchedValues.description || null,
+      thumbnail_url: watchedValues.thumbnail_url || null,
+      price: watchedValues.price ?? null,
+      is_published: watchedValues.is_published,
+      is_subscription: watchedValues.is_subscription,
+    });
+  }, [watchedValues.title, watchedValues.description, watchedValues.thumbnail_url, watchedValues.price, watchedValues.is_published, watchedValues.is_subscription]);
+
+  // Update form when course prop changes (e.g., from program selection)
+  useEffect(() => {
+    setValue("title", course.title || "");
+    setValue("description", course.description || "");
+    setValue("thumbnail_url", course.thumbnail_url || "");
+    setValue("price", course.price ?? undefined);
+    setValue("is_published", course.is_published || false);
+    setValue("is_subscription", course.is_subscription || false);
+  }, [course.title, course.description, course.thumbnail_url, course.price, course.is_published, course.is_subscription, setValue]);
+
+  const handleBlur = (fieldName: string) => {
+    setTouchedFields(prev => new Set(prev).add(fieldName));
+    trigger(fieldName as keyof CourseFormData);
+  };
 
   const fillFromProgram = (program: Program) => {
     let priceValue: number | null = null;
@@ -43,15 +109,13 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
       priceValue = numericPrice ? parseFloat(numericPrice) : null;
     }
 
-    onChange({
-      ...course,
-      title: program.subtitle,
-      description: program.fullDescription,
-      thumbnail_url: program.image || null,
-      price: priceValue,
-    });
-
+    setValue("title", program.subtitle);
+    setValue("description", program.fullDescription);
+    setValue("thumbnail_url", program.image || "");
+    setValue("price", priceValue ?? undefined);
+    
     setSelectedProgram(program.slug);
+    setTouchedFields(new Set()); // Reset touched fields
 
     if (onProgramSelected) {
       onProgramSelected(program);
@@ -90,7 +154,7 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
         .from("course-materials")
         .getPublicUrl(fileName);
 
-      onChange({ ...course, thumbnail_url: publicUrl });
+      setValue("thumbnail_url", publicUrl);
       toast({ title: "Thumbnail enviada!" });
     } catch (error) {
       console.error("Upload error:", error);
@@ -101,10 +165,22 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
   };
 
   const removeThumbnail = () => {
-    onChange({ ...course, thumbnail_url: null });
+    setValue("thumbnail_url", "");
   };
 
   const selectedProgramData = selectedProgram ? programsList.find(p => p.slug === selectedProgram) : null;
+  
+  const getFieldState = (fieldName: keyof CourseFormData) => {
+    const hasError = !!errors[fieldName];
+    const isTouched = touchedFields.has(fieldName);
+    const value = watchedValues[fieldName];
+    const isValid = isTouched && !hasError && value;
+    return { hasError, isValid, isTouched };
+  };
+
+  const titleState = getFieldState("title");
+  const thumbnailUrlState = getFieldState("thumbnail_url");
+  const priceState = getFieldState("price");
 
   return (
     <div className="space-y-8">
@@ -192,52 +268,90 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Left Column */}
           <div className="space-y-5">
-            <div>
-              <Label htmlFor="title" className="text-foreground font-medium text-sm mb-2 block">
-                Título do Curso <span className="text-primary">*</span>
+            {/* Title Field with Validation */}
+            <div className="space-y-2">
+              <Label htmlFor="title" className="text-foreground font-medium text-sm flex items-center gap-1">
+                Título do Curso <span className="text-destructive">*</span>
               </Label>
-              <Input
-                id="title"
-                value={course.title || ""}
-                onChange={(e) => onChange({ ...course, title: e.target.value })}
-                placeholder="Ex: Mentoria Soberana Completa"
-                className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-secondary/20 h-11"
-              />
+              <div className="relative">
+                <Input
+                  id="title"
+                  {...register("title")}
+                  onBlur={() => handleBlur("title")}
+                  placeholder="Ex: Mentoria Soberana Completa"
+                  className={cn(
+                    "bg-background border-border text-foreground placeholder:text-muted-foreground h-11 pr-10 transition-colors",
+                    titleState.hasError && "border-destructive focus-visible:ring-destructive/50",
+                    titleState.isValid && "border-emerald-500 focus-visible:ring-emerald-500/50"
+                  )}
+                />
+                {(titleState.hasError || titleState.isValid) && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {titleState.hasError ? (
+                      <AlertCircle className="h-4 w-4 text-destructive" />
+                    ) : (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                    )}
+                  </div>
+                )}
+              </div>
+              {errors.title && (
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.title.message}
+                </p>
+              )}
             </div>
 
-            <div>
-              <Label htmlFor="description" className="text-foreground font-medium text-sm mb-2 block">
+            {/* Description Field */}
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-foreground font-medium text-sm">
                 Descrição
               </Label>
               <Textarea
                 id="description"
-                value={course.description || ""}
-                onChange={(e) => onChange({ ...course, description: e.target.value })}
+                {...register("description")}
                 placeholder="Descreva o curso, seus benefícios e o que o aluno vai aprender..."
                 rows={6}
                 className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-secondary/20 resize-none"
               />
             </div>
 
-            <div>
-              <Label htmlFor="price" className="text-foreground font-medium text-sm mb-2 block">
+            {/* Price Field with Validation */}
+            <div className="space-y-2">
+              <Label htmlFor="price" className="text-foreground font-medium text-sm">
                 Preço (R$)
               </Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                value={course.price || ""}
-                onChange={(e) => onChange({ 
-                  ...course, 
-                  price: e.target.value ? parseFloat(e.target.value) : null 
-                })}
-                placeholder="0.00"
-                className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-secondary/20 h-11"
-              />
-              <p className="text-xs text-muted-foreground mt-1.5">
-                Deixe em branco para curso gratuito
-              </p>
+              <div className="relative">
+                <Input
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  {...register("price", { valueAsNumber: true })}
+                  onBlur={() => handleBlur("price")}
+                  placeholder="0.00"
+                  className={cn(
+                    "bg-background border-border text-foreground placeholder:text-muted-foreground h-11 pr-10 transition-colors",
+                    priceState.hasError && "border-destructive focus-visible:ring-destructive/50",
+                    priceState.isValid && "border-emerald-500 focus-visible:ring-emerald-500/50"
+                  )}
+                />
+                {priceState.hasError && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <AlertCircle className="h-4 w-4 text-destructive" />
+                  </div>
+                )}
+              </div>
+              {errors.price ? (
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.price.message}
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Deixe em branco para curso gratuito
+                </p>
+              )}
             </div>
           </div>
 
@@ -247,12 +361,15 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
               Thumbnail do Curso
             </Label>
             <div className="space-y-3">
-              {course.thumbnail_url ? (
+              {watchedValues.thumbnail_url ? (
                 <div className="relative group">
                   <img
-                    src={course.thumbnail_url}
+                    src={watchedValues.thumbnail_url}
                     alt="Thumbnail"
-                    className="w-full aspect-video object-cover rounded-xl border-2 border-border"
+                    className={cn(
+                      "w-full aspect-video object-cover rounded-xl border-2",
+                      thumbnailUrlState.hasError ? "border-destructive" : "border-border"
+                    )}
                   />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
                     <Button
@@ -293,16 +410,32 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
                 </label>
               )}
 
-              <div>
-                <p className="text-xs text-muted-foreground mb-1.5">
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">
                   Ou cole uma URL direta:
                 </p>
-                <Input
-                  value={course.thumbnail_url || ""}
-                  onChange={(e) => onChange({ ...course, thumbnail_url: e.target.value })}
-                  placeholder="https://..."
-                  className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-secondary/20 h-10 text-sm"
-                />
+                <div className="relative">
+                  <Input
+                    {...register("thumbnail_url")}
+                    onBlur={() => handleBlur("thumbnail_url")}
+                    placeholder="https://..."
+                    className={cn(
+                      "bg-background border-border text-foreground placeholder:text-muted-foreground h-10 text-sm pr-10 transition-colors",
+                      thumbnailUrlState.hasError && "border-destructive focus-visible:ring-destructive/50"
+                    )}
+                  />
+                  {thumbnailUrlState.hasError && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <AlertCircle className="h-4 w-4 text-destructive" />
+                    </div>
+                  )}
+                </div>
+                {errors.thumbnail_url && (
+                  <p className="text-sm text-destructive flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {errors.thumbnail_url.message}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -330,8 +463,8 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
               </p>
             </div>
             <Switch
-              checked={course.is_subscription || false}
-              onCheckedChange={(checked) => onChange({ ...course, is_subscription: checked })}
+              checked={watchedValues.is_subscription || false}
+              onCheckedChange={(checked) => setValue("is_subscription", checked)}
             />
           </div>
 
@@ -343,8 +476,8 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
               </p>
             </div>
             <Switch
-              checked={course.is_published || false}
-              onCheckedChange={(checked) => onChange({ ...course, is_published: checked })}
+              checked={watchedValues.is_published || false}
+              onCheckedChange={(checked) => setValue("is_published", checked)}
             />
           </div>
         </div>
