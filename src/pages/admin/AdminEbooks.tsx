@@ -206,11 +206,11 @@ const AdminEbooks = () => {
               </p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={fetchDownloads} className="border-secondary/30 text-cream hover:bg-secondary/10 hover:border-secondary/50">
+              <Button variant="premium" size="sm" onClick={fetchDownloads}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Atualizar
               </Button>
-              <Button variant="outline" size="sm" onClick={exportCSV} className="border-secondary/30 text-cream hover:bg-secondary/10 hover:border-secondary/50">
+              <Button variant="premium" size="sm" onClick={exportCSV}>
                 <FileDown className="w-4 h-4 mr-2" />
                 Exportar CSV
               </Button>
