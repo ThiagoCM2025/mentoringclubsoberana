@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -28,7 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { Search, Users, UserPlus, Loader2, Eye, EyeOff, GraduationCap } from "lucide-react";
+import { Search, Users, UserPlus, Loader2, Eye, EyeOff, GraduationCap, User, CheckCircle2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Student {
@@ -38,6 +40,7 @@ interface Student {
   phone: string | null;
   created_at: string;
   enrollment_count?: number;
+  diagnostic_completed?: boolean;
 }
 
 interface Course {
@@ -47,6 +50,7 @@ interface Course {
 }
 
 const AdminStudents = () => {
+  const navigate = useNavigate();
   const [students, setStudents] = useState<Student[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,15 +91,28 @@ const AdminStudents = () => {
       .from("enrollments")
       .select("user_id");
 
+    const { data: diagnostics } = await supabase
+      .from("student_diagnostics")
+      .select("user_id, completed");
+
     const enrollmentCounts: Record<string, number> = {};
     enrollments?.forEach(e => {
       enrollmentCounts[e.user_id] = (enrollmentCounts[e.user_id] || 0) + 1;
     });
 
+    const diagnosticStatus: Record<string, boolean> = {};
+    diagnostics?.forEach(d => {
+      diagnosticStatus[d.user_id] = d.completed || false;
+    });
+
     if (profiles) {
       const studentsOnly = profiles
         .filter(p => !adminUserIds.includes(p.user_id))
-        .map(p => ({ ...p, enrollment_count: enrollmentCounts[p.user_id] || 0 }));
+        .map(p => ({ 
+          ...p, 
+          enrollment_count: enrollmentCounts[p.user_id] || 0,
+          diagnostic_completed: diagnosticStatus[p.user_id] || false
+        }));
       setStudents(studentsOnly);
     }
     setLoading(false);
@@ -387,6 +404,7 @@ const AdminStudents = () => {
                 <TableHead>Aluno</TableHead>
                 <TableHead>Telefone</TableHead>
                 <TableHead>Cursos</TableHead>
+                <TableHead>Diagnóstico</TableHead>
                 <TableHead>Cadastrado em</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -394,13 +412,13 @@ const AdminStudents = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredStudents.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8">
                     <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                     <p className="text-muted-foreground">Nenhum aluno encontrado</p>
                   </TableCell>
@@ -430,18 +448,42 @@ const AdminStudents = () => {
                       </span>
                     </TableCell>
                     <TableCell>
+                      {student.diagnostic_completed ? (
+                        <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-green-500/20">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          Completo
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20">
+                          <AlertCircle className="h-3 w-3 mr-1" />
+                          Pendente
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       {new Date(student.created_at).toLocaleDateString("pt-BR")}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEnrollDialog(student)}
-                        className="gap-2"
-                      >
-                        <GraduationCap className="w-4 h-4" />
-                        Matricular
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => navigate(`/admin/students/${student.user_id}`)}
+                          className="gap-2"
+                        >
+                          <User className="w-4 h-4" />
+                          Ver Perfil
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openEnrollDialog(student)}
+                          className="gap-2"
+                        >
+                          <GraduationCap className="w-4 h-4" />
+                          Matricular
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

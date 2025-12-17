@@ -494,6 +494,72 @@ export type Database = {
           },
         ]
       }
+      student_diagnostics: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          current_step: number | null
+          digital_presence: string | null
+          has_office: boolean | null
+          id: string
+          main_challenges: string[] | null
+          main_goals: string[] | null
+          marketing_knowledge: string | null
+          monthly_revenue: string | null
+          office_size: string | null
+          practice_area: string | null
+          practice_area_other: string | null
+          referral_source: string | null
+          revenue_goal: string | null
+          updated_at: string | null
+          user_id: string
+          weekly_study_hours: string | null
+          years_practicing: string | null
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          current_step?: number | null
+          digital_presence?: string | null
+          has_office?: boolean | null
+          id?: string
+          main_challenges?: string[] | null
+          main_goals?: string[] | null
+          marketing_knowledge?: string | null
+          monthly_revenue?: string | null
+          office_size?: string | null
+          practice_area?: string | null
+          practice_area_other?: string | null
+          referral_source?: string | null
+          revenue_goal?: string | null
+          updated_at?: string | null
+          user_id: string
+          weekly_study_hours?: string | null
+          years_practicing?: string | null
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          current_step?: number | null
+          digital_presence?: string | null
+          has_office?: boolean | null
+          id?: string
+          main_challenges?: string[] | null
+          main_goals?: string[] | null
+          marketing_knowledge?: string | null
+          monthly_revenue?: string | null
+          office_size?: string | null
+          practice_area?: string | null
+          practice_area_other?: string | null
+          referral_source?: string | null
+          revenue_goal?: string | null
+          updated_at?: string | null
+          user_id?: string
+          weekly_study_hours?: string | null
+          years_practicing?: string | null
+        }
+        Relationships: []
+      }
       user_badges: {
         Row: {
           badge_id: string

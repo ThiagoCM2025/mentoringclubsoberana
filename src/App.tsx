@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCourses from "./pages/admin/AdminCourses";
 import CourseEditor from "./pages/admin/CourseEditor";
 import AdminStudents from "./pages/admin/AdminStudents";
+import AdminStudentProfile from "./pages/admin/AdminStudentProfile";
 import AdminEnrollments from "./pages/admin/AdminEnrollments";
 import AdminLeads from "./pages/admin/AdminLeads";
 import NotFound from "./pages/NotFound";
@@ -107,6 +108,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin>
                   <AdminStudents />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/students/:userId"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminStudentProfile />
                 </ProtectedRoute>
               }
             />
