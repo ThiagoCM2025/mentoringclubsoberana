@@ -60,15 +60,15 @@ export const HeroSection = () => {
       </div>
 
       {/* Content - positioned at bottom */}
-      <div className="relative z-10 flex-1 flex flex-col justify-end pb-12 md:pb-16 pt-20">
-        <div className="container-soberana px-4 md:px-8">
-          <div className="text-center max-w-4xl mx-auto">
+      <div className="relative z-10 flex-1 flex flex-col justify-end pb-12 md:pb-16 pt-20 overflow-hidden">
+        <div className="container-soberana">
+          <div className="text-center max-w-4xl mx-auto px-2">
             {/* Logo with Star */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex items-center justify-center gap-3 mb-6"
+              className="flex items-center justify-center gap-3 mb-4 sm:mb-6"
             >
               <SoberanaLogoMark variant="light" size="lg" />
             </motion.div>
@@ -78,7 +78,7 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-2xl md:text-4xl lg:text-5xl font-serif font-medium text-cream leading-tight mb-4"
+              className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif font-medium text-cream leading-tight mb-3 sm:mb-4"
             >
               Transforme sua Advocacia Técnica em um Negócio{" "}
               <span className="text-shimmer-gold">
@@ -91,7 +91,7 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-base md:text-lg text-cream/90 mb-8 leading-relaxed"
+              className="text-sm sm:text-base md:text-lg text-cream/90 mb-6 sm:mb-8 leading-relaxed"
             >
               Chegou a hora de assumir seu lugar de{" "}
               <strong className="text-secondary">CEO</strong> da sua própria história.
@@ -102,15 +102,17 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="flex justify-center mb-8"
+              className="flex justify-center mb-6 sm:mb-8"
             >
               <Button
                 onClick={scrollToJornada}
                 size="lg"
-                className="cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 md:px-12 py-6 md:py-7 text-base md:text-lg font-semibold uppercase tracking-wider group"
+                className="cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground px-5 sm:px-8 md:px-12 py-5 sm:py-6 md:py-7 text-sm sm:text-base md:text-lg font-semibold uppercase tracking-wider group whitespace-normal text-center leading-tight"
               >
-                Quero Transformar Meu Negócio
-                <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <span className="flex items-center justify-center gap-2 sm:gap-3">
+                  Quero Transformar Meu Negócio
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+                </span>
               </Button>
             </motion.div>
 
@@ -119,19 +121,19 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.7 }}
-              className="pt-6 border-t border-cream/10 flex flex-wrap justify-center gap-6 md:gap-10 text-cream/70"
+              className="pt-4 sm:pt-6 border-t border-cream/10 flex flex-col sm:flex-row sm:flex-wrap justify-center items-center gap-3 sm:gap-6 md:gap-10 text-cream/70"
             >
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-secondary" />
-                <span className="text-sm tracking-wide">+500 Advogadas Transformadas</span>
+                <div className="w-2 h-2 rounded-full bg-secondary flex-shrink-0" />
+                <span className="text-xs sm:text-sm tracking-wide">+500 Advogadas Transformadas</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-secondary" />
-                <span className="text-sm tracking-wide">+10 Anos de Experiência</span>
+                <div className="w-2 h-2 rounded-full bg-secondary flex-shrink-0" />
+                <span className="text-xs sm:text-sm tracking-wide">+10 Anos de Experiência</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-secondary" />
-                <span className="text-sm tracking-wide">Especialista em IA Jurídica</span>
+                <div className="w-2 h-2 rounded-full bg-secondary flex-shrink-0" />
+                <span className="text-xs sm:text-sm tracking-wide">Especialista em IA Jurídica</span>
               </div>
             </motion.div>
           </div>
