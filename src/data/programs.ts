@@ -1,5 +1,12 @@
 import { Bot, Calendar, Rocket, Star, Crown, LucideIcon } from "lucide-react";
 
+// Program images
+import programWorkshopIA from "@/assets/programs/program-workshop-ia.jpg";
+import programExperienceStart from "@/assets/programs/program-experience-start.jpg";
+import programAceleracao from "@/assets/programs/program-aceleracao.jpg";
+import programMentoria360 from "@/assets/programs/program-mentoria-360.jpg";
+import programElite from "@/assets/programs/program-elite.jpg";
+
 export interface ProgramTestimonial {
   name: string;
   area: string;
@@ -48,6 +55,7 @@ export const programs: Record<string, Program> = {
   "workshop-ia": {
     slug: "workshop-ia",
     title: "Ganhe tempo e autoridade com tecnologia",
+    image: programWorkshopIA,
     titleHighlight: "com tecnologia",
     subtitle: "Workshop Soberana IA",
     impactPhrase: "O seu primeiro passo.",
@@ -104,6 +112,7 @@ export const programs: Record<string, Program> = {
     slug: "experience-start",
     title: "Networking e estratégia presencial em um dia exclusivo",
     titleHighlight: "em um dia exclusivo",
+    image: programExperienceStart,
     subtitle: "Soberana Experience Start",
     impactPhrase: "O despertar em SP.",
     description: "Oficinas presenciais personalíssimas em São Paulo para apenas 12 mulheres. Um dia de imersão prática para destravar sua visão de negócio.",
@@ -162,6 +171,7 @@ export const programs: Record<string, Program> = {
     slug: "aceleracao",
     title: "Estruture sua advocacia em 90 dias",
     titleHighlight: "em 90 dias",
+    image: programAceleracao,
     subtitle: "Programa de Aceleração Soberana",
     impactPhrase: "A fundação do seu escritório lucrativo.",
     description: "Mentoria em grupo focada nos 6 pilares: Mentalidade, Posicionamento, Marketing, Vendas, Precificação e Gestão.",
@@ -231,6 +241,7 @@ export const programs: Record<string, Program> = {
     slug: "mentoria-360",
     title: "Eu percorro o caminho com você",
     titleHighlight: "com você",
+    image: programMentoria360,
     subtitle: "Mentoria Soberana 360°",
     impactPhrase: "Acompanhamento semestral de elite.",
     description: "O acompanhamento de elite para quem quer escala. Aqui eu não apenas ensino, eu implemento junto com você.",
@@ -293,6 +304,7 @@ export const programs: Record<string, Program> = {
     slug: "elite",
     title: "O próximo nível da liberdade e liderança jurídica",
     titleHighlight: "liberdade e liderança jurídica",
+    image: programElite,
     subtitle: "Soberana Elite — Mastermind Anual",
     impactPhrase: "Para quem lidera impérios.",
     description: "Para quem já deixou de ser apenas advogada e agora lidera um império. O Mastermind Elite é o ambiente de quem não aceita caminhar sozinha.",

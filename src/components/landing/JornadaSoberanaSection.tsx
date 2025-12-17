@@ -22,34 +22,48 @@ const ProgramCard = ({ program, index, isReversed }: ProgramCardProps) => {
       initial={{ opacity: 0, y: 40 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, delay: index * 0.15 }}
-      className={`grid md:grid-cols-2 gap-8 md:gap-12 items-center ${
+      className={`grid md:grid-cols-2 gap-8 md:gap-16 items-center ${
         isReversed ? "md:grid-flow-dense" : ""
       }`}
     >
-      {/* Image */}
+      {/* Image with Golden Frame */}
       <div className={`relative ${isReversed ? "md:col-start-2" : ""}`}>
-        <div className="relative overflow-hidden rounded-lg aspect-[4/3]">
-          <img
-            src={program.image || mentorFabiana}
-            alt={program.title}
-            className="w-full h-full object-cover"
-          />
-          {/* Subtle overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        <div className="golden-frame">
+          {/* Decorative corners */}
+          <div className="golden-corner golden-corner-tl" />
+          <div className="golden-corner golden-corner-tr" />
+          <div className="golden-corner golden-corner-bl" />
+          <div className="golden-corner golden-corner-br" />
+          
+          <div className="golden-frame-inner aspect-[4/5]">
+            <img
+              src={program.image || mentorFabiana}
+              alt={program.title}
+              className="w-full h-full object-cover object-top"
+            />
+            {/* Elegant vignette overlay */}
+            <div className="golden-vignette" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
+          </div>
         </div>
+        
+        {/* Floating golden particles */}
+        <div className="golden-particle golden-particle-1" />
+        <div className="golden-particle golden-particle-2" />
+        <div className="golden-particle golden-particle-3" />
       </div>
 
       {/* Content */}
       <div className={`${isReversed ? "md:col-start-1 md:text-right" : ""}`}>
-        <span className="inline-block text-muted-foreground text-xs tracking-[0.2em] uppercase mb-4">
+        <span className="inline-block text-secondary text-xs tracking-[0.25em] uppercase mb-4 font-medium">
           {program.subtitle}
         </span>
         
-        <h3 className="text-2xl md:text-3xl lg:text-4xl font-serif font-medium text-foreground mb-2 leading-tight">
+        <h3 className="text-2xl md:text-3xl lg:text-4xl font-serif font-medium text-foreground mb-3 leading-tight">
           {program.titleHighlight ? (
             <>
               {program.title.split(program.titleHighlight)[0]}
-              <em className="italic">{program.titleHighlight}</em>
+              <em className="italic text-secondary">{program.titleHighlight}</em>
               {program.title.split(program.titleHighlight)[1]}
             </>
           ) : (
@@ -57,17 +71,17 @@ const ProgramCard = ({ program, index, isReversed }: ProgramCardProps) => {
           )}
         </h3>
         
-        <p className="text-muted-foreground mb-6 leading-relaxed">
+        <p className="text-muted-foreground mb-6 leading-relaxed text-base">
           {program.description}
         </p>
 
         {program.price && (
-          <p className="text-secondary font-semibold mb-4">{program.price}</p>
+          <p className="text-secondary font-semibold mb-4 text-lg">{program.price}</p>
         )}
 
         <Button
           asChild
-          className={`bg-foreground hover:bg-foreground/90 text-background px-6 py-5 text-sm font-medium tracking-wide ${
+          className={`bg-foreground hover:bg-foreground/90 text-background px-8 py-5 text-sm font-medium tracking-wide transition-all duration-300 hover:shadow-lg ${
             isReversed ? "md:ml-auto" : ""
           }`}
         >
