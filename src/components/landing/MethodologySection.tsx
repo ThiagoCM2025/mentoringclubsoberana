@@ -134,8 +134,35 @@ export const MethodologySection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex justify-center items-center gap-3 md:gap-5 mb-12"
+          className="relative flex justify-center items-center gap-4 md:gap-8 mb-12 py-8"
         >
+          {/* Floating particles container */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1.5 h-1.5 rounded-full bg-secondary/60"
+                style={{
+                  left: `${10 + Math.random() * 80}%`,
+                  top: `${10 + Math.random() * 80}%`,
+                }}
+                animate={{
+                  y: [0, -30, 0],
+                  x: [0, Math.random() * 20 - 10, 0],
+                  opacity: [0.3, 0.8, 0.3],
+                  scale: [0.8, 1.2, 0.8],
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                  ease: "easeInOut",
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Letters */}
           {pillars.map((pillar, index) => (
             <motion.div
               key={index}
@@ -144,12 +171,14 @@ export const MethodologySection = () => {
               transition={{ duration: 0.5, delay: 0.3 + index * 0.12, type: "spring", stiffness: 200 }}
               className="relative group"
             >
-              <motion.div 
-                className="w-14 h-14 md:w-20 md:h-20 rounded-xl bg-gradient-to-br from-secondary via-secondary to-gold-light flex items-center justify-center text-secondary-foreground font-serif font-bold text-2xl md:text-3xl shadow-[0_0_20px_rgba(166,144,97,0.4)] transition-all duration-300 group-hover:scale-115 group-hover:shadow-[0_0_35px_rgba(166,144,97,0.7)]"
-                whileHover={{ y: -5 }}
+              <motion.span 
+                className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-b from-gold-light via-secondary to-secondary/80 drop-shadow-[0_0_15px_rgba(166,144,97,0.6)] cursor-default transition-all duration-300 group-hover:drop-shadow-[0_0_25px_rgba(166,144,97,0.9)]"
+                whileHover={{ scale: 1.1, y: -5 }}
               >
                 {pillar.letter}
-              </motion.div>
+              </motion.span>
+              {/* Individual letter glow */}
+              <div className="absolute inset-0 bg-secondary/20 blur-xl -z-10 group-hover:bg-secondary/40 transition-colors duration-300" />
             </motion.div>
           ))}
         </motion.div>
