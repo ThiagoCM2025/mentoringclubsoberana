@@ -67,12 +67,15 @@ const StudentSidebar = ({ onSignOut, studentName, xp = 0, streak = 0 }: StudentS
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex flex-col"
+                className="flex flex-col leading-tight"
               >
-                <span className="text-secondary/60 text-[8px] tracking-[0.2em] uppercase leading-tight">
-                  Mentoring Club
+                <span className="text-cream/70 text-[9px] tracking-[0.15em] uppercase">
+                  Mentoring
                 </span>
-                <span className="font-serif font-bold text-secondary text-base tracking-wider">
+                <span className="text-cream/70 text-[9px] tracking-[0.15em] uppercase -mt-0.5">
+                  Club
+                </span>
+                <span className="font-serif font-bold text-secondary text-sm tracking-wider mt-0.5">
                   SOBERANA
                 </span>
               </motion.div>

@@ -211,14 +211,19 @@ const Auth = () => {
               />
             </div>
             {/* Brand text below S - Mobile */}
-            <div className="text-center mt-3">
-              <p className="text-muted-foreground/60 text-[10px] tracking-[0.3em] uppercase mb-0.5">
+            <motion.div 
+              className="text-center mt-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            >
+              <p className="text-muted-foreground/60 text-[11px] tracking-[0.25em] uppercase mb-1">
                 Mentoring Club
               </p>
-              <p className="text-secondary text-lg font-serif tracking-[0.15em]">
+              <p className="text-secondary text-xl font-serif tracking-[0.12em] font-medium">
                 SOBERANA
               </p>
-            </div>
+            </motion.div>
           </div>
 
           {/* Form header */}
