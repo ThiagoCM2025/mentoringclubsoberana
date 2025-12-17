@@ -1,15 +1,26 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import mentorSobre from "@/assets/mentor-sobre.jpg";
+import patternGold from "@/assets/brand/pattern-gold.png";
 
 export const TrajetoriaSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-20 md:py-32 bg-background relative overflow-hidden">
-      {/* Subtle decorative line */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+    <section className="py-20 md:py-32 bg-brand-black relative overflow-hidden">
+      {/* Pattern Background */}
+      <div 
+        className="absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage: `url(${patternGold})`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '200px',
+        }}
+      />
+      
+      {/* Subtle decorative lines */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
       
       <div className="container-soberana relative z-10">
         <div ref={ref} className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -20,17 +31,17 @@ export const TrajetoriaSection = () => {
             transition={{ duration: 0.7 }}
             className="order-2 lg:order-1"
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-medium text-foreground mb-8 leading-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-medium text-cream mb-8 leading-tight">
               Comecei minha trajetória{" "}
               <em className="italic text-secondary">como muitas advogadas:</em>
             </h2>
             
-            <div className="space-y-5 text-muted-foreground leading-relaxed">
+            <div className="space-y-5 text-cream/80 leading-relaxed">
               <p>
                 Com um forte domínio técnico, dedicação à advocacia e o desejo de construir uma carreira sólida. Mas, com o tempo, percebi que apenas a técnica não bastava. Eu me sentia sobrecarregada, sem clareza de direção e longe da visão de liberdade e realização que sonhei quando escolhi o Direito.
               </p>
               
-              <p className="text-foreground font-medium">
+              <p className="text-cream font-medium">
                 Foi quando decidi parar de operar apenas como uma advogada prestadora de serviços e comecei a enxergar minha advocacia como um negócio jurídico.
               </p>
               
@@ -48,11 +59,11 @@ export const TrajetoriaSection = () => {
             </div>
             
             {/* Signature */}
-            <div className="mt-8 pt-6 border-t border-border/50">
+            <div className="mt-8 pt-6 border-t border-cream/10">
               <p className="font-signature text-3xl text-secondary">
                 Fabiana Duarte
               </p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-cream/60 mt-1">
                 Fundadora do Mentoring Club Soberana
               </p>
             </div>
@@ -95,7 +106,7 @@ export const TrajetoriaSection = () => {
       </div>
       
       {/* Bottom decorative line */}
-      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
     </section>
   );
 };

@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import isotipo from "@/assets/brand/isotipo.png";
 
 const faqs = [
   {
@@ -56,8 +57,16 @@ export const FAQSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} id="faq" className="section-padding bg-background">
-      <div className="container-soberana">
+    <section ref={ref} id="faq" className="section-padding bg-cream relative overflow-hidden">
+      {/* Isotipo decorations */}
+      <div className="absolute top-20 left-10 opacity-5">
+        <img src={isotipo} alt="" className="w-32 h-32" />
+      </div>
+      <div className="absolute bottom-20 right-10 opacity-5">
+        <img src={isotipo} alt="" className="w-24 h-24" />
+      </div>
+
+      <div className="container-soberana relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -84,7 +93,7 @@ export const FAQSection = () => {
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
-                className="bg-card border border-border rounded-lg px-6 data-[state=open]:border-secondary/50"
+                className="bg-background border border-secondary/20 rounded-lg px-6 data-[state=open]:border-secondary/50 data-[state=open]:shadow-md transition-all duration-300"
               >
                 <AccordionTrigger className="text-left font-serif text-lg hover:text-primary hover:no-underline py-5">
                   {faq.question}
@@ -106,7 +115,7 @@ export const FAQSection = () => {
           <p className="text-muted-foreground">
             Ainda tem dúvidas?{" "}
             <a
-              href="https://wa.me/5511999999999?text=Olá! Tenho uma dúvida sobre os programas Soberana"
+              href="https://wa.me/5511993563468?text=Olá! Tenho uma dúvida sobre os programas Soberana"
               target="_blank"
               rel="noopener noreferrer"
               className="text-secondary hover:underline font-medium"

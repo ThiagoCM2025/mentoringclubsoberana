@@ -3,6 +3,7 @@ import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Quote, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import patternWhite from "@/assets/brand/pattern-white.png";
 
 const testimonials = [
   {
@@ -53,20 +54,32 @@ export const TestimonialsSection = () => {
   };
 
   return (
-    <section ref={ref} className="section-padding bg-muted/30">
-      <div className="container-soberana">
+    <section ref={ref} className="section-padding bg-primary relative overflow-hidden">
+      {/* Pattern Background */}
+      <div 
+        className="absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage: `url(${patternWhite})`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '180px',
+        }}
+      />
+
+      <div className="container-soberana relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <span className="badge-gold mb-4">Depoimentos</span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-6">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-secondary/20 text-secondary border border-secondary/30 mb-4">
+            Depoimentos
+          </span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-primary-foreground mb-6">
             Histórias de{" "}
-            <span className="text-primary">Transformação</span>
+            <span className="text-secondary">Transformação</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
             Advogadas reais que transformaram suas carreiras com a metodologia Soberana.
           </p>
         </motion.div>
@@ -78,8 +91,8 @@ export const TestimonialsSection = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="max-w-4xl mx-auto mb-12"
         >
-          <div className="relative bg-card rounded-2xl p-8 md:p-12 shadow-elegant border border-border">
-            <Quote className="absolute top-6 left-6 w-12 h-12 text-secondary/20" />
+          <div className="relative bg-cream rounded-2xl p-8 md:p-12 shadow-2xl">
+            <Quote className="absolute top-6 left-6 w-12 h-12 text-secondary/30" />
             
             <div className="relative">
               <div className="flex items-center gap-1 mb-6">
@@ -111,7 +124,7 @@ export const TestimonialsSection = () => {
               variant="outline"
               size="icon"
               onClick={prevTestimonial}
-              className="rounded-full border-border hover:border-secondary hover:text-secondary"
+              className="rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:border-secondary hover:text-secondary"
             >
               <ChevronLeft className="w-5 h-5" />
             </Button>
@@ -121,7 +134,7 @@ export const TestimonialsSection = () => {
                   key={index}
                   onClick={() => setActiveIndex(index)}
                   className={`w-2 h-2 rounded-full transition-all ${
-                    index === activeIndex ? "w-8 bg-secondary" : "bg-border"
+                    index === activeIndex ? "w-8 bg-secondary" : "bg-primary-foreground/30"
                   }`}
                 />
               ))}
@@ -130,7 +143,7 @@ export const TestimonialsSection = () => {
               variant="outline"
               size="icon"
               onClick={nextTestimonial}
-              className="rounded-full border-border hover:border-secondary hover:text-secondary"
+              className="rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:border-secondary hover:text-secondary"
             >
               <ChevronRight className="w-5 h-5" />
             </Button>
@@ -151,8 +164,8 @@ export const TestimonialsSection = () => {
             { value: "4.9", label: "Avaliação" },
           ].map((stat, index) => (
             <div key={index} className="text-center">
-              <p className="text-3xl md:text-4xl font-serif font-bold text-primary">{stat.value}</p>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
+              <p className="text-3xl md:text-4xl font-serif font-bold text-secondary">{stat.value}</p>
+              <p className="text-sm text-primary-foreground/70">{stat.label}</p>
             </div>
           ))}
         </motion.div>
