@@ -205,9 +205,9 @@ export function RecipientSelector() {
     <>
       <div className="grid gap-6 md:grid-cols-[300px_1fr]">
         {/* Audience Type Selection */}
-        <Card>
+        <Card className="admin-card">
           <CardHeader>
-            <CardTitle className="text-lg">Selecione o Público</CardTitle>
+            <CardTitle className="text-lg text-cream">Selecione o Público</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <button
@@ -247,10 +247,10 @@ export function RecipientSelector() {
         </Card>
 
         {/* Recipients List */}
-        <Card>
+        <Card className="admin-card">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">
+              <CardTitle className="text-lg text-cream">
                 {audienceType === "student" ? "Alunos" : "Leads"}
               </CardTitle>
               <Badge variant="outline">
@@ -346,6 +346,7 @@ export function RecipientSelector() {
 
             <div className="pt-4 border-t mt-4">
               <Button
+                variant="gold"
                 onClick={() => setIsComposerOpen(true)}
                 disabled={selectedIds.size === 0}
                 className="w-full"

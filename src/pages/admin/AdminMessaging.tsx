@@ -29,20 +29,20 @@ export default function AdminMessaging() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-lg grid-cols-4">
-            <TabsTrigger value="send" className="flex items-center gap-2">
+          <TabsList className="grid w-full max-w-lg grid-cols-4 bg-zinc-900 border border-secondary/20">
+            <TabsTrigger value="send" className="flex items-center gap-2 text-cream/80 data-[state=active]:bg-secondary data-[state=active]:text-black">
               <Mail className="h-4 w-4" />
               Enviar
             </TabsTrigger>
-            <TabsTrigger value="nurturing" className="flex items-center gap-2">
+            <TabsTrigger value="nurturing" className="flex items-center gap-2 text-cream/80 data-[state=active]:bg-secondary data-[state=active]:text-black">
               <Zap className="h-4 w-4" />
               Automação
             </TabsTrigger>
-            <TabsTrigger value="templates" className="flex items-center gap-2">
+            <TabsTrigger value="templates" className="flex items-center gap-2 text-cream/80 data-[state=active]:bg-secondary data-[state=active]:text-black">
               <FileText className="h-4 w-4" />
               Templates
             </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2">
+            <TabsTrigger value="history" className="flex items-center gap-2 text-cream/80 data-[state=active]:bg-secondary data-[state=active]:text-black">
               <History className="h-4 w-4" />
               Histórico
             </TabsTrigger>

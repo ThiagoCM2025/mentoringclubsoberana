@@ -72,17 +72,18 @@ export const Navbar = () => {
 
             {/* CTA Buttons */}
             <div className="hidden lg:flex items-center gap-4">
-              <Button
-                variant="outline"
-                asChild
-                className={`tracking-wide font-medium transition-all duration-300 ${
-                  isScrolled 
-                    ? "border-foreground/50 text-foreground bg-foreground/5 hover:border-secondary hover:text-secondary hover:bg-secondary/10" 
-                    : "border-cream text-cream bg-cream/15 hover:bg-cream/25 hover:border-cream"
-                }`}
-              >
-                <Link to="/auth">Área do Aluno</Link>
-              </Button>
+              <Link to="/auth">
+                <Button
+                  variant="outline"
+                  className={`tracking-wide font-medium transition-all duration-300 ${
+                    isScrolled 
+                      ? "border-foreground/50 text-foreground bg-foreground/5 hover:border-secondary hover:text-secondary hover:bg-secondary/10" 
+                      : "border-cream text-cream bg-cream/15 hover:bg-cream/25 hover:border-cream"
+                  }`}
+                >
+                  Área do Aluno
+                </Button>
+              </Link>
               <Button
                 asChild
                 className="cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground tracking-wide"

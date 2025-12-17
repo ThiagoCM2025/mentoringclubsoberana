@@ -145,6 +145,14 @@ export const SplashScreen = ({ onComplete, duration = 2500 }: SplashScreenProps)
               transition={{ delay: 0.6, duration: 0.6 }}
               className="mt-8 text-center"
             >
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.7 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="text-cream/70 text-xs tracking-[0.2em] mb-2"
+              >
+                MENTORING CLUB
+              </motion.p>
               <motion.h1 
                 className="text-2xl md:text-3xl font-serif tracking-[0.3em] text-secondary"
                 animate={{
@@ -162,14 +170,6 @@ export const SplashScreen = ({ onComplete, duration = 2500 }: SplashScreenProps)
               >
                 SOBERANA
               </motion.h1>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.6 }}
-                transition={{ delay: 1, duration: 0.5 }}
-                className="text-cream/60 text-xs tracking-[0.2em] mt-2"
-              >
-                MENTORING CLUB
-              </motion.p>
             </motion.div>
 
             {/* Loading indicator */}

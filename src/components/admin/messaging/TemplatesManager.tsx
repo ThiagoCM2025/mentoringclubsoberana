@@ -118,21 +118,21 @@ export function TemplatesManager() {
     return (
       <div className="grid gap-4 md:grid-cols-2">
         {templateList.map((template) => (
-          <Card key={template.id} className="relative">
+          <Card key={template.id} className="relative bg-zinc-900/80 border border-secondary/20">
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">{template.icon || "📧"}</span>
                   <div>
-                    <CardTitle className="text-base">{template.name}</CardTitle>
+                    <CardTitle className="text-base text-cream">{template.name}</CardTitle>
                     {template.description && (
-                      <CardDescription className="text-xs mt-1">
+                      <CardDescription className="text-xs mt-1 text-cream/60">
                         {template.description}
                       </CardDescription>
                     )}
                   </div>
                 </div>
-                <Badge variant={template.is_active ? "default" : "secondary"}>
+                <Badge variant={template.is_active ? "default" : "secondary"} className={template.is_active ? "bg-secondary text-black" : ""}>
                   {template.is_active ? "Ativo" : "Inativo"}
                 </Badge>
               </div>
@@ -140,14 +140,14 @@ export function TemplatesManager() {
             <CardContent className="space-y-3">
               {template.email_subject && (
                 <div className="text-sm">
-                  <span className="text-muted-foreground">Email:</span>
-                  <p className="truncate font-medium">{template.email_subject}</p>
+                  <span className="text-cream/60">Email:</span>
+                  <p className="truncate font-medium text-cream">{template.email_subject}</p>
                 </div>
               )}
               {template.whatsapp_message && (
                 <div className="text-sm">
-                  <span className="text-muted-foreground">WhatsApp:</span>
-                  <p className="truncate text-muted-foreground">
+                  <span className="text-cream/60">WhatsApp:</span>
+                  <p className="truncate text-cream/70">
                     {template.whatsapp_message.slice(0, 60)}...
                   </p>
                 </div>
@@ -155,7 +155,7 @@ export function TemplatesManager() {
 
               <div className="flex gap-2 pt-2">
                 <Button
-                  variant="outline"
+                  variant="premium"
                   size="sm"
                   onClick={() => handleEdit(template)}
                   className="flex-1"
@@ -164,10 +164,10 @@ export function TemplatesManager() {
                   Editar
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="premium"
                   size="sm"
                   onClick={() => setDeletingTemplate(template)}
-                  className="text-destructive hover:text-destructive"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>
@@ -181,16 +181,16 @@ export function TemplatesManager() {
 
   return (
     <>
-      <Card>
+      <Card className="admin-card">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg">Templates de Mensagem</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-lg text-cream">Templates de Mensagem</CardTitle>
+              <CardDescription className="text-cream/60">
                 Gerencie os modelos de mensagem para cada cenário
               </CardDescription>
             </div>
-            <Button onClick={() => setIsFormOpen(true)}>
+            <Button variant="gold" onClick={() => setIsFormOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Novo Template
             </Button>
@@ -203,12 +203,12 @@ export function TemplatesManager() {
             </div>
           ) : (
             <Tabs value={audienceTab} onValueChange={(v) => setAudienceTab(v as "student" | "lead")}>
-              <TabsList className="mb-4">
-                <TabsTrigger value="student" className="flex items-center gap-2">
+              <TabsList className="mb-4 bg-zinc-900 border border-secondary/20">
+                <TabsTrigger value="student" className="flex items-center gap-2 text-cream/80 data-[state=active]:bg-secondary data-[state=active]:text-black">
                   <Users className="h-4 w-4" />
                   Alunos ({studentTemplates.length})
                 </TabsTrigger>
-                <TabsTrigger value="lead" className="flex items-center gap-2">
+                <TabsTrigger value="lead" className="flex items-center gap-2 text-cream/80 data-[state=active]:bg-secondary data-[state=active]:text-black">
                   <Target className="h-4 w-4" />
                   Leads ({leadTemplates.length})
                 </TabsTrigger>
