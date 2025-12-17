@@ -221,4 +221,13 @@
   .marsala-glow {
     box-shadow: 0 0 40px hsla(350, 100%, 20%, 0.3);
   }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }

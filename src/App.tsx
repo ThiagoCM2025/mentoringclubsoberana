@@ -12,6 +12,7 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import CourseDetail from "./pages/student/CourseDetail";
 import LessonPlayer from "./pages/student/LessonPlayer";
 import StudentAchievements from "./pages/student/StudentAchievements";
+import StudentCertificates from "./pages/student/StudentCertificates";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCourses from "./pages/admin/AdminCourses";
 import CourseEditor from "./pages/admin/CourseEditor";
@@ -64,6 +65,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireStudent>
                   <StudentAchievements />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/student/certificates"
+              element={
+                <ProtectedRoute requireStudent>
+                  <StudentCertificates />
                 </ProtectedRoute>
               }
             />
