@@ -2,10 +2,11 @@ import { useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import SEO from "@/components/SEO";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, FileText, History } from "lucide-react";
+import { Mail, FileText, History, Zap } from "lucide-react";
 import { RecipientSelector } from "@/components/admin/messaging/RecipientSelector";
 import { MessageHistory } from "@/components/admin/messaging/MessageHistory";
 import { TemplatesManager } from "@/components/admin/messaging/TemplatesManager";
+import { NurturingManager } from "@/components/admin/messaging/NurturingManager";
 
 export default function AdminMessaging() {
   const [activeTab, setActiveTab] = useState("send");
@@ -28,10 +29,14 @@ export default function AdminMessaging() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-lg grid-cols-4">
             <TabsTrigger value="send" className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
               Enviar
+            </TabsTrigger>
+            <TabsTrigger value="nurturing" className="flex items-center gap-2">
+              <Zap className="h-4 w-4" />
+              Automação
             </TabsTrigger>
             <TabsTrigger value="templates" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
@@ -45,6 +50,10 @@ export default function AdminMessaging() {
 
           <TabsContent value="send" className="space-y-6">
             <RecipientSelector />
+          </TabsContent>
+
+          <TabsContent value="nurturing" className="space-y-6">
+            <NurturingManager />
           </TabsContent>
 
           <TabsContent value="templates" className="space-y-6">
