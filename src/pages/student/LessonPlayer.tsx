@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LessonSidebar from "@/components/student/LessonSidebar";
 import FavoriteButton from "@/components/student/FavoriteButton";
+import VideoPlayer from "@/components/student/VideoPlayer";
 import {
   ArrowLeft,
   CheckCircle,
@@ -17,12 +18,7 @@ import {
   FileText,
   PlayCircle,
   Clock,
-  BookOpen,
-  List,
-  X,
-  Maximize2,
-  Volume2,
-  Settings
+  List
 } from "lucide-react";
 import brandLogo from "@/assets/brand-logo.png";
 
@@ -386,23 +382,12 @@ const LessonPlayer = () => {
         <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? "lg:mr-80" : ""}`}>
           {/* Video Player */}
           <div className={`bg-black relative ${theaterMode ? "h-[80vh]" : "aspect-video max-h-[70vh]"}`}>
-            {lesson?.video_url ? (
-              <video
-                ref={videoRef}
-                src={lesson.video_url}
-                controls
-                className="w-full h-full"
-                onTimeUpdate={handleTimeUpdate}
-                onEnded={handleVideoEnded}
-              >
-                Seu navegador não suporta vídeos.
-              </video>
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-background/60">
-                <PlayCircle className="w-20 h-20 mb-4" />
-                <p>Vídeo em breve</p>
-              </div>
-            )}
+            <VideoPlayer
+              url={lesson?.video_url || null}
+              onTimeUpdate={handleTimeUpdate}
+              onEnded={handleVideoEnded}
+              initialTime={progressSeconds}
+            />
           </div>
 
           {/* Lesson Content */}
