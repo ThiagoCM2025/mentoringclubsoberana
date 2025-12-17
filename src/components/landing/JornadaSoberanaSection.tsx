@@ -107,7 +107,7 @@ export const JornadaSoberanaSection = () => {
   ];
 
   return (
-    <section id="programas" className="py-20 md:py-32 bg-cream relative overflow-hidden">
+    <section id="jornada" className="py-20 md:py-32 bg-cream relative overflow-hidden">
       {/* Subtle decorative elements */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
