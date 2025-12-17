@@ -15,6 +15,7 @@ import StudentAchievements from "./pages/student/StudentAchievements";
 import StudentCertificates from "./pages/student/StudentCertificates";
 import StudentFavorites from "./pages/student/StudentFavorites";
 import StudentCommunity from "./pages/student/StudentCommunity";
+import StudentProfile from "./pages/student/StudentProfile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCourses from "./pages/admin/AdminCourses";
 import CourseEditor from "./pages/admin/CourseEditor";
@@ -24,6 +25,7 @@ import AdminEnrollments from "./pages/admin/AdminEnrollments";
 import AdminLeads from "./pages/admin/AdminLeads";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminNotifications from "./pages/admin/AdminNotifications";
+import AdminCommunity from "./pages/admin/AdminCommunity";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -94,6 +96,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireStudent>
                   <StudentCommunity />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/student/profile"
+              element={
+                <ProtectedRoute requireStudent>
+                  <StudentProfile />
                 </ProtectedRoute>
               }
             />
@@ -168,6 +178,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin>
                   <AdminNotifications />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/community"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminCommunity />
                 </ProtectedRoute>
               }
             />

@@ -45,6 +45,9 @@ interface Post {
   likes_count: number;
   comments_count: number;
   created_at: string;
+  is_pinned: boolean;
+  is_highlighted: boolean;
+  is_hidden: boolean;
   profiles?: {
     full_name: string | null;
     avatar_url: string | null;
@@ -85,6 +88,8 @@ const StudentCommunity = () => {
     let query = supabase
       .from("community_posts")
       .select("*")
+      .eq("is_hidden", false)
+      .order("is_pinned", { ascending: false })
       .order("created_at", { ascending: false });
 
     if (selectedCategory !== "all") {
