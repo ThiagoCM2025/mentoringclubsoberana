@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Award, BookOpen, Users, Star } from "lucide-react";
-import mentorProfile from "@/assets/mentor-profile.jpg";
+import { Building2, Bot, TrendingUp, Briefcase } from "lucide-react";
+import mentorFabiana from "@/assets/mentor-fabiana.jpeg";
 
 const achievements = [
-  { icon: Users, value: "+500", label: "Advogadas Mentoradas" },
-  { icon: Award, value: "15+", label: "Anos de Experiência" },
-  { icon: BookOpen, value: "7", label: "Pilares Metodológicos" },
-  { icon: Star, value: "4.9", label: "Avaliação Média" },
+  { icon: Briefcase, value: "+10 Anos", label: "no Direito Imobiliário" },
+  { icon: Building2, value: "2", label: "Escritórios Boutique" },
+  { icon: Bot, value: "Expert", label: "em IA Jurídica" },
+  { icon: TrendingUp, value: "Tráfego", label: "Pago para Advogadas" },
 ];
 
 export const MentorSection = () => {
@@ -16,7 +16,7 @@ export const MentorSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="section-padding bg-muted/30">
+    <section ref={ref} id="sobre" className="section-padding bg-muted/30">
       <div className="container-soberana">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Image */}
@@ -24,23 +24,23 @@ export const MentorSection = () => {
             initial={{ opacity: 0, x: -30 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="relative"
+            className="relative order-2 lg:order-1"
           >
             <div className="relative">
               {/* Gold Frame */}
               <div className="absolute -inset-4 border-2 border-secondary/30 rounded-lg" />
               <div className="absolute -inset-8 border border-secondary/10 rounded-lg" />
-              
+
               <img
-                src={mentorProfile}
-                alt="Fabiana Duarte - Mentora"
+                src={mentorFabiana}
+                alt="Fabiana Duarte - Mentora para Advogadas"
                 className="w-full rounded-lg shadow-elegant relative z-10"
               />
-              
+
               {/* Floating Badge */}
               <div className="absolute -bottom-6 -right-6 bg-primary text-primary-foreground px-6 py-3 rounded-lg shadow-lg z-20">
-                <p className="text-sm font-medium">Fundadora</p>
-                <p className="text-lg font-serif font-bold">Soberana Club</p>
+                <p className="text-sm font-medium">Advogada & Mentora</p>
+                <p className="text-lg font-serif font-bold">Fabiana Duarte</p>
               </div>
             </div>
           </motion.div>
@@ -50,26 +50,28 @@ export const MentorSection = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
+            className="order-1 lg:order-2"
           >
-            <span className="badge-gold mb-4">Sobre a Mentora</span>
+            <span className="badge-gold mb-4">Quem Conduz a Sua Jornada?</span>
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-6">
               Fabiana Duarte
             </h2>
             <div className="space-y-4 text-muted-foreground mb-8">
-              <p>
-                Advogada há mais de 15 anos, Fabiana viveu na pele todos os desafios 
-                de construir um escritório do zero. Passou por esgotamento, trabalhou 
-                por honorários que não refletiam seu valor e sentiu a angústia de não 
-                ter previsibilidade financeira.
+              <p className="text-lg">
+                <span className="text-foreground font-medium">
+                  Advogada no Imobiliário há mais de uma década
+                </span>
+                , empresária jurídica e especialista em soluções tecnológicas.
               </p>
               <p>
-                Até que decidiu mudar. Estudou gestão, negócios e liderança. Desenvolveu 
-                uma metodologia própria que transformou sua advocacia em um negócio 
-                estruturado e lucrativo.
+                Após construir dois escritórios boutique e desenvolver habilidades 
+                que vão muito além do Direito, decidi ensinar o que o mercado não 
+                mostra: <strong className="text-foreground">como trabalhar menos, faturar mais 
+                e ter um posicionamento que impõe respeito e gera lucro</strong>.
               </p>
-              <p className="font-medium text-foreground">
-                Hoje, sua missão é ajudar outras advogadas a conquistarem a mesma 
-                transformação através do Soberana Mentoring Club.
+              <p className="text-lg font-medium text-foreground border-l-4 border-secondary pl-4">
+                Minha missão é transformar advogadas estagnadas em líderes 
+                soberanas de seus próprios negócios.
               </p>
             </div>
 
@@ -81,7 +83,7 @@ export const MentorSection = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-background"
+                  className="flex items-center gap-3 p-4 rounded-lg bg-background border border-border"
                 >
                   <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
                     <achievement.icon className="w-5 h-5 text-secondary" />
