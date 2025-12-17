@@ -5,9 +5,14 @@ import { Loader2 } from "lucide-react";
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
+  requireStudent?: boolean;
 }
 
-export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({ 
+  children, 
+  requireAdmin = false,
+  requireStudent = false 
+}: ProtectedRouteProps) => {
   const { user, loading, isAdmin } = useAuth();
 
   if (loading) {
@@ -22,6 +27,12 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     return <Navigate to="/auth" replace />;
   }
 
+  // Admin trying to access student area → redirect to admin
+  if (requireStudent && isAdmin) {
+    return <Navigate to="/admin" replace />;
+  }
+
+  // Student trying to access admin area → redirect to student
   if (requireAdmin && !isAdmin) {
     return <Navigate to="/student" replace />;
   }

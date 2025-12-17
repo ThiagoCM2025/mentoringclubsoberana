@@ -25,13 +25,14 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAdmin, loading } = useAuth();
 
   useEffect(() => {
-    if (user) {
-      navigate("/student");
+    if (!loading && user) {
+      // Redirect based on role
+      navigate(isAdmin ? "/admin" : "/student");
     }
-  }, [user, navigate]);
+  }, [user, isAdmin, loading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,19 +54,19 @@ const Auth = () => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast({ title: "Bem-vinda de volta!" });
-        navigate("/student");
+        // Redirect will happen automatically via useEffect when user/isAdmin updates
       } else {
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/student`,
+            emailRedirectTo: `${window.location.origin}/auth`,
             data: { full_name: fullName },
           },
         });
         if (error) throw error;
         toast({ title: "Conta criada!", description: "Você já pode acessar a plataforma." });
-        navigate("/student");
+        // Redirect will happen automatically via useEffect when user updates
       }
     } catch (error: any) {
       const message = error.message === "Invalid login credentials" 
