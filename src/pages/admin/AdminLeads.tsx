@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -28,10 +28,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle } from "lucide-react";
+import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { Database } from "@/integrations/supabase/types";
+import { NewLeadDialog } from "@/components/admin/NewLeadDialog";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
@@ -96,6 +97,74 @@ const AdminLeads = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [communicationHistory, setCommunicationHistory] = useState<CommunicationHistory[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [newLeadDialogOpen, setNewLeadDialogOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleExport = () => {
+    const csvContent = [
+      ["Nome", "Email", "Telefone", "Fonte", "Status", "Temperatura", "Score", "Notas", "Criado em"].join(","),
+      ...leads.map(lead => [
+        `"${lead.full_name}"`,
+        lead.email,
+        lead.phone || "",
+        lead.source || "",
+        lead.status || "",
+        lead.temperature || "",
+        lead.score || 0,
+        `"${(lead.notes || "").replace(/"/g, '""')}"`,
+        new Date(lead.created_at).toLocaleDateString("pt-BR")
+      ].join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `leads_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    toast({ title: "Leads exportados com sucesso!" });
+  };
+
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const text = e.target?.result as string;
+      const lines = text.split("\n").slice(1);
+      let imported = 0;
+      let errors = 0;
+
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        const parts = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
+        const cleanParts = parts.map(p => p.replace(/^"|"$/g, "").trim());
+        
+        const [full_name, email, phone, source] = cleanParts;
+        
+        if (full_name && email) {
+          const { error } = await supabase.from("leads").insert({
+            full_name,
+            email,
+            phone: phone || null,
+            source: source || "importação",
+            status: "new" as LeadStatus,
+            temperature: "cold" as LeadTemperature,
+          });
+          if (error) errors++;
+          else imported++;
+        }
+      }
+
+      toast({
+        title: "Importação concluída",
+        description: `${imported} leads importados, ${errors} erros`,
+      });
+      fetchLeads();
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   useEffect(() => {
     fetchLeads();
@@ -220,6 +289,29 @@ const AdminLeads = () => {
             </p>
             <p className="text-sm text-muted-foreground">Convertidos</p>
           </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          <Button onClick={() => setNewLeadDialogOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Novo Lead
+          </Button>
+          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+            <Upload className="w-4 h-4 mr-2" />
+            Importar CSV
+          </Button>
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="w-4 h-4 mr-2" />
+            Exportar CSV
+          </Button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept=".csv"
+            onChange={handleImport}
+            className="hidden"
+          />
         </div>
 
         {/* Filters */}
@@ -495,6 +587,13 @@ const AdminLeads = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* New Lead Dialog */}
+        <NewLeadDialog
+          open={newLeadDialogOpen}
+          onOpenChange={setNewLeadDialogOpen}
+          onSuccess={fetchLeads}
+        />
       </div>
     </AdminLayout>
   );

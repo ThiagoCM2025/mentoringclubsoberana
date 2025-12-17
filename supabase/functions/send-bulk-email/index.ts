@@ -44,7 +44,10 @@ function generateEmailTemplate(
     ? "https://soberanamentoria.com.br/student" 
     : "https://soberanamentoria.com.br";
 
-  const formattedContent = content.replace(/\n/g, "<br>");
+    const formattedContent = content
+      .replace(/\\n\\n/g, "<br><br>")
+      .replace(/\\n/g, "<br>")
+      .replace(/\n/g, "<br>");
 
   return `
 <!DOCTYPE html>

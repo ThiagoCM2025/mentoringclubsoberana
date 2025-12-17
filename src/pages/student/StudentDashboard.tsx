@@ -302,6 +302,7 @@ const StudentDashboard = () => {
                 variant="ghost"
                 size="icon"
                 className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                onClick={() => navigate("/student/profile")}
               >
                 <User className="w-5 h-5" />
               </Button>
@@ -370,6 +371,7 @@ const StudentDashboard = () => {
               <Button
                 variant="ghost"
                 className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                onClick={() => { navigate("/student/profile"); setMobileMenuOpen(false); }}
               >
                 <User className="w-4 h-4 mr-2" />
                 Perfil
