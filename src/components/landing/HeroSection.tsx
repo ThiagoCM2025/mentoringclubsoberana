@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import heroVariations from "@/assets/hero-variations.jpeg";
 import isotipo from "@/assets/brand/isotipo.png";
-import patternGold from "@/assets/brand/pattern-gold.png";
+import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
+import isotipoGold from "@/assets/brand/isotipo-gold.png";
 
 export const HeroSection = () => {
   const scrollToPrograms = () => {
@@ -38,15 +39,25 @@ export const HeroSection = () => {
         }}
       />
       
-      {/* Gold Pattern - subtle texture */}
+      {/* Circle Pattern - premium texture */}
       <div 
-        className="absolute inset-0 z-[2] opacity-[0.05]"
+        className="absolute inset-0 z-[2] opacity-[0.06]"
         style={{
-          backgroundImage: `url(${patternGold})`,
+          backgroundImage: `url(${patternCirclesGold})`,
           backgroundRepeat: 'repeat',
-          backgroundSize: '250px',
+          backgroundSize: '300px',
         }}
       />
+
+      {/* Isotipo Gold - decorative element bottom left */}
+      <div className="absolute bottom-32 left-8 z-[3] opacity-10 hidden lg:block">
+        <img src={isotipoGold} alt="" className="w-24 h-24" />
+      </div>
+      
+      {/* Isotipo Gold - top right subtle */}
+      <div className="absolute top-24 right-8 z-[3] opacity-[0.06] hidden lg:block">
+        <img src={isotipoGold} alt="" className="w-32 h-32" />
+      </div>
 
       {/* Content - positioned at bottom */}
       <div className="relative z-10 flex-1 flex flex-col justify-end pb-12 md:pb-16 pt-20">

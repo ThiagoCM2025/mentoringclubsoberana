@@ -2,7 +2,9 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 import mentorSobre from "@/assets/mentor-sobre.jpg";
-import isotipo from "@/assets/brand/isotipo.png";
+import patternCirclesMarsala from "@/assets/brand/pattern-circles-marsala.png";
+import isotipoGold from "@/assets/brand/isotipo-gold.png";
+import isotipoMarsala from "@/assets/brand/isotipo-marsala.png";
 
 export const MentorSection = () => {
   const ref = useRef(null);
@@ -10,13 +12,31 @@ export const MentorSection = () => {
 
   return (
     <section ref={ref} id="sobre" className="py-20 md:py-32 bg-background relative overflow-hidden">
+      {/* Circle Pattern - left half only */}
+      <div 
+        className="absolute left-0 top-0 w-1/2 h-full opacity-[0.04]"
+        style={{
+          backgroundImage: `url(${patternCirclesMarsala})`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '280px',
+        }}
+      />
+
+      {/* Isotipo Gold - top right */}
+      <div className="absolute top-16 right-12 opacity-[0.07] hidden lg:block">
+        <img src={isotipoGold} alt="" className="w-20 h-20" />
+      </div>
+      
+      {/* Isotipo Marsala - bottom left */}
+      <div className="absolute bottom-16 left-12 opacity-[0.06] hidden lg:block">
+        <img src={isotipoMarsala} alt="" className="w-24 h-24" />
+      </div>
+
       {/* Subtle top border */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent" />
       
-      {/* Isotipo decorations */}
-      <div className="absolute top-10 right-10 opacity-5">
-        <img src={isotipo} alt="" className="w-20 h-20" />
-      </div>
+      {/* Radial gradient for depth */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_hsl(var(--cream))_100%)]" />
       
       <div className="container-soberana relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">

@@ -2,7 +2,8 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { Target, Clock, DollarSign, Flame, ArrowRight } from "lucide-react";
-import patternMarsala from "@/assets/brand/pattern-marsala.png";
+import patternCirclesMarsala from "@/assets/brand/pattern-circles-marsala.png";
+import isotipoMarsala from "@/assets/brand/isotipo-marsala.png";
 
 const problems = [
   {
@@ -29,15 +30,26 @@ export const ProblemSection = () => {
 
   return (
     <section ref={ref} className="section-padding bg-cream relative overflow-hidden">
-      {/* Pattern Background */}
+      {/* Circle Pattern Background - Marsala */}
       <div 
-        className="absolute inset-0 opacity-[0.04]"
+        className="absolute inset-0 opacity-[0.06]"
         style={{
-          backgroundImage: `url(${patternMarsala})`,
+          backgroundImage: `url(${patternCirclesMarsala})`,
           backgroundRepeat: 'repeat',
-          backgroundSize: '180px',
+          backgroundSize: '280px',
         }}
       />
+
+      {/* Isotipo Marsala - decorative */}
+      <div className="absolute top-20 right-12 opacity-[0.08] hidden lg:block">
+        <img src={isotipoMarsala} alt="" className="w-24 h-24" />
+      </div>
+      <div className="absolute bottom-20 left-12 opacity-[0.08] hidden lg:block">
+        <img src={isotipoMarsala} alt="" className="w-20 h-20" />
+      </div>
+
+      {/* Gradient overlay for depth */}
+      <div className="absolute inset-0 bg-gradient-to-b from-cream via-transparent to-white/50" />
 
       <div className="container-soberana relative z-10">
         <div className="max-w-4xl mx-auto">
