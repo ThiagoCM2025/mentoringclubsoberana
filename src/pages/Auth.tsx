@@ -103,7 +103,7 @@ const Auth = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative mb-10"
+            className="relative mb-6"
           >
             {/* Glow ring behind */}
             <div className="absolute inset-0 flex items-center justify-center">
@@ -124,6 +124,21 @@ const Auth = () => {
               }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             />
+          </motion.div>
+
+          {/* Brand text below S */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-center mb-8"
+          >
+            <p className="text-secondary/60 text-xs tracking-[0.3em] uppercase mb-1">
+              Mentoring Club
+            </p>
+            <h2 className="text-secondary text-2xl font-serif tracking-[0.15em]">
+              SOBERANA
+            </h2>
           </motion.div>
 
           {/* Title with elegant styling */}
