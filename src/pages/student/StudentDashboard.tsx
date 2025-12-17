@@ -26,6 +26,7 @@ import CourseCard from "@/components/student/CourseCard";
 import ContinueWatching from "@/components/student/ContinueWatching";
 import CoursePreviewModal from "@/components/student/CoursePreviewModal";
 import { DiagnosticBanner } from "@/components/student/DiagnosticBanner";
+import { NotificationBell } from "@/components/student/NotificationBell";
 import brandLogo from "@/assets/brand-logo.png";
 
 interface Course {
@@ -280,6 +281,7 @@ const StudentDashboard = () => {
                 <User className="w-4 h-4 mr-2" />
                 Perfil
               </Button>
+              <NotificationBell />
               <Button
                 variant="ghost"
                 size="sm"
