@@ -134,22 +134,22 @@ export const MethodologySection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex justify-center items-center gap-1 md:gap-2 mb-12"
+          className="flex justify-center items-center gap-3 md:gap-5 mb-12"
         >
           {pillars.map((pillar, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20, scale: 0.8 }}
+              initial={{ opacity: 0, y: 30, scale: 0.5 }}
               animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-              transition={{ duration: 0.4, delay: 0.3 + index * 0.08 }}
+              transition={{ duration: 0.5, delay: 0.3 + index * 0.12, type: "spring", stiffness: 200 }}
               className="relative group"
             >
-              <div className="w-10 h-10 md:w-14 md:h-14 rounded-lg bg-gradient-to-br from-secondary via-secondary to-secondary/80 flex items-center justify-center text-secondary-foreground font-serif font-bold text-xl md:text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300 group-hover:shadow-[0_0_25px_rgba(166,144,97,0.5)]">
+              <motion.div 
+                className="w-14 h-14 md:w-20 md:h-20 rounded-xl bg-gradient-to-br from-secondary via-secondary to-gold-light flex items-center justify-center text-secondary-foreground font-serif font-bold text-2xl md:text-3xl shadow-[0_0_20px_rgba(166,144,97,0.4)] transition-all duration-300 group-hover:scale-115 group-hover:shadow-[0_0_35px_rgba(166,144,97,0.7)]"
+                whileHover={{ y: -5 }}
+              >
                 {pillar.letter}
-              </div>
-              {index < pillars.length - 1 && (
-                <div className="absolute top-1/2 -right-1 md:-right-1.5 w-1 md:w-2 h-px bg-secondary/50" />
-              )}
+              </motion.div>
             </motion.div>
           ))}
         </motion.div>
@@ -231,28 +231,26 @@ export const MethodologySection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 1 }}
-          className="mt-16 text-center"
+          className="mt-16"
         >
-          <div className="inline-block relative">
-            <p className="text-2xl md:text-3xl font-serif">
-              <span className="text-shimmer-gold font-bold">S.O.B.E.R.A.N.A.</span>
-            </p>
-            <p className="text-primary-foreground/70 mt-2">O caminho para a sua transformação</p>
-            
-            {/* Decorative lines */}
-            <div className="absolute -left-8 top-1/2 w-6 h-px bg-gradient-to-r from-transparent to-secondary/50" />
-            <div className="absolute -right-8 top-1/2 w-6 h-px bg-gradient-to-l from-transparent to-secondary/50" />
-          </div>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10">
+            <div className="text-center md:text-left">
+              <p className="text-2xl md:text-3xl font-serif">
+                <span className="text-shimmer-gold font-bold">S.O.B.E.R.A.N.A.</span>
+              </p>
+              <p className="text-primary-foreground/70 mt-2">O caminho para a sua transformação</p>
+            </div>
 
-          <motion.a
-            href="#jornada"
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.5, delay: 1.2 }}
-            className="cta-premium inline-flex items-center gap-3 bg-secondary hover:bg-secondary/90 text-secondary-foreground px-10 py-5 rounded-lg text-lg font-semibold uppercase tracking-wider transition-all duration-300 mt-8"
-          >
-            Conhecer os Programas
-          </motion.a>
+            <motion.a
+              href="#jornada"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.5, delay: 1.2 }}
+              className="cta-premium inline-flex items-center gap-3 bg-secondary hover:bg-secondary/90 text-secondary-foreground px-10 py-5 rounded-lg text-lg font-semibold uppercase tracking-wider transition-all duration-300"
+            >
+              Conhecer os Programas
+            </motion.a>
+          </div>
         </motion.div>
       </div>
 
