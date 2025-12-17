@@ -15,6 +15,7 @@ import AdminCourses from "./pages/admin/AdminCourses";
 import CourseEditor from "./pages/admin/CourseEditor";
 import AdminStudents from "./pages/admin/AdminStudents";
 import AdminEnrollments from "./pages/admin/AdminEnrollments";
+import AdminLeads from "./pages/admin/AdminLeads";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -94,6 +95,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin>
                   <AdminEnrollments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/leads"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLeads />
                 </ProtectedRoute>
               }
             />

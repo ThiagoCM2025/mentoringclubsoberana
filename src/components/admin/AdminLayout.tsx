@@ -12,7 +12,8 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
-  Menu
+  Menu,
+  Target
 } from "lucide-react";
 import brandLogo from "@/assets/brand-logo.png";
 
@@ -25,6 +26,7 @@ const menuItems = [
   { icon: BookOpen, label: "Cursos", href: "/admin/courses" },
   { icon: Users, label: "Alunos", href: "/admin/students" },
   { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments" },
+  { icon: Target, label: "Leads", href: "/admin/leads" },
   { icon: BarChart3, label: "Relatórios", href: "/admin/reports" },
   { icon: Settings, label: "Configurações", href: "/admin/settings" },
 ];
