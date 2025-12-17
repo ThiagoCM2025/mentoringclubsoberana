@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import mentorFabiana from "@/assets/mentor-fabiana.jpeg";
+import mentorSobre from "@/assets/mentor-sobre.jpg";
 
 export const MentorSection = () => {
   const ref = useRef(null);
@@ -14,7 +14,7 @@ export const MentorSection = () => {
       
       <div className="container-soberana">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Image with Signature */}
+          {/* Image with Golden Frame and Signature */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -22,18 +22,40 @@ export const MentorSection = () => {
             className="relative order-2 lg:order-1"
           >
             <div className="relative">
-              <img
-                src={mentorFabiana}
-                alt="Fabiana Duarte - Mentora para Advogadas"
-                className="w-full rounded-lg shadow-elegant"
-              />
+              {/* Golden Frame */}
+              <div className="golden-frame transition-all duration-500">
+                {/* Decorative corners */}
+                <div className="golden-corner golden-corner-tl" />
+                <div className="golden-corner golden-corner-tr" />
+                <div className="golden-corner golden-corner-bl" />
+                <div className="golden-corner golden-corner-br" />
+                
+                <div className="golden-frame-inner">
+                  <img
+                    src={mentorSobre}
+                    alt="Fabiana Duarte - Mentora para Advogadas"
+                    className="w-full aspect-[3/4] object-cover object-top"
+                  />
+                  {/* Golden vignette overlay */}
+                  <div className="golden-vignette" />
+                </div>
+              </div>
               
               {/* Handwritten Signature Overlay */}
-              <div className="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 bg-background p-4 rounded-lg shadow-lg">
-                <p className="font-serif italic text-2xl md:text-3xl text-secondary">
-                  Fabiana Duarte
-                </p>
+              <div className="absolute -bottom-6 -right-6 md:-bottom-8 md:-right-8 z-10">
+                <div className="bg-background/95 backdrop-blur-sm px-6 py-4 rounded-lg shadow-xl border border-secondary/30">
+                  <p className="font-signature text-3xl md:text-4xl text-secondary">
+                    Fabiana Duarte
+                  </p>
+                  {/* Decorative underline */}
+                  <div className="h-0.5 w-3/4 mx-auto mt-1 bg-gradient-to-r from-transparent via-secondary to-transparent" />
+                </div>
               </div>
+              
+              {/* Floating golden particles */}
+              <div className="golden-particle absolute -top-3 -right-3 w-3 h-3" />
+              <div className="golden-particle absolute -bottom-4 -left-4 w-2 h-2 animation-delay-300" />
+              <div className="golden-particle absolute top-1/3 -left-2 w-2 h-2 animation-delay-500" />
             </div>
           </motion.div>
 
