@@ -75,12 +75,12 @@ const ProgramCard = ({ program, index, isReversed, isInView }: ProgramCardProps)
         animate={cardInView ? { opacity: 1, x: 0 } : {}}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
-        <span className="inline-flex items-center gap-2 text-secondary text-sm md:text-base tracking-[0.3em] uppercase mb-4 font-semibold drop-shadow-[0_0_8px_rgba(166,144,97,0.5)]">
-          <Star className="w-4 h-4" />
+        <span className="inline-flex items-center gap-2 text-secondary text-xs sm:text-sm md:text-base tracking-[0.2em] sm:tracking-[0.3em] uppercase mb-3 sm:mb-4 font-semibold drop-shadow-[0_0_8px_rgba(166,144,97,0.5)]">
+          <Star className="w-3 h-3 sm:w-4 sm:h-4" />
           {program.subtitle}
         </span>
         
-        <h3 className="text-3xl md:text-4xl lg:text-5xl font-serif font-medium text-foreground mb-4 leading-tight group-hover:scale-[1.01] transition-transform duration-300">
+        <h3 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif font-medium text-foreground mb-3 sm:mb-4 leading-tight group-hover:scale-[1.01] transition-transform duration-300">
           {program.titleHighlight ? (
             <>
               {program.title.split(program.titleHighlight)[0]}
@@ -92,7 +92,7 @@ const ProgramCard = ({ program, index, isReversed, isInView }: ProgramCardProps)
           )}
         </h3>
         
-        <p className="text-muted-foreground mb-6 leading-relaxed text-base">
+        <p className="text-muted-foreground mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
           {program.description}
         </p>
 
@@ -115,13 +115,13 @@ const ProgramCard = ({ program, index, isReversed, isInView }: ProgramCardProps)
         >
           <Link 
             to={`/programa/${program.slug}`}
-            className="group/btn relative inline-flex items-center gap-3 bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 py-4 rounded-lg font-semibold tracking-wide transition-all duration-300 overflow-hidden shadow-lg hover:shadow-[0_0_40px_rgba(166,144,97,0.4)]"
+            className="group/btn relative inline-flex items-center gap-2 sm:gap-3 bg-secondary hover:bg-secondary/90 text-secondary-foreground px-5 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-sm sm:text-base tracking-wide transition-all duration-300 overflow-hidden shadow-lg hover:shadow-[0_0_40px_rgba(166,144,97,0.4)]"
           >
             {/* Shimmer effect */}
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
             
             <span className="relative z-10">{program.ctaText}</span>
-            <ArrowRight className="relative z-10 w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+            <ArrowRight className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 group-hover/btn:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
       </motion.div>
@@ -141,13 +141,13 @@ export const JornadaSoberanaSection = () => {
   ];
 
   return (
-    <section className="py-24 md:py-40 bg-background relative overflow-hidden">
+    <section className="py-16 sm:py-24 md:py-40 bg-background relative overflow-hidden">
       {/* Enhanced Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-cream via-background to-cream/50" />
       
-      {/* Circle Pattern decoration - corners */}
+      {/* Circle Pattern decoration - corners - hidden on small mobile */}
       <div 
-        className="absolute top-0 right-0 w-[800px] h-[800px] opacity-[0.12]"
+        className="absolute top-0 right-0 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] opacity-[0.08] sm:opacity-[0.12]"
         style={{
           backgroundImage: `url(${patternCirclesGold})`,
           backgroundRepeat: 'no-repeat',
@@ -156,7 +156,7 @@ export const JornadaSoberanaSection = () => {
         }}
       />
       <div 
-        className="absolute bottom-0 left-0 w-[800px] h-[800px] opacity-[0.12]"
+        className="absolute bottom-0 left-0 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] opacity-[0.08] sm:opacity-[0.12]"
         style={{
           backgroundImage: `url(${patternCirclesGold})`,
           backgroundRepeat: 'no-repeat',
@@ -166,7 +166,7 @@ export const JornadaSoberanaSection = () => {
       />
 
       {/* Central glow - reduced on mobile */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] md:w-[1000px] h-[500px] md:h-[1000px] bg-secondary/3 md:bg-secondary/5 blur-2xl md:blur-3xl rounded-full" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] md:w-[1000px] h-[300px] sm:h-[500px] md:h-[1000px] bg-secondary/3 md:bg-secondary/5 blur-xl sm:blur-2xl md:blur-3xl rounded-full" />
 
       {/* Isotipo Gold - decorative */}
       <div className="absolute top-1/4 left-8 opacity-[0.18] hidden lg:block animate-float-slow">
@@ -190,17 +190,17 @@ export const JornadaSoberanaSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
-          className="text-center mb-24"
+          className="text-center mb-12 sm:mb-16 md:mb-24 px-2"
         >
           {/* Isotipo S decoration */}
           <motion.div 
-            className="flex justify-center mb-6"
+            className="flex justify-center mb-4 sm:mb-6"
             initial={{ opacity: 0, scale: 0.5, rotate: -180 }}
             animate={isInView ? { opacity: 1, scale: 1, rotate: 0 } : {}}
             transition={{ duration: 0.8, type: "spring" }}
           >
             <div className="relative">
-              <img src={isotipoSGold} alt="" className="w-14 h-14 isotipo-glow" />
+              <img src={isotipoSGold} alt="" className="w-10 h-10 sm:w-14 sm:h-14 isotipo-glow" />
               {/* Glow ring */}
               <div className="absolute inset-0 rounded-full bg-secondary/20 blur-xl scale-150" />
             </div>
@@ -211,15 +211,15 @@ export const JornadaSoberanaSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="inline-flex items-center gap-2 mb-6 px-5 py-2 rounded-full border border-secondary/40 bg-secondary/10 text-secondary"
+            className="inline-flex items-center gap-2 mb-4 sm:mb-6 px-3 sm:px-5 py-1.5 sm:py-2 rounded-full border border-secondary/40 bg-secondary/10 text-secondary"
           >
-            <Sparkles className="w-4 h-4" />
-            <span className="text-sm font-medium tracking-wider uppercase">A Jornada Soberana</span>
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="text-xs sm:text-sm font-medium tracking-wider uppercase">A Jornada Soberana</span>
+            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
           </motion.div>
 
           <motion.h2 
-            className="text-4xl md:text-5xl lg:text-7xl font-serif font-medium text-foreground mb-6"
+            className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-serif font-medium text-foreground mb-4 sm:mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -228,7 +228,7 @@ export const JornadaSoberanaSection = () => {
           </motion.h2>
           
           <motion.p 
-            className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+            className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -243,12 +243,12 @@ export const JornadaSoberanaSection = () => {
             initial={{ scaleX: 0 }}
             animate={isInView ? { scaleX: 1 } : {}}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="mt-10 mx-auto w-32 h-px bg-gradient-to-r from-transparent via-secondary to-transparent"
+            className="mt-6 sm:mt-10 mx-auto w-24 sm:w-32 h-px bg-gradient-to-r from-transparent via-secondary to-transparent"
           />
         </motion.div>
 
         {/* Programs List */}
-        <div className="space-y-24 md:space-y-40">
+        <div className="space-y-16 sm:space-y-24 md:space-y-40">
           {orderedPrograms.map((program, index) => (
             <ProgramCard
               key={program.slug}
@@ -282,23 +282,23 @@ export const JornadaSoberanaSection = () => {
               <Crown className="w-5 h-5 text-secondary" />
             </motion.div>
             
-            <p className="text-xl md:text-2xl text-foreground font-serif mb-8 max-w-xl mx-auto">
+            <p className="text-lg sm:text-xl md:text-2xl text-foreground font-serif mb-6 sm:mb-8 max-w-xl mx-auto px-2">
               Não sabe qual programa escolher?
               <br />
-              <span className="text-muted-foreground text-base font-sans">Receba uma orientação personalizada</span>
+              <span className="text-muted-foreground text-sm sm:text-base font-sans">Receba uma orientação personalizada</span>
             </p>
             
             <div className="relative inline-block">
-              {/* Pulsing rings */}
-              <span className="absolute inset-0 -m-2 rounded-2xl bg-secondary/40 animate-[pulse_2s_ease-in-out_infinite]" />
-              <span className="absolute inset-0 -m-4 rounded-2xl bg-secondary/20 animate-[pulse_2s_ease-in-out_infinite_0.5s]" />
-              <span className="absolute inset-0 -m-6 rounded-3xl bg-secondary/10 animate-[pulse_2s_ease-in-out_infinite_1s]" />
+              {/* Pulsing rings - hidden on mobile for performance */}
+              <span className="absolute inset-0 -m-2 rounded-2xl bg-secondary/40 animate-[pulse_2s_ease-in-out_infinite] hidden sm:block" />
+              <span className="absolute inset-0 -m-4 rounded-2xl bg-secondary/20 animate-[pulse_2s_ease-in-out_infinite_0.5s] hidden sm:block" />
+              <span className="absolute inset-0 -m-6 rounded-3xl bg-secondary/10 animate-[pulse_2s_ease-in-out_infinite_1s] hidden sm:block" />
               
               <motion.a
                 href="https://wa.me/5511993563468?text=Olá! Quero ajuda para escolher o programa ideal para mim"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative inline-flex items-center gap-3 px-12 py-6 rounded-xl font-semibold text-lg tracking-wide overflow-hidden"
+                className="group relative inline-flex items-center gap-2 sm:gap-3 px-6 sm:px-12 py-4 sm:py-6 rounded-xl font-semibold text-sm sm:text-lg tracking-wide overflow-hidden"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
                 animate={{ 
@@ -325,10 +325,10 @@ export const JornadaSoberanaSection = () => {
                 {/* Border glow */}
                 <span className="absolute inset-0 rounded-xl border-2 border-white/30 group-hover:border-white/50 transition-colors duration-300" />
                 
-                <span className="relative z-10 text-secondary-foreground flex items-center gap-3">
-                  <Sparkles className="w-5 h-5 animate-pulse" />
-                  Falar com Equipe Soberana
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                <span className="relative z-10 text-secondary-foreground flex items-center gap-2 sm:gap-3">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
+                  <span className="whitespace-nowrap">Falar com Equipe Soberana</span>
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-2 transition-transform duration-300" />
                 </span>
               </motion.a>
             </div>
@@ -338,15 +338,15 @@ export const JornadaSoberanaSection = () => {
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
               transition={{ delay: 1.3, duration: 0.5 }}
-              className="mt-8 flex items-center justify-center gap-6 text-sm text-muted-foreground"
+              className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-muted-foreground"
             >
               <span className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-500" />
+                <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
                 Resposta em até 24h
               </span>
-              <span className="hidden md:block">•</span>
+              <span className="hidden sm:block">•</span>
               <span className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-secondary" />
+                <span className="w-2 h-2 rounded-full bg-secondary flex-shrink-0" />
                 +500 advogadas atendidas
               </span>
             </motion.div>
