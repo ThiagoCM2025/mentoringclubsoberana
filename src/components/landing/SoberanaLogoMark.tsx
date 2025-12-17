@@ -26,19 +26,22 @@ export const SoberanaLogoMark = ({
       container: "gap-0.5",
       mentoring: "text-[8px] tracking-[0.25em]",
       soberana: "text-base",
-      star: "w-2.5 h-2.5",
+      star: "w-2 h-2",
+      oLetter: "w-[0.65em]",
     },
     md: {
       container: "gap-0.5",
       mentoring: "text-[10px] tracking-[0.3em]",
       soberana: "text-xl",
-      star: "w-3 h-3",
+      star: "w-2.5 h-2.5",
+      oLetter: "w-[0.7em]",
     },
     lg: {
       container: "gap-1",
       mentoring: "text-xs tracking-[0.35em]",
       soberana: "text-2xl",
-      star: "w-4 h-4",
+      star: "w-3 h-3",
+      oLetter: "w-[0.75em]",
     },
   };
 
@@ -76,8 +79,11 @@ export const SoberanaLogoMark = ({
         style={{ fontFamily: "'Cormorant Garamond', serif" }}
       >
         S
-        <span className={cn("inline-flex items-center justify-center mx-0.5", colors.star)}>
-          <FourPointStar className={sizes.star} />
+        <span className={cn("relative inline-flex items-center justify-center", sizes.oLetter)}>
+          <span className="opacity-90">O</span>
+          <span className={cn("absolute inset-0 flex items-center justify-center", colors.star)}>
+            <FourPointStar className={sizes.star} />
+          </span>
         </span>
         BERANA
       </span>
