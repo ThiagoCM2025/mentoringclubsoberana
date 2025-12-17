@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
-import brandLogo from "@/assets/brand-logo.png";
 
 const navLinks = [
   { label: "Sobre", href: "#sobre" },
@@ -12,6 +11,34 @@ const navLinks = [
   { label: "Depoimentos", href: "#depoimentos" },
   { label: "FAQ", href: "#faq" },
 ];
+
+const SoberanaLogo = ({ isScrolled }: { isScrolled: boolean }) => (
+  <div className="flex flex-col items-center leading-none">
+    <span
+      className={`text-[10px] tracking-[0.3em] font-light uppercase transition-colors ${
+        isScrolled ? "text-muted-foreground" : "text-primary-foreground/70"
+      }`}
+      style={{ fontFamily: "'Montserrat', sans-serif" }}
+    >
+      Mentoring Club
+    </span>
+    <span
+      className={`text-[8px] my-0.5 transition-colors ${
+        isScrolled ? "text-secondary" : "text-secondary"
+      }`}
+    >
+      ✦
+    </span>
+    <span
+      className={`text-xl font-semibold tracking-wide transition-colors ${
+        isScrolled ? "text-foreground" : "text-primary-foreground"
+      }`}
+      style={{ fontFamily: "'Cormorant Garamond', serif" }}
+    >
+      SOBERANA
+    </span>
+  </div>
+);
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -37,7 +64,7 @@ export const Navbar = () => {
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled
             ? "bg-background/95 backdrop-blur-md shadow-md py-3"
             : "bg-transparent py-5"
@@ -46,21 +73,8 @@ export const Navbar = () => {
         <div className="container-soberana px-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3">
-              <img
-                src={brandLogo}
-                alt="Soberana"
-                className={`w-10 h-10 object-contain transition-all ${
-                  isScrolled ? "" : "brightness-0 invert"
-                }`}
-              />
-              <span
-                className={`font-serif font-bold text-xl hidden sm:block transition-colors ${
-                  isScrolled ? "text-foreground" : "text-primary-foreground"
-                }`}
-              >
-                Soberana
-              </span>
+            <Link to="/" className="flex items-center">
+              <SoberanaLogo isScrolled={isScrolled} />
             </Link>
 
             {/* Desktop Navigation */}
@@ -69,11 +83,12 @@ export const Navbar = () => {
                 <button
                   key={link.label}
                   onClick={() => scrollToSection(link.href)}
-                  className={`text-sm font-medium transition-colors hover:text-secondary ${
+                  className={`text-sm font-medium tracking-wide transition-all duration-300 hover:text-secondary relative group ${
                     isScrolled ? "text-muted-foreground" : "text-primary-foreground/80"
                   }`}
                 >
                   {link.label}
+                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-secondary transition-all duration-300 group-hover:w-full" />
                 </button>
               ))}
             </div>
@@ -83,13 +98,13 @@ export const Navbar = () => {
               <Button
                 variant="ghost"
                 asChild
-                className={isScrolled ? "" : "text-primary-foreground hover:bg-primary-foreground/10"}
+                className={`tracking-wide ${isScrolled ? "" : "text-primary-foreground hover:bg-primary-foreground/10"}`}
               >
                 <Link to="/auth">Área do Aluno</Link>
               </Button>
               <Button
                 asChild
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground tracking-wide"
               >
                 <a href="#captura">Quero Ser Soberana</a>
               </Button>
@@ -115,15 +130,20 @@ export const Navbar = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-background pt-20 lg:hidden"
+            className="fixed inset-0 z-40 bg-background pt-24 lg:hidden"
           >
             <div className="container-soberana px-4 py-8">
+              {/* Mobile Logo */}
+              <div className="flex justify-center mb-8">
+                <SoberanaLogo isScrolled={true} />
+              </div>
+              
               <div className="flex flex-col gap-4">
                 {navLinks.map((link) => (
                   <button
                     key={link.label}
                     onClick={() => scrollToSection(link.href)}
-                    className="text-lg font-medium text-foreground py-3 border-b border-border text-left"
+                    className="text-lg font-medium text-foreground py-3 border-b border-border/50 text-left tracking-wide"
                   >
                     {link.label}
                   </button>

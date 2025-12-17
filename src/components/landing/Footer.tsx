@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Instagram, Linkedin, Youtube, Mail, Phone, MapPin, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
-import brandLogo from "@/assets/brand-logo.png";
 
 const socialLinks = [
   { icon: Instagram, href: "https://instagram.com/fabianaduarte.adv", label: "Instagram" },
@@ -21,6 +20,24 @@ const legalLinks = [
   { label: "Termos de Uso", href: "/termos" },
 ];
 
+const SoberanaLogo = () => (
+  <div className="flex flex-col items-center leading-none">
+    <span
+      className="text-[10px] tracking-[0.3em] font-light uppercase text-background/60"
+      style={{ fontFamily: "'Montserrat', sans-serif" }}
+    >
+      Mentoring Club
+    </span>
+    <span className="text-secondary text-[8px] my-0.5">✦</span>
+    <span
+      className="text-xl font-semibold tracking-wide text-background"
+      style={{ fontFamily: "'Cormorant Garamond', serif" }}
+    >
+      SOBERANA
+    </span>
+  </div>
+);
+
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -31,12 +48,10 @@ export const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-1">
-            <img
-              src={brandLogo}
-              alt="Soberana Mentoring Club"
-              className="w-20 h-20 object-contain mb-4 brightness-0 invert"
-            />
-            <p className="text-background/70 mb-6 text-sm">
+            <div className="mb-6">
+              <SoberanaLogo />
+            </div>
+            <p className="text-background/70 mb-6 text-sm leading-relaxed">
               Transformando advogadas em CEOs dos seus próprios negócios através 
               da metodologia S.O.B.E.R.A.N.A.
             </p>
@@ -49,7 +64,7 @@ export const Footer = () => {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground transition-colors"
+                  className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-secondary hover:text-secondary-foreground transition-all duration-300"
                   aria-label={social.label}
                 >
                   <social.icon className="w-5 h-5" />
@@ -60,13 +75,13 @@ export const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-serif font-bold text-lg mb-4">Links Rápidos</h4>
+            <h4 className="font-serif font-bold text-lg mb-4 tracking-wide">Links Rápidos</h4>
             <ul className="space-y-2">
               {quickLinks.map((link, index) => (
                 <li key={index}>
                   <a
                     href={link.href}
-                    className="text-background/70 hover:text-secondary transition-colors text-sm"
+                    className="text-background/70 hover:text-secondary transition-colors text-sm tracking-wide"
                   >
                     {link.label}
                   </a>
@@ -75,7 +90,7 @@ export const Footer = () => {
               <li>
                 <Link
                   to="/auth"
-                  className="text-background/70 hover:text-secondary transition-colors text-sm"
+                  className="text-background/70 hover:text-secondary transition-colors text-sm tracking-wide"
                 >
                   Área do Aluno
                 </Link>
@@ -85,7 +100,7 @@ export const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h4 className="font-serif font-bold text-lg mb-4">Contato</h4>
+            <h4 className="font-serif font-bold text-lg mb-4 tracking-wide">Contato</h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm text-background/70">
                 <Mail className="w-4 h-4 mt-0.5 text-secondary" />
@@ -108,13 +123,13 @@ export const Footer = () => {
 
           {/* Legal & Admin */}
           <div>
-            <h4 className="font-serif font-bold text-lg mb-4">Legal</h4>
+            <h4 className="font-serif font-bold text-lg mb-4 tracking-wide">Legal</h4>
             <ul className="space-y-2 mb-6">
               {legalLinks.map((link, index) => (
                 <li key={index}>
                   <Link
                     to={link.href}
-                    className="text-background/70 hover:text-secondary transition-colors text-sm"
+                    className="text-background/70 hover:text-secondary transition-colors text-sm tracking-wide"
                   >
                     {link.label}
                   </Link>
@@ -138,10 +153,10 @@ export const Footer = () => {
       <div className="border-t border-background/10">
         <div className="container-soberana py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-background/50">
-            <p>
+            <p className="tracking-wide">
               © {currentYear} Soberana Mentoring Club. Todos os direitos reservados.
             </p>
-            <p>
+            <p className="tracking-wide">
               Feito com <span className="text-secondary">♥</span> para advogadas extraordinárias
             </p>
           </div>
