@@ -1,142 +1,159 @@
 import { motion } from "framer-motion";
-import { ChevronRight, ExternalLink } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ChevronRight, Sparkles } from "lucide-react";
 import { Program } from "@/data/programs";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { ProgramPreviewModal } from "./ProgramPreviewModal";
 
 interface ProgramCardProps {
   program: Program;
   index?: number;
 }
 
-const tierLabels = {
+const tierLabels: Record<string, string> = {
   entry: "Entrada",
   mid: "Premium",
   elite: "Elite"
 };
 
-const tierColors = {
-  entry: "bg-secondary/80 text-black",
-  mid: "bg-gradient-to-r from-secondary to-secondary-light text-black",
-  elite: "bg-gradient-to-r from-primary to-primary-light text-cream"
+const tierColors: Record<string, string> = {
+  entry: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+  mid: "bg-secondary/20 text-secondary border-secondary/30",
+  elite: "bg-purple-500/20 text-purple-400 border-purple-500/30"
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 30, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    scale: 1,
-    transition: { duration: 0.5 }
-  }
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
 };
 
 export const ProgramCard = ({ program, index = 0 }: ProgramCardProps) => {
-  const navigate = useNavigate();
+  const [showPreview, setShowPreview] = useState(false);
   const IconComponent = program.icon;
-  
-  const handleClick = () => {
-    // If it's an external link, open in new tab
-    if (program.ctaLink.startsWith('http')) {
-      window.open(program.ctaLink, '_blank');
-    } else {
-      navigate(`/programa/${program.slug}`);
-    }
-  };
 
   return (
-    <motion.div
-      variants={cardVariants}
-      whileHover={{ 
-        y: -8, 
-        scale: 1.02,
-        transition: { duration: 0.3 }
-      }}
-      whileTap={{ scale: 0.98 }}
-      className="group cursor-pointer"
-      onClick={handleClick}
-    >
-      <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-secondary/20 hover:border-secondary/50 transition-all duration-300 shadow-lg hover:shadow-[0_0_40px_rgba(166,144,97,0.2)]">
-        {/* Background Image */}
-        {program.image && (
-          <img 
-            src={program.image} 
-            alt={program.subtitle}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-        )}
+    <>
+      <motion.div
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ duration: 0.5, delay: index * 0.1 }}
+        whileHover={{ y: -8 }}
+        className="group cursor-pointer relative"
+        onClick={() => setShowPreview(true)}
+      >
+        {/* Shimmer Border Effect */}
+        <div className="absolute -inset-[1px] rounded-xl bg-gradient-to-r from-transparent via-secondary/50 to-transparent bg-[length:200%_100%] animate-shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
-        
-        {/* Tier Badge */}
-        <div className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold ${tierColors[program.tier]}`}>
-          {tierLabels[program.tier]}
-        </div>
-        
-        {/* Featured Badge */}
-        {program.featured && (
-          <div className="absolute top-3 right-3 px-2 py-1 bg-primary/90 rounded-full text-xs font-semibold text-cream flex items-center gap-1">
-            <span className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse" />
-            Destaque
-          </div>
-        )}
-        
-        {/* Icon */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="w-16 h-16 rounded-full bg-secondary/20 backdrop-blur-sm flex items-center justify-center border border-secondary/40">
-            <IconComponent className="w-8 h-8 text-secondary" />
-          </div>
-        </div>
-        
-        {/* Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          {/* Impact Phrase */}
-          <p className="text-secondary text-xs font-medium mb-1 tracking-wide uppercase">
-            {program.impactPhrase}
-          </p>
-          
-          {/* Title */}
-          <h3 className="font-serif text-lg text-cream font-bold mb-2 leading-tight">
-            {program.subtitle}
-          </h3>
-          
-          {/* Description */}
-          <p className="text-cream/60 text-sm line-clamp-2 mb-3">
-            {program.description}
-          </p>
-          
-          {/* Price & CTA */}
-          <div className="flex items-center justify-between">
-            {program.price ? (
-              <span className="text-secondary font-bold text-lg">
-                {program.price}
-              </span>
-            ) : (
-              <span className="text-cream/50 text-sm">Consultar valores</span>
+        {/* Card Content */}
+        <div className="relative bg-zinc-900/80 rounded-xl overflow-hidden border border-secondary/10 group-hover:border-secondary/30 transition-all duration-300">
+          {/* Image Container */}
+          <div className="relative aspect-[4/5] overflow-hidden">
+            {program.image && (
+              <img 
+                src={program.image} 
+                alt={program.title}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
             )}
             
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="text-secondary hover:text-secondary hover:bg-secondary/10 gap-1 p-2"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleClick();
-              }}
-            >
-              Conhecer
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Button>
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
+            
+            {/* Premium Glow Effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+            
+            {/* Floating Particles */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 h-1 rounded-full bg-secondary/60"
+                  initial={{ 
+                    x: `${20 + Math.random() * 60}%`, 
+                    y: "100%", 
+                    opacity: 0 
+                  }}
+                  animate={{ 
+                    y: "0%", 
+                    opacity: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: 2 + Math.random() * 1.5,
+                    repeat: Infinity,
+                    delay: Math.random() * 2
+                  }}
+                />
+              ))}
+            </div>
+            
+            {/* Tier Badge */}
+            <div className={`absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-medium border backdrop-blur-sm ${tierColors[program.tier]}`}>
+              {tierLabels[program.tier]}
+            </div>
+            
+            {/* Featured Badge */}
+            {program.featured && (
+              <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-secondary/90 text-black text-xs font-semibold flex items-center gap-1">
+                <Sparkles className="w-3 h-3" />
+                Destaque
+              </div>
+            )}
+            
+            {/* Icon */}
+            <div className="absolute bottom-4 left-4 p-3 rounded-xl bg-zinc-900/80 backdrop-blur-sm border border-secondary/20 group-hover:border-secondary/40 transition-colors">
+              <IconComponent className="w-6 h-6 text-secondary" />
+            </div>
+          </div>
+          
+          {/* Info Section */}
+          <div className="p-5 space-y-3">
+            {/* Impact Phrase */}
+            {program.impactPhrase && (
+              <p className="text-secondary text-xs font-medium tracking-wide uppercase">
+                {program.impactPhrase}
+              </p>
+            )}
+            
+            {/* Title */}
+            <h3 className="font-serif text-lg text-cream group-hover:text-secondary transition-colors line-clamp-2">
+              {program.subtitle}
+            </h3>
+            
+            {/* Description */}
+            <p className="text-cream/50 text-sm line-clamp-2 leading-relaxed">
+              {program.description}
+            </p>
+            
+            {/* Footer */}
+            <div className="flex items-center justify-between pt-3 border-t border-secondary/10">
+              {program.price ? (
+                <span className="text-secondary font-bold">{program.price}</span>
+              ) : (
+                <span className="text-cream/40 text-sm">Consultar</span>
+              )}
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-cream/70 hover:text-secondary hover:bg-secondary/10 group-hover:translate-x-1 transition-all"
+              >
+                Conhecer
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
           </div>
         </div>
         
-        {/* Hover Glow Effect */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-secondary/10 to-transparent" />
-        </div>
-      </div>
-    </motion.div>
+        {/* Glow Effect on Hover */}
+        <div className="absolute -inset-4 rounded-2xl bg-secondary/5 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+      </motion.div>
+
+      <ProgramPreviewModal 
+        program={program}
+        isOpen={showPreview}
+        onClose={() => setShowPreview(false)}
+      />
+    </>
   );
 };
 
