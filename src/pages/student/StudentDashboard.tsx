@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useGamification } from "@/hooks/useGamification";
 import { motion } from "framer-motion";
 import { 
   BookOpen, 
@@ -11,13 +12,15 @@ import {
   Flame,
   Star,
   Trophy,
-  TrendingUp,
   Menu,
   X,
   LogOut,
-  User
+  User,
+  Medal,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import StatsCard from "@/components/student/StatsCard";
 import CourseCard from "@/components/student/CourseCard";
 import ContinueWatching from "@/components/student/ContinueWatching";
@@ -47,6 +50,7 @@ interface ContinueItem {
 const StudentDashboard = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { stats: gamificationStats, calculateLevel, getCurrentLevelProgress } = useGamification();
   const [enrollments, setEnrollments] = useState<EnrollmentWithCourse[]>([]);
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [courseStats, setCourseStats] = useState<Record<string, { total: number; completed: number }>>({});
@@ -55,6 +59,9 @@ const StudentDashboard = () => {
   const [continueWatching, setContinueWatching] = useState<ContinueItem[]>([]);
   const [totalCompleted, setTotalCompleted] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const level = gamificationStats ? calculateLevel(gamificationStats.xp) : 1;
+  const levelProgress = gamificationStats ? getCurrentLevelProgress(gamificationStats.xp) : 0;
 
   useEffect(() => {
     if (user) {
@@ -230,7 +237,25 @@ const StudentDashboard = () => {
           
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-6">
-            <nav className="flex items-center gap-4">
+            <nav className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/student/achievements")}
+                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <Trophy className="w-4 h-4 mr-2" />
+                Conquistas
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/student/certificates")}
+                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <Medal className="w-4 h-4 mr-2" />
+                Certificados
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -272,6 +297,22 @@ const StudentDashboard = () => {
             <nav className="flex flex-col gap-2">
               <Button
                 variant="ghost"
+                onClick={() => { navigate("/student/achievements"); setMobileMenuOpen(false); }}
+                className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <Trophy className="w-4 h-4 mr-2" />
+                Conquistas
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => { navigate("/student/certificates"); setMobileMenuOpen(false); }}
+                className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <Medal className="w-4 h-4 mr-2" />
+                Certificados
+              </Button>
+              <Button
+                variant="ghost"
                 className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
               >
                 <User className="w-4 h-4 mr-2" />
@@ -291,21 +332,48 @@ const StudentDashboard = () => {
       </header>
 
       <main className="container-soberana py-8 px-4">
-        {/* Welcome Banner */}
+        {/* Welcome Banner with XP */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-marsala-light to-primary p-8 mb-8"
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-marsala-light to-primary p-6 md:p-8 mb-8"
         >
           <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
-          <div className="relative z-10">
-            <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary-foreground mb-2">
-              Olá, {firstName}! 👋
-            </h1>
-            <p className="text-primary-foreground/80 max-w-xl">
-              Continue sua jornada para se tornar uma advogada soberana. 
-              Você está indo muito bem!
-            </p>
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <h1 className="text-2xl md:text-4xl font-serif font-bold text-primary-foreground mb-2">
+                Olá, {firstName}! 👋
+              </h1>
+              <p className="text-primary-foreground/80 max-w-xl">
+                Continue sua jornada para se tornar uma advogada soberana.
+              </p>
+            </div>
+            
+            {/* XP and Streak */}
+            <div className="flex items-center gap-4">
+              <div 
+                className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 cursor-pointer hover:bg-primary-foreground/20 transition-colors"
+                onClick={() => navigate("/student/achievements")}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <Star className="w-5 h-5 text-secondary" />
+                  <span className="text-sm text-primary-foreground/70">Nível {level}</span>
+                </div>
+                <p className="text-2xl font-bold text-primary-foreground">{gamificationStats?.xp || 0} XP</p>
+                <Progress value={levelProgress} className="h-1.5 mt-2 bg-primary-foreground/20" />
+              </div>
+              
+              <div 
+                className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 cursor-pointer hover:bg-primary-foreground/20 transition-colors"
+                onClick={() => navigate("/student/achievements")}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <Flame className="w-5 h-5 text-orange-400" />
+                  <span className="text-sm text-primary-foreground/70">Streak</span>
+                </div>
+                <p className="text-2xl font-bold text-primary-foreground">{gamificationStats?.streak_days || 0} dias</p>
+              </div>
+            </div>
           </div>
           
           {/* Decorative elements */}

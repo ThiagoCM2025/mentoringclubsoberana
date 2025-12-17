@@ -50,6 +50,47 @@ export type Database = {
         }
         Relationships: []
       }
+      certificates: {
+        Row: {
+          certificate_number: string
+          completion_date: string
+          course_id: string
+          course_title: string
+          id: string
+          issued_at: string
+          student_name: string
+          user_id: string
+        }
+        Insert: {
+          certificate_number: string
+          completion_date?: string
+          course_id: string
+          course_title: string
+          id?: string
+          issued_at?: string
+          student_name: string
+          user_id: string
+        }
+        Update: {
+          certificate_number?: string
+          completion_date?: string
+          course_id?: string
+          course_title?: string
+          id?: string
+          issued_at?: string
+          student_name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           created_at: string
@@ -268,6 +309,44 @@ export type Database = {
           },
         ]
       }
+      lesson_notes: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          lesson_id: string
+          timestamp_seconds: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          lesson_id: string
+          timestamp_seconds?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          timestamp_seconds?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_notes_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lessons: {
         Row: {
           created_at: string
@@ -444,6 +523,35 @@ export type Database = {
           },
         ]
       }
+      user_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          lesson_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lesson_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_gamification: {
         Row: {
           created_at: string
@@ -509,6 +617,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_certificate: {
+        Args: {
+          p_course_id: string
+          p_course_title: string
+          p_student_name: string
+          p_user_id: string
+        }
+        Returns: string
+      }
       get_leaderboard: {
         Args: { limit_count?: number }
         Returns: {
