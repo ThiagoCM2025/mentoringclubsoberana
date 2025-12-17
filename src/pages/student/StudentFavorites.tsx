@@ -13,7 +13,7 @@ import {
   Trash2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import brandLogo from "@/assets/brand-logo.png";
+import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 
 interface FavoriteLesson {
   id: string;
@@ -99,21 +99,31 @@ const StudentFavorites = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground py-4 px-4 sticky top-0 z-50">
+      <header className="bg-black border-b border-secondary/20 py-4 px-4 sticky top-0 z-50">
         <div className="container-soberana flex items-center gap-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate("/student")}
-            className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+            className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div className="flex items-center gap-3">
-            <img src={brandLogo} alt="Soberana" className="w-10 h-10 object-contain" />
-            <span className="font-serif font-bold text-xl">Aulas Favoritas</span>
+            <img src={isotipoGold} alt="Soberana" className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
+            <div className="flex flex-col leading-tight">
+              <span className="text-cream/70 text-[9px] tracking-[0.15em] uppercase">
+                Mentoring
+              </span>
+              <span className="text-cream/70 text-[9px] tracking-[0.15em] uppercase -mt-0.5">
+                Club
+              </span>
+              <span className="font-serif font-bold text-secondary text-sm tracking-wider mt-0.5">
+                SOBERANA
+              </span>
+            </div>
           </div>
         </div>
       </header>
@@ -124,8 +134,8 @@ const StudentFavorites = () => {
             <Heart className="w-6 h-6 text-secondary" />
           </div>
           <div>
-            <h1 className="text-2xl font-serif font-bold text-foreground">Minhas Aulas Favoritas</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl font-serif font-bold text-cream">Minhas Aulas Favoritas</h1>
+            <p className="text-cream/60">
               {favorites.length} {favorites.length === 1 ? 'aula salva' : 'aulas salvas'}
             </p>
           </div>
@@ -133,20 +143,20 @@ const StudentFavorites = () => {
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-2 border-secondary border-t-transparent rounded-full" />
           </div>
         ) : favorites.length === 0 ? (
           <div className="text-center py-16 px-4">
-            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-              <Heart className="w-10 h-10 text-muted-foreground" />
+            <div className="w-20 h-20 rounded-full bg-zinc-900 flex items-center justify-center mx-auto mb-4">
+              <Heart className="w-10 h-10 text-cream/40" />
             </div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">
+            <h3 className="text-xl font-semibold text-cream mb-2">
               Nenhuma aula favorita ainda
             </h3>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+            <p className="text-cream/50 mb-6 max-w-md mx-auto">
               Clique no ícone de coração nas aulas para salvá-las aqui e acessá-las facilmente depois.
             </p>
-            <Button onClick={() => navigate("/student")} className="bg-primary hover:bg-primary/90">
+            <Button onClick={() => navigate("/student")} className="bg-secondary hover:bg-secondary/90 text-black">
               <BookOpen className="w-4 h-4 mr-2" />
               Explorar cursos
             </Button>
@@ -159,7 +169,7 @@ const StudentFavorites = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="bg-card rounded-xl overflow-hidden border border-border shadow-sm hover:shadow-md transition-shadow"
+                className="bg-zinc-900 rounded-xl overflow-hidden border border-secondary/10 shadow-sm hover:shadow-md transition-shadow hover:border-secondary/30"
               >
                 <div 
                   className="aspect-video bg-muted relative cursor-pointer"
@@ -185,16 +195,16 @@ const StudentFavorites = () => {
                   <p className="text-xs text-secondary font-medium uppercase tracking-wider mb-1">
                     {favorite.lessons.modules?.courses?.title}
                   </p>
-                  <h3 className="font-semibold text-foreground line-clamp-2 mb-2">
+                  <h3 className="font-semibold text-cream line-clamp-2 mb-2">
                     {favorite.lessons.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-3">
+                  <p className="text-sm text-cream/50 mb-3">
                     {favorite.lessons.modules?.title}
                   </p>
                   
                   <div className="flex items-center justify-between">
                     {favorite.lessons.duration_minutes && (
-                      <span className="flex items-center text-sm text-muted-foreground">
+                      <span className="flex items-center text-sm text-cream/50">
                         <Clock className="w-4 h-4 mr-1" />
                         {favorite.lessons.duration_minutes} min
                       </span>
