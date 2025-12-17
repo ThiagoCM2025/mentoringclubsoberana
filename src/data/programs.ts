@@ -1,4 +1,4 @@
-import { Bot, Sparkles, Rocket, Target, Crown, LucideIcon } from "lucide-react";
+import { Bot, Calendar, Rocket, Star, Crown, LucideIcon } from "lucide-react";
 
 export interface ProgramTestimonial {
   name: string;
@@ -15,6 +15,7 @@ export interface ProgramFAQ {
 export interface Program {
   slug: string;
   title: string;
+  titleHighlight?: string;
   subtitle: string;
   impactPhrase: string;
   description: string;
@@ -34,6 +35,7 @@ export interface Program {
   icon: LucideIcon;
   tier: "entry" | "mid" | "elite";
   featured?: boolean;
+  image?: string;
   testimonials: ProgramTestimonial[];
   faq: ProgramFAQ[];
   modules?: {
@@ -45,9 +47,10 @@ export interface Program {
 export const programs: Record<string, Program> = {
   "workshop-ia": {
     slug: "workshop-ia",
-    title: "Workshop Soberana IA",
-    subtitle: "O seu primeiro passo",
-    impactPhrase: "Ganhe tempo e autoridade com tecnologia.",
+    title: "Ganhe tempo e autoridade com tecnologia",
+    titleHighlight: "com tecnologia",
+    subtitle: "Workshop Soberana IA",
+    impactPhrase: "O seu primeiro passo.",
     description: "Domine as Inteligências Artificiais treinadas para advocacia. Recupere horas da sua semana com ajuda da IA no que é repetitivo e na criação de estratégias de negócios, produção de conteúdo e vendas.",
     fullDescription: "O Workshop Soberana IA foi desenvolvido para advogadas que querem usar a tecnologia a seu favor. Você vai aprender a usar IAs treinadas especificamente para a advocacia, automatizando tarefas repetitivas e ganhando tempo para focar no que realmente importa: seus clientes e seu crescimento.",
     targetAudience: [
@@ -99,9 +102,10 @@ export const programs: Record<string, Program> = {
   },
   "experience-start": {
     slug: "experience-start",
-    title: "Soberana Experience Start",
-    subtitle: "O despertar em SP",
-    impactPhrase: "Networking e estratégia presencial mão na massa em um dia exclusivo.",
+    title: "Networking e estratégia presencial em um dia exclusivo",
+    titleHighlight: "em um dia exclusivo",
+    subtitle: "Soberana Experience Start",
+    impactPhrase: "O despertar em SP.",
     description: "Oficinas presenciais personalíssimas em São Paulo para apenas 12 mulheres. Um dia de imersão prática para destravar sua visão de negócio.",
     fullDescription: "O Soberana Experience Start é uma oficina presencial exclusiva em São Paulo, limitada a apenas 12 advogadas. Um dia intensivo de imersão prática para destravar sua visão de negócio, com networking de alto nível e estratégias aplicáveis imediatamente.",
     targetAudience: [
@@ -123,7 +127,7 @@ export const programs: Record<string, Program> = {
     ],
     ctaLink: "https://form.typeform.com/to/WcPbnyhP",
     ctaText: "Ver Próximas Datas em SP",
-    icon: Sparkles,
+    icon: Calendar,
     tier: "entry",
     testimonials: [
       {
@@ -156,8 +160,9 @@ export const programs: Record<string, Program> = {
   },
   "aceleracao": {
     slug: "aceleracao",
-    title: "Programa de Aceleração",
-    subtitle: "90 Dias de Transformação",
+    title: "Estruture sua advocacia em 90 dias",
+    titleHighlight: "em 90 dias",
+    subtitle: "Programa de Aceleração Soberana",
     impactPhrase: "A fundação do seu escritório lucrativo.",
     description: "Mentoria em grupo focada nos 6 pilares: Mentalidade, Posicionamento, Marketing, Vendas, Precificação e Gestão.",
     fullDescription: "O Programa de Aceleração é a mentoria em grupo de 90 dias para advogadas que querem sair do caos e estruturar um negócio jurídico organizado e lucrativo. Trabalhamos os 6 pilares fundamentais da Metodologia Soberana para você construir uma base sólida.",
@@ -224,9 +229,10 @@ export const programs: Record<string, Program> = {
   },
   "mentoria-360": {
     slug: "mentoria-360",
-    title: "Mentoria Soberana 360°",
-    subtitle: "Semestral",
-    impactPhrase: "Eu percorro o caminho com você.",
+    title: "Eu percorro o caminho com você",
+    titleHighlight: "com você",
+    subtitle: "Mentoria Soberana 360°",
+    impactPhrase: "Acompanhamento semestral de elite.",
     description: "O acompanhamento de elite para quem quer escala. Aqui eu não apenas ensino, eu implemento junto com você.",
     fullDescription: "A Mentoria Soberana 360° é meu programa de acompanhamento semestral para advogadas que querem escalar seu escritório com posicionamento premium, tráfego pago e autoridade digital. O diferencial? Eu não apenas ensino: eu implemento junto com você.",
     targetAudience: [
@@ -251,7 +257,7 @@ export const programs: Record<string, Program> = {
       link: "https://wa.me/5511993563468?text=Olá! Quero aplicar para a Mentoria Soberana 360°",
       text: "Conversar com a Fabiana"
     },
-    icon: Target,
+    icon: Star,
     tier: "mid",
     featured: true,
     testimonials: [
@@ -285,9 +291,10 @@ export const programs: Record<string, Program> = {
   },
   "elite": {
     slug: "elite",
-    title: "Soberana Elite",
-    subtitle: "Mastermind Anual",
-    impactPhrase: "O próximo nível da liberdade e da liderança jurídica.",
+    title: "O próximo nível da liberdade e liderança jurídica",
+    titleHighlight: "liberdade e liderança jurídica",
+    subtitle: "Soberana Elite — Mastermind Anual",
+    impactPhrase: "Para quem lidera impérios.",
     description: "Para quem já deixou de ser apenas advogada e agora lidera um império. O Mastermind Elite é o ambiente de quem não aceita caminhar sozinha.",
     fullDescription: "O Mastermind Soberana Elite é um acompanhamento exclusivo de 12 meses para advogadas que já estruturaram a base e agora buscam consolidação de marca, gestão de equipe e crescimento a longo prazo. Foco total em escala, liderança de associados, cultura empresarial e networking premium.",
     targetAudience: [
