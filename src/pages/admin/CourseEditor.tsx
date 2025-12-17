@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ArrowLeft, Save, Settings, Layers, FileText, Eye } from "lucide-react";
+import { Program } from "@/data/programs";
 
 // Tab Components
 import CourseBasicInfoTab from "@/components/admin/course/CourseBasicInfoTab";
@@ -60,6 +61,7 @@ const CourseEditor = () => {
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("basic");
+  const [pendingModules, setPendingModules] = useState<{ title: string; description: string }[]>([]);
 
   useEffect(() => {
     if (!isNew && courseId) {
@@ -109,6 +111,14 @@ const CourseEditor = () => {
     setLoading(false);
   };
 
+  const handleProgramSelected = (program: Program) => {
+    if (program.modules && program.modules.length > 0) {
+      setPendingModules(program.modules);
+    } else {
+      setPendingModules([]);
+    }
+  };
+
   const saveCourse = async () => {
     if (!course.title) {
       toast({ title: "Título é obrigatório", variant: "destructive" });
@@ -133,7 +143,38 @@ const CourseEditor = () => {
           .single();
 
         if (error) throw error;
-        toast({ title: "Curso criado com sucesso!" });
+
+        // Create modules automatically if a program was selected
+        if (pendingModules.length > 0 && data) {
+          const modulesToInsert = pendingModules.map((m, index) => ({
+            course_id: data.id,
+            title: m.title,
+            description: m.description,
+            order_index: index,
+          }));
+
+          const { error: modulesError } = await supabase
+            .from("modules")
+            .insert(modulesToInsert);
+
+          if (modulesError) {
+            console.error("Error creating modules:", modulesError);
+            toast({ 
+              title: "Curso criado, mas houve erro ao criar módulos", 
+              variant: "destructive" 
+            });
+          } else {
+            toast({ 
+              title: "Curso e módulos criados com sucesso!",
+              description: `${pendingModules.length} módulos foram criados automaticamente.`
+            });
+          }
+
+          setPendingModules([]);
+        } else {
+          toast({ title: "Curso criado com sucesso!" });
+        }
+
         navigate(`/admin/courses/${data.id}`);
       } else {
         const { error } = await supabase
@@ -246,6 +287,7 @@ const CourseEditor = () => {
                 <CourseBasicInfoTab
                   course={course}
                   onChange={setCourse}
+                  onProgramSelected={handleProgramSelected}
                 />
               </div>
             </TabsContent>
@@ -291,6 +333,11 @@ const CourseEditor = () => {
             <div className="mt-6 p-4 rounded-lg bg-secondary/10 border border-secondary/20">
               <p className="text-sm text-secondary">
                 💡 Salve o curso primeiro para poder adicionar módulos, aulas e materiais.
+                {pendingModules.length > 0 && (
+                  <span className="block mt-1">
+                    <strong>{pendingModules.length} módulos</strong> serão criados automaticamente ao salvar.
+                  </span>
+                )}
               </p>
             </div>
           )}
