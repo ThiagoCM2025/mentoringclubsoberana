@@ -103,10 +103,10 @@ const AdminCourses = () => {
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
         >
           <div>
-            <h1 className="text-3xl font-serif font-bold text-cream mb-2">
+            <h1 className="text-3xl font-serif font-bold text-cream title-premium mb-2">
               Cursos
             </h1>
-            <p className="text-cream/60">
+            <p className="text-cream/80">
               Gerencie todos os cursos da plataforma
             </p>
           </div>
@@ -131,7 +131,7 @@ const AdminCourses = () => {
         </div>
 
         {/* Table */}
-        <div className="admin-card overflow-hidden">
+        <div className="admin-table-container">
           <Table>
             <TableHeader>
               <TableRow>
@@ -145,15 +145,15 @@ const AdminCourses = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
+                  <TableCell colSpan={5} className="text-center py-8 text-cream/70">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredCourses.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8">
-                    <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">Nenhum curso encontrado</p>
+                    <BookOpen className="w-12 h-12 text-cream/40 mx-auto mb-3" />
+                    <p className="text-cream/70">Nenhum curso encontrado</p>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -161,8 +161,8 @@ const AdminCourses = () => {
                   <TableRow key={course.id}>
                     <TableCell>
                       <div>
-                        <p className="font-medium">{course.title}</p>
-                        <p className="text-sm text-muted-foreground line-clamp-1">
+                        <p className="font-medium text-cream">{course.title}</p>
+                        <p className="text-sm text-cream/60 line-clamp-1">
                           {course.description}
                         </p>
                       </div>
@@ -178,12 +178,12 @@ const AdminCourses = () => {
                         {course.is_published ? "Publicado" : "Rascunho"}
                       </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-cream/80">
                       {course.price
                         ? `R$ ${course.price.toFixed(2)}`
                         : "Gratuito"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-cream/70">
                       {new Date(course.created_at).toLocaleDateString("pt-BR")}
                     </TableCell>
                     <TableCell>

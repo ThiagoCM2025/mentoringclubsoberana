@@ -69,18 +69,18 @@ const ContinueWatching = ({ items }: ContinueWatchingProps) => {
             </div>
 
             <div className="p-4">
-              <p className="text-xs text-cream/40 mb-1 truncate">
+              <p className="text-xs text-secondary mb-1 truncate font-medium">
                 {item.courseTitle}
               </p>
               <h3 className="font-medium text-cream line-clamp-2 mb-2">
                 {item.lessonTitle}
               </h3>
-              <div className="flex items-center justify-between text-xs text-cream/40">
+              <div className="flex items-center justify-between text-xs text-cream/70">
                 <span className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {item.duration ? `${item.duration} min` : "—"}
                 </span>
-                <span className="text-secondary font-medium">
+                <span className="text-secondary font-semibold">
                   {item.progress}% completo
                 </span>
               </div>

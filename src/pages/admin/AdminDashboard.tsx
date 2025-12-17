@@ -544,7 +544,7 @@ const AdminDashboard = () => {
 
   const PeriodSelector = ({ value, onChange }: { value: PeriodFilter; onChange: (v: PeriodFilter) => void }) => (
     <Select value={value} onValueChange={(v) => onChange(v as PeriodFilter)}>
-      <SelectTrigger className="w-[120px] h-8 text-xs border-0 bg-muted/50">
+      <SelectTrigger className="w-[120px] h-8 text-xs border-secondary/30 bg-zinc-800/80 text-cream">
         <Calendar className="w-3 h-3 mr-1" />
         <SelectValue />
       </SelectTrigger>
@@ -567,10 +567,10 @@ const AdminDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-foreground mb-1">
+          <h1 className="text-3xl font-bold text-cream title-premium mb-1">
             Dashboard
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-cream/80">
             Visão geral do seu ecossistema de cursos
           </p>
         </motion.div>
@@ -584,26 +584,24 @@ const AdminDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Card className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300">
-                <div className={`absolute top-0 right-0 w-24 h-24 ${stat.bgLight} rounded-bl-[100px] opacity-60`} />
-                <CardContent className="p-5">
+              <div className="admin-stat-card p-5">
+                <div className={`absolute top-0 right-0 w-24 h-24 bg-secondary/5 rounded-bl-[100px] opacity-60`} />
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center mb-3 shadow-lg`}>
                     <stat.icon className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex items-end gap-2">
-                    <p className="text-2xl font-bold text-foreground">
+                    <p className="text-2xl font-bold text-cream">
                       {loading ? "-" : stat.value}
                     </p>
                     {stat.trend !== undefined && (
-                      <span className={`text-xs font-medium flex items-center ${stat.trendUp ? 'text-emerald-600' : 'text-red-500'}`}>
+                      <span className={`text-xs font-medium flex items-center ${stat.trendUp ? 'text-emerald-400' : 'text-red-400'}`}>
                         {stat.trendUp ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                         {Math.abs(stat.trend)}%
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
-                </CardContent>
-              </Card>
+                  <p className="text-xs text-cream/75 mt-1 font-medium">{stat.label}</p>
+              </div>
             </motion.div>
           ))}
         </div>

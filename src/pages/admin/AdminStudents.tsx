@@ -234,11 +234,11 @@ const AdminStudents = () => {
           className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
         >
           <div>
-            <h1 className="text-3xl font-serif font-bold text-cream mb-2">
+            <h1 className="text-3xl font-serif font-bold text-cream title-premium mb-2">
               Alunos
             </h1>
-            <p className="text-cream/60">
-              Gerencie todos os alunos cadastrados
+            <p className="text-cream/80">
+              Gerencie todos os alunos cadastrados na plataforma
             </p>
           </div>
 
@@ -402,7 +402,7 @@ const AdminStudents = () => {
         </div>
 
         {/* Table */}
-        <div className="admin-card overflow-hidden">
+        <div className="admin-table-container">
           <Table>
             <TableHeader>
               <TableRow className="border-secondary/20 hover:bg-zinc-800/50">
@@ -417,37 +417,37 @@ const AdminStudents = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8 text-cream/70">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredStudents.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
-                    <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">Nenhum aluno encontrado</p>
+                    <Users className="w-12 h-12 text-cream/40 mx-auto mb-3" />
+                    <p className="text-cream/70">Nenhum aluno encontrado</p>
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredStudents.map((student) => (
-                  <TableRow key={student.id}>
+                  <TableRow key={student.id} className="border-secondary/10">
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-primary font-medium">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-secondary-light flex items-center justify-center">
+                          <span className="text-black font-semibold">
                             {student.full_name?.charAt(0)?.toUpperCase() || "A"}
                           </span>
                         </div>
                         <div>
-                          <p className="font-medium">{student.full_name || "Sem nome"}</p>
-                          <p className="text-xs text-muted-foreground">{student.user_id}</p>
+                          <p className="font-medium text-cream">{student.full_name || "Sem nome"}</p>
+                          <p className="text-xs text-cream/60">{student.user_id.slice(0, 8)}...</p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{student.phone || "-"}</TableCell>
+                    <TableCell className="text-cream/80">{student.phone || "-"}</TableCell>
                     <TableCell>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        student.enrollment_count ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                        student.enrollment_count ? 'bg-secondary/20 text-secondary' : 'bg-zinc-800 text-cream/60'
                       }`}>
                         {student.enrollment_count || 0}
                       </span>
@@ -465,7 +465,7 @@ const AdminStudents = () => {
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-cream/70">
                       {new Date(student.created_at).toLocaleDateString("pt-BR")}
                     </TableCell>
                     <TableCell className="text-right">
@@ -474,7 +474,7 @@ const AdminStudents = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => navigate(`/admin/students/${student.user_id}`)}
-                          className="gap-2"
+                          className="gap-2 text-cream/80 hover:text-cream hover:bg-zinc-800"
                         >
                           <User className="w-4 h-4" />
                           Ver Perfil
@@ -483,7 +483,7 @@ const AdminStudents = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => openEnrollDialog(student)}
-                          className="gap-2"
+                          className="gap-2 border-secondary/30 text-cream hover:bg-secondary/10 hover:border-secondary/50"
                         >
                           <GraduationCap className="w-4 h-4" />
                           Matricular
