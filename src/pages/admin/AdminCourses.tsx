@@ -103,16 +103,16 @@ const AdminCourses = () => {
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
         >
           <div>
-            <h1 className="text-3xl font-serif font-bold text-cream title-premium mb-2">
+            <h1 className="text-3xl font-serif font-bold text-foreground title-premium mb-2">
               Cursos
             </h1>
-            <p className="text-cream/80">
+            <p className="text-muted-foreground">
               Gerencie todos os cursos da plataforma
             </p>
           </div>
           <Button
             onClick={() => navigate("/admin/courses/new")}
-            className="bg-secondary hover:bg-secondary/90 text-black btn-glow-gold"
+            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground btn-glow-gold"
           >
             <Plus className="w-4 h-4 mr-2" />
             Novo Curso
@@ -121,12 +121,12 @@ const AdminCourses = () => {
 
         {/* Search */}
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cream/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Buscar cursos..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
+            className="pl-10 bg-card border-border text-foreground placeholder:text-muted-foreground"
           />
         </div>
 
@@ -145,15 +145,15 @@ const AdminCourses = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-cream/70">
+                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredCourses.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8">
-                    <BookOpen className="w-12 h-12 text-cream/40 mx-auto mb-3" />
-                    <p className="text-cream/70">Nenhum curso encontrado</p>
+                    <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground">Nenhum curso encontrado</p>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -161,8 +161,8 @@ const AdminCourses = () => {
                   <TableRow key={course.id}>
                     <TableCell>
                       <div>
-                        <p className="font-medium text-cream">{course.title}</p>
-                        <p className="text-sm text-cream/60 line-clamp-1">
+                        <p className="font-medium text-foreground">{course.title}</p>
+                        <p className="text-sm text-muted-foreground line-clamp-1">
                           {course.description}
                         </p>
                       </div>
@@ -171,19 +171,19 @@ const AdminCourses = () => {
                       <span
                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                           course.is_published
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
+                            ? "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400"
+                            : "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400"
                         }`}
                       >
                         {course.is_published ? "Publicado" : "Rascunho"}
                       </span>
                     </TableCell>
-                    <TableCell className="text-cream/80">
+                    <TableCell className="text-muted-foreground">
                       {course.price
                         ? `R$ ${course.price.toFixed(2)}`
                         : "Gratuito"}
                     </TableCell>
-                    <TableCell className="text-cream/70">
+                    <TableCell className="text-muted-foreground">
                       {new Date(course.created_at).toLocaleDateString("pt-BR")}
                     </TableCell>
                     <TableCell>

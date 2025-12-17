@@ -203,13 +203,17 @@
            bg-secondary/10 text-secondary border border-secondary/20;
   }
 
-  /* Admin Area - Better Readability */
+  /* Admin Area - Better Readability & Contrast */
   .admin-title {
-    @apply font-admin font-semibold tracking-tight;
+    @apply font-admin font-semibold tracking-tight text-foreground;
   }
 
   .admin-text {
-    @apply font-admin;
+    @apply font-admin text-foreground;
+  }
+
+  .admin-text-muted {
+    @apply font-admin text-muted-foreground;
   }
 
   .admin-label {
@@ -217,8 +221,22 @@
   }
 
   .admin-card {
-    @apply bg-card rounded-lg border border-border/50 shadow-md 
+    @apply bg-card rounded-lg border border-border shadow-md 
            transition-all duration-300 hover:shadow-lg;
+  }
+
+  .admin-input {
+    @apply bg-card border-border text-foreground placeholder:text-muted-foreground
+           focus:border-secondary focus:ring-secondary/20;
+  }
+
+  .admin-stat-card {
+    @apply bg-card rounded-xl border border-border/50 shadow-sm relative overflow-hidden
+           transition-all duration-300 hover:shadow-lg hover:border-secondary/30;
+  }
+
+  .admin-table-container {
+    @apply bg-card rounded-xl border border-border overflow-hidden;
   }
 
   /* ============ SECTION PATTERN BACKGROUNDS ============ */

@@ -544,7 +544,7 @@ const AdminDashboard = () => {
 
   const PeriodSelector = ({ value, onChange }: { value: PeriodFilter; onChange: (v: PeriodFilter) => void }) => (
     <Select value={value} onValueChange={(v) => onChange(v as PeriodFilter)}>
-      <SelectTrigger className="w-[120px] h-8 text-xs border-secondary/30 bg-zinc-800/80 text-cream">
+      <SelectTrigger className="w-[120px] h-8 text-xs border-border bg-card text-foreground">
         <Calendar className="w-3 h-3 mr-1" />
         <SelectValue />
       </SelectTrigger>
@@ -567,10 +567,10 @@ const AdminDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-cream title-premium mb-1">
+          <h1 className="text-3xl font-bold text-foreground title-premium mb-1">
             Dashboard
           </h1>
-          <p className="text-cream/80">
+          <p className="text-muted-foreground">
             Visão geral do seu ecossistema de cursos
           </p>
         </motion.div>
@@ -590,7 +590,7 @@ const AdminDashboard = () => {
                     <stat.icon className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex items-end gap-2">
-                    <p className="text-2xl font-bold text-cream">
+                    <p className="text-2xl font-bold text-foreground">
                       {loading ? "-" : stat.value}
                     </p>
                     {stat.trend !== undefined && (
@@ -600,7 +600,7 @@ const AdminDashboard = () => {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-cream/75 mt-1 font-medium">{stat.label}</p>
+                  <p className="text-xs text-muted-foreground mt-1 font-medium">{stat.label}</p>
               </div>
             </motion.div>
           ))}
@@ -616,7 +616,7 @@ const AdminDashboard = () => {
           >
             <Card className="admin-card border-0 shadow-md">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-base font-semibold flex items-center gap-2 text-cream">
+                <CardTitle className="text-base font-semibold flex items-center gap-2 text-foreground">
                   <BarChart3 className="w-4 h-4 text-secondary" />
                   Evolução de Matrículas
                 </CardTitle>
@@ -636,13 +636,13 @@ const AdminDashboard = () => {
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--secondary) / 0.2)" vertical={false} />
                         <XAxis 
                           dataKey="period" 
-                          stroke="hsl(var(--cream) / 0.6)"
+                          stroke="hsl(var(--muted-foreground))"
                           fontSize={11}
                           tickLine={false}
                           axisLine={false}
                         />
                         <YAxis 
-                          stroke="hsl(var(--cream) / 0.6)"
+                          stroke="hsl(var(--muted-foreground))"
                           fontSize={11}
                           tickLine={false}
                           axisLine={false}
@@ -666,7 +666,7 @@ const AdminDashboard = () => {
                       </AreaChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-cream/60">
+                    <div className="h-full flex items-center justify-center text-muted-foreground">
                       Sem dados de matrículas
                     </div>
                   )}
@@ -683,7 +683,7 @@ const AdminDashboard = () => {
           >
             <Card className="admin-card border-0 shadow-md">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-base font-semibold flex items-center gap-2 text-cream">
+                <CardTitle className="text-base font-semibold flex items-center gap-2 text-foreground">
                   <Target className="w-4 h-4 text-pink-400" />
                   Leads por Status
                 </CardTitle>
@@ -717,12 +717,12 @@ const AdminDashboard = () => {
                         <Legend 
                           verticalAlign="bottom"
                           height={36}
-                          formatter={(value) => <span className="text-xs text-cream">{value}</span>}
+                          formatter={(value) => <span className="text-xs text-foreground">{value}</span>}
                         />
                       </PieChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-cream/60">
+                    <div className="h-full flex items-center justify-center text-muted-foreground">
                       Sem leads no período
                     </div>
                   )}
@@ -741,7 +741,7 @@ const AdminDashboard = () => {
         >
           <Card className="admin-card border-0 shadow-md">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-base font-semibold flex items-center gap-2 text-cream">
+              <CardTitle className="text-base font-semibold flex items-center gap-2 text-foreground">
                 <GraduationCap className="w-4 h-4 text-emerald-400" />
                 Top 5 Alunos Mais Ativos
               </CardTitle>
@@ -753,11 +753,11 @@ const AdminDashboard = () => {
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={studentProgress} layout="vertical" barGap={8}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--secondary) / 0.2)" horizontal={false} />
-                      <XAxis type="number" stroke="hsl(var(--cream) / 0.6)" fontSize={11} tickLine={false} axisLine={false} />
+                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} />
                       <YAxis 
                         dataKey="name" 
                         type="category" 
-                        stroke="hsl(var(--cream) / 0.6)" 
+                        stroke="hsl(var(--muted-foreground))" 
                         fontSize={11}
                         width={80}
                         tickLine={false}
@@ -773,7 +773,7 @@ const AdminDashboard = () => {
                       <Legend 
                         verticalAlign="top"
                         height={36}
-                        formatter={(value) => <span className="text-xs text-cream">{value}</span>}
+                        formatter={(value) => <span className="text-xs text-foreground">{value}</span>}
                       />
                       <Bar 
                         dataKey="completed" 
@@ -790,7 +790,7 @@ const AdminDashboard = () => {
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-full flex items-center justify-center text-cream/60">
+                  <div className="h-full flex items-center justify-center text-muted-foreground">
                     Sem dados de progresso no período
                   </div>
                 )}
@@ -810,7 +810,7 @@ const AdminDashboard = () => {
           >
             <Card className="admin-card border-0 shadow-md">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold flex items-center gap-2 text-cream">
+                <CardTitle className="text-base font-semibold flex items-center gap-2 text-foreground">
                   <Activity className="w-4 h-4 text-violet-400" />
                   Atividades Recentes
                 </CardTitle>
@@ -821,20 +821,20 @@ const AdminDashboard = () => {
                     {recentActivities.map((activity) => (
                       <div 
                         key={activity.id}
-                        className="flex items-center gap-4 p-3 rounded-xl bg-zinc-800/50 hover:bg-zinc-800 transition-colors"
+                        className="flex items-center gap-4 p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
                       >
                         <div className={`w-9 h-9 rounded-full flex items-center justify-center ${getActivityColor(activity.type)}`}>
                           {getActivityIcon(activity.type)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-cream truncate">
+                          <p className="text-sm font-medium text-foreground truncate">
                             {activity.userName}
                           </p>
-                          <p className="text-xs text-cream/60 truncate">
+                          <p className="text-xs text-muted-foreground truncate">
                             {activity.description}
                           </p>
                         </div>
-                        <span className="text-xs text-cream/50 whitespace-nowrap">
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">
                           {new Date(activity.date).toLocaleDateString("pt-BR", { 
                             day: '2-digit',
                             month: 'short'
@@ -844,7 +844,7 @@ const AdminDashboard = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="py-8 text-center text-cream/60">
+                  <div className="py-8 text-center text-muted-foreground">
                     Nenhuma atividade recente
                   </div>
                 )}
@@ -860,7 +860,7 @@ const AdminDashboard = () => {
           >
             <Card className="admin-card border-0 shadow-md">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold text-cream">
+                <CardTitle className="text-base font-semibold text-foreground">
                   Ações Rápidas
                 </CardTitle>
               </CardHeader>
@@ -873,10 +873,10 @@ const AdminDashboard = () => {
                     <BookOpen className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-cream group-hover:text-blue-400 transition-colors">
+                    <p className="text-sm font-medium text-foreground group-hover:text-blue-400 transition-colors">
                       Novo Curso
                     </p>
-                    <p className="text-xs text-cream/60">Criar novo curso</p>
+                    <p className="text-xs text-muted-foreground">Criar novo curso</p>
                   </div>
                 </Link>
                 
@@ -888,10 +888,10 @@ const AdminDashboard = () => {
                     <Users className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-cream group-hover:text-emerald-400 transition-colors">
+                    <p className="text-sm font-medium text-foreground group-hover:text-emerald-400 transition-colors">
                       Alunos
                     </p>
-                    <p className="text-xs text-cream/60">Gerenciar alunos</p>
+                    <p className="text-xs text-muted-foreground">Gerenciar alunos</p>
                   </div>
                 </Link>
                 
@@ -903,10 +903,10 @@ const AdminDashboard = () => {
                     <Target className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-cream group-hover:text-pink-400 transition-colors">
+                    <p className="text-sm font-medium text-foreground group-hover:text-pink-400 transition-colors">
                       Leads
                     </p>
-                    <p className="text-xs text-cream/60">Gerenciar leads</p>
+                    <p className="text-xs text-muted-foreground">Gerenciar leads</p>
                   </div>
                 </Link>
                 
@@ -918,10 +918,10 @@ const AdminDashboard = () => {
                     <BarChart3 className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-cream group-hover:text-violet-400 transition-colors">
+                    <p className="text-sm font-medium text-foreground group-hover:text-violet-400 transition-colors">
                       Relatórios
                     </p>
-                    <p className="text-xs text-cream/60">Ver métricas</p>
+                    <p className="text-xs text-muted-foreground">Ver métricas</p>
                   </div>
                 </Link>
               </CardContent>
