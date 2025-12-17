@@ -261,12 +261,12 @@ export default function AdminSettings() {
                     {admins.map((admin) => (
                       <div
                         key={admin.user_id}
-                        className="border rounded-lg p-4 space-y-3"
+                        className="border border-secondary/20 rounded-lg p-4 space-y-3 bg-zinc-900/50"
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <h4 className="font-medium">{admin.full_name}</h4>
-                            <p className="text-sm text-muted-foreground">
+                            <h4 className="font-medium text-cream">{admin.full_name}</h4>
+                            <p className="text-sm text-cream/60">
                               ID: {admin.user_id.slice(0, 8)}...
                             </p>
                           </div>
@@ -276,13 +276,14 @@ export default function AdminSettings() {
                                 <>
                                   <Button
                                     size="sm"
-                                    variant="outline"
+                                    variant="premium"
                                     onClick={() => setEditingAdmin(null)}
                                   >
                                     Cancelar
                                   </Button>
                                   <Button
                                     size="sm"
+                                    variant="gold"
                                     onClick={() => handleSavePermissions(editingAdmin)}
                                     disabled={savingPermissions}
                                   >
@@ -298,7 +299,7 @@ export default function AdminSettings() {
                                 <>
                                   <Button
                                     size="sm"
-                                    variant="outline"
+                                    variant="premium"
                                     onClick={() => setEditingAdmin(admin)}
                                   >
                                     Editar
@@ -317,7 +318,7 @@ export default function AdminSettings() {
                         </div>
 
                         {editingAdmin?.user_id === admin.user_id ? (
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-secondary/20">
                             {Object.entries(permissionLabels).map(([key, label]) => (
                               <div key={key} className="flex items-center space-x-2">
                                 <Checkbox
@@ -336,7 +337,7 @@ export default function AdminSettings() {
                                 />
                                 <Label
                                   htmlFor={`${admin.user_id}-${key}`}
-                                  className="text-sm cursor-pointer"
+                                  className="text-sm cursor-pointer text-cream/80"
                                 >
                                   {label}
                                 </Label>
@@ -351,7 +352,7 @@ export default function AdminSettings() {
                                 <Badge
                                   key={key}
                                   variant="secondary"
-                                  className="text-xs"
+                                  className="text-xs bg-secondary/20 text-secondary border-secondary/30"
                                 >
                                   {permissionLabels[key as keyof typeof permissionLabels]}
                                 </Badge>
