@@ -51,6 +51,12 @@ import {
 } from "recharts";
 import { format, subDays, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import {
+  ChartSkeleton,
+  StatsCardSkeleton,
+  PieChartSkeleton,
+  TableSkeleton,
+} from "@/components/admin/skeletons/AdminSkeletons";
 
 type PeriodFilter = '7d' | '30d' | '6m' | '1y';
 
@@ -354,38 +360,44 @@ const AdminReports = () => {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          <SummaryCard 
-            icon={Users} 
-            label="Matrículas" 
-            value={summary.totalEnrollments}
-            color="bg-blue-600"
-          />
-          <SummaryCard 
-            icon={Target} 
-            label="Leads" 
-            value={summary.totalLeads}
-            color="bg-purple-600"
-          />
-          <SummaryCard 
-            icon={TrendingUp} 
-            label="Conversão" 
-            value={summary.conversionRate}
-            suffix="%"
-            color="bg-emerald-600"
-          />
-          <SummaryCard 
-            icon={MessageSquare} 
-            label="Comunicações" 
-            value={summary.totalCommunications}
-            color="bg-amber-600"
-          />
-          <SummaryCard 
-            icon={Activity} 
-            label="Progresso Médio" 
-            value={summary.avgProgress}
-            suffix="%"
-            color="bg-teal-600"
-          />
+          {loading ? (
+            <StatsCardSkeleton count={5} />
+          ) : (
+            <>
+              <SummaryCard 
+                icon={Users} 
+                label="Matrículas" 
+                value={summary.totalEnrollments}
+                color="bg-blue-600"
+              />
+              <SummaryCard 
+                icon={Target} 
+                label="Leads" 
+                value={summary.totalLeads}
+                color="bg-purple-600"
+              />
+              <SummaryCard 
+                icon={TrendingUp} 
+                label="Conversão" 
+                value={summary.conversionRate}
+                suffix="%"
+                color="bg-emerald-600"
+              />
+              <SummaryCard 
+                icon={MessageSquare} 
+                label="Comunicações" 
+                value={summary.totalCommunications}
+                color="bg-amber-600"
+              />
+              <SummaryCard 
+                icon={Activity} 
+                label="Progresso Médio" 
+                value={summary.avgProgress}
+                suffix="%"
+                color="bg-teal-600"
+              />
+            </>
+          )}
         </div>
 
         {/* Charts Row 1 */}
@@ -415,7 +427,9 @@ const AdminReports = () => {
               </CardHeader>
               <CardContent>
                 <div className="h-72">
-                  {enrollmentData.length > 0 ? (
+                  {loading ? (
+                    <ChartSkeleton height={288} variant="area" />
+                  ) : enrollmentData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={enrollmentData}>
                         <defs>

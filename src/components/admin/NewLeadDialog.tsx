@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +11,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -17,13 +19,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Loader2, CheckCircle2 } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
+
+const formSchema = z.object({
+  full_name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres").max(100),
+  email: z.string().email("Email inválido").max(255),
+  phone: z.string().optional(),
+  source: z.string().optional(),
+  status: z.enum(["new", "contacted", "negotiating", "converted", "lost"]),
+  temperature: z.enum(["cold", "warm", "hot"]),
+  notes: z.string().optional(),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 interface NewLeadDialogProps {
   open: boolean;
@@ -34,34 +56,33 @@ interface NewLeadDialogProps {
 export const NewLeadDialog = ({ open, onOpenChange, onSuccess }: NewLeadDialogProps) => {
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState({
-    full_name: "",
-    email: "",
-    phone: "",
-    source: "",
-    status: "new" as LeadStatus,
-    temperature: "cold" as LeadTemperature,
-    notes: "",
+  const [success, setSuccess] = useState(false);
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      full_name: "",
+      email: "",
+      phone: "",
+      source: "",
+      status: "new",
+      temperature: "cold",
+      notes: "",
+    },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.full_name || !formData.email) {
-      toast({ title: "Nome e email são obrigatórios", variant: "destructive" });
-      return;
-    }
-
+  const onSubmit = async (data: FormData) => {
     setSaving(true);
+    setSuccess(false);
 
     const { error } = await supabase.from("leads").insert({
-      full_name: formData.full_name,
-      email: formData.email,
-      phone: formData.phone || null,
-      source: formData.source || "manual",
-      status: formData.status,
-      temperature: formData.temperature,
-      notes: formData.notes || null,
+      full_name: data.full_name,
+      email: data.email,
+      phone: data.phone || null,
+      source: data.source || "manual",
+      status: data.status as LeadStatus,
+      temperature: data.temperature as LeadTemperature,
+      notes: data.notes || null,
     });
 
     setSaving(false);
@@ -69,18 +90,14 @@ export const NewLeadDialog = ({ open, onOpenChange, onSuccess }: NewLeadDialogPr
     if (error) {
       toast({ title: "Erro ao criar lead", description: error.message, variant: "destructive" });
     } else {
+      setSuccess(true);
       toast({ title: "Lead criado com sucesso!" });
-      setFormData({
-        full_name: "",
-        email: "",
-        phone: "",
-        source: "",
-        status: "new",
-        temperature: "cold",
-        notes: "",
-      });
-      onOpenChange(false);
-      onSuccess();
+      setTimeout(() => {
+        form.reset();
+        setSuccess(false);
+        onOpenChange(false);
+        onSuccess();
+      }, 500);
     }
   };
 
@@ -94,108 +111,154 @@ export const NewLeadDialog = ({ open, onOpenChange, onSuccess }: NewLeadDialogPr
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="full_name">Nome completo *</Label>
-            <Input
-              id="full_name"
-              placeholder="Maria Silva"
-              value={formData.full_name}
-              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              required
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="full_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nome completo *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Maria Silva" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="maria@exemplo.com"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email *</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="maria@exemplo.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="phone">Telefone</Label>
-            <Input
-              id="phone"
-              placeholder="(11) 99999-9999"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Telefone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="(11) 99999-9999" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="source">Fonte</Label>
-            <Input
-              id="source"
-              placeholder="Instagram, Google, Indicação..."
-              value={formData.source}
-              onChange={(e) => setFormData({ ...formData, source: e.target.value })}
+            <FormField
+              control={form.control}
+              name="source"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fonte</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Instagram, Google, Indicação..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => setFormData({ ...formData, status: value as LeadStatus })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="new">Novo</SelectItem>
-                  <SelectItem value="contacted">Contatado</SelectItem>
-                  <SelectItem value="negotiating">Negociando</SelectItem>
-                  <SelectItem value="converted">Convertido</SelectItem>
-                  <SelectItem value="lost">Perdido</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="new">Novo</SelectItem>
+                        <SelectItem value="contacted">Contatado</SelectItem>
+                        <SelectItem value="negotiating">Negociando</SelectItem>
+                        <SelectItem value="converted">Convertido</SelectItem>
+                        <SelectItem value="lost">Perdido</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="temperature"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Temperatura</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="cold">Frio</SelectItem>
+                        <SelectItem value="warm">Morno</SelectItem>
+                        <SelectItem value="hot">Quente</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
-            <div className="space-y-2">
-              <Label>Temperatura</Label>
-              <Select
-                value={formData.temperature}
-                onValueChange={(value) => setFormData({ ...formData, temperature: value as LeadTemperature })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cold">Frio</SelectItem>
-                  <SelectItem value="warm">Morno</SelectItem>
-                  <SelectItem value="hot">Quente</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notas</Label>
-            <Textarea
-              id="notes"
-              placeholder="Informações adicionais sobre o lead..."
-              value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              rows={3}
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notas</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Informações adicionais sobre o lead..."
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={saving}>
-              {saving ? "Salvando..." : "Criar Lead"}
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={saving} className="min-w-[120px]">
+                {saving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Salvando...
+                  </>
+                ) : success ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 mr-2 text-emerald-500" />
+                    Criado!
+                  </>
+                ) : (
+                  "Criar Lead"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
