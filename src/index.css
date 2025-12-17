@@ -623,4 +623,58 @@
     opacity: 0.2;
     filter: grayscale(0%);
   }
+
+  /* ============ FLOATING ANIMATIONS FOR DECORATIVE ELEMENTS ============ */
+  
+  .animate-float-slow {
+    animation: floatSlow 6s ease-in-out infinite;
+  }
+  
+  .animate-pulse-slow {
+    animation: pulseSlow 4s ease-in-out infinite;
+  }
+  
+  .animation-delay-1000 {
+    animation-delay: 1s;
+  }
+  
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  
+  @keyframes floatSlow {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-12px) rotate(2deg);
+    }
+  }
+  
+  @keyframes pulseSlow {
+    0%, 100% {
+      opacity: 0.20;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+      opacity: 0.25;
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+  }
+  
+  /* Section transition gradients */
+  .section-transition-top {
+    position: relative;
+  }
+  
+  .section-transition-top::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, hsl(var(--secondary) / 0.1), transparent);
+    pointer-events: none;
+  }
 }

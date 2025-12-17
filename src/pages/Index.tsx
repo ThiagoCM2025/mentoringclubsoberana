@@ -31,10 +31,16 @@ const Index = () => {
       <HeroSection />
       <section id="sobre">
         <ProblemSection />
+      </section>
+      <section id="metodologia">
         <MentorSection />
       </section>
-      <JornadaSoberanaSection />
-      <TrajetoriaSection />
+      <section id="jornada">
+        <JornadaSoberanaSection />
+      </section>
+      <section id="trajetoria">
+        <TrajetoriaSection />
+      </section>
       <section id="depoimentos">
         <TestimonialsSection />
       </section>

@@ -58,7 +58,7 @@ export const TestimonialsSection = () => {
     <section ref={ref} className="section-padding bg-primary relative overflow-hidden">
       {/* Circle Pattern Background - White */}
       <div 
-        className="absolute inset-0 opacity-[0.06]"
+        className="absolute inset-0 opacity-[0.12]"
         style={{
           backgroundImage: `url(${patternCirclesWhite})`,
           backgroundRepeat: 'repeat',
@@ -67,15 +67,15 @@ export const TestimonialsSection = () => {
       />
 
       {/* Isotipo White - corners */}
-      <div className="absolute top-16 left-12 opacity-10 hidden lg:block">
-        <img src={isotipoWhite} alt="" className="w-24 h-24" />
+      <div className="absolute top-16 left-12 opacity-[0.18] hidden lg:block animate-float-slow">
+        <img src={isotipoWhite} alt="" className="w-28 h-28" />
       </div>
-      <div className="absolute bottom-16 right-12 opacity-10 hidden lg:block">
-        <img src={isotipoWhite} alt="" className="w-20 h-20" />
+      <div className="absolute bottom-16 right-12 opacity-[0.18] hidden lg:block animate-float-slow animation-delay-1000">
+        <img src={isotipoWhite} alt="" className="w-24 h-24" />
       </div>
 
       {/* Vignette for depth */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_50%,_rgba(0,0,0,0.2)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_50%,_rgba(0,0,0,0.15)_100%)]" />
 
       <div className="container-soberana relative z-10">
         <motion.div

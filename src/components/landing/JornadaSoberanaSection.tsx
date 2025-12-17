@@ -109,10 +109,10 @@ export const JornadaSoberanaSection = () => {
   ];
 
   return (
-    <section id="jornada" className="py-20 md:py-32 bg-cream relative overflow-hidden">
+    <section className="py-20 md:py-32 bg-background relative overflow-hidden">
       {/* Circle Pattern decoration - corners */}
       <div 
-        className="absolute top-0 right-0 w-[500px] h-[500px] opacity-[0.05]"
+        className="absolute top-0 right-0 w-[600px] h-[600px] opacity-[0.10]"
         style={{
           backgroundImage: `url(${patternCirclesGold})`,
           backgroundRepeat: 'no-repeat',
@@ -121,7 +121,7 @@ export const JornadaSoberanaSection = () => {
         }}
       />
       <div 
-        className="absolute bottom-0 left-0 w-[500px] h-[500px] opacity-[0.05]"
+        className="absolute bottom-0 left-0 w-[600px] h-[600px] opacity-[0.10]"
         style={{
           backgroundImage: `url(${patternCirclesGold})`,
           backgroundRepeat: 'no-repeat',
@@ -131,16 +131,16 @@ export const JornadaSoberanaSection = () => {
       />
 
       {/* Isotipo Gold - decorative */}
-      <div className="absolute top-1/4 left-8 opacity-[0.08] hidden lg:block">
-        <img src={isotipoGold} alt="" className="w-20 h-20" />
-      </div>
-      <div className="absolute bottom-1/4 right-8 opacity-[0.08] hidden lg:block">
+      <div className="absolute top-1/4 left-8 opacity-[0.15] hidden lg:block animate-float-slow">
         <img src={isotipoGold} alt="" className="w-24 h-24" />
+      </div>
+      <div className="absolute bottom-1/4 right-8 opacity-[0.15] hidden lg:block animate-float-slow animation-delay-1000">
+        <img src={isotipoGold} alt="" className="w-28 h-28" />
       </div>
 
       {/* Subtle decorative lines */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
-      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent" />
 
       <div className="container-soberana relative z-10">
         {/* Header */}
