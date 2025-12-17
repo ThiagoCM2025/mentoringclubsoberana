@@ -11,7 +11,7 @@ export const MentorSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-20 md:py-32 bg-brand-black relative overflow-hidden">
+    <section id="sobre" ref={ref} className="py-20 md:py-32 bg-brand-black relative overflow-hidden">
       {/* Circle Pattern - Gold on dark background */}
       <div 
         className="absolute inset-0 opacity-[0.08]"
