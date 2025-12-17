@@ -451,7 +451,11 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          last_contact_at: string | null
+          messages_sent: number | null
           notes: string | null
+          nurturing_active: boolean | null
+          nurturing_step: number | null
           phone: string | null
           score: number | null
           source: string | null
@@ -464,7 +468,11 @@ export type Database = {
           email: string
           full_name: string
           id?: string
+          last_contact_at?: string | null
+          messages_sent?: number | null
           notes?: string | null
+          nurturing_active?: boolean | null
+          nurturing_step?: number | null
           phone?: string | null
           score?: number | null
           source?: string | null
@@ -477,7 +485,11 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          last_contact_at?: string | null
+          messages_sent?: number | null
           notes?: string | null
+          nurturing_active?: boolean | null
+          nurturing_step?: number | null
           phone?: string | null
           score?: number | null
           source?: string | null
