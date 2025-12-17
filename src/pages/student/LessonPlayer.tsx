@@ -16,11 +16,10 @@ import {
   ChevronRight,
   Download,
   FileText,
-  PlayCircle,
   Clock,
   List
 } from "lucide-react";
-import brandLogo from "@/assets/brand-logo.png";
+import isotipoGold from "@/assets/brand/isotipo-gold.png";
 
 interface Lesson {
   id: string;
@@ -91,7 +90,6 @@ const LessonPlayer = () => {
   const fetchLessonData = async () => {
     if (!lessonId || !user) return;
 
-    // Fetch lesson
     const { data: lessonData } = await supabase
       .from("lessons")
       .select("*")
@@ -101,7 +99,6 @@ const LessonPlayer = () => {
     if (lessonData) {
       setLesson(lessonData);
 
-      // Fetch module
       const { data: moduleData } = await supabase
         .from("modules")
         .select("id, title, course_id, order_index")
@@ -114,7 +111,6 @@ const LessonPlayer = () => {
         fetchAllModulesWithLessons(moduleData.course_id);
       }
 
-      // Fetch materials
       const { data: materialsData } = await supabase
         .from("lesson_materials")
         .select("*")
@@ -122,7 +118,6 @@ const LessonPlayer = () => {
 
       if (materialsData) setMaterials(materialsData);
 
-      // Fetch progress
       const { data: progressData } = await supabase
         .from("progress")
         .select("completed, progress_seconds")
@@ -142,7 +137,6 @@ const LessonPlayer = () => {
   const fetchAllModulesWithLessons = async (courseId: string) => {
     if (!user) return;
 
-    // Fetch all modules
     const { data: modules } = await supabase
       .from("modules")
       .select("id, title, order_index")
@@ -161,7 +155,6 @@ const LessonPlayer = () => {
         .order("order_index");
 
       if (lessons) {
-        // Get progress for these lessons
         const lessonIds = lessons.map(l => l.id);
         const { data: progressData } = await supabase
           .from("progress")
@@ -285,7 +278,6 @@ const LessonPlayer = () => {
       description: "Seu progresso foi salvo.",
     });
 
-    // Update sidebar state
     setModulesWithLessons(prev => 
       prev.map(m => ({
         ...m,
@@ -312,31 +304,48 @@ const LessonPlayer = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-foreground flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-6">
+        <motion.img
+          src={isotipoGold}
+          alt="Carregando"
+          className="w-16 h-16 object-contain"
+          animate={{
+            filter: [
+              "drop-shadow(0 0 10px hsla(38, 30%, 51%, 0.3))",
+              "drop-shadow(0 0 30px hsla(38, 30%, 51%, 0.6))",
+              "drop-shadow(0 0 10px hsla(38, 30%, 51%, 0.3))"
+            ]
+          }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <div className="w-32 h-[2px] bg-gradient-to-r from-transparent via-secondary to-transparent animate-pulse" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-foreground">
-      {/* Header */}
-      <header className="bg-foreground text-background py-3 px-4 sticky top-0 z-50 border-b border-background/10">
+    <div className="min-h-screen bg-black">
+      {/* Header - Premium Black/Gold Theme */}
+      <header className="bg-black/95 backdrop-blur-sm py-3 px-4 sticky top-0 z-50 border-b border-secondary/20">
         <div className="flex items-center justify-between max-w-[1920px] mx-auto">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={goBack}
-              className="text-background/80 hover:text-background hover:bg-background/10"
+              className="text-cream/80 hover:text-cream hover:bg-secondary/10"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-3">
-              <img src={brandLogo} alt="Soberana" className="w-8 h-8 object-contain brightness-0 invert" />
+              <img 
+                src={isotipoGold} 
+                alt="Soberana" 
+                className="w-8 h-8 object-contain isotipo-glow" 
+              />
               <div className="hidden sm:block">
-                <p className="text-xs text-background/60">{module?.title}</p>
-                <p className="font-medium text-background text-sm line-clamp-1">{lesson?.title}</p>
+                <p className="text-xs text-secondary font-medium">{module?.title}</p>
+                <p className="font-medium text-cream text-sm line-clamp-1">{lesson?.title}</p>
               </div>
             </div>
           </div>
@@ -345,23 +354,25 @@ const LessonPlayer = () => {
             {lessonId && (
               <FavoriteButton 
                 lessonId={lessonId} 
-                className="text-background/80 hover:text-red-400 hover:bg-background/10"
+                className="text-cream/70 hover:text-red-400 hover:bg-secondary/10"
               />
             )}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-background/80 hover:text-background hover:bg-background/10"
+              className="text-cream/70 hover:text-cream hover:bg-secondary/10"
             >
               <List className="w-5 h-5" />
             </Button>
             <Button
               onClick={markAsComplete}
               disabled={isCompleted}
-              variant={isCompleted ? "secondary" : "default"}
               size="sm"
-              className={isCompleted ? "bg-green-600 hover:bg-green-600 text-white" : "bg-secondary hover:bg-secondary/90"}
+              className={isCompleted 
+                ? "bg-green-600 hover:bg-green-600 text-white" 
+                : "bg-secondary hover:bg-secondary-light text-black font-semibold btn-glow-gold"
+              }
             >
               {isCompleted ? (
                 <>
@@ -380,7 +391,7 @@ const LessonPlayer = () => {
       <div className="flex">
         {/* Main Content */}
         <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? "lg:mr-80" : ""}`}>
-          {/* Video Player */}
+          {/* Video Player - Immersive Black Background */}
           <div className={`bg-black relative ${theaterMode ? "h-[80vh]" : "aspect-video max-h-[70vh]"}`}>
             <VideoPlayer
               url={lesson?.video_url || null}
@@ -390,33 +401,41 @@ const LessonPlayer = () => {
             />
           </div>
 
-          {/* Lesson Content */}
-          <div className="bg-background">
+          {/* Lesson Content - Premium Dark Theme */}
+          <div className="bg-zinc-950">
             <div className="max-w-4xl mx-auto p-6">
               <Tabs defaultValue="description" className="w-full">
-                <TabsList className="mb-6">
-                  <TabsTrigger value="description">Descrição</TabsTrigger>
-                  <TabsTrigger value="materials">
+                <TabsList className="mb-6 bg-zinc-900/80 border border-secondary/20">
+                  <TabsTrigger 
+                    value="description" 
+                    className="data-[state=active]:bg-secondary/20 data-[state=active]:text-secondary"
+                  >
+                    Descrição
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="materials"
+                    className="data-[state=active]:bg-secondary/20 data-[state=active]:text-secondary"
+                  >
                     Materiais ({materials.length})
                   </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="description">
-                  <h1 className="text-2xl font-serif font-bold text-foreground mb-3">
+                  <h1 className="text-2xl font-serif font-bold text-cream mb-3">
                     {lesson?.title}
                   </h1>
                   {lesson?.duration_minutes && (
-                    <p className="text-sm text-muted-foreground flex items-center gap-2 mb-4">
-                      <Clock className="w-4 h-4" />
+                    <p className="text-sm text-cream/60 flex items-center gap-2 mb-4">
+                      <Clock className="w-4 h-4 text-secondary" />
                       {lesson.duration_minutes} minutos
                     </p>
                   )}
                   {lesson?.description ? (
-                    <p className="text-muted-foreground leading-relaxed">
+                    <p className="text-cream/80 leading-relaxed">
                       {lesson.description}
                     </p>
                   ) : (
-                    <p className="text-muted-foreground italic">
+                    <p className="text-cream/50 italic">
                       Nenhuma descrição disponível para esta aula.
                     </p>
                   )}
@@ -431,16 +450,16 @@ const LessonPlayer = () => {
                           href={material.file_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-4 p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors group"
+                          className="flex items-center gap-4 p-4 rounded-xl bg-zinc-900/80 border border-secondary/10 hover:border-secondary/30 transition-all group"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
-                            <Download className="w-5 h-5 text-secondary" />
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-secondary-light flex items-center justify-center shadow-lg">
+                            <Download className="w-5 h-5 text-black" />
                           </div>
                           <div className="flex-1">
-                            <p className="font-medium text-foreground">
+                            <p className="font-medium text-cream">
                               {material.title}
                             </p>
-                            <p className="text-sm text-muted-foreground uppercase">
+                            <p className="text-sm text-cream/50 uppercase">
                               {material.file_type || "Arquivo"}
                             </p>
                           </div>
@@ -452,8 +471,8 @@ const LessonPlayer = () => {
                     </div>
                   ) : (
                     <div className="text-center py-12">
-                      <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                      <p className="text-muted-foreground">
+                      <FileText className="w-12 h-12 text-cream/30 mx-auto mb-3" />
+                      <p className="text-cream/50">
                         Nenhum material disponível para esta aula.
                       </p>
                     </div>
@@ -461,13 +480,13 @@ const LessonPlayer = () => {
                 </TabsContent>
               </Tabs>
 
-              {/* Navigation */}
-              <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+              {/* Navigation - Premium Buttons */}
+              <div className="flex items-center justify-between mt-8 pt-6 border-t border-secondary/20">
                 {prevLesson ? (
                   <Button
                     variant="outline"
                     onClick={() => navigate(`/student/lesson/${prevLesson.id}`)}
-                    className="group"
+                    className="group border-secondary/30 text-cream hover:bg-secondary/10 hover:border-secondary/50"
                   >
                     <ChevronLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
                     <span className="hidden sm:inline">Anterior</span>
@@ -478,13 +497,16 @@ const LessonPlayer = () => {
                 {nextLesson ? (
                   <Button
                     onClick={() => navigate(`/student/lesson/${nextLesson.id}`)}
-                    className="bg-primary hover:bg-primary/90 group"
+                    className="bg-secondary hover:bg-secondary-light text-black font-semibold group btn-glow-gold"
                   >
                     <span className="hidden sm:inline">Próxima</span>
                     <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 ) : (
-                  <Button onClick={goBack} className="bg-secondary hover:bg-secondary/90">
+                  <Button 
+                    onClick={goBack} 
+                    className="bg-secondary hover:bg-secondary-light text-black font-semibold btn-glow-gold"
+                  >
                     Voltar ao curso
                   </Button>
                 )}
@@ -493,7 +515,7 @@ const LessonPlayer = () => {
           </div>
         </main>
 
-        {/* Sidebar */}
+        {/* Sidebar - Premium Dark Theme */}
         <AnimatePresence>
           {sidebarOpen && (
             <motion.aside
@@ -501,7 +523,7 @@ const LessonPlayer = () => {
               animate={{ x: 0 }}
               exit={{ x: 320 }}
               transition={{ type: "spring", damping: 20 }}
-              className="fixed right-0 top-[57px] bottom-0 w-80 hidden lg:block"
+              className="fixed right-0 top-[57px] bottom-0 w-80 hidden lg:block bg-zinc-950 border-l border-secondary/20"
             >
               <LessonSidebar
                 modules={modulesWithLessons}
