@@ -10,7 +10,12 @@ import {
   Target,
   GraduationCap,
   Activity,
-  Calendar
+  Calendar,
+  ArrowUpRight,
+  ArrowDownRight,
+  DollarSign,
+  Percent,
+  BarChart3
 } from "lucide-react";
 import {
   LineChart,
@@ -25,7 +30,9 @@ import {
   Cell,
   BarChart,
   Bar,
-  Legend
+  Legend,
+  AreaChart,
+  Area
 } from "recharts";
 import {
   Table,
@@ -42,6 +49,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 type PeriodFilter = '7d' | '30d' | '6m' | '1y';
 
@@ -52,6 +63,9 @@ interface Stats {
   recentEnrollments: number;
   totalLeads: number;
   completionRate: number;
+  conversionRate: number;
+  estimatedRevenue: number;
+  growthRate: number;
 }
 
 interface EnrollmentTrend {
@@ -76,11 +90,13 @@ interface RecentActivity {
   type: 'enrollment' | 'lead' | 'course';
   description: string;
   date: string;
+  userName?: string;
 }
 
 const LEAD_STATUS_COLORS: Record<string, string> = {
   new: '#3b82f6',
   contacted: '#f59e0b',
+  negotiating: '#8b5cf6',
   converted: '#10b981',
   lost: '#ef4444'
 };
@@ -88,6 +104,7 @@ const LEAD_STATUS_COLORS: Record<string, string> = {
 const LEAD_STATUS_LABELS: Record<string, string> = {
   new: 'Novos',
   contacted: 'Contactados',
+  negotiating: 'Negociando',
   converted: 'Convertidos',
   lost: 'Perdidos'
 };
@@ -125,7 +142,10 @@ const AdminDashboard = () => {
     totalEnrollments: 0,
     recentEnrollments: 0,
     totalLeads: 0,
-    completionRate: 0
+    completionRate: 0,
+    conversionRate: 0,
+    estimatedRevenue: 0,
+    growthRate: 0
   });
   const [enrollmentTrends, setEnrollmentTrends] = useState<EnrollmentTrend[]>([]);
   const [leadsByStatus, setLeadsByStatus] = useState<LeadByStatus[]>([]);
@@ -194,10 +214,34 @@ const AdminDashboard = () => {
       .select("*", { count: "exact", head: true })
       .gte("enrolled_at", sevenDaysAgo.toISOString());
 
+    // Previous 7 days for growth calculation
+    const fourteenDaysAgo = new Date();
+    fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+    const { count: previousCount } = await supabase
+      .from("enrollments")
+      .select("*", { count: "exact", head: true })
+      .gte("enrolled_at", fourteenDaysAgo.toISOString())
+      .lt("enrolled_at", sevenDaysAgo.toISOString());
+
+    // Growth rate
+    const growthRate = previousCount && previousCount > 0 
+      ? Math.round(((recentCount || 0) - previousCount) / previousCount * 100)
+      : 0;
+
     // Total leads
     const { count: leadsCount } = await supabase
       .from("leads")
       .select("*", { count: "exact", head: true });
+
+    // Converted leads for conversion rate
+    const { count: convertedCount } = await supabase
+      .from("leads")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "converted");
+
+    const conversionRate = leadsCount && leadsCount > 0 
+      ? Math.round((convertedCount || 0) / leadsCount * 100) 
+      : 0;
 
     // Completion rate
     const { data: progressData } = await supabase
@@ -208,13 +252,27 @@ const AdminDashboard = () => {
     const totalProgress = progressData?.length || 0;
     const completionRate = totalProgress > 0 ? Math.round((completedLessons / totalProgress) * 100) : 0;
 
+    // Estimated revenue (mock - based on enrollments * average price)
+    const { data: courses } = await supabase
+      .from("courses")
+      .select("price")
+      .not("price", "is", null);
+    
+    const avgPrice = courses && courses.length > 0 
+      ? courses.reduce((sum, c) => sum + (c.price || 0), 0) / courses.length 
+      : 0;
+    const estimatedRevenue = (enrollmentsCount || 0) * avgPrice;
+
     setStats({
       totalCourses: coursesCount || 0,
       totalStudents: pureStudents.length,
       totalEnrollments: enrollmentsCount || 0,
       recentEnrollments: recentCount || 0,
       totalLeads: leadsCount || 0,
-      completionRate
+      completionRate,
+      conversionRate,
+      estimatedRevenue,
+      growthRate
     });
   };
 
@@ -231,9 +289,7 @@ const AdminDashboard = () => {
       const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
       const groupedData: Record<string, number> = {};
 
-      // Initialize periods based on filter
       if (enrollmentPeriod === '7d' || enrollmentPeriod === '30d') {
-        // Group by day
         const days = enrollmentPeriod === '7d' ? 7 : 30;
         for (let i = days - 1; i >= 0; i--) {
           const date = new Date();
@@ -250,18 +306,17 @@ const AdminDashboard = () => {
           }
         });
       } else {
-        // Group by month
         const monthsCount = enrollmentPeriod === '6m' ? 6 : 12;
         for (let i = monthsCount - 1; i >= 0; i--) {
           const date = new Date();
           date.setMonth(date.getMonth() - i);
-          const key = `${months[date.getMonth()]}/${date.getFullYear().toString().slice(2)}`;
+          const key = `${months[date.getMonth()]}`;
           groupedData[key] = 0;
         }
 
         enrollments.forEach(e => {
           const date = new Date(e.enrolled_at);
-          const key = `${months[date.getMonth()]}/${date.getFullYear().toString().slice(2)}`;
+          const key = `${months[date.getMonth()]}`;
           if (key in groupedData) {
             groupedData[key]++;
           }
@@ -289,6 +344,7 @@ const AdminDashboard = () => {
       const statusCounts: Record<string, number> = {
         new: 0,
         contacted: 0,
+        negotiating: 0,
         converted: 0,
         lost: 0
       };
@@ -315,14 +371,12 @@ const AdminDashboard = () => {
   const fetchStudentProgress = async () => {
     const startDate = getDateFromPeriod(progressPeriod);
 
-    // Get progress data with user info
     const { data: progressData } = await supabase
       .from("progress")
       .select("user_id, completed, updated_at")
       .gte("updated_at", startDate.toISOString());
 
     if (progressData && progressData.length > 0) {
-      // Group by user
       const userProgress: Record<string, { completed: number; inProgress: number }> = {};
       
       progressData.forEach(p => {
@@ -336,14 +390,12 @@ const AdminDashboard = () => {
         }
       });
 
-      // Get top 5 by completed lessons
       const topUserIds = Object.entries(userProgress)
         .sort((a, b) => b[1].completed - a[1].completed)
         .slice(0, 5)
         .map(([userId]) => userId);
 
       if (topUserIds.length > 0) {
-        // Fetch user names
         const { data: profiles } = await supabase
           .from("profiles")
           .select("user_id, full_name")
@@ -369,82 +421,130 @@ const AdminDashboard = () => {
   const fetchRecentActivities = async () => {
     const activities: RecentActivity[] = [];
 
-    // Recent enrollments
     const { data: recentEnrollments } = await supabase
       .from("enrollments")
-      .select(`
-        id,
-        enrolled_at,
-        user_id,
-        course_id
-      `)
+      .select(`id, enrolled_at, user_id, course_id`)
       .order("enrolled_at", { ascending: false })
-      .limit(3);
+      .limit(5);
 
     if (recentEnrollments) {
-      // Get course names
       const courseIds = recentEnrollments.map(e => e.course_id);
+      const userIds = recentEnrollments.map(e => e.user_id);
+      
       const { data: courses } = await supabase
         .from("courses")
         .select("id, title")
         .in("id", courseIds);
 
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, full_name")
+        .in("user_id", userIds);
+
       const courseMap = new Map(courses?.map(c => [c.id, c.title]) || []);
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p.full_name]) || []);
 
       recentEnrollments.forEach(e => {
         activities.push({
           id: e.id,
           type: 'enrollment',
           description: `Nova matrícula em "${courseMap.get(e.course_id) || 'Curso'}"`,
-          date: e.enrolled_at
+          date: e.enrolled_at,
+          userName: profileMap.get(e.user_id) || 'Aluno'
         });
       });
     }
 
-    // Recent leads
     const { data: recentLeads } = await supabase
       .from("leads")
       .select("id, full_name, created_at")
       .order("created_at", { ascending: false })
-      .limit(3);
+      .limit(5);
 
     if (recentLeads) {
       recentLeads.forEach(l => {
         activities.push({
           id: l.id,
           type: 'lead',
-          description: `Novo lead: ${l.full_name}`,
-          date: l.created_at
+          description: `Novo lead capturado`,
+          date: l.created_at,
+          userName: l.full_name
         });
       });
     }
 
-    // Sort by date and take top 5
     activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    setRecentActivities(activities.slice(0, 5));
+    setRecentActivities(activities.slice(0, 8));
   };
 
   const statCards = [
-    { icon: BookOpen, label: "Cursos", value: stats.totalCourses, color: "bg-blue-500" },
-    { icon: Users, label: "Alunos", value: stats.totalStudents, color: "bg-green-500" },
-    { icon: UserCheck, label: "Matrículas", value: stats.totalEnrollments, color: "bg-purple-500" },
-    { icon: TrendingUp, label: "Novos (7 dias)", value: stats.recentEnrollments, color: "bg-orange-500" },
-    { icon: Target, label: "Leads", value: stats.totalLeads, color: "bg-pink-500" },
-    { icon: GraduationCap, label: "Conclusão", value: `${stats.completionRate}%`, color: "bg-teal-500" },
+    { 
+      icon: BookOpen, 
+      label: "Cursos Ativos", 
+      value: stats.totalCourses, 
+      gradient: "from-blue-500 to-blue-600",
+      bgLight: "bg-blue-50"
+    },
+    { 
+      icon: Users, 
+      label: "Alunos", 
+      value: stats.totalStudents, 
+      gradient: "from-emerald-500 to-emerald-600",
+      bgLight: "bg-emerald-50"
+    },
+    { 
+      icon: UserCheck, 
+      label: "Matrículas", 
+      value: stats.totalEnrollments, 
+      gradient: "from-violet-500 to-violet-600",
+      bgLight: "bg-violet-50"
+    },
+    { 
+      icon: TrendingUp, 
+      label: "Novos (7d)", 
+      value: stats.recentEnrollments, 
+      gradient: "from-amber-500 to-amber-600",
+      bgLight: "bg-amber-50",
+      trend: stats.growthRate,
+      trendUp: stats.growthRate >= 0
+    },
+    { 
+      icon: Target, 
+      label: "Leads", 
+      value: stats.totalLeads, 
+      gradient: "from-pink-500 to-pink-600",
+      bgLight: "bg-pink-50"
+    },
+    { 
+      icon: Percent, 
+      label: "Conversão", 
+      value: `${stats.conversionRate}%`, 
+      gradient: "from-teal-500 to-teal-600",
+      bgLight: "bg-teal-50"
+    },
   ];
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'enrollment': return <UserCheck className="w-4 h-4 text-purple-500" />;
-      case 'lead': return <Target className="w-4 h-4 text-pink-500" />;
-      case 'course': return <BookOpen className="w-4 h-4 text-blue-500" />;
-      default: return <Activity className="w-4 h-4 text-muted-foreground" />;
+      case 'enrollment': return <UserCheck className="w-4 h-4" />;
+      case 'lead': return <Target className="w-4 h-4" />;
+      case 'course': return <BookOpen className="w-4 h-4" />;
+      default: return <Activity className="w-4 h-4" />;
+    }
+  };
+
+  const getActivityColor = (type: string) => {
+    switch (type) {
+      case 'enrollment': return 'bg-violet-100 text-violet-600';
+      case 'lead': return 'bg-pink-100 text-pink-600';
+      case 'course': return 'bg-blue-100 text-blue-600';
+      default: return 'bg-gray-100 text-gray-600';
     }
   };
 
   const PeriodSelector = ({ value, onChange }: { value: PeriodFilter; onChange: (v: PeriodFilter) => void }) => (
     <Select value={value} onValueChange={(v) => onChange(v as PeriodFilter)}>
-      <SelectTrigger className="w-[120px] h-8 text-xs">
+      <SelectTrigger className="w-[120px] h-8 text-xs border-0 bg-muted/50">
         <Calendar className="w-3 h-3 mr-1" />
         <SelectValue />
       </SelectTrigger>
@@ -460,21 +560,22 @@ const AdminDashboard = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 lg:p-8">
+      <div className="p-6 lg:p-8 admin-area">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-admin font-bold text-foreground mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-1">
             Dashboard
           </h1>
-          <p className="text-muted-foreground font-admin">
+          <p className="text-muted-foreground">
             Visão geral do seu ecossistema de cursos
           </p>
         </motion.div>
 
-        {/* Stats Grid */}
+        {/* Stats Grid - Modern Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
           {statCards.map((stat, index) => (
             <motion.div
@@ -482,120 +583,154 @@ const AdminDashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="card-elegant p-4 lg:p-6"
             >
-              <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-lg ${stat.color} flex items-center justify-center mb-3`}>
-                <stat.icon className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
-              </div>
-              <p className="text-2xl lg:text-3xl font-bold text-foreground">
-                {loading ? "-" : stat.value}
-              </p>
-              <p className="text-xs lg:text-sm text-muted-foreground">{stat.label}</p>
+              <Card className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300">
+                <div className={`absolute top-0 right-0 w-24 h-24 ${stat.bgLight} rounded-bl-[100px] opacity-60`} />
+                <CardContent className="p-5">
+                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center mb-3 shadow-lg`}>
+                    <stat.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex items-end gap-2">
+                    <p className="text-2xl font-bold text-foreground">
+                      {loading ? "-" : stat.value}
+                    </p>
+                    {stat.trend !== undefined && (
+                      <span className={`text-xs font-medium flex items-center ${stat.trendUp ? 'text-emerald-600' : 'text-red-500'}`}>
+                        {stat.trendUp ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                        {Math.abs(stat.trend)}%
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+                </CardContent>
+              </Card>
             </motion.div>
           ))}
         </div>
 
         {/* Charts Row */}
         <div className="grid lg:grid-cols-2 gap-6 mb-8">
-          {/* Enrollment Trends */}
+          {/* Enrollment Trends - Area Chart */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="card-elegant p-6"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-serif font-semibold text-foreground">
-                Matrículas
-              </h3>
-              <PeriodSelector value={enrollmentPeriod} onChange={setEnrollmentPeriod} />
-            </div>
-            <div className="h-64">
-              {enrollmentTrends.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={enrollmentTrends}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis 
-                      dataKey="period" 
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={10}
-                      tick={{ fontSize: 10 }}
-                    />
-                    <YAxis 
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={10}
-                    />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
-                      }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="enrollments" 
-                      stroke="hsl(var(--primary))" 
-                      strokeWidth={2}
-                      dot={{ fill: 'hsl(var(--primary))' }}
-                      name="Matrículas"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-full flex items-center justify-center text-muted-foreground">
-                  Sem dados de matrículas
+            <Card className="border-0 shadow-md">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-primary" />
+                  Evolução de Matrículas
+                </CardTitle>
+                <PeriodSelector value={enrollmentPeriod} onChange={setEnrollmentPeriod} />
+              </CardHeader>
+              <CardContent>
+                <div className="h-64">
+                  {enrollmentTrends.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={enrollmentTrends}>
+                        <defs>
+                          <linearGradient id="colorEnrollments" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                        <XAxis 
+                          dataKey="period" 
+                          stroke="hsl(var(--muted-foreground))"
+                          fontSize={11}
+                          tickLine={false}
+                          axisLine={false}
+                        />
+                        <YAxis 
+                          stroke="hsl(var(--muted-foreground))"
+                          fontSize={11}
+                          tickLine={false}
+                          axisLine={false}
+                        />
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: 'hsl(var(--card))',
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: '12px',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                          }}
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="enrollments" 
+                          stroke="hsl(var(--primary))" 
+                          strokeWidth={2}
+                          fill="url(#colorEnrollments)"
+                          name="Matrículas"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                      Sem dados de matrículas
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </CardContent>
+            </Card>
           </motion.div>
 
-          {/* Leads by Status */}
+          {/* Leads by Status - Donut Chart */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="card-elegant p-6"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-serif font-semibold text-foreground">
-                Leads por Status
-              </h3>
-              <PeriodSelector value={leadsPeriod} onChange={setLeadsPeriod} />
-            </div>
-            <div className="h-64">
-              {leadsByStatus.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={leadsByStatus}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {leadsByStatus.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
-                      }}
-                    />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-full flex items-center justify-center text-muted-foreground">
-                  Sem leads no período
+            <Card className="border-0 shadow-md">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <Target className="w-4 h-4 text-pink-500" />
+                  Leads por Status
+                </CardTitle>
+                <PeriodSelector value={leadsPeriod} onChange={setLeadsPeriod} />
+              </CardHeader>
+              <CardContent>
+                <div className="h-64">
+                  {leadsByStatus.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={leadsByStatus}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={90}
+                          paddingAngle={4}
+                          dataKey="value"
+                        >
+                          {leadsByStatus.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: 'hsl(var(--card))',
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: '12px'
+                          }}
+                        />
+                        <Legend 
+                          verticalAlign="bottom"
+                          height={36}
+                          formatter={(value) => <span className="text-xs text-foreground">{value}</span>}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                      Sem leads no período
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
 
@@ -604,55 +739,66 @@ const AdminDashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45 }}
-          className="card-elegant p-6 mb-8"
+          className="mb-8"
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-serif font-semibold text-foreground">
-              Top 5 Alunos Mais Ativos
-            </h3>
-            <PeriodSelector value={progressPeriod} onChange={setProgressPeriod} />
-          </div>
-          <div className="h-64">
-            {studentProgress.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={studentProgress} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={10} />
-                  <YAxis 
-                    dataKey="name" 
-                    type="category" 
-                    stroke="hsl(var(--muted-foreground))" 
-                    fontSize={11}
-                    width={80}
-                  />
-                  <Tooltip 
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px'
-                    }}
-                  />
-                  <Legend />
-                  <Bar 
-                    dataKey="completed" 
-                    fill="#10b981" 
-                    name="Concluídas"
-                    radius={[0, 4, 4, 0]}
-                  />
-                  <Bar 
-                    dataKey="inProgress" 
-                    fill="#f59e0b" 
-                    name="Em Progresso"
-                    radius={[0, 4, 4, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex items-center justify-center text-muted-foreground">
-                Sem dados de progresso no período
+          <Card className="border-0 shadow-md">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-emerald-500" />
+                Top 5 Alunos Mais Ativos
+              </CardTitle>
+              <PeriodSelector value={progressPeriod} onChange={setProgressPeriod} />
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                {studentProgress.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={studentProgress} layout="vertical" barGap={8}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} />
+                      <YAxis 
+                        dataKey="name" 
+                        type="category" 
+                        stroke="hsl(var(--muted-foreground))" 
+                        fontSize={11}
+                        width={80}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '12px'
+                        }}
+                      />
+                      <Legend 
+                        verticalAlign="top"
+                        height={36}
+                        formatter={(value) => <span className="text-xs">{value}</span>}
+                      />
+                      <Bar 
+                        dataKey="completed" 
+                        fill="#10b981" 
+                        name="Concluídas"
+                        radius={[0, 6, 6, 0]}
+                      />
+                      <Bar 
+                        dataKey="inProgress" 
+                        fill="#f59e0b" 
+                        name="Em Progresso"
+                        radius={[0, 6, 6, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-muted-foreground">
+                    Sem dados de progresso no período
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Bottom Row */}
@@ -662,40 +808,50 @@ const AdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="card-elegant p-6 lg:col-span-2"
+            className="lg:col-span-2"
           >
-            <h3 className="font-serif font-semibold text-foreground mb-4">
-              Atividades Recentes
-            </h3>
-            {recentActivities.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Atividade</TableHead>
-                    <TableHead className="text-right">Data</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentActivities.map((activity) => (
-                    <TableRow key={activity.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-violet-500" />
+                  Atividades Recentes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {recentActivities.length > 0 ? (
+                  <div className="space-y-3">
+                    {recentActivities.map((activity) => (
+                      <div 
+                        key={activity.id}
+                        className="flex items-center gap-4 p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
+                      >
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center ${getActivityColor(activity.type)}`}>
                           {getActivityIcon(activity.type)}
-                          <span className="text-sm">{activity.description}</span>
                         </div>
-                      </TableCell>
-                      <TableCell className="text-right text-sm text-muted-foreground">
-                        {new Date(activity.date).toLocaleDateString("pt-BR")}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <div className="py-8 text-center text-muted-foreground">
-                Nenhuma atividade recente
-              </div>
-            )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {activity.userName}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {activity.description}
+                          </p>
+                        </div>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                          {new Date(activity.date).toLocaleDateString("pt-BR", { 
+                            day: '2-digit',
+                            month: 'short'
+                          })}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-8 text-center text-muted-foreground">
+                    Nenhuma atividade recente
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </motion.div>
 
           {/* Quick Actions */}
@@ -703,55 +859,75 @@ const AdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="space-y-4"
           >
-            <h3 className="font-serif font-semibold text-foreground">
-              Ações Rápidas
-            </h3>
-            <a href="/admin/courses/new" className="card-elegant p-4 hover:border-secondary/50 transition-colors group flex items-center gap-3">
-              <BookOpen className="w-6 h-6 text-secondary" />
-              <div>
-                <p className="font-medium text-foreground group-hover:text-secondary transition-colors text-sm">
-                  Criar Novo Curso
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Adicione um novo curso
-                </p>
-              </div>
-            </a>
-            <a href="/admin/students" className="card-elegant p-4 hover:border-secondary/50 transition-colors group flex items-center gap-3">
-              <Users className="w-6 h-6 text-secondary" />
-              <div>
-                <p className="font-medium text-foreground group-hover:text-secondary transition-colors text-sm">
-                  Gerenciar Alunos
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Veja todos os alunos
-                </p>
-              </div>
-            </a>
-            <a href="/admin/enrollments" className="card-elegant p-4 hover:border-secondary/50 transition-colors group flex items-center gap-3">
-              <UserCheck className="w-6 h-6 text-secondary" />
-              <div>
-                <p className="font-medium text-foreground group-hover:text-secondary transition-colors text-sm">
-                  Adicionar Matrícula
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Matricule um aluno
-                </p>
-              </div>
-            </a>
-            <a href="/admin/leads" className="card-elegant p-4 hover:border-secondary/50 transition-colors group flex items-center gap-3">
-              <Target className="w-6 h-6 text-secondary" />
-              <div>
-                <p className="font-medium text-foreground group-hover:text-secondary transition-colors text-sm">
-                  Gerenciar Leads
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Acompanhe seus leads
-                </p>
-              </div>
-            </a>
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold">
+                  Ações Rápidas
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Link 
+                  to="/admin/courses/new" 
+                  className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100/50 hover:from-blue-100 hover:to-blue-100 transition-all group"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center">
+                    <BookOpen className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground group-hover:text-blue-600 transition-colors">
+                      Novo Curso
+                    </p>
+                    <p className="text-xs text-muted-foreground">Criar novo curso</p>
+                  </div>
+                </Link>
+                
+                <Link 
+                  to="/admin/students" 
+                  className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-emerald-100/50 hover:from-emerald-100 hover:to-emerald-100 transition-all group"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-emerald-500 flex items-center justify-center">
+                    <Users className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground group-hover:text-emerald-600 transition-colors">
+                      Alunos
+                    </p>
+                    <p className="text-xs text-muted-foreground">Gerenciar alunos</p>
+                  </div>
+                </Link>
+                
+                <Link 
+                  to="/admin/leads" 
+                  className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-pink-50 to-pink-100/50 hover:from-pink-100 hover:to-pink-100 transition-all group"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-pink-500 flex items-center justify-center">
+                    <Target className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground group-hover:text-pink-600 transition-colors">
+                      Leads
+                    </p>
+                    <p className="text-xs text-muted-foreground">Gerenciar leads</p>
+                  </div>
+                </Link>
+                
+                <Link 
+                  to="/admin/reports" 
+                  className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-violet-50 to-violet-100/50 hover:from-violet-100 hover:to-violet-100 transition-all group"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-violet-500 flex items-center justify-center">
+                    <BarChart3 className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground group-hover:text-violet-600 transition-colors">
+                      Relatórios
+                    </p>
+                    <p className="text-xs text-muted-foreground">Ver métricas</p>
+                  </div>
+                </Link>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
       </div>
