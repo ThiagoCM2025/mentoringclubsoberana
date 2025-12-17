@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
+import { CourseSplashScreen } from "@/components/CourseSplashScreen";
 
 interface Course {
   id: string;
@@ -160,9 +161,10 @@ const CourseDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-secondary border-t-transparent rounded-full" />
-      </div>
+      <CourseSplashScreen 
+        courseTitle={course?.title || "Carregando curso..."}
+        autoProgress={true}
+      />
     );
   }
 
