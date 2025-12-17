@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_permissions: {
+        Row: {
+          can_manage_admins: boolean | null
+          can_manage_courses: boolean | null
+          can_manage_enrollments: boolean | null
+          can_manage_leads: boolean | null
+          can_manage_students: boolean | null
+          can_send_notifications: boolean | null
+          can_view_reports: boolean | null
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          can_manage_admins?: boolean | null
+          can_manage_courses?: boolean | null
+          can_manage_enrollments?: boolean | null
+          can_manage_leads?: boolean | null
+          can_manage_students?: boolean | null
+          can_send_notifications?: boolean | null
+          can_view_reports?: boolean | null
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          can_manage_admins?: boolean | null
+          can_manage_courses?: boolean | null
+          can_manage_enrollments?: boolean | null
+          can_manage_leads?: boolean | null
+          can_manage_students?: boolean | null
+          can_send_notifications?: boolean | null
+          can_view_reports?: boolean | null
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           category: string
