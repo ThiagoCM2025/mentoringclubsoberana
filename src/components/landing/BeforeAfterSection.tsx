@@ -75,9 +75,9 @@ export const BeforeAfterSection = () => {
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
           {/* Before Card */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            initial={{ opacity: 0, x: -80, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, x: 0, scale: 1 } : {}}
+            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
             className="relative"
           >
             <div className="bg-foreground/5 border border-primary/20 rounded-2xl p-8 h-full">
@@ -95,9 +95,9 @@ export const BeforeAfterSection = () => {
                 {beforeItems.map((item, index) => (
                   <motion.li
                     key={index}
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, x: -30 }}
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
+                    transition={{ duration: 0.5, delay: 0.4 + index * 0.12 }}
                     className="flex items-center gap-3"
                   >
                     <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -112,12 +112,22 @@ export const BeforeAfterSection = () => {
 
           {/* After Card */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            initial={{ opacity: 0, x: 80, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, x: 0, scale: 1 } : {}}
+            transition={{ duration: 0.7, delay: 0.35, ease: "easeOut" }}
             className="relative"
           >
-            <div className="bg-gradient-to-br from-secondary/10 to-secondary/5 border border-secondary/30 rounded-2xl p-8 h-full shadow-lg">
+            <motion.div 
+              className="bg-gradient-to-br from-secondary/10 to-secondary/5 border border-secondary/30 rounded-2xl p-8 h-full shadow-lg"
+              animate={isInView ? { 
+                boxShadow: [
+                  "0 10px 15px -3px rgba(166, 144, 97, 0.1)",
+                  "0 20px 40px -3px rgba(166, 144, 97, 0.25)",
+                  "0 10px 15px -3px rgba(166, 144, 97, 0.1)"
+                ]
+              } : {}}
+              transition={{ duration: 2, delay: 1, repeat: Infinity, repeatDelay: 3 }}
+            >
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
                   <Sparkles className="w-6 h-6 text-secondary" />
@@ -132,9 +142,9 @@ export const BeforeAfterSection = () => {
                 {afterItems.map((item, index) => (
                   <motion.li
                     key={index}
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 30 }}
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+                    transition={{ duration: 0.5, delay: 0.55 + index * 0.12 }}
                     className="flex items-center gap-3"
                   >
                     <div className="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center flex-shrink-0">
@@ -144,10 +154,14 @@ export const BeforeAfterSection = () => {
                   </motion.li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
             
             {/* Decorative glow */}
-            <div className="absolute -inset-1 bg-gradient-to-br from-secondary/20 to-transparent rounded-2xl blur-xl -z-10" />
+            <motion.div 
+              className="absolute -inset-1 bg-gradient-to-br from-secondary/20 to-transparent rounded-2xl blur-xl -z-10"
+              animate={isInView ? { opacity: [0.5, 1, 0.5] } : {}}
+              transition={{ duration: 3, delay: 1, repeat: Infinity }}
+            />
           </motion.div>
         </div>
 
@@ -167,9 +181,9 @@ export const BeforeAfterSection = () => {
 
         {/* Timeline */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
           className="max-w-4xl mx-auto"
         >
           <h3 className="text-center text-lg font-serif font-semibold text-foreground mb-8">
@@ -177,22 +191,37 @@ export const BeforeAfterSection = () => {
           </h3>
           
           <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-secondary/50 rounded-full transform -translate-y-1/2 hidden md:block" />
+            {/* Timeline line with drawing animation */}
+            <motion.div 
+              className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-secondary/50 rounded-full transform -translate-y-1/2 hidden md:block origin-left"
+              initial={{ scaleX: 0 }}
+              animate={isInView ? { scaleX: 1 } : {}}
+              transition={{ duration: 1.2, delay: 1, ease: "easeOut" }}
+            />
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-0">
               {timeline.map((item, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
+                  initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                  animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+                  transition={{ duration: 0.5, delay: 1.1 + index * 0.2, ease: "easeOut" }}
                   className="relative flex flex-col items-center text-center"
                 >
                   {/* Node */}
-                  <div className="w-14 h-14 rounded-full bg-background border-4 border-secondary shadow-lg flex items-center justify-center text-2xl z-10 mb-3">
+                  <motion.div 
+                    className="w-14 h-14 rounded-full bg-background border-4 border-secondary shadow-lg flex items-center justify-center text-2xl z-10 mb-3"
+                    animate={isInView ? { 
+                      boxShadow: [
+                        "0 4px 6px -1px rgba(166, 144, 97, 0.2)",
+                        "0 10px 20px -1px rgba(166, 144, 97, 0.35)",
+                        "0 4px 6px -1px rgba(166, 144, 97, 0.2)"
+                      ]
+                    } : {}}
+                    transition={{ duration: 2, delay: 1.5 + index * 0.3, repeat: Infinity, repeatDelay: 2 }}
+                  >
                     {item.icon}
-                  </div>
+                  </motion.div>
                   
                   <span className="text-sm font-bold text-secondary">{item.period}</span>
                   <span className="text-xs text-muted-foreground mt-1">{item.label}</span>

@@ -7,7 +7,7 @@ import { SoberanaLogoMark } from "./SoberanaLogoMark";
 
 const navLinks = [
   { label: "Sobre", href: "#sobre" },
-  { label: "Metodologia", href: "#metodologia" },
+  { label: "Metodologia", href: "#sobre" },
   { label: "A Jornada", href: "#jornada" },
   { label: "Trajetória", href: "#trajetoria" },
   { label: "Depoimentos", href: "#depoimentos" },
@@ -77,8 +77,8 @@ export const Navbar = () => {
                 asChild
                 className={`tracking-wide font-medium transition-all duration-300 ${
                   isScrolled 
-                    ? "border-foreground/30 text-foreground hover:border-secondary hover:text-secondary hover:bg-secondary/5" 
-                    : "border-cream/40 text-cream hover:bg-cream/10 hover:border-cream/60 hover:text-cream"
+                    ? "border-foreground/50 text-foreground bg-foreground/5 hover:border-secondary hover:text-secondary hover:bg-secondary/10" 
+                    : "border-cream text-cream bg-cream/15 hover:bg-cream/25 hover:border-cream"
                 }`}
               >
                 <Link to="/auth">Área do Aluno</Link>
