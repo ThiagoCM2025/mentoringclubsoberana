@@ -12,6 +12,7 @@ import { DuvidaCTASection } from "@/components/landing/DuvidaCTASection";
 import { LeadCaptureSection } from "@/components/landing/LeadCaptureSection";
 import { Footer } from "@/components/landing/Footer";
 import { WhatsAppButton } from "@/components/landing/WhatsAppButton";
+import { ExitIntentPopup } from "@/components/landing/ExitIntentPopup";
 import SEO, { createFAQSchema } from "@/components/SEO";
 
 const faqItems = [
@@ -51,6 +52,7 @@ const Index = () => {
       <LeadCaptureSection />
       <Footer />
       <WhatsAppButton />
+      <ExitIntentPopup />
     </main>
   );
 };

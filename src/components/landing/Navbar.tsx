@@ -87,7 +87,7 @@ export const Navbar = () => {
                 asChild
                 className="cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground tracking-wide"
               >
-                <a href="#captura">Quero Ser Soberana</a>
+                <a href="#jornada">Quero Ser Soberana</a>
               </Button>
             </div>
 
@@ -137,7 +137,7 @@ export const Navbar = () => {
                   </Button>
                   <Button
                     className="w-full cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground"
-                    onClick={() => scrollToSection("#captura")}
+                    onClick={() => scrollToSection("#jornada")}
                   >
                     Quero Ser Soberana
                   </Button>
