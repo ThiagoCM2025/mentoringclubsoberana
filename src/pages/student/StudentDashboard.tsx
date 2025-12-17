@@ -3,18 +3,24 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { 
   BookOpen, 
   PlayCircle, 
   Clock, 
   Award,
+  Flame,
+  Star,
+  Trophy,
+  TrendingUp,
+  Menu,
+  X,
   LogOut,
-  User,
-  ChevronRight,
-  GraduationCap
+  User
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import StatsCard from "@/components/student/StatsCard";
+import CourseCard from "@/components/student/CourseCard";
+import ContinueWatching from "@/components/student/ContinueWatching";
 import brandLogo from "@/assets/brand-logo.png";
 
 interface Course {
@@ -29,9 +35,13 @@ interface EnrollmentWithCourse {
   courses: Course;
 }
 
-interface ProgressData {
-  lesson_id: string;
-  completed: boolean;
+interface ContinueItem {
+  lessonId: string;
+  lessonTitle: string;
+  courseTitle: string;
+  thumbnail: string | null;
+  progress: number;
+  duration: number | null;
 }
 
 const StudentDashboard = () => {
@@ -39,8 +49,12 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
   const [enrollments, setEnrollments] = useState<EnrollmentWithCourse[]>([]);
   const [progress, setProgress] = useState<Record<string, number>>({});
+  const [courseStats, setCourseStats] = useState<Record<string, { total: number; completed: number }>>({});
   const [profile, setProfile] = useState<{ full_name: string | null }>({ full_name: null });
   const [loading, setLoading] = useState(true);
+  const [continueWatching, setContinueWatching] = useState<ContinueItem[]>([]);
+  const [totalCompleted, setTotalCompleted] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -81,7 +95,19 @@ const StudentDashboard = () => {
       for (const enrollment of enrollmentData) {
         await fetchCourseProgress(enrollment.course_id);
       }
+
+      // Fetch continue watching
+      await fetchContinueWatching(enrollmentData as unknown as EnrollmentWithCourse[]);
     }
+
+    // Fetch total completed lessons
+    const { count } = await supabase
+      .from("progress")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("completed", true);
+    
+    setTotalCompleted(count || 0);
 
     setLoading(false);
   };
@@ -89,7 +115,6 @@ const StudentDashboard = () => {
   const fetchCourseProgress = async (courseId: string) => {
     if (!user) return;
 
-    // Get all lessons for this course
     const { data: modules } = await supabase
       .from("modules")
       .select("id")
@@ -97,6 +122,7 @@ const StudentDashboard = () => {
 
     if (!modules || modules.length === 0) {
       setProgress(prev => ({ ...prev, [courseId]: 0 }));
+      setCourseStats(prev => ({ ...prev, [courseId]: { total: 0, completed: 0 } }));
       return;
     }
 
@@ -109,6 +135,7 @@ const StudentDashboard = () => {
 
     if (!lessons || lessons.length === 0) {
       setProgress(prev => ({ ...prev, [courseId]: 0 }));
+      setCourseStats(prev => ({ ...prev, [courseId]: { total: 0, completed: 0 } }));
       return;
     }
 
@@ -120,10 +147,68 @@ const StudentDashboard = () => {
       .eq("user_id", user.id)
       .in("lesson_id", lessonIds);
 
-    const completedCount = progressData?.filter((p: ProgressData) => p.completed).length || 0;
+    const completedCount = progressData?.filter(p => p.completed).length || 0;
     const percentage = Math.round((completedCount / lessons.length) * 100);
     
     setProgress(prev => ({ ...prev, [courseId]: percentage }));
+    setCourseStats(prev => ({ ...prev, [courseId]: { total: lessons.length, completed: completedCount } }));
+  };
+
+  const fetchContinueWatching = async (enrollments: EnrollmentWithCourse[]) => {
+    if (!user || enrollments.length === 0) return;
+
+    const items: ContinueItem[] = [];
+
+    for (const enrollment of enrollments) {
+      // Get modules for this course
+      const { data: modules } = await supabase
+        .from("modules")
+        .select("id")
+        .eq("course_id", enrollment.course_id);
+
+      if (!modules || modules.length === 0) continue;
+
+      const moduleIds = modules.map(m => m.id);
+
+      // Get lessons
+      const { data: lessons } = await supabase
+        .from("lessons")
+        .select("id, title, duration_minutes")
+        .in("module_id", moduleIds)
+        .order("order_index");
+
+      if (!lessons || lessons.length === 0) continue;
+
+      // Get progress
+      const lessonIds = lessons.map(l => l.id);
+      const { data: progressData } = await supabase
+        .from("progress")
+        .select("lesson_id, progress_seconds, completed")
+        .eq("user_id", user.id)
+        .in("lesson_id", lessonIds);
+
+      // Find lessons in progress (started but not completed)
+      for (const lesson of lessons) {
+        const lessonProgress = progressData?.find(p => p.lesson_id === lesson.id);
+        if (lessonProgress && !lessonProgress.completed && lessonProgress.progress_seconds > 0) {
+          const durationSeconds = (lesson.duration_minutes || 0) * 60;
+          const progressPercent = durationSeconds > 0 
+            ? Math.round((lessonProgress.progress_seconds / durationSeconds) * 100)
+            : 0;
+
+          items.push({
+            lessonId: lesson.id,
+            lessonTitle: lesson.title,
+            courseTitle: enrollment.courses.title,
+            thumbnail: enrollment.courses.thumbnail_url,
+            progress: Math.min(progressPercent, 99),
+            duration: lesson.duration_minutes
+          });
+        }
+      }
+    }
+
+    setContinueWatching(items.slice(0, 5));
   };
 
   const handleSignOut = async () => {
@@ -136,76 +221,135 @@ const StudentDashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground py-4 px-6 sticky top-0 z-50">
+      <header className="bg-primary text-primary-foreground py-4 px-4 sticky top-0 z-50">
         <div className="container-soberana flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src={brandLogo} alt="Soberana" className="w-10 h-10 object-contain" />
-            <span className="font-serif font-bold text-xl">Área do Aluno</span>
+            <span className="font-serif font-bold text-xl hidden sm:block">Área do Aluno</span>
           </div>
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
-            >
-              <User className="w-4 h-4 mr-2" />
-              Perfil
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSignOut}
-              className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sair
-            </Button>
+          
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-6">
+            <nav className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Perfil
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSignOut}
+                className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sair
+              </Button>
+            </nav>
           </div>
+
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden text-primary-foreground"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </Button>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="md:hidden absolute top-full left-0 right-0 bg-primary border-t border-primary-foreground/10 p-4"
+          >
+            <nav className="flex flex-col gap-2">
+              <Button
+                variant="ghost"
+                className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Perfil
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={handleSignOut}
+                className="justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sair
+              </Button>
+            </nav>
+          </motion.div>
+        )}
       </header>
 
       <main className="container-soberana py-8 px-4">
-        {/* Welcome Section */}
+        {/* Welcome Banner */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-10"
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-marsala-light to-primary p-8 mb-8"
         >
-          <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-2">
-            Olá, {firstName}! 👋
-          </h1>
-          <p className="text-muted-foreground">
-            Continue sua jornada para se tornar uma advogada soberana.
-          </p>
+          <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
+          <div className="relative z-10">
+            <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary-foreground mb-2">
+              Olá, {firstName}! 👋
+            </h1>
+            <p className="text-primary-foreground/80 max-w-xl">
+              Continue sua jornada para se tornar uma advogada soberana. 
+              Você está indo muito bem!
+            </p>
+          </div>
+          
+          {/* Decorative elements */}
+          <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-secondary/20 rounded-full blur-3xl" />
+          <div className="absolute right-20 top-0 w-20 h-20 bg-accent/20 rounded-full blur-2xl" />
         </motion.div>
 
-        {/* Stats Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10"
-        >
-          {[
-            { icon: BookOpen, label: "Cursos Ativos", value: enrollments.length },
-            { icon: PlayCircle, label: "Aulas Assistidas", value: Object.values(progress).reduce((a, b) => a + b, 0) || 0 },
-            { icon: Clock, label: "Horas de Estudo", value: "0" },
-            { icon: Award, label: "Certificados", value: "0" },
-          ].map((stat, index) => (
-            <div key={index} className="card-elegant p-4">
-              <stat.icon className="w-8 h-8 text-secondary mb-2" />
-              <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
-            </div>
-          ))}
-        </motion.div>
+        {/* Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          <StatsCard
+            icon={BookOpen}
+            label="Cursos Ativos"
+            value={enrollments.length}
+            color="primary"
+            index={0}
+          />
+          <StatsCard
+            icon={PlayCircle}
+            label="Aulas Concluídas"
+            value={totalCompleted}
+            color="green"
+            index={1}
+          />
+          <StatsCard
+            icon={Clock}
+            label="Horas de Estudo"
+            value={Math.round(totalCompleted * 0.25)}
+            color="secondary"
+            index={2}
+          />
+          <StatsCard
+            icon={Award}
+            label="Certificados"
+            value={Object.values(progress).filter(p => p === 100).length}
+            color="accent"
+            index={3}
+          />
+        </div>
 
-        {/* My Courses */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
+        {/* Continue Watching */}
+        <ContinueWatching items={continueWatching} />
+
+        {/* Courses */}
+        <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-serif font-bold text-foreground">
               Meus Cursos
@@ -215,77 +359,51 @@ const StudentDashboard = () => {
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="card-elegant p-4 animate-pulse">
-                  <div className="w-full h-40 bg-muted rounded-lg mb-4" />
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-[16/10] rounded-xl bg-muted mb-4" />
                   <div className="h-6 bg-muted rounded w-3/4 mb-2" />
                   <div className="h-4 bg-muted rounded w-1/2" />
                 </div>
               ))}
             </div>
           ) : enrollments.length === 0 ? (
-            <div className="card-elegant p-12 text-center">
-              <GraduationCap className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-card rounded-2xl p-12 text-center border border-border/50"
+            >
+              <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+                <BookOpen className="w-10 h-10 text-muted-foreground" />
+              </div>
               <h3 className="text-xl font-serif font-semibold text-foreground mb-2">
                 Nenhum curso ainda
               </h3>
-              <p className="text-muted-foreground mb-6">
-                Você ainda não está matriculada em nenhum curso.
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                Você ainda não está matriculada em nenhum curso. 
+                Explore nossos programas e comece sua transformação!
               </p>
               <Button asChild className="bg-primary hover:bg-primary/90">
                 <a href="/#produtos">Conhecer Cursos</a>
               </Button>
-            </div>
+            </motion.div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {enrollments.map((enrollment) => (
-                <motion.div
+              {enrollments.map((enrollment, index) => (
+                <CourseCard
                   key={enrollment.course_id}
-                  whileHover={{ y: -4 }}
-                  className="card-elegant overflow-hidden cursor-pointer"
-                  onClick={() => navigate(`/student/course/${enrollment.course_id}`)}
-                >
-                  <div className="relative h-40 bg-gradient-to-br from-primary to-marsala-light">
-                    {enrollment.courses.thumbnail_url ? (
-                      <img
-                        src={enrollment.courses.thumbnail_url}
-                        alt={enrollment.courses.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <BookOpen className="w-16 h-16 text-primary-foreground/30" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-serif font-semibold text-lg text-foreground mb-2 line-clamp-2">
-                      {enrollment.courses.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                      {enrollment.courses.description}
-                    </p>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Progresso</span>
-                        <span className="font-medium text-foreground">
-                          {progress[enrollment.course_id] || 0}%
-                        </span>
-                      </div>
-                      <Progress value={progress[enrollment.course_id] || 0} className="h-2" />
-                    </div>
-                    <Button
-                      variant="ghost"
-                      className="w-full mt-4 text-secondary hover:text-secondary group"
-                    >
-                      Continuar
-                      <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </div>
-                </motion.div>
+                  id={enrollment.course_id}
+                  title={enrollment.courses.title}
+                  description={enrollment.courses.description}
+                  thumbnail={enrollment.courses.thumbnail_url}
+                  progress={progress[enrollment.course_id] || 0}
+                  totalLessons={courseStats[enrollment.course_id]?.total || 0}
+                  completedLessons={courseStats[enrollment.course_id]?.completed || 0}
+                  index={index}
+                />
               ))}
             </div>
           )}
-        </motion.div>
+        </section>
       </main>
     </div>
   );

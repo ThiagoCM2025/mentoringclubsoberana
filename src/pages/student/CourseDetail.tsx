@@ -15,10 +15,12 @@ import {
   ArrowLeft, 
   PlayCircle, 
   CheckCircle, 
-  Lock,
   Clock,
   FileText,
-  Download
+  BookOpen,
+  Award,
+  Users,
+  Play
 } from "lucide-react";
 import brandLogo from "@/assets/brand-logo.png";
 
@@ -26,6 +28,7 @@ interface Course {
   id: string;
   title: string;
   description: string;
+  thumbnail_url: string | null;
 }
 
 interface Module {
@@ -58,6 +61,7 @@ const CourseDetail = () => {
   const [modules, setModules] = useState<Module[]>([]);
   const [lessonProgress, setLessonProgress] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
+  const [firstIncompleteLessonId, setFirstIncompleteLessonId] = useState<string | null>(null);
 
   useEffect(() => {
     if (courseId && user) {
@@ -71,7 +75,7 @@ const CourseDetail = () => {
     // Fetch course
     const { data: courseData } = await supabase
       .from("courses")
-      .select("id, title, description")
+      .select("id, title, description, thumbnail_url")
       .eq("id", courseId)
       .single();
 
@@ -119,7 +123,23 @@ const CourseDetail = () => {
             progressMap[p.lesson_id] = p.completed;
           });
           setLessonProgress(progressMap);
+
+          // Find first incomplete lesson
+          for (const module of sortedModules) {
+            for (const lesson of module.lessons) {
+              if (!progressMap[lesson.id]) {
+                setFirstIncompleteLessonId(lesson.id);
+                break;
+              }
+            }
+            if (firstIncompleteLessonId) break;
+          }
         }
+      }
+
+      // If no progress, first lesson is the first incomplete
+      if (!firstIncompleteLessonId && sortedModules.length > 0 && sortedModules[0].lessons.length > 0) {
+        setFirstIncompleteLessonId(sortedModules[0].lessons[0].id);
       }
     }
 
@@ -129,9 +149,18 @@ const CourseDetail = () => {
   const totalLessons = modules.reduce((acc, m) => acc + m.lessons.length, 0);
   const completedLessons = Object.values(lessonProgress).filter(Boolean).length;
   const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  const totalDuration = modules.reduce((acc, m) => 
+    acc + m.lessons.reduce((lacc, l) => lacc + (l.duration_minutes || 0), 0), 0
+  );
 
   const handleLessonClick = (lessonId: string) => {
     navigate(`/student/lesson/${lessonId}`);
+  };
+
+  const handleContinue = () => {
+    if (firstIncompleteLessonId) {
+      navigate(`/student/lesson/${firstIncompleteLessonId}`);
+    }
   };
 
   if (loading) {
@@ -144,136 +173,207 @@ const CourseDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-primary text-primary-foreground py-4 px-6 sticky top-0 z-50">
-        <div className="container-soberana flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/student")}
-              className="text-primary-foreground hover:bg-primary-foreground/10"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div className="flex items-center gap-3">
-              <img src={brandLogo} alt="Soberana" className="w-8 h-8 object-contain" />
-              <span className="font-serif font-bold hidden sm:block">Área do Aluno</span>
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-b from-primary via-marsala-light to-background">
+        {/* Header */}
+        <header className="relative z-10 py-4 px-4">
+          <div className="container-soberana flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/student")}
+                className="text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <div className="flex items-center gap-3">
+                <img src={brandLogo} alt="Soberana" className="w-8 h-8 object-contain" />
+                <span className="font-serif font-bold hidden sm:block text-primary-foreground">Área do Aluno</span>
+              </div>
             </div>
+          </div>
+        </header>
+
+        {/* Course Hero */}
+        <div className="container-soberana px-4 pb-12 pt-4">
+          <div className="grid lg:grid-cols-2 gap-8 items-center">
+            {/* Info */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-primary-foreground"
+            >
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-4">
+                {course?.title}
+              </h1>
+              <p className="text-primary-foreground/80 mb-6 text-lg">
+                {course?.description}
+              </p>
+
+              {/* Stats */}
+              <div className="flex flex-wrap gap-6 mb-8">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-secondary" />
+                  <span>{totalLessons} aulas</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-secondary" />
+                  <span>{Math.round(totalDuration / 60)}h de conteúdo</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Award className="w-5 h-5 text-secondary" />
+                  <span>Certificado incluso</span>
+                </div>
+              </div>
+
+              {/* Progress */}
+              <div className="bg-primary-foreground/10 rounded-xl p-4 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm">Seu progresso</span>
+                  <span className="font-semibold">{progressPercentage}%</span>
+                </div>
+                <Progress value={progressPercentage} className="h-2 bg-primary-foreground/20" />
+                <p className="text-sm text-primary-foreground/70 mt-2">
+                  {completedLessons} de {totalLessons} aulas concluídas
+                </p>
+              </div>
+
+              {/* CTA */}
+              <Button
+                onClick={handleContinue}
+                size="lg"
+                className="mt-6 bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+              >
+                <Play className="w-5 h-5 mr-2" />
+                {completedLessons === 0 ? "Começar Curso" : "Continuar"}
+              </Button>
+            </motion.div>
+
+            {/* Thumbnail */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="hidden lg:block"
+            >
+              <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl">
+                {course?.thumbnail_url ? (
+                  <img
+                    src={course.thumbnail_url}
+                    alt={course.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-marsala-light to-primary flex items-center justify-center">
+                    <BookOpen className="w-24 h-24 text-primary-foreground/30" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
+              </div>
+            </motion.div>
           </div>
         </div>
-      </header>
+      </div>
 
+      {/* Content */}
       <main className="container-soberana py-8 px-4">
-        {/* Course Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          transition={{ delay: 0.2 }}
         >
-          <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">
-            {course?.title}
-          </h1>
-          <p className="text-muted-foreground mb-6">{course?.description}</p>
-          
-          {/* Progress Bar */}
-          <div className="card-elegant p-6">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-muted-foreground">Seu progresso</span>
-              <span className="text-sm font-medium">
-                {completedLessons} de {totalLessons} aulas concluídas
-              </span>
-            </div>
-            <Progress value={progressPercentage} className="h-3" />
-            <p className="text-right text-sm text-secondary font-medium mt-2">
-              {progressPercentage}% completo
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Modules */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <h2 className="text-xl font-serif font-bold text-foreground mb-4">
+          <h2 className="text-2xl font-serif font-bold text-foreground mb-6">
             Conteúdo do Curso
           </h2>
 
-          <Accordion type="multiple" className="space-y-4">
-            {modules.map((module, moduleIndex) => (
-              <AccordionItem
-                key={module.id}
-                value={module.id}
-                className="card-elegant border-none"
-              >
-                <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                  <div className="flex items-center gap-4 text-left">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                      {moduleIndex + 1}
+          <Accordion type="multiple" defaultValue={modules.map(m => m.id)} className="space-y-4">
+            {modules.map((module, moduleIndex) => {
+              const moduleCompleted = module.lessons.every(l => lessonProgress[l.id]);
+              const moduleLessonsCompleted = module.lessons.filter(l => lessonProgress[l.id]).length;
+              
+              return (
+                <AccordionItem
+                  key={module.id}
+                  value={module.id}
+                  className="bg-card rounded-xl border border-border/50 overflow-hidden"
+                >
+                  <AccordionTrigger className="px-6 py-5 hover:no-underline hover:bg-muted/30 transition-colors">
+                    <div className="flex items-center gap-4 text-left w-full">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg ${
+                        moduleCompleted
+                          ? "bg-green-500/20 text-green-500"
+                          : "bg-primary/10 text-primary"
+                      }`}>
+                        {moduleCompleted ? (
+                          <CheckCircle className="w-6 h-6" />
+                        ) : (
+                          moduleIndex + 1
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-serif font-semibold text-foreground text-lg">
+                          {module.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {moduleLessonsCompleted}/{module.lessons.length} aulas concluídas
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-serif font-semibold text-foreground">
-                        {module.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {module.lessons.length} aulas
-                      </p>
-                    </div>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4">
-                  <div className="space-y-2 pt-2">
-                    {module.lessons.map((lesson, lessonIndex) => {
-                      const isCompleted = lessonProgress[lesson.id];
-                      
-                      return (
-                        <button
-                          key={lesson.id}
-                          onClick={() => handleLessonClick(lesson.id)}
-                          className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left group"
-                        >
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            isCompleted 
-                              ? "bg-green-100 text-green-600" 
-                              : "bg-muted text-muted-foreground"
-                          }`}>
-                            {isCompleted ? (
-                              <CheckCircle className="w-5 h-5" />
-                            ) : (
-                              <PlayCircle className="w-5 h-5" />
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <p className={`font-medium ${
-                              isCompleted ? "text-muted-foreground" : "text-foreground"
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4">
+                    <div className="space-y-1 pt-2">
+                      {module.lessons.map((lesson, lessonIndex) => {
+                        const isCompleted = lessonProgress[lesson.id];
+                        
+                        return (
+                          <motion.button
+                            key={lesson.id}
+                            onClick={() => handleLessonClick(lesson.id)}
+                            whileHover={{ x: 4 }}
+                            className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-muted/50 transition-all text-left group"
+                          >
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                              isCompleted 
+                                ? "bg-green-500/20 text-green-500" 
+                                : "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary"
                             }`}>
-                              {moduleIndex + 1}.{lessonIndex + 1} - {lesson.title}
-                            </p>
-                            {lesson.duration_minutes && (
-                              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                {lesson.duration_minutes} min
+                              {isCompleted ? (
+                                <CheckCircle className="w-5 h-5" />
+                              ) : (
+                                <PlayCircle className="w-5 h-5" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <p className={`font-medium transition-colors ${
+                                isCompleted ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
+                              }`}>
+                                {moduleIndex + 1}.{lessonIndex + 1} - {lesson.title}
                               </p>
+                              {lesson.duration_minutes && (
+                                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                                  <Clock className="w-3 h-3" />
+                                  {lesson.duration_minutes} min
+                                </p>
+                              )}
+                            </div>
+                            {lesson.is_free && (
+                              <span className="text-xs px-3 py-1 bg-secondary/10 text-secondary rounded-full font-medium">
+                                Grátis
+                              </span>
                             )}
-                          </div>
-                          {lesson.is_free && (
-                            <span className="text-xs px-2 py-1 bg-secondary/10 text-secondary rounded-full">
-                              Grátis
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
           </Accordion>
 
           {modules.length === 0 && (
-            <div className="card-elegant p-12 text-center">
+            <div className="bg-card rounded-2xl p-12 text-center border border-border/50">
               <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-xl font-serif font-semibold text-foreground mb-2">
                 Conteúdo em breve
