@@ -4,15 +4,14 @@ import { Link } from "react-router-dom";
 import brandLogo from "@/assets/brand-logo.png";
 
 const socialLinks = [
-  { icon: Instagram, href: "https://instagram.com/soberanamentoria", label: "Instagram" },
-  { icon: Linkedin, href: "https://linkedin.com/company/soberana", label: "LinkedIn" },
-  { icon: Youtube, href: "https://youtube.com/@soberanamentoria", label: "YouTube" },
+  { icon: Instagram, href: "https://instagram.com/fabianaduarte.adv", label: "Instagram" },
+  { icon: Linkedin, href: "https://linkedin.com/in/fabianaduarteadv", label: "LinkedIn" },
+  { icon: Youtube, href: "https://youtube.com/@fabianaduarteadv", label: "YouTube" },
 ];
 
 const quickLinks = [
   { label: "Sobre", href: "#sobre" },
-  { label: "Metodologia", href: "#metodologia" },
-  { label: "Produtos", href: "#produtos" },
+  { label: "Programas", href: "#programas" },
   { label: "Depoimentos", href: "#depoimentos" },
   { label: "FAQ", href: "#faq" },
 ];
@@ -96,8 +95,8 @@ export const Footer = () => {
               </li>
               <li className="flex items-start gap-3 text-sm text-background/70">
                 <Phone className="w-4 h-4 mt-0.5 text-secondary" />
-                <a href="tel:+5511999999999" className="hover:text-secondary transition-colors">
-                  (11) 99999-9999
+                <a href="https://wa.me/5511993563468" target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">
+                  (11) 99356-3468
                 </a>
               </li>
               <li className="flex items-start gap-3 text-sm text-background/70">
