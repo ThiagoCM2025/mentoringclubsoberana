@@ -290,7 +290,7 @@ const ExperienceStartLanding = () => {
                 initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: animationDuration, delay: isMobile ? 0.15 : 0.4 }}
-                className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-cream leading-tight mb-4 sm:mb-6 break-words"
+                className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-cream leading-tight mb-4 sm:mb-6 px-4 sm:px-6 md:px-0"
               >
                 SOBERANA{" "}
                 <span className="text-shimmer-gold">
@@ -304,7 +304,7 @@ const ExperienceStartLanding = () => {
                 initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: animationDuration, delay: isMobile ? 0.2 : 0.5 }}
-                className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto break-words"
+                className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto px-4 sm:px-6 md:px-0"
               >
                 Um encontro presencial criado para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2025.
               </motion.p>
@@ -379,7 +379,7 @@ const ExperienceStartLanding = () => {
                   <Button
                     asChild
                     size="lg"
-                    className="relative cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground px-6 sm:px-10 md:px-12 py-6 md:py-7 text-sm sm:text-base md:text-lg font-bold uppercase tracking-wide group"
+                    className="relative cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground px-4 sm:px-8 md:px-12 py-5 sm:py-6 md:py-7 text-xs sm:text-sm md:text-lg font-bold uppercase tracking-wide group"
                     onClick={() => trackCTAClick("hero_cta")}
                   >
                     <a href={ctaUrl} target="_blank" rel="noopener noreferrer">

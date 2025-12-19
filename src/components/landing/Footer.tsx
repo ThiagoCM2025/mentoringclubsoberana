@@ -53,7 +53,7 @@ export const Footer = () => {
 
       {/* Main Footer */}
       <div className="container-soberana px-4 sm:px-6 py-12 sm:py-16 pb-8 sm:pb-12 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12 text-center sm:text-left">
           {/* Brand Column */}
           <div className="sm:col-span-2 lg:col-span-1">
             <div className="mb-5 sm:mb-6">
@@ -63,7 +63,7 @@ export const Footer = () => {
               Transformando advogadas em CEOs dos seus próprios negócios através 
               da metodologia S.O.B.E.R.A.N.A.
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-3 justify-center sm:justify-start">
               {socialLinks.map((social, index) => (
                 <motion.a
                   key={index}
@@ -160,7 +160,7 @@ export const Footer = () => {
       {/* Bottom Bar */}
       <div className="border-t border-background/10 relative z-10">
         <div className="container-soberana py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-background/50">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-background/50 text-center">
             <p className="tracking-wide">
               © {currentYear} Soberana Mentoring Club. Todos os direitos reservados.
             </p>
