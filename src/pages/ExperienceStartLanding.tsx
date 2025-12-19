@@ -62,8 +62,8 @@ const ExperienceStartLanding = () => {
   const inviteInView = useInView(inviteRef, { once: true, amount: 0.3 });
   const pricingInView = useInView(pricingRef, { once: true, amount: 0.3 });
 
-  // Countdown para 17 de Janeiro de 2025 às 09:00
-  const eventDate = new Date('2025-01-17T09:00:00-03:00');
+  // Countdown para 17 de Janeiro de 2026 às 09:00 (horário de São Paulo)
+  const eventDate = new Date('2026-01-17T09:00:00-03:00');
   const timeLeft = useCountdown(eventDate);
 
   // Link de pagamento Kiwify
