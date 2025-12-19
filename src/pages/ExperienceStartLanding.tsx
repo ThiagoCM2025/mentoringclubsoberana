@@ -4,6 +4,7 @@ import { Calendar, Clock, MapPin, CheckCircle2, Sparkles, Brain, Settings, Users
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import { Footer } from "@/components/landing/Footer";
+import { SoberanaLogoMark } from "@/components/landing/SoberanaLogoMark";
 
 // Import brand assets
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
@@ -11,7 +12,7 @@ import isotipoWhite from "@/assets/brand/isotipo-white.png";
 import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 import patternGold from "@/assets/brand/pattern-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
-import heroFabiana from "@/assets/hero-fabiana.jpeg";
+import heroImage from "@/assets/experience-start-hero.jpeg";
 
 const ExperienceStartLanding = () => {
   const heroRef = useRef(null);
@@ -26,7 +27,8 @@ const ExperienceStartLanding = () => {
   const inviteInView = useInView(inviteRef, { once: true, amount: 0.3 });
   const pricingInView = useInView(pricingRef, { once: true, amount: 0.3 });
 
-  const ctaUrl = "https://wa.me/5511999999999?text=Quero%20garantir%20minha%20vaga%20no%20Experience%20Start";
+  // Link de pagamento Kiwify
+  const ctaUrl = "https://pay.kiwify.com.br/p3kpN7k";
 
   const programContent = [
     {
@@ -37,32 +39,32 @@ const ExperienceStartLanding = () => {
     {
       icon: Brain,
       title: "Uso de IA na otimização da rotina",
-      description: "Tecnologia para ganhar tempo e aumentar produtividade."
+      description: "Tecnologia para ganhar tempo."
     },
     {
       icon: Settings,
       title: "Implementação de sistema de gestão",
-      description: "A base sólida para o crescimento sustentável."
+      description: "A base para o crescimento."
     },
     {
       icon: Users,
       title: "Posicionamento e redes sociais",
-      description: "Seja vista como autoridade na sua área."
+      description: "Seja vista como autoridade."
     },
     {
       icon: TrendingUp,
       title: "Fluxos de captação de clientes",
-      description: "Como atrair leads qualificados de forma consistente."
+      description: "Como atrair leads qualificados."
     },
     {
       icon: Sparkles,
       title: "Estratégia de Precificação",
-      description: "Como cobrar seus honorários com lucro real."
+      description: "Como cobrar seus honorários com lucro."
     },
     {
       icon: Calendar,
       title: "Plano dos 90 dias",
-      description: "Saia com o cronograma pronto para iniciar o ano no controle."
+      description: "Saia com o cronograma pronto para iniciar o ano no controle e com clareza."
     }
   ];
 
@@ -107,14 +109,14 @@ const ExperienceStartLanding = () => {
     <div className="min-h-screen bg-background landing-page">
       <SEO
         title="Soberana Experience Start | Oficina Presencial para Advogadas em SP"
-        description="Reorganize sua advocacia e destrave seu crescimento em 2026. Oficina 100% prática com Fabiana Soberana. 17 de Janeiro em São Paulo. Apenas 12 vagas."
+        description="Reorganize sua advocacia e destrave seu crescimento em 2026. Oficina 100% prática com Fabiana Soberana. 17 de Janeiro em São Paulo."
         keywords="oficina para advogadas, evento presencial advocacia, mentoria jurídica SP, networking advogadas, Fabiana Soberana, gestão advocacia"
         url="https://soberana.com.br/experience-start"
         type="website"
         schema={eventSchema}
       />
 
-      {/* Section 1: Header Superior Sticky - Premium */}
+      {/* Header Sticky Premium */}
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -140,180 +142,189 @@ const ExperienceStartLanding = () => {
         </div>
       </motion.header>
 
-      {/* Section 2: Hero Principal - Premium */}
+      {/* HERO SECTION - Premium Full Screen (igual à página inicial) */}
       <section 
         ref={heroRef}
-        className="relative min-h-screen flex items-center pt-20 overflow-hidden"
+        className="relative min-h-screen flex flex-col overflow-hidden bg-brand-black"
       >
-        {/* Background with premium gradients */}
-        <div className="absolute inset-0 bg-gradient-to-br from-marsala-dark via-primary to-marsala" />
+        {/* Background Image - Fabiana */}
         <div 
-          className="absolute inset-0 opacity-8"
-          style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '200px' }}
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `url(${heroImage})`,
+            backgroundPosition: 'center top',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+          }}
         />
         
-        {/* Premium vignette overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-marsala-dark/40 via-transparent to-marsala-dark/20" />
-        <div className="absolute inset-0 bg-gradient-to-r from-marsala-dark/30 via-transparent to-marsala-dark/30" />
-        
+        {/* Premium gradient overlay for legibility */}
+        <div 
+          className="absolute inset-0 z-[1]"
+          style={{
+            background: `
+              linear-gradient(to bottom, 
+                rgba(0,0,0,0.5) 0%, 
+                rgba(0,0,0,0.3) 30%, 
+                rgba(0,0,0,0.6) 60%, 
+                rgba(0,0,0,0.95) 100%
+              )
+            `
+          }}
+        />
+
+        {/* Decorative golden circle pattern overlay */}
+        <div 
+          className="absolute inset-0 z-[2] opacity-10"
+          style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '200px' }}
+        />
+
         {/* Floating decorative isotipos */}
         <motion.img
           src={isotipoGold}
           alt=""
-          className="absolute right-0 top-1/4 w-64 md:w-96 opacity-15 animate-float-slow"
+          className="absolute right-4 md:right-12 top-1/4 w-32 md:w-48 opacity-10 animate-float-slow z-[3]"
           initial={{ x: 100, opacity: 0 }}
-          animate={heroInView ? { x: 0, opacity: 0.15 } : {}}
+          animate={heroInView ? { x: 0, opacity: 0.1 } : {}}
           transition={{ duration: 1, delay: 0.5 }}
         />
         <motion.img
           src={isotipoSGold}
           alt=""
-          className="absolute left-8 bottom-1/4 w-20 md:w-32 opacity-10 animate-float-slow animation-delay-2000"
+          className="absolute left-4 md:left-12 bottom-1/3 w-16 md:w-24 opacity-8 animate-float-slow animation-delay-2000 z-[3]"
           initial={{ x: -50, opacity: 0 }}
-          animate={heroInView ? { x: 0, opacity: 0.1 } : {}}
+          animate={heroInView ? { x: 0, opacity: 0.08 } : {}}
           transition={{ duration: 1, delay: 0.8 }}
         />
 
-        <div className="container-soberana relative z-10 py-16 md:py-24">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Text Content */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={heroInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.8 }}
-              className="text-center lg:text-left"
-            >
-              {/* Premium badge with glow */}
+        {/* Content - positioned at bottom like main page */}
+        <div className="relative z-10 flex-1 flex flex-col justify-end pb-12 md:pb-16 pt-24 overflow-hidden">
+          <div className="container-soberana">
+            <div className="text-center max-w-4xl mx-auto px-2">
+              {/* Logo with Star */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={heroInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.2 }}
-                className="inline-flex items-center gap-2 bg-secondary/20 border border-secondary/40 rounded-full px-5 py-2.5 mb-6 glow-gold-subtle"
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="flex items-center justify-center gap-3 mb-4 sm:mb-6"
               >
-                <img src={isotipoSGold} alt="" className="w-4 h-4 isotipo-glow" />
-                <span className="text-secondary text-sm font-medium tracking-wider">LOTE 1 • Vagas Limitadas</span>
-                <Star className="w-3 h-3 text-secondary fill-secondary" />
+                <SoberanaLogoMark variant="light" size="lg" />
               </motion.div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold text-primary-foreground mb-6 leading-tight">
-                SOBERANA<br />
-                <span className="text-shimmer-gold">EXPERIENCE</span><br />
+              {/* Main Headline */}
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-cream leading-tight mb-4 sm:mb-6"
+              >
+                SOBERANA{" "}
+                <span className="text-shimmer-gold">
+                  EXPERIENCE
+                </span>{" "}
                 START
-              </h1>
+              </motion.h1>
 
-              <p className="text-primary-foreground/85 text-lg md:text-xl leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
-                Um encontro presencial criado para <strong className="text-primary-foreground">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2026.
-              </p>
+              {/* Subtext */}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="text-base sm:text-lg md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto"
+              >
+                Um encontro presencial criado para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2026.
+              </motion.p>
 
+              {/* Quote highlight */}
               <motion.div
                 initial={{ opacity: 0 }}
-                animate={heroInView ? { opacity: 1 } : {}}
+                animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
-                className="bg-secondary/10 border border-secondary/30 rounded-lg px-6 py-4 mb-8 max-w-xl mx-auto lg:mx-0"
+                className="bg-secondary/15 border border-secondary/30 rounded-lg px-6 py-4 mb-8 max-w-2xl mx-auto"
               >
                 <p className="text-secondary text-base md:text-lg italic font-serif">
                   "Nada muda se você continuar pensando e fazendo como antes."
                 </p>
               </motion.div>
 
-              {/* Premium CTA with pulsing rings */}
+              {/* Premium CTA */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={heroInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.8 }}
-                className="relative inline-block"
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.7 }}
+                className="flex justify-center mb-8"
               >
-                {/* Pulsing rings */}
-                <div className="absolute inset-0 -m-3">
-                  <span className="absolute inset-0 rounded-lg bg-secondary/20 animate-ping" style={{ animationDuration: '2s' }} />
+                <div className="relative">
+                  {/* Pulsing rings */}
+                  <div className="absolute inset-0 -m-3 pointer-events-none">
+                    <span className="absolute inset-0 rounded-lg bg-secondary/20 animate-ping" style={{ animationDuration: '2s' }} />
+                  </div>
+                  <div className="absolute inset-0 -m-2 pointer-events-none">
+                    <span className="absolute inset-0 rounded-lg bg-secondary/10 animate-ping" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }} />
+                  </div>
+                  
+                  <Button
+                    asChild
+                    size="lg"
+                    className="relative cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground px-6 sm:px-10 md:px-12 py-6 md:py-7 text-sm sm:text-base md:text-lg font-bold uppercase tracking-wide group"
+                  >
+                    <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
+                      <Sparkles className="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
+                      <span>QUERO GARANTIR MINHA VAGA POR R$ 299,00</span>
+                      <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+                    </a>
+                  </Button>
                 </div>
-                <div className="absolute inset-0 -m-2">
-                  <span className="absolute inset-0 rounded-lg bg-secondary/10 animate-ping" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }} />
-                </div>
-                
-                <Button 
-                  asChild 
-                  size="lg"
-                  className="relative bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-base md:text-lg px-8 md:px-12 py-6 md:py-8 rounded-lg shadow-2xl hover:shadow-secondary/30 transition-all group cta-premium"
-                >
-                  <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
-                    <Sparkles className="mr-2 w-5 h-5" />
-                    QUERO GARANTIR MINHA VAGA POR R$ 299,00
-                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </a>
-                </Button>
               </motion.div>
-            </motion.div>
 
-            {/* Hero Image with Golden Frame */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={heroInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="relative hidden lg:block"
-            >
-              <div className="golden-frame">
-                {/* Golden corner decorations */}
-                <div className="golden-corner golden-corner-tl" />
-                <div className="golden-corner golden-corner-tr" />
-                <div className="golden-corner golden-corner-bl" />
-                <div className="golden-corner golden-corner-br" />
-                
-                {/* Floating particles */}
-                <div className="golden-particle golden-particle-1" />
-                <div className="golden-particle golden-particle-2" />
-                <div className="golden-particle golden-particle-3" />
-                
-                <div className="golden-frame-inner">
-                  <img
-                    src={heroFabiana}
-                    alt="Fabiana Soberana - Mentora"
-                    className="w-full max-w-lg mx-auto object-cover aspect-[3/4]"
-                  />
-                  <div className="golden-vignette" />
-                </div>
-              </div>
-              
-              {/* Date badge with glow */}
+              {/* Trust Indicators */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={heroInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 1 }}
-                className="absolute -bottom-4 -right-4 bg-secondary text-secondary-foreground px-6 py-3 rounded-lg font-semibold shadow-lg glow-gold"
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+                className="pt-6 border-t border-cream/10 flex flex-col sm:flex-row sm:flex-wrap justify-center items-center gap-3 sm:gap-6 md:gap-10 text-cream/70"
               >
-                <Calendar className="inline w-4 h-4 mr-2" />
-                17 de Janeiro, 2025
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <span className="text-xs sm:text-sm tracking-wide">17 de Janeiro de 2025</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <span className="text-xs sm:text-sm tracking-wide">São Paulo - SP</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0" />
+                  <span className="text-xs sm:text-sm tracking-wide">Vagas Limitadas</span>
+                </div>
               </motion.div>
-            </motion.div>
+            </div>
           </div>
         </div>
 
-        {/* Premium scroll indicator */}
+        {/* Premium Scroll Indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          transition={{ duration: 0.6, delay: 1.2 }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
         >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-            className="w-6 h-10 border-2 border-secondary/50 rounded-full flex justify-center"
-          >
-            <motion.div className="w-1.5 h-3 bg-secondary rounded-full mt-2" />
-          </motion.div>
+          <div className="w-6 h-10 border-2 border-cream/30 rounded-full flex items-start justify-center p-1">
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="w-1.5 h-1.5 bg-secondary rounded-full"
+            />
+          </div>
         </motion.div>
       </section>
 
-      {/* Section 3: Informações Logísticas - Premium Cards */}
+      {/* SEÇÃO LOGÍSTICA - Premium Cards */}
       <section className="py-16 md:py-20 bg-background relative overflow-hidden">
-        {/* Background pattern */}
         <div 
           className="absolute inset-0 opacity-5"
           style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '150px' }}
         />
         
-        {/* Decorative isotipos */}
         <img 
           src={isotipoGold} 
           alt="" 
@@ -335,7 +346,6 @@ const ExperienceStartLanding = () => {
                 transition={{ delay: index * 0.15 }}
                 className="group relative bg-card border border-border/50 rounded-xl p-6 text-center hover:shadow-xl hover:border-secondary/40 transition-all duration-500 card-luxury"
               >
-                {/* Subtle golden frame on hover */}
                 <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none border-2 border-secondary/20" />
                 
                 <div className="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-primary/10 to-secondary/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -350,7 +360,7 @@ const ExperienceStartLanding = () => {
         </div>
       </section>
 
-      {/* Section 4: O Problema (A Dor) - Premium Dark */}
+      {/* SEÇÃO PROBLEMA (A DOR) - Premium Dark */}
       <section 
         ref={problemRef}
         className="py-20 md:py-28 bg-primary relative overflow-hidden"
@@ -360,10 +370,8 @@ const ExperienceStartLanding = () => {
           style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '150px' }}
         />
         
-        {/* Vignette overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-marsala-dark/20 via-transparent to-marsala-dark/20" />
         
-        {/* Decorative isotipos */}
         <motion.img
           src={isotipoWhite}
           alt=""
@@ -419,18 +427,16 @@ const ExperienceStartLanding = () => {
         </div>
       </section>
 
-      {/* Section 5: A Experiência (Conteúdo Programático) - Premium Grid */}
+      {/* SEÇÃO A EXPERIÊNCIA (Conteúdo Programático) - Premium Grid */}
       <section 
         ref={experienceRef}
         className="py-20 md:py-28 bg-background relative overflow-hidden"
       >
-        {/* Background pattern */}
         <div 
           className="absolute inset-0 opacity-5"
           style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '180px' }}
         />
         
-        {/* Decorative elements */}
         <img 
           src={isotipoGold} 
           alt="" 
@@ -470,7 +476,6 @@ const ExperienceStartLanding = () => {
                 transition={{ delay: 0.1 * index }}
                 className="group relative bg-card border border-border/50 rounded-xl p-6 hover:shadow-2xl hover:border-secondary/40 hover:-translate-y-2 transition-all duration-500"
               >
-                {/* Number badge */}
                 <div className="absolute -top-3 -left-3 w-8 h-8 bg-gradient-to-br from-secondary to-gold-dark rounded-full flex items-center justify-center text-secondary-foreground font-bold text-sm shadow-lg glow-gold-subtle">
                   {index + 1}
                 </div>
@@ -504,7 +509,7 @@ const ExperienceStartLanding = () => {
               <div className="golden-frame-inner bg-gradient-to-r from-primary to-marsala p-8 text-center">
                 <CheckCircle2 className="w-10 h-10 text-secondary mx-auto mb-4" />
                 <p className="text-primary-foreground text-lg md:text-xl font-medium">
-                  Saia com seu <strong className="text-secondary">Plano de 90 dias</strong> pronto para iniciar 2026 no controle e com clareza total do que fazer.
+                  Saia com seu <strong className="text-secondary">Plano de 90 dias</strong> pronto para iniciar 2025 no controle e com clareza total do que fazer.
                 </p>
               </div>
             </div>
@@ -512,7 +517,7 @@ const ExperienceStartLanding = () => {
         </div>
       </section>
 
-      {/* Section 6: Convite Especial - Premium Dark with Stars */}
+      {/* SEÇÃO CONVITE ESPECIAL - Premium Dark with Golden Glow */}
       <section 
         ref={inviteRef}
         className="py-20 md:py-28 bg-brand-black relative overflow-hidden"
@@ -525,7 +530,6 @@ const ExperienceStartLanding = () => {
         {/* Golden glow effect */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
         
-        {/* Floating isotipos */}
         <motion.img
           src={isotipoGold}
           alt=""
@@ -605,12 +609,11 @@ const ExperienceStartLanding = () => {
         </div>
       </section>
 
-      {/* Section 7: Investimento (Oferta) - Premium Card */}
+      {/* SEÇÃO INVESTIMENTO (Oferta) - Premium Card */}
       <section 
         ref={pricingRef}
         className="py-20 md:py-28 bg-background relative overflow-hidden"
       >
-        {/* Background pattern */}
         <div 
           className="absolute inset-0 opacity-5"
           style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '150px' }}
@@ -640,30 +643,26 @@ const ExperienceStartLanding = () => {
               transition={{ delay: 0.3 }}
             >
               <div className="golden-frame">
-                {/* Golden corners */}
                 <div className="golden-corner golden-corner-tl" />
                 <div className="golden-corner golden-corner-tr" />
                 <div className="golden-corner golden-corner-bl" />
                 <div className="golden-corner golden-corner-br" />
                 
-                {/* Floating particles */}
                 <div className="golden-particle golden-particle-1" />
                 <div className="golden-particle golden-particle-2" />
                 
                 <div className="golden-frame-inner bg-card p-8 md:p-12 text-center">
                   <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-bold mb-6 glow-gold-subtle">
                     <Crown className="w-4 h-4" />
-                    APENAS 12 VAGAS
+                    LOTE 1 • OPORTUNIDADE EXCLUSIVA
                   </div>
 
                   <div className="mb-8">
-                    <p className="text-muted-foreground text-sm line-through mb-2">De R$ 497,00</p>
                     <div className="flex items-center justify-center gap-2">
                       <span className="text-muted-foreground text-2xl">R$</span>
                       <span className="text-6xl md:text-7xl font-serif font-bold text-gradient-gold">299</span>
                       <span className="text-muted-foreground text-2xl">,00</span>
                     </div>
-                    <p className="text-muted-foreground text-sm mt-2">ou 3x de R$ 99,67 sem juros</p>
                   </div>
 
                   <ul className="text-left max-w-sm mx-auto mb-8 space-y-3">
@@ -683,7 +682,6 @@ const ExperienceStartLanding = () => {
 
                   {/* Premium CTA with pulsing rings */}
                   <div className="relative">
-                    {/* Pulsing rings */}
                     <div className="absolute inset-0 -m-4 pointer-events-none">
                       <span className="absolute inset-0 rounded-lg bg-primary/20 animate-ping" style={{ animationDuration: '2s' }} />
                     </div>
@@ -694,7 +692,7 @@ const ExperienceStartLanding = () => {
                     <Button 
                       asChild 
                       size="lg"
-                      className="relative w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg py-7 rounded-lg shadow-2xl hover:shadow-primary/30 transition-all group animate-pulse-glow-gold"
+                      className="relative w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base md:text-lg py-7 rounded-lg shadow-2xl hover:shadow-primary/30 transition-all group"
                     >
                       <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
                         <Sparkles className="mr-2 w-5 h-5" />
@@ -728,28 +726,17 @@ const ExperienceStartLanding = () => {
                 +500 advogadas atendidas
               </span>
             </motion.div>
-
-            {/* Urgency */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={pricingInView ? { opacity: 1 } : {}}
-              transition={{ delay: 0.8 }}
-              className="text-center text-muted-foreground mt-6 text-sm"
-            >
-              ⚡ Vagas limitadas a 12 participantes para garantir atenção individualizada
-            </motion.p>
           </motion.div>
         </div>
       </section>
 
-      {/* Section 8: Rodapé de Autoridade - Premium Footer */}
+      {/* RODAPÉ DE AUTORIDADE - Premium Footer */}
       <section className="py-16 md:py-20 bg-primary relative overflow-hidden">
         <div 
           className="absolute inset-0 opacity-8"
           style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '100px' }}
         />
         
-        {/* Decorative gradient line at top */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/60 to-transparent" />
         
         <div className="container-soberana relative z-10 text-center">
@@ -769,7 +756,6 @@ const ExperienceStartLanding = () => {
             </p>
             <p className="text-secondary mt-6 font-medium tracking-wide">— Fabiana Soberana</p>
             
-            {/* Decorative line */}
             <div className="mt-8 w-32 h-px mx-auto bg-gradient-to-r from-transparent via-secondary/60 to-transparent" />
           </motion.div>
         </div>
