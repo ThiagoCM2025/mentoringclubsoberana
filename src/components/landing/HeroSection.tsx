@@ -13,14 +13,16 @@ export const HeroSection = () => {
     <section className="relative min-h-screen flex flex-col overflow-hidden bg-brand-black">
       {/* Background Image - Fabiana */}
       <div 
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: `url(${heroVariations})`,
-          backgroundPosition: 'center top',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
+        className="absolute inset-0 z-0 bg-brand-black"
+        aria-hidden="true"
+      >
+        <img 
+          src={heroVariations}
+          alt=""
+          loading="eager"
+          className="w-full h-full object-contain sm:object-cover object-top"
+        />
+      </div>
       
       {/* Gradient Overlay for legibility */}
       <div 
