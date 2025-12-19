@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-import { Calendar, Clock, MapPin, CheckCircle2, Sparkles, Brain, Settings, Users, TrendingUp, Target, ArrowRight, Star, Crown } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { Calendar, Clock, MapPin, CheckCircle2, Sparkles, Brain, Settings, Users, TrendingUp, Target, ArrowRight, Star, Crown, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import { Footer } from "@/components/landing/Footer";
@@ -12,7 +12,39 @@ import isotipoWhite from "@/assets/brand/isotipo-white.png";
 import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 import patternGold from "@/assets/brand/pattern-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
-import heroImage from "@/assets/experience-start-hero.jpeg";
+import heroImage from "@/assets/experience-start-hero-premium.jpeg";
+
+// Countdown Hook
+const useCountdown = (targetDate: Date) => {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const difference = targetDate.getTime() - new Date().getTime();
+      
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60)
+        });
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, [targetDate]);
+
+  return timeLeft;
+};
 
 const ExperienceStartLanding = () => {
   const heroRef = useRef(null);
@@ -26,6 +58,10 @@ const ExperienceStartLanding = () => {
   const experienceInView = useInView(experienceRef, { once: true, amount: 0.2 });
   const inviteInView = useInView(inviteRef, { once: true, amount: 0.3 });
   const pricingInView = useInView(pricingRef, { once: true, amount: 0.3 });
+
+  // Countdown para 17 de Janeiro de 2025 às 09:00
+  const eventDate = new Date('2025-01-17T09:00:00-03:00');
+  const timeLeft = useCountdown(eventDate);
 
   // Link de pagamento Kiwify
   const ctaUrl = "https://pay.kiwify.com.br/p3kpN7k";
@@ -72,7 +108,7 @@ const ExperienceStartLanding = () => {
     "@context": "https://schema.org",
     "@type": "Event",
     "name": "Soberana Experience Start",
-    "description": "Oficina presencial para advogadas reorganizarem sua advocacia e destravarem o crescimento em 2026.",
+    "description": "Oficina presencial para advogadas reorganizarem sua advocacia e destravarem o crescimento em 2025.",
     "startDate": "2025-01-17T09:00:00-03:00",
     "endDate": "2025-01-17T17:00:00-03:00",
     "eventStatus": "https://schema.org/EventScheduled",
@@ -109,7 +145,7 @@ const ExperienceStartLanding = () => {
     <div className="min-h-screen bg-background landing-page">
       <SEO
         title="Soberana Experience Start | Oficina Presencial para Advogadas em SP"
-        description="Reorganize sua advocacia e destrave seu crescimento em 2026. Oficina 100% prática com Fabiana Soberana. 17 de Janeiro em São Paulo."
+        description="Reorganize sua advocacia e destrave seu crescimento em 2025. Oficina 100% prática com Fabiana Soberana. 17 de Janeiro em São Paulo."
         keywords="oficina para advogadas, evento presencial advocacia, mentoria jurídica SP, networking advogadas, Fabiana Soberana, gestão advocacia"
         url="https://soberana.com.br/experience-start"
         type="website"
@@ -127,27 +163,33 @@ const ExperienceStartLanding = () => {
         <div className="container-soberana py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src={isotipoSGold} alt="" className="w-6 h-6 opacity-80 hidden sm:block" />
-            <p className="text-primary-foreground/90 text-sm md:text-base font-medium">
-              Um convite para uma experiência transformadora.
-            </p>
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+              </span>
+              <p className="text-primary-foreground/90 text-sm md:text-base font-medium">
+                Apenas <strong className="text-secondary">12 vagas</strong> restantes
+              </p>
+            </div>
           </div>
           <Button 
             asChild 
             className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold text-xs md:text-sm px-4 md:px-6 cta-premium"
           >
             <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
-              QUERO MEU LUGAR
+              GARANTA SUA VAGA
             </a>
           </Button>
         </div>
       </motion.header>
 
-      {/* HERO SECTION - Premium Full Screen (igual à página inicial) */}
+      {/* HERO SECTION - Premium Full Screen */}
       <section 
         ref={heroRef}
         className="relative min-h-screen flex flex-col overflow-hidden bg-brand-black"
       >
-        {/* Background Image - Fabiana */}
+        {/* Background Image - Fabiana Premium */}
         <div 
           className="absolute inset-0 z-0"
           style={{
@@ -164,9 +206,9 @@ const ExperienceStartLanding = () => {
           style={{
             background: `
               linear-gradient(to bottom, 
-                rgba(0,0,0,0.5) 0%, 
-                rgba(0,0,0,0.3) 30%, 
-                rgba(0,0,0,0.6) 60%, 
+                rgba(0,0,0,0.4) 0%, 
+                rgba(0,0,0,0.2) 30%, 
+                rgba(0,0,0,0.5) 60%, 
                 rgba(0,0,0,0.95) 100%
               )
             `
@@ -201,6 +243,17 @@ const ExperienceStartLanding = () => {
         <div className="relative z-10 flex-1 flex flex-col justify-end pb-12 md:pb-16 pt-24 overflow-hidden">
           <div className="container-soberana">
             <div className="text-center max-w-4xl mx-auto px-2">
+              {/* Badge de urgência */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 bg-red-500/20 border border-red-500/40 text-red-400 px-4 py-2 rounded-full mb-4"
+              >
+                <AlertCircle className="w-4 h-4" />
+                <span className="text-sm font-medium">EVENTO PRESENCIAL • DATA ÚNICA</span>
+              </motion.div>
+
               {/* Logo with Star */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -232,7 +285,7 @@ const ExperienceStartLanding = () => {
                 transition={{ duration: 0.6, delay: 0.5 }}
                 className="text-base sm:text-lg md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto"
               >
-                Um encontro presencial criado para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2026.
+                Um encontro presencial criado para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2025.
               </motion.p>
 
               {/* Quote highlight */}
@@ -245,6 +298,39 @@ const ExperienceStartLanding = () => {
                 <p className="text-secondary text-base md:text-lg italic font-serif">
                   "Nada muda se você continuar pensando e fazendo como antes."
                 </p>
+              </motion.div>
+
+              {/* Premium Countdown Timer */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.65 }}
+                className="mb-8"
+              >
+                <p className="text-cream/70 text-sm uppercase tracking-wider mb-4">O evento começa em:</p>
+                <div className="flex justify-center gap-3 md:gap-4">
+                  {[
+                    { value: timeLeft.days, label: 'DIAS' },
+                    { value: timeLeft.hours, label: 'HORAS' },
+                    { value: timeLeft.minutes, label: 'MIN' },
+                    { value: timeLeft.seconds, label: 'SEG' }
+                  ].map((item, index) => (
+                    <div 
+                      key={index}
+                      className="relative group"
+                    >
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-secondary/50 to-gold-dark/50 rounded-lg blur opacity-60 group-hover:opacity-100 transition duration-500" />
+                      <div className="relative bg-brand-black/80 border border-secondary/40 rounded-lg px-3 md:px-5 py-3 md:py-4 min-w-[60px] md:min-w-[80px]">
+                        <span className="block text-2xl md:text-4xl font-bold text-shimmer-gold tabular-nums">
+                          {String(item.value).padStart(2, '0')}
+                        </span>
+                        <span className="block text-[10px] md:text-xs text-cream/60 mt-1 tracking-wider">
+                          {item.label}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </motion.div>
 
               {/* Premium CTA */}
@@ -270,14 +356,14 @@ const ExperienceStartLanding = () => {
                   >
                     <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
                       <Sparkles className="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
-                      <span>QUERO GARANTIR MINHA VAGA POR R$ 299,00</span>
+                      <span>GARANTA SUA VAGA AGORA • R$ 299</span>
                       <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                     </a>
                   </Button>
                 </div>
               </motion.div>
 
-              {/* Trust Indicators */}
+              {/* Trust Indicators with Urgency */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -292,9 +378,12 @@ const ExperienceStartLanding = () => {
                   <MapPin className="w-4 h-4 text-secondary flex-shrink-0" />
                   <span className="text-xs sm:text-sm tracking-wide">São Paulo - SP</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0" />
-                  <span className="text-xs sm:text-sm tracking-wide">Vagas Limitadas</span>
+                <div className="flex items-center gap-2 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/30">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                  </span>
+                  <span className="text-xs sm:text-sm tracking-wide text-red-400 font-medium">Apenas 12 vagas</span>
                 </div>
               </motion.div>
             </div>
@@ -357,6 +446,23 @@ const ExperienceStartLanding = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* Scarcity Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-10 max-w-2xl mx-auto"
+          >
+            <div className="bg-gradient-to-r from-primary/5 via-red-500/10 to-primary/5 border border-red-500/20 rounded-xl px-6 py-4 text-center">
+              <div className="flex items-center justify-center gap-3">
+                <AlertCircle className="w-5 h-5 text-red-400" />
+                <p className="text-foreground">
+                  <strong className="text-red-400">Turma limitada</strong> para garantir experiência personalizada
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -600,7 +706,7 @@ const ExperienceStartLanding = () => {
               >
                 <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
                   <Star className="mr-2 w-5 h-5 fill-secondary-foreground" />
-                  QUERO ESTAR LÁ
+                  QUERO GARANTIR MEU LUGAR
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </a>
               </Button>
@@ -652,6 +758,15 @@ const ExperienceStartLanding = () => {
                 <div className="golden-particle golden-particle-2" />
                 
                 <div className="golden-frame-inner bg-card p-8 md:p-12 text-center">
+                  {/* Urgency Badge */}
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                    </span>
+                    <span className="text-red-400 text-sm font-medium">Apenas 12 vagas restantes</span>
+                  </div>
+
                   <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-bold mb-6 glow-gold-subtle">
                     <Crown className="w-4 h-4" />
                     LOTE 1 • OPORTUNIDADE EXCLUSIVA
@@ -696,7 +811,7 @@ const ExperienceStartLanding = () => {
                     >
                       <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
                         <Sparkles className="mr-2 w-5 h-5" />
-                        SIM! QUERO COMEÇAR 2025 COM ESTRATÉGIA
+                        SIM! QUERO GARANTIR MEU LUGAR
                         <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                       </a>
                     </Button>
