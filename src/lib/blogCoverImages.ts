@@ -1,21 +1,20 @@
 // Blog cover images mapping
-import coverMarketingJuridicoGuia from "@/assets/blog/cover-marketing-juridico-guia.jpg";
-import coverAtrairClientes from "@/assets/blog/cover-atrair-clientes.jpg";
-import coverRedesSociais from "@/assets/blog/cover-redes-sociais.jpg";
-import coverSeoAdvocacia from "@/assets/blog/cover-seo-advocacia.jpg";
-import coverEticaMarketing from "@/assets/blog/cover-etica-marketing.jpg";
-import coverCasesSucesso from "@/assets/blog/cover-cases-sucesso.jpg";
-import coverTendencias2025 from "@/assets/blog/cover-tendencias-2025.jpg";
+import coverCaptarClientes from "@/assets/blog/cover-captar-clientes.jpg";
+import coverMarketingDigital from "@/assets/blog/cover-marketing-digital.jpg";
+import coverIaAdvocacia from "@/assets/blog/cover-ia-advocacia.jpg";
+import coverTrafegoPago from "@/assets/blog/cover-trafego-pago.jpg";
+import coverPrecificarHonorarios from "@/assets/blog/cover-precificar-honorarios.jpg";
+import coverInstagramAdvogadas from "@/assets/blog/cover-instagram-advogadas.jpg";
+import coverOabEtica from "@/assets/blog/cover-oab-etica.jpg";
 
 export const blogCoverImages: Record<string, string> = {
-  // Slugs corretos do banco de dados
-  "como-captar-clientes-advocacia-guia-completo-2025": coverAtrairClientes,
-  "marketing-digital-advogados-estrategias-funcionam": coverMarketingJuridicoGuia,
-  "como-usar-ia-advocacia-aumentar-produtividade": coverTendencias2025,
-  "trafego-pago-advogados-vale-pena": coverSeoAdvocacia,
-  "como-precificar-honorarios-advocaticios-corretamente": coverCasesSucesso,
-  "instagram-advogadas-como-atrair-clientes": coverRedesSociais,
-  "oab-marketing-juridico-o-que-pode-nao-pode": coverEticaMarketing,
+  "como-captar-clientes-advocacia-guia-completo-2025": coverCaptarClientes,
+  "marketing-digital-advogados-estrategias-funcionam": coverMarketingDigital,
+  "como-usar-ia-advocacia-aumentar-produtividade": coverIaAdvocacia,
+  "trafego-pago-advogados-vale-pena": coverTrafegoPago,
+  "como-precificar-honorarios-advocaticios-corretamente": coverPrecificarHonorarios,
+  "instagram-advogadas-como-atrair-clientes": coverInstagramAdvogadas,
+  "oab-marketing-juridico-o-que-pode-nao-pode": coverOabEtica,
 };
 
 export const getBlogCoverImage = (slug: string, coverImageUrl: string | null): string => {
