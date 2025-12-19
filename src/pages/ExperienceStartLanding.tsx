@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import { Footer } from "@/components/landing/Footer";
 import { SoberanaLogoMark } from "@/components/landing/SoberanaLogoMark";
+import { ExperienceExitPopup } from "@/components/landing/ExperienceExitPopup";
+import { ExperienceFAQ } from "@/components/landing/ExperienceFAQ";
+import { ExperienceTestimonials } from "@/components/landing/ExperienceTestimonials";
 
 // Import brand assets
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
@@ -623,8 +626,11 @@ const ExperienceStartLanding = () => {
         </div>
       </section>
 
+      {/* SEÇÃO DEPOIMENTOS */}
+      <ExperienceTestimonials />
+
       {/* SEÇÃO CONVITE ESPECIAL - Premium Dark with Golden Glow */}
-      <section 
+      <section
         ref={inviteRef}
         className="py-20 md:py-28 bg-brand-black relative overflow-hidden"
       >
@@ -715,8 +721,11 @@ const ExperienceStartLanding = () => {
         </div>
       </section>
 
+      {/* SEÇÃO FAQ */}
+      <ExperienceFAQ />
+
       {/* SEÇÃO INVESTIMENTO (Oferta) - Premium Card */}
-      <section 
+      <section
         ref={pricingRef}
         className="py-20 md:py-28 bg-background relative overflow-hidden"
       >
@@ -877,6 +886,9 @@ const ExperienceStartLanding = () => {
       </section>
 
       <Footer />
+      
+      {/* Exit Intent Popup */}
+      <ExperienceExitPopup />
     </div>
   );
 };
