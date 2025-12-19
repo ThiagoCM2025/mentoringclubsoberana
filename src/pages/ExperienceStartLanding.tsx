@@ -8,6 +8,7 @@ import { SoberanaLogoMark } from "@/components/landing/SoberanaLogoMark";
 import { ExperienceExitPopup } from "@/components/landing/ExperienceExitPopup";
 import { ExperienceFAQ } from "@/components/landing/ExperienceFAQ";
 import { ExperienceTestimonials } from "@/components/landing/ExperienceTestimonials";
+import { useUTMParams } from "@/hooks/useUTMParams";
 
 // Import brand assets
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
@@ -66,8 +67,12 @@ const ExperienceStartLanding = () => {
   const eventDate = new Date('2026-01-17T09:00:00-03:00');
   const timeLeft = useCountdown(eventDate);
 
-  // Link de pagamento Kiwify
-  const ctaUrl = "https://pay.kiwify.com.br/p3kpN7k";
+  // UTM Tracking
+  const { buildUrlWithUTM } = useUTMParams();
+
+  // Link de pagamento Kiwify com UTM
+  const baseCtaUrl = "https://pay.kiwify.com.br/p3kpN7k";
+  const ctaUrl = buildUrlWithUTM(baseCtaUrl);
 
   const programContent = [
     {
@@ -151,6 +156,10 @@ const ExperienceStartLanding = () => {
         description="Reorganize sua advocacia e destrave seu crescimento em 2025. Oficina 100% prática com Fabiana Soberana. 17 de Janeiro em São Paulo."
         keywords="oficina para advogadas, evento presencial advocacia, mentoria jurídica SP, networking advogadas, Fabiana Soberana, gestão advocacia"
         url="https://soberana.com.br/experience-start"
+        image="https://soberana.com.br/og-experience-start.jpg"
+        imageWidth={1200}
+        imageHeight={630}
+        twitterCard="summary_large_image"
         type="website"
         schema={eventSchema}
       />
@@ -163,7 +172,7 @@ const ExperienceStartLanding = () => {
         className="fixed top-0 left-0 right-0 z-50 bg-primary/95 backdrop-blur-md border-b border-secondary/20"
       >
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/60 to-transparent" />
-        <div className="container-soberana px-4 py-3 flex items-center justify-between">
+        <div className="container-soberana py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
             <img src={isotipoSGold} alt="" className="w-6 h-6 opacity-80 hidden sm:block" />
             <div className="flex items-center gap-2">
@@ -224,28 +233,28 @@ const ExperienceStartLanding = () => {
           style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '200px' }}
         />
 
-        {/* Floating decorative isotipos */}
+        {/* Floating decorative isotipos - hidden on mobile */}
         <motion.img
           src={isotipoGold}
           alt=""
-          className="absolute right-4 md:right-12 top-1/4 w-32 md:w-48 opacity-10 animate-float-slow z-[3]"
-          initial={{ x: 100, opacity: 0 }}
-          animate={heroInView ? { x: 0, opacity: 0.1 } : {}}
+          className="absolute right-4 md:right-12 top-1/4 w-32 md:w-48 opacity-10 animate-float-slow z-[3] hidden md:block"
+          initial={{ opacity: 0 }}
+          animate={heroInView ? { opacity: 0.1 } : {}}
           transition={{ duration: 1, delay: 0.5 }}
         />
         <motion.img
           src={isotipoSGold}
           alt=""
-          className="absolute left-4 md:left-12 bottom-1/3 w-16 md:w-24 opacity-8 animate-float-slow animation-delay-2000 z-[3]"
-          initial={{ x: -50, opacity: 0 }}
-          animate={heroInView ? { x: 0, opacity: 0.08 } : {}}
+          className="absolute left-4 md:left-12 bottom-1/3 w-16 md:w-24 opacity-8 animate-float-slow animation-delay-2000 z-[3] hidden md:block"
+          initial={{ opacity: 0 }}
+          animate={heroInView ? { opacity: 0.08 } : {}}
           transition={{ duration: 1, delay: 0.8 }}
         />
 
         {/* Content - positioned at bottom like main page */}
         <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-20 sm:pt-24 overflow-hidden">
-          <div className="container-soberana px-4 sm:px-6">
-            <div className="text-center max-w-4xl mx-auto">
+          <div className="container-soberana">
+            <div className="text-center max-w-4xl mx-auto px-4 sm:px-6">
               {/* Badge de urgência */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -423,7 +432,7 @@ const ExperienceStartLanding = () => {
           className="absolute right-4 top-8 w-24 opacity-5 animate-float-slow hidden sm:block"
         />
         
-        <div className="container-soberana relative z-10 px-4 sm:px-6">
+        <div className="container-soberana relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
             {[
               { icon: Calendar, label: "DATA", value: "17 de Janeiro de 2025", sublabel: "Sexta-feira" },
@@ -501,7 +510,7 @@ const ExperienceStartLanding = () => {
           transition={{ delay: 0.8 }}
         />
         
-        <div className="container-soberana relative z-10 px-5 md:px-6">
+        <div className="container-soberana relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={problemInView ? { opacity: 1, y: 0 } : {}}
@@ -560,7 +569,7 @@ const ExperienceStartLanding = () => {
           className="absolute right-8 bottom-20 w-20 opacity-5 animate-float-slow animation-delay-2000 hidden sm:block"
         />
         
-        <div className="container-soberana relative z-10 px-4 sm:px-6">
+        <div className="container-soberana relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={experienceInView ? { opacity: 1, y: 0 } : {}}
@@ -660,7 +669,7 @@ const ExperienceStartLanding = () => {
           animate={inviteInView ? { opacity: 0.12 } : {}}
         />
         
-        <div className="container-soberana relative z-10 px-4 sm:px-6">
+        <div className="container-soberana relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={inviteInView ? { opacity: 1, y: 0 } : {}}
@@ -737,7 +746,7 @@ const ExperienceStartLanding = () => {
           style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '150px' }}
         />
         
-        <div className="container-soberana relative z-10 px-4 sm:px-6">
+        <div className="container-soberana relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={pricingInView ? { opacity: 1, y: 0 } : {}}
