@@ -256,7 +256,7 @@ const ExperienceStartLanding = () => {
         {/* Content - positioned at bottom like main page */}
         <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-20 sm:pt-24 overflow-hidden">
           <div className="container-soberana">
-            <div className="text-center max-w-4xl mx-auto px-4 sm:px-6">
+            <div className="text-center max-w-4xl mx-auto w-full">
               {/* Badge de urgência */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
