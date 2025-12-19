@@ -40,7 +40,7 @@ export const HeroSection = () => {
       {/* Content - positioned at bottom */}
       <div className="relative z-10 flex-1 flex flex-col justify-end pb-12 md:pb-16 pt-20 overflow-hidden">
         <div className="container-soberana">
-          <div className="text-center max-w-4xl mx-auto px-2">
+          <div className="text-center max-w-4xl mx-auto w-full">
             {/* Logo with Star */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
