@@ -5,11 +5,14 @@ interface SEOProps {
   description?: string;
   keywords?: string;
   image?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   url?: string;
   type?: "website" | "article" | "product" | "course";
   author?: string;
   publishedTime?: string;
   modifiedTime?: string;
+  twitterCard?: "summary" | "summary_large_image";
   schema?: object;
 }
 
@@ -18,11 +21,14 @@ const SEO = ({
   description = "Programa de mentoria exclusivo para advogadas que desejam construir uma carreira jurídica de sucesso, com autonomia e excelência.",
   keywords = "mentoria jurídica, advogada, carreira jurídica, advocacia feminina, desenvolvimento profissional",
   image = "/og-image.jpg",
+  imageWidth = 1200,
+  imageHeight = 630,
   url = "https://soberana.com.br",
   type = "website",
   author = "Fabiana Soberana",
   publishedTime,
   modifiedTime,
+  twitterCard = "summary_large_image",
   schema
 }: SEOProps) => {
   const structuredData = schema || {
@@ -60,15 +66,19 @@ const SEO = ({
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
+      <meta property="og:image:width" content={String(imageWidth)} />
+      <meta property="og:image:height" content={String(imageHeight)} />
+      <meta property="og:image:alt" content={title} />
       <meta property="og:locale" content="pt_BR" />
       <meta property="og:site_name" content="Soberana Mentoring Club" />
       
       {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:card" content={twitterCard} />
       <meta name="twitter:url" content={url} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
+      <meta name="twitter:image:alt" content={title} />
       
       {/* Article specific */}
       {publishedTime && <meta property="article:published_time" content={publishedTime} />}
