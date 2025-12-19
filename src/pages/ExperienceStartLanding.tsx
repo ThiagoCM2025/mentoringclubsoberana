@@ -208,7 +208,7 @@ const ExperienceStartLanding = () => {
       {/* HERO SECTION - Premium Full Screen */}
       <section 
         ref={heroRef}
-        className="relative min-h-screen flex flex-col overflow-hidden bg-brand-black"
+        className="relative min-h-screen flex flex-col bg-brand-black"
       >
         {/* Background Image - Fabiana Premium */}
         <div 
@@ -263,7 +263,7 @@ const ExperienceStartLanding = () => {
         {/* Content - positioned at bottom like main page */}
         <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-20 sm:pt-24">
           <div className="container-soberana">
-            <div className="text-center max-w-4xl mx-auto w-full">
+            <div className="text-center max-w-4xl mx-auto w-full px-4 sm:px-0">
               {/* Badge de urgência */}
               <motion.div
                 initial={{ opacity: 0, y: isMobile ? -5 : -10 }}
@@ -290,7 +290,7 @@ const ExperienceStartLanding = () => {
                 initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: animationDuration, delay: isMobile ? 0.15 : 0.4 }}
-                className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-cream leading-tight mb-4 sm:mb-6 break-words px-2 sm:px-0"
+                className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-cream leading-tight mb-4 sm:mb-6 break-words"
               >
                 SOBERANA{" "}
                 <span className="text-shimmer-gold">
@@ -304,7 +304,7 @@ const ExperienceStartLanding = () => {
                 initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: animationDuration, delay: isMobile ? 0.2 : 0.5 }}
-                className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto px-2 sm:px-0"
+                className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto break-words"
               >
                 Um encontro presencial criado para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2025.
               </motion.p>
@@ -314,7 +314,7 @@ const ExperienceStartLanding = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: isMobile ? 0.25 : 0.6 }}
-                className="bg-secondary/15 border border-secondary/30 rounded-lg px-6 py-4 mb-8 max-w-2xl mx-auto"
+                className="bg-secondary/15 border border-secondary/30 rounded-lg px-4 sm:px-6 py-4 mb-8 max-w-2xl mx-4 sm:mx-auto"
               >
                 <p className="text-secondary text-base md:text-lg italic font-serif">
                   "Nada muda se você continuar pensando e fazendo como antes."
