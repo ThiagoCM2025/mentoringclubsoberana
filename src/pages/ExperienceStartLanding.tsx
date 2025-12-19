@@ -9,6 +9,7 @@ import { ExperienceExitPopup } from "@/components/landing/ExperienceExitPopup";
 import { ExperienceFAQ } from "@/components/landing/ExperienceFAQ";
 import { ExperienceTestimonials } from "@/components/landing/ExperienceTestimonials";
 import { useUTMParams } from "@/hooks/useUTMParams";
+import { trackCTAClick } from "@/components/Analytics";
 
 // Import brand assets
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
@@ -188,6 +189,7 @@ const ExperienceStartLanding = () => {
           <Button 
             asChild 
             className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold text-xs md:text-sm px-3 sm:px-4 md:px-6 cta-premium"
+            onClick={() => trackCTAClick("header_cta")}
           >
             <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
               GARANTA SUA VAGA
@@ -365,6 +367,7 @@ const ExperienceStartLanding = () => {
                     asChild
                     size="lg"
                     className="relative cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground px-6 sm:px-10 md:px-12 py-6 md:py-7 text-sm sm:text-base md:text-lg font-bold uppercase tracking-wide group"
+                    onClick={() => trackCTAClick("hero_cta")}
                   >
                     <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
                       <Sparkles className="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
@@ -721,6 +724,7 @@ const ExperienceStartLanding = () => {
                 asChild 
                 size="lg"
                 className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-sm sm:text-lg px-6 sm:px-10 py-6 sm:py-7 rounded-lg shadow-2xl hover:shadow-secondary/30 transition-all group cta-premium"
+                onClick={() => trackCTAClick("invite_cta")}
               >
                 <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
                   <Star className="mr-2 w-4 h-4 sm:w-5 sm:h-5 fill-secondary-foreground" />
@@ -829,6 +833,7 @@ const ExperienceStartLanding = () => {
                       asChild 
                       size="lg"
                       className="relative w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base md:text-lg py-7 rounded-lg shadow-2xl hover:shadow-primary/30 transition-all group"
+                      onClick={() => trackCTAClick("pricing_cta")}
                     >
                       <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
                         <Sparkles className="mr-2 w-5 h-5" />
