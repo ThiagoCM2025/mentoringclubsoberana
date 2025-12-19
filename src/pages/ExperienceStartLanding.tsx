@@ -474,27 +474,33 @@ const ExperienceStartLanding = () => {
         ref={problemRef}
         className="py-20 md:py-28 bg-primary relative overflow-hidden"
       >
+        {/* Subtle pattern background */}
         <div 
-          className="absolute inset-0 opacity-8"
-          style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '150px' }}
+          className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '200px' }}
         />
         
-        <div className="absolute inset-0 bg-gradient-to-b from-marsala-dark/20 via-transparent to-marsala-dark/20" />
+        {/* Vignette overlay for depth */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_50%,_rgba(0,0,0,0.15)_100%)]" />
         
+        {/* Top/bottom gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-marsala-dark/10 via-transparent to-marsala-dark/10" />
+        
+        {/* Decorative isotipos - desktop only, subtle */}
         <motion.img
           src={isotipoWhite}
           alt=""
-          className="absolute right-8 top-16 w-32 opacity-5 animate-float-slow"
+          className="absolute right-8 top-16 w-32 opacity-[0.04] animate-float-slow hidden lg:block"
           initial={{ opacity: 0 }}
-          animate={problemInView ? { opacity: 0.05 } : {}}
+          animate={problemInView ? { opacity: 0.04 } : {}}
           transition={{ delay: 0.6 }}
         />
         <motion.img
           src={isotipoSGold}
           alt=""
-          className="absolute left-4 bottom-8 w-20 opacity-8 animate-float-slow animation-delay-1000"
+          className="absolute left-4 bottom-8 w-20 opacity-[0.05] animate-float-slow animation-delay-1000 hidden lg:block"
           initial={{ opacity: 0 }}
-          animate={problemInView ? { opacity: 0.08 } : {}}
+          animate={problemInView ? { opacity: 0.05 } : {}}
           transition={{ delay: 0.8 }}
         />
         
@@ -856,10 +862,14 @@ const ExperienceStartLanding = () => {
 
       {/* RODAPÉ DE AUTORIDADE - Premium Footer */}
       <section className="py-16 md:py-20 bg-primary relative overflow-hidden">
+        {/* Subtle pattern background */}
         <div 
-          className="absolute inset-0 opacity-8"
-          style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '100px' }}
+          className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '200px' }}
         />
+        
+        {/* Vignette overlay for depth */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_60%,_rgba(0,0,0,0.12)_100%)]" />
         
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/60 to-transparent" />
         
@@ -878,7 +888,7 @@ const ExperienceStartLanding = () => {
             <p className="text-primary-foreground/95 text-xl md:text-2xl lg:text-3xl font-serif italic max-w-3xl mx-auto leading-relaxed">
               "Quando uma advogada domina a estratégia, ela não corre atrás de clientes. <span className="text-shimmer-gold font-semibold">Ela comanda.</span>"
             </p>
-            <p className="text-secondary mt-6 font-medium tracking-wide">— Fabiana Soberana</p>
+            <p className="text-secondary mt-8 font-serif text-lg tracking-widest uppercase">— Fabiana Duarte</p>
             
             <div className="mt-8 w-32 h-px mx-auto bg-gradient-to-r from-transparent via-secondary/60 to-transparent" />
           </motion.div>
