@@ -9,6 +9,7 @@ import { Footer } from "@/components/landing/Footer";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getBlogCoverImage } from "@/lib/blogCoverImages";
 
 interface BlogPost {
   id: string;
@@ -198,17 +199,16 @@ const Blog = () => {
                         <div className="relative overflow-hidden rounded-xl bg-card border border-border/50 hover:border-secondary/50 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/5">
                           {/* Cover Image */}
                           <div className="aspect-video bg-muted overflow-hidden">
-                            {post.cover_image_url ? (
-                              <img
-                                src={post.cover_image_url}
-                                alt={post.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-secondary/20 to-primary/20 flex items-center justify-center">
-                                <span className="font-serif text-4xl text-secondary/50">S</span>
-                              </div>
-                            )}
+                            <img
+                              src={getBlogCoverImage(post.slug, post.cover_image_url)}
+                              alt={post.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                target.parentElement!.innerHTML = '<div class="w-full h-full bg-gradient-to-br from-secondary/20 to-primary/20 flex items-center justify-center"><span class="font-serif text-4xl text-secondary/50">S</span></div>';
+                              }}
+                            />
                           </div>
 
                           {/* Content */}

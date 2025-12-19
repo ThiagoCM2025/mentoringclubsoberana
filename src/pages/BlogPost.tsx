@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { getBlogCoverImage } from "@/lib/blogCoverImages";
 
 interface BlogPost {
   id: string;
@@ -293,20 +294,18 @@ const BlogPostPage = () => {
           </motion.header>
 
           {/* Cover Image */}
-          {post.cover_image_url && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mb-10"
-            >
-              <img
-                src={post.cover_image_url}
-                alt={post.title}
-                className="w-full rounded-2xl shadow-lg"
-              />
-            </motion.div>
-          )}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-10"
+          >
+            <img
+              src={getBlogCoverImage(post.slug, post.cover_image_url)}
+              alt={post.title}
+              className="w-full rounded-2xl shadow-lg"
+            />
+          </motion.div>
 
           {/* Content */}
           <motion.div
