@@ -153,6 +153,24 @@
 }
 
 @layer components {
+  /* Hero image optimization - prevent CLS and improve LCP */
+  .hero-image-container {
+    contain: layout size style;
+    content-visibility: auto;
+    contain-intrinsic-size: 100vw 100vh;
+  }
+
+  .hero-background-image {
+    content-visibility: auto;
+    contain-intrinsic-size: 100vw 100vh;
+  }
+
+  @media (max-width: 768px) {
+    .hero-image-container {
+      contain-intrinsic-size: 100vw 100svh;
+    }
+  }
+
   .btn-soberana {
     @apply bg-primary text-primary-foreground px-8 py-4 rounded-md font-medium 
            transition-all duration-300 hover:shadow-lg hover:scale-[1.02]
