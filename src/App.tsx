@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AnimatedRoutes } from "@/components/AnimatedRoutes";
+import { Analytics } from "@/components/Analytics";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <Analytics />
             <AnimatedRoutes />
           </BrowserRouter>
         </TooltipProvider>
