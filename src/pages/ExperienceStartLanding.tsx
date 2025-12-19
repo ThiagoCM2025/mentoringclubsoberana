@@ -225,7 +225,7 @@ const ExperienceStartLanding = () => {
         
         {/* Background Image - Fabiana Premium - Priority LCP with optimizations */}
         <div 
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 bg-brand-black"
           aria-hidden="true"
         >
           <img 
@@ -235,13 +235,29 @@ const ExperienceStartLanding = () => {
             loading="eager"
             decoding="async"
             sizes="100vw"
-            className="w-full h-full object-cover object-[center_15%] sm:object-top"
+            className="w-full h-full object-contain sm:object-cover object-top bg-brand-black"
             style={{
               contentVisibility: 'auto',
               containIntrinsicSize: '100vw 100vh'
             }}
           />
         </div>
+        
+        {/* Gradiente lateral para suavizar bordas em mobile */}
+        <div 
+          className="absolute inset-0 z-[1] sm:hidden pointer-events-none"
+          aria-hidden="true"
+          style={{
+            background: `
+              linear-gradient(to right, 
+                rgba(26,26,26,0.4) 0%, 
+                transparent 20%, 
+                transparent 80%, 
+                rgba(26,26,26,0.4) 100%
+              )
+            `
+          }}
+        />
         
         {/* Premium gradient overlay for legibility */}
         <div 
