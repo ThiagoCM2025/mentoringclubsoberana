@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -240,9 +241,9 @@ export const LeadCaptureSection = () => {
 
                     <p className="text-xs text-center text-muted-foreground">
                       Ao se cadastrar, você concorda com nossa{" "}
-                      <a href="#" className="text-secondary hover:underline">
+                      <Link to="/privacidade" className="text-secondary hover:underline">
                         Política de Privacidade
-                      </a>
+                      </Link>
                     </p>
                   </form>
                 </>
