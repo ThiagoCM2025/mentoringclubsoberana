@@ -1106,4 +1106,75 @@
       opacity: 0.6;
     }
   }
+
+  /* ============ MOBILE ANIMATION OPTIMIZATIONS ============ */
+  
+  /* Lighter animations on mobile for better performance */
+  @media (max-width: 768px) {
+    /* Reduce float animation complexity */
+    .animate-float-slow {
+      animation-duration: 8s !important;
+    }
+    
+    /* Simpler hover effects on touch devices */
+    .card-luxury:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Reduce particle effects */
+    .golden-particle {
+      animation-duration: 6s !important;
+      opacity: 0.4;
+    }
+    
+    /* Simpler glow effects */
+    .isotipo-glow,
+    .isotipo-glow-white,
+    .glow-gold-subtle {
+      animation: none !important;
+      filter: none;
+    }
+    
+    /* Reduce pulsing ring animations */
+    .animate-ping {
+      animation-duration: 2.5s !important;
+    }
+  }
+
+  /* Smooth fade-in animation for lazy loaded images */
+  .img-lazy-load {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+  }
+  
+  .img-lazy-load.loaded {
+    opacity: 1;
+  }
+
+  /* Mobile-optimized entrance animations */
+  @keyframes fadeInMobile {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideUpMobile {
+    from { 
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .animate-slide-up {
+      animation: slideUpMobile 0.4s ease-out forwards;
+    }
+    
+    .animate-fade-in {
+      animation: fadeInMobile 0.3s ease-out forwards;
+    }
+  }
 }
