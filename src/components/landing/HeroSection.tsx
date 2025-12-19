@@ -12,13 +12,27 @@ export const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex flex-col overflow-hidden bg-brand-black">
       {/* Background Image - Fabiana */}
+      <div className="absolute inset-0 z-0 bg-brand-black">
+        <div
+          className="w-full h-full bg-contain sm:bg-cover bg-no-repeat bg-top"
+          style={{
+            backgroundImage: `url(${heroVariations})`,
+          }}
+        />
+      </div>
+      
+      {/* Gradiente lateral para suavizar bordas em mobile */}
       <div 
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-[1] sm:hidden pointer-events-none"
         style={{
-          backgroundImage: `url(${heroVariations})`,
-          backgroundPosition: 'center top',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
+          background: `
+            linear-gradient(to right, 
+              rgba(26,26,26,0.4) 0%, 
+              transparent 20%, 
+              transparent 80%, 
+              rgba(26,26,26,0.4) 100%
+            )
+          `
         }}
       />
       
