@@ -217,7 +217,13 @@ const ExperienceStartLanding = () => {
         ref={heroRef}
         className="relative min-h-screen flex flex-col bg-brand-black"
       >
-        {/* Background Image - Fabiana Premium - Priority LCP */}
+        {/* LQIP Placeholder - gradiente que simula a imagem para melhorar percepção de carregamento */}
+        <div 
+          className="absolute inset-0 z-0 bg-gradient-to-b from-brand-black via-marsala/30 to-brand-black"
+          aria-hidden="true"
+        />
+        
+        {/* Background Image - Fabiana Premium - Priority LCP with optimizations */}
         <div 
           className="absolute inset-0 z-0"
           aria-hidden="true"
@@ -228,7 +234,12 @@ const ExperienceStartLanding = () => {
             fetchPriority="high"
             loading="eager"
             decoding="async"
+            sizes="100vw"
             className="w-full h-full object-cover object-[center_15%] sm:object-top"
+            style={{
+              contentVisibility: 'auto',
+              containIntrinsicSize: '100vw 100vh'
+            }}
           />
         </div>
         
