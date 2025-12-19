@@ -76,7 +76,7 @@ export const ExperienceFAQ = () => {
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-cream via-transparent to-white/60" />
 
-      <div className="container-soberana relative z-10 px-4 sm:px-6">
+      <div className="container-soberana relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}

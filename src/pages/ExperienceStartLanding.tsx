@@ -263,7 +263,7 @@ const ExperienceStartLanding = () => {
         {/* Content - positioned at bottom like main page */}
         <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-20 sm:pt-24">
           <div className="container-soberana">
-            <div className="text-center max-w-4xl mx-auto w-full px-4 sm:px-0">
+            <div className="text-center max-w-4xl mx-auto w-full">
               {/* Badge de urgência */}
               <motion.div
                 initial={{ opacity: 0, y: isMobile ? -5 : -10 }}
@@ -290,7 +290,7 @@ const ExperienceStartLanding = () => {
                 initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: animationDuration, delay: isMobile ? 0.15 : 0.4 }}
-                className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-cream leading-tight mb-4 sm:mb-6 px-4 sm:px-6 md:px-0"
+                className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-cream leading-tight mb-4 sm:mb-6"
               >
                 SOBERANA{" "}
                 <span className="text-shimmer-gold">
@@ -304,7 +304,7 @@ const ExperienceStartLanding = () => {
                 initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: animationDuration, delay: isMobile ? 0.2 : 0.5 }}
-                className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto px-4 sm:px-6 md:px-0"
+                className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto"
               >
                 Um encontro presencial criado para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2025.
               </motion.p>
@@ -314,7 +314,7 @@ const ExperienceStartLanding = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: isMobile ? 0.25 : 0.6 }}
-                className="bg-secondary/15 border border-secondary/30 rounded-lg px-4 sm:px-6 py-4 mb-8 max-w-2xl mx-4 sm:mx-auto"
+                className="bg-secondary/15 border border-secondary/30 rounded-lg w-full max-w-2xl mx-auto px-4 sm:px-6 py-4 mb-8"
               >
                 <p className="text-secondary text-base md:text-lg italic font-serif">
                   "Nada muda se você continuar pensando e fazendo como antes."
@@ -736,7 +736,7 @@ const ExperienceStartLanding = () => {
               <Button 
                 asChild 
                 size="lg"
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-sm sm:text-lg px-6 sm:px-10 py-6 sm:py-7 rounded-lg shadow-2xl hover:shadow-secondary/30 transition-all group cta-premium"
+                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-sm sm:text-lg w-full sm:w-auto px-6 sm:px-10 py-5 sm:py-7 rounded-lg shadow-2xl hover:shadow-secondary/30 transition-all group cta-premium whitespace-normal text-center leading-tight flex-wrap justify-center"
                 onClick={() => trackCTAClick("invite_cta")}
               >
                 <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
@@ -845,7 +845,7 @@ const ExperienceStartLanding = () => {
                     <Button 
                       asChild 
                       size="lg"
-                      className="relative w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base md:text-lg py-7 rounded-lg shadow-2xl hover:shadow-primary/30 transition-all group"
+                      className="relative w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm sm:text-base md:text-lg py-6 sm:py-7 h-auto rounded-lg shadow-2xl hover:shadow-primary/30 transition-all group whitespace-normal text-center leading-tight flex-wrap justify-center"
                       onClick={() => trackCTAClick("pricing_cta")}
                     >
                       <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
