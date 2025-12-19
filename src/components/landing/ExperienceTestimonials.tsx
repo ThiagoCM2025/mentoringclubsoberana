@@ -70,7 +70,7 @@ export const ExperienceTestimonials = () => {
       {/* Vignette for depth */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_50%,_rgba(0,0,0,0.15)_100%)]" />
 
-      <div className="container-soberana relative z-10 px-4 sm:px-6">
+      <div className="container-soberana relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
