@@ -217,84 +217,215 @@ const ExperienceStartLanding = () => {
         ref={heroRef}
         className="relative min-h-screen flex flex-col bg-brand-black"
       >
-        {/* LQIP Placeholder - gradiente que simula a imagem para melhorar percepção de carregamento */}
-        <div 
-          className="absolute inset-0 z-0 bg-gradient-to-b from-brand-black via-marsala/30 to-brand-black"
-          aria-hidden="true"
-        />
         
-        {/* Background Image - Fabiana Premium - Priority LCP with optimizations */}
-        <div 
-          className="absolute inset-0 z-0"
-          aria-hidden="true"
-        >
-          <img 
-            src={heroImage}
-            alt=""
-            fetchPriority="high"
-            loading="eager"
-            decoding="async"
-            sizes="100vw"
-            className="w-full h-full object-cover object-[center_15%] sm:object-top"
+        {/* ===== MOBILE: Layout Stacked (imagem acima + texto abaixo) ===== */}
+        <div className="md:hidden flex flex-col min-h-screen">
+          {/* Imagem da Fabiana - Altura controlada no mobile */}
+          <div className="relative h-[45vh] w-full overflow-hidden flex-shrink-0">
+            <img 
+              src={heroImage}
+              alt=""
+              fetchPriority="high"
+              loading="eager"
+              decoding="async"
+              className="w-full h-full object-cover object-[center_20%]"
+            />
+            {/* Gradiente inferior para transição suave */}
+            <div 
+              className="absolute inset-x-0 bottom-0 h-28 pointer-events-none"
+              style={{
+                background: 'linear-gradient(to top, hsl(var(--brand-black)) 0%, transparent 100%)'
+              }}
+              aria-hidden="true"
+            />
+          </div>
+          
+          {/* Conteúdo do texto abaixo da imagem - Mobile */}
+          <div className="flex-1 flex flex-col justify-start px-4 py-4 bg-brand-black text-center">
+            {/* Badge de urgência */}
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="inline-flex items-center gap-2 bg-red-500/20 border border-red-500/40 text-red-400 px-3 py-1.5 rounded-full mb-3 mx-auto"
+            >
+              <AlertCircle className="w-3 h-3" />
+              <span className="text-xs font-medium">EVENTO PRESENCIAL • DATA ÚNICA</span>
+            </motion.div>
+
+            {/* Logo */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              className="flex items-center justify-center gap-3 mb-3"
+            >
+              <SoberanaLogoMark variant="light" size="md" />
+            </motion.div>
+
+            {/* Main Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.15 }}
+              className="text-xl font-serif font-bold text-cream leading-tight mb-3"
+            >
+              SOBERANA{" "}
+              <span className="text-shimmer-gold">EXPERIENCE</span>{" "}
+              START
+            </motion.h1>
+
+            {/* Subtext */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="text-xs text-cream/90 mb-4 leading-relaxed"
+            >
+              Um encontro presencial para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar seu crescimento em 2025.
+            </motion.p>
+
+            {/* Countdown Mobile */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.25 }}
+              className="flex justify-center gap-2 mb-4"
+            >
+              {[
+                { value: timeLeft.days, label: 'DIAS' },
+                { value: timeLeft.hours, label: 'HRS' },
+                { value: timeLeft.minutes, label: 'MIN' },
+                { value: timeLeft.seconds, label: 'SEG' }
+              ].map((item, index) => (
+                <div key={index} className="text-center bg-primary/60 backdrop-blur-sm rounded-lg px-2 py-1.5 border border-secondary/20">
+                  <div className="text-lg font-bold text-secondary">{String(item.value).padStart(2, '0')}</div>
+                  <div className="text-[8px] text-cream/60 tracking-wide">{item.label}</div>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* CTA Button Mobile */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
+              className="mb-4"
+            >
+              <Button 
+                asChild 
+                size="lg"
+                className="w-full cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground px-6 py-5 text-sm font-semibold uppercase tracking-wider"
+                onClick={() => trackCTAClick("hero_cta_mobile")}
+              >
+                <a href={ctaUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                  GARANTA SUA VAGA AGORA
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </Button>
+            </motion.div>
+
+            {/* Event Info Mobile */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.35 }}
+              className="flex flex-wrap justify-center items-center gap-3 text-cream/70 text-xs"
+            >
+              <div className="flex items-center gap-1.5">
+                <Calendar className="w-3 h-3 text-secondary" />
+                <span>17 Jan 2025</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-3 h-3 text-secondary" />
+                <span>São Paulo</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Clock className="w-3 h-3 text-secondary" />
+                <span>9h às 17h</span>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* ===== DESKTOP: Layout Original com Overlay ===== */}
+        <div className="hidden md:flex flex-col min-h-screen">
+          {/* LQIP Placeholder */}
+          <div 
+            className="absolute inset-0 z-0 bg-gradient-to-b from-brand-black via-marsala/30 to-brand-black"
+            aria-hidden="true"
+          />
+          
+          {/* Background Image - Fabiana Premium */}
+          <div 
+            className="absolute inset-0 z-0"
+            aria-hidden="true"
+          >
+            <img 
+              src={heroImage}
+              alt=""
+              fetchPriority="high"
+              loading="eager"
+              decoding="async"
+              sizes="100vw"
+              className="w-full h-full object-cover object-top"
+              style={{
+                contentVisibility: 'auto',
+                containIntrinsicSize: '100vw 100vh'
+              }}
+            />
+          </div>
+          
+          {/* Premium gradient overlay for legibility */}
+          <div 
+            className="absolute inset-0 z-[1]"
             style={{
-              contentVisibility: 'auto',
-              containIntrinsicSize: '100vw 100vh'
+              background: `
+                linear-gradient(to bottom, 
+                  rgba(0,0,0,0.4) 0%, 
+                  rgba(0,0,0,0.2) 30%, 
+                  rgba(0,0,0,0.5) 60%, 
+                  rgba(0,0,0,0.95) 100%
+                )
+              `
             }}
           />
-        </div>
-        
-        {/* Premium gradient overlay for legibility */}
-        <div 
-          className="absolute inset-0 z-[1]"
-          style={{
-            background: `
-              linear-gradient(to bottom, 
-                rgba(0,0,0,0.4) 0%, 
-                rgba(0,0,0,0.2) 30%, 
-                rgba(0,0,0,0.5) 60%, 
-                rgba(0,0,0,0.95) 100%
-              )
-            `
-          }}
-        />
 
-        {/* Decorative golden circle pattern overlay - lazy loaded, hidden on mobile */}
-        {!isMobile && (
+          {/* Decorative golden circle pattern overlay */}
           <div 
-            className="absolute inset-0 z-[2] opacity-10 hidden md:block"
+            className="absolute inset-0 z-[2] opacity-10"
             style={{ 
               backgroundImage: `url(${patternCirclesGold})`, 
               backgroundSize: '200px' 
             }}
           />
-        )}
 
-        {/* Floating decorative isotipos - hidden on mobile, no animation if reduced motion */}
-        {shouldAnimate && (
-          <>
-            <motion.img
-              src={isotipoGold}
-              alt=""
-              loading="lazy"
-              className="absolute right-4 md:right-12 top-1/4 w-32 md:w-48 opacity-10 animate-float-slow z-[3] hidden md:block"
-              initial={{ opacity: 0 }}
-              animate={heroInView ? { opacity: 0.1 } : {}}
-              transition={{ duration: 1, delay: 0.5 }}
-            />
-            <motion.img
-              src={isotipoSGold}
-              alt=""
-              loading="lazy"
-              className="absolute left-4 md:left-12 bottom-1/3 w-16 md:w-24 opacity-8 animate-float-slow animation-delay-2000 z-[3] hidden md:block"
-              initial={{ opacity: 0 }}
-              animate={heroInView ? { opacity: 0.08 } : {}}
-              transition={{ duration: 1, delay: 0.8 }}
-            />
-          </>
-        )}
+          {/* Floating decorative isotipos */}
+          {shouldAnimate && (
+            <>
+              <motion.img
+                src={isotipoGold}
+                alt=""
+                loading="lazy"
+                className="absolute right-12 top-1/4 w-48 opacity-10 animate-float-slow z-[3]"
+                initial={{ opacity: 0 }}
+                animate={heroInView ? { opacity: 0.1 } : {}}
+                transition={{ duration: 1, delay: 0.5 }}
+              />
+              <motion.img
+                src={isotipoSGold}
+                alt=""
+                loading="lazy"
+                className="absolute left-12 bottom-1/3 w-24 opacity-8 animate-float-slow animation-delay-2000 z-[3]"
+                initial={{ opacity: 0 }}
+                animate={heroInView ? { opacity: 0.08 } : {}}
+                transition={{ duration: 1, delay: 0.8 }}
+              />
+            </>
+          )}
 
-        {/* Content - positioned at bottom like main page */}
-        <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-20 sm:pt-24">
+          {/* Content - positioned at bottom like main page */}
+          <div className="relative z-10 flex-1 flex flex-col justify-end pb-12 md:pb-16 pt-24">
           <div className="container-soberana">
             <div className="text-center max-w-4xl mx-auto w-full">
               {/* Badge de urgência */}
@@ -449,6 +580,7 @@ const ExperienceStartLanding = () => {
               </motion.div>
             </div>
           </div>
+        </div>
         </div>
 
         {/* Premium Scroll Indicator */}
