@@ -70,12 +70,12 @@ export const ExperienceTestimonials = () => {
       {/* Vignette for depth */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_50%,_rgba(0,0,0,0.15)_100%)]" />
 
-      <div className="container-soberana relative z-10">
+      <div className="container-soberana relative z-10 px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
         >
           {/* Isotipo S decoration */}
           <motion.div 
@@ -84,17 +84,17 @@ export const ExperienceTestimonials = () => {
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.5 }}
           >
-            <img src={isotipoSWhite} alt="" className="w-10 h-10 isotipo-glow-white" />
+            <img src={isotipoSWhite} alt="" className="w-8 h-8 sm:w-10 sm:h-10 isotipo-glow-white" />
           </motion.div>
           
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-secondary/20 text-secondary border border-secondary/30 mb-4">
             Depoimentos
           </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-primary-foreground mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-primary-foreground mb-4 sm:mb-6">
             Histórias de{" "}
             <span className="text-secondary">Transformação</span>
           </h2>
-          <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-primary-foreground/80 max-w-2xl mx-auto">
             Advogadas reais que transformaram suas carreiras no Experience Start.
           </p>
         </motion.div>
@@ -104,23 +104,23 @@ export const ExperienceTestimonials = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-4xl mx-auto mb-12"
+          className="max-w-4xl mx-auto mb-8 sm:mb-12"
         >
-          <div className="relative bg-cream rounded-2xl p-8 md:p-12 shadow-2xl">
-            <Quote className="absolute top-6 left-6 w-12 h-12 text-secondary/30" />
+          <div className="relative bg-cream rounded-2xl p-6 sm:p-8 md:p-12 shadow-2xl">
+            <Quote className="absolute top-4 sm:top-6 left-4 sm:left-6 w-8 h-8 sm:w-12 sm:h-12 text-secondary/30" />
             
             <div className="relative">
-              <div className="flex items-center gap-1 mb-6">
+              <div className="flex items-center gap-1 mb-4 sm:mb-6">
                 {[...Array(testimonials[activeIndex].rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-secondary fill-secondary" />
+                  <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 text-secondary fill-secondary" />
                 ))}
               </div>
 
-              <p className="text-xl md:text-2xl font-serif text-foreground mb-8 leading-relaxed">
+              <p className="text-lg sm:text-xl md:text-2xl font-serif text-foreground mb-6 sm:mb-8 leading-relaxed">
                 "{testimonials[activeIndex].content}"
               </p>
 
-              <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                   <p className="font-semibold text-foreground">{testimonials[activeIndex].name}</p>
                   <p className="text-sm text-muted-foreground">{testimonials[activeIndex].role}</p>
@@ -170,7 +170,7 @@ export const ExperienceTestimonials = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto"
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-3xl mx-auto"
         >
           {[
             { value: "98%", label: "Recomendam" },
@@ -179,8 +179,8 @@ export const ExperienceTestimonials = () => {
             { value: "100%", label: "Satisfação" },
           ].map((stat, index) => (
             <div key={index} className="text-center">
-              <p className="text-3xl md:text-4xl font-serif font-bold text-secondary">{stat.value}</p>
-              <p className="text-sm text-primary-foreground/70">{stat.label}</p>
+              <p className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-secondary">{stat.value}</p>
+              <p className="text-xs sm:text-sm text-primary-foreground/70">{stat.label}</p>
             </div>
           ))}
         </motion.div>

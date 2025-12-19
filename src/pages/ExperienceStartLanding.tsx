@@ -133,7 +133,7 @@ const ExperienceStartLanding = () => {
     },
     "performer": {
       "@type": "Person",
-      "name": "Fabiana Soberana"
+      "name": "Fabiana Duarte"
     },
     "offers": {
       "@type": "Offer",
@@ -163,22 +163,22 @@ const ExperienceStartLanding = () => {
         className="fixed top-0 left-0 right-0 z-50 bg-primary/95 backdrop-blur-md border-b border-secondary/20"
       >
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/60 to-transparent" />
-        <div className="container-soberana py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="container-soberana px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3">
             <img src={isotipoSGold} alt="" className="w-6 h-6 opacity-80 hidden sm:block" />
             <div className="flex items-center gap-2">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
               </span>
-              <p className="text-primary-foreground/90 text-sm md:text-base font-medium">
+              <p className="text-primary-foreground/90 text-xs sm:text-sm md:text-base font-medium">
                 Apenas <strong className="text-secondary">12 vagas</strong> restantes
               </p>
             </div>
           </div>
           <Button 
             asChild 
-            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold text-xs md:text-sm px-4 md:px-6 cta-premium"
+            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold text-xs md:text-sm px-3 sm:px-4 md:px-6 cta-premium"
           >
             <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
               GARANTA SUA VAGA
@@ -243,9 +243,9 @@ const ExperienceStartLanding = () => {
         />
 
         {/* Content - positioned at bottom like main page */}
-        <div className="relative z-10 flex-1 flex flex-col justify-end pb-12 md:pb-16 pt-24 overflow-hidden">
-          <div className="container-soberana">
-            <div className="text-center max-w-4xl mx-auto px-2">
+        <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-20 sm:pt-24 overflow-hidden">
+          <div className="container-soberana px-4 sm:px-6">
+            <div className="text-center max-w-4xl mx-auto">
               {/* Badge de urgência */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -411,7 +411,7 @@ const ExperienceStartLanding = () => {
       </section>
 
       {/* SEÇÃO LOGÍSTICA - Premium Cards */}
-      <section className="py-16 md:py-20 bg-background relative overflow-hidden">
+      <section className="py-12 sm:py-16 md:py-20 bg-background relative overflow-hidden">
         <div 
           className="absolute inset-0 opacity-5"
           style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '150px' }}
@@ -420,11 +420,11 @@ const ExperienceStartLanding = () => {
         <img 
           src={isotipoGold} 
           alt="" 
-          className="absolute right-4 top-8 w-24 opacity-5 animate-float-slow"
+          className="absolute right-4 top-8 w-24 opacity-5 animate-float-slow hidden sm:block"
         />
         
-        <div className="container-soberana relative z-10">
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="container-soberana relative z-10 px-4 sm:px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
             {[
               { icon: Calendar, label: "DATA", value: "17 de Janeiro de 2025", sublabel: "Sexta-feira" },
               { icon: Clock, label: "HORÁRIO", value: "09H00 às 17H00", sublabel: "Pausa de 1H30 para almoço" },
@@ -436,16 +436,16 @@ const ExperienceStartLanding = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.15 }}
-                className="group relative bg-card border border-border/50 rounded-xl p-6 text-center hover:shadow-xl hover:border-secondary/40 transition-all duration-500 card-luxury"
+                className="group relative bg-card border border-border/50 rounded-xl p-5 sm:p-6 text-center hover:shadow-xl hover:border-secondary/40 transition-all duration-500 card-luxury"
               >
                 <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none border-2 border-secondary/20" />
                 
-                <div className="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-primary/10 to-secondary/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <item.icon className="w-7 h-7 text-primary group-hover:text-secondary transition-colors" />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-3 sm:mb-4 bg-gradient-to-br from-primary/10 to-secondary/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <item.icon className="w-6 h-6 sm:w-7 sm:h-7 text-primary group-hover:text-secondary transition-colors" />
                 </div>
                 <p className="text-xs font-bold text-secondary tracking-wider mb-2">{item.label}</p>
-                <p className="text-lg font-serif font-semibold text-foreground mb-1">{item.value}</p>
-                <p className="text-sm text-muted-foreground">{item.sublabel}</p>
+                <p className="text-base sm:text-lg font-serif font-semibold text-foreground mb-1">{item.value}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{item.sublabel}</p>
               </motion.div>
             ))}
           </div>
@@ -455,12 +455,12 @@ const ExperienceStartLanding = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mt-10 max-w-2xl mx-auto"
+            className="mt-8 sm:mt-10 max-w-2xl mx-auto"
           >
-            <div className="bg-gradient-to-r from-primary/5 via-red-500/10 to-primary/5 border border-red-500/20 rounded-xl px-6 py-4 text-center">
-              <div className="flex items-center justify-center gap-3">
-                <AlertCircle className="w-5 h-5 text-red-400" />
-                <p className="text-foreground">
+            <div className="bg-gradient-to-r from-primary/5 via-red-500/10 to-primary/5 border border-red-500/20 rounded-xl px-4 sm:px-6 py-3 sm:py-4 text-center">
+              <div className="flex items-center justify-center gap-2 sm:gap-3">
+                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 flex-shrink-0" />
+                <p className="text-sm sm:text-base text-foreground">
                   <strong className="text-red-400">Turma limitada</strong> para garantir experiência personalizada
                 </p>
               </div>
@@ -542,7 +542,7 @@ const ExperienceStartLanding = () => {
       {/* SEÇÃO A EXPERIÊNCIA (Conteúdo Programático) - Premium Grid */}
       <section 
         ref={experienceRef}
-        className="py-20 md:py-28 bg-background relative overflow-hidden"
+        className="py-14 sm:py-20 md:py-28 bg-background relative overflow-hidden"
       >
         <div 
           className="absolute inset-0 opacity-5"
@@ -552,50 +552,50 @@ const ExperienceStartLanding = () => {
         <img 
           src={isotipoGold} 
           alt="" 
-          className="absolute left-4 top-20 w-28 opacity-5 animate-float-slow"
+          className="absolute left-4 top-20 w-28 opacity-5 animate-float-slow hidden sm:block"
         />
         <img 
           src={isotipoSGold} 
           alt="" 
-          className="absolute right-8 bottom-20 w-20 opacity-5 animate-float-slow animation-delay-2000"
+          className="absolute right-8 bottom-20 w-20 opacity-5 animate-float-slow animation-delay-2000 hidden sm:block"
         />
         
-        <div className="container-soberana relative z-10">
+        <div className="container-soberana relative z-10 px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={experienceInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mb-10 sm:mb-16"
           >
-            <div className="inline-flex items-center gap-2 bg-secondary/10 border border-secondary/20 rounded-full px-4 py-2 mb-6">
+            <div className="inline-flex items-center gap-2 bg-secondary/10 border border-secondary/20 rounded-full px-3 sm:px-4 py-2 mb-4 sm:mb-6">
               <Crown className="w-4 h-4 text-secondary" />
-              <span className="text-secondary text-sm font-medium tracking-wider">O QUE VOCÊ VAI VIVER</span>
+              <span className="text-secondary text-xs sm:text-sm font-medium tracking-wider">O QUE VOCÊ VAI VIVER</span>
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">
               Uma oficina <span className="text-primary">100% prática.</span>
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
               7 módulos transformadores para você sair com clareza e um plano de ação concreto.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
             {programContent.map((item, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
                 animate={experienceInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.1 * index }}
-                className="group relative bg-card border border-border/50 rounded-xl p-6 hover:shadow-2xl hover:border-secondary/40 hover:-translate-y-2 transition-all duration-500"
+                className="group relative bg-card border border-border/50 rounded-xl p-5 sm:p-6 hover:shadow-2xl hover:border-secondary/40 hover:-translate-y-2 transition-all duration-500"
               >
-                <div className="absolute -top-3 -left-3 w-8 h-8 bg-gradient-to-br from-secondary to-gold-dark rounded-full flex items-center justify-center text-secondary-foreground font-bold text-sm shadow-lg glow-gold-subtle">
+                <div className="absolute -top-3 -left-3 w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-secondary to-gold-dark rounded-full flex items-center justify-center text-secondary-foreground font-bold text-xs sm:text-sm shadow-lg glow-gold-subtle">
                   {index + 1}
                 </div>
                 
-                <div className="w-12 h-12 mb-4 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <item.icon className="w-6 h-6 text-primary group-hover:text-secondary transition-colors" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 mb-3 sm:mb-4 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary group-hover:text-secondary transition-colors" />
                 </div>
-                <h3 className="font-serif font-bold text-foreground text-lg mb-2">
+                <h3 className="font-serif font-bold text-foreground text-base sm:text-lg mb-2">
                   {item.title}
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -610,7 +610,7 @@ const ExperienceStartLanding = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={experienceInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 0.8 }}
-            className="mt-12 max-w-3xl mx-auto"
+            className="mt-8 sm:mt-12 max-w-3xl mx-auto"
           >
             <div className="golden-frame">
               <div className="golden-corner golden-corner-tl" />
@@ -618,9 +618,9 @@ const ExperienceStartLanding = () => {
               <div className="golden-corner golden-corner-bl" />
               <div className="golden-corner golden-corner-br" />
               
-              <div className="golden-frame-inner bg-gradient-to-r from-primary to-marsala p-8 text-center">
-                <CheckCircle2 className="w-10 h-10 text-secondary mx-auto mb-4" />
-                <p className="text-primary-foreground text-lg md:text-xl font-medium">
+              <div className="golden-frame-inner bg-gradient-to-r from-primary to-marsala p-6 sm:p-8 text-center">
+                <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-secondary mx-auto mb-3 sm:mb-4" />
+                <p className="text-primary-foreground text-base sm:text-lg md:text-xl font-medium">
                   Saia com seu <strong className="text-secondary">Plano de 90 dias</strong> pronto para iniciar 2025 no controle e com clareza total do que fazer.
                 </p>
               </div>
@@ -635,32 +635,32 @@ const ExperienceStartLanding = () => {
       {/* SEÇÃO CONVITE ESPECIAL - Premium Dark with Golden Glow */}
       <section
         ref={inviteRef}
-        className="py-20 md:py-28 bg-brand-black relative overflow-hidden"
+        className="py-14 sm:py-20 md:py-28 bg-brand-black relative overflow-hidden"
       >
         <div 
-          className="absolute inset-0 opacity-15"
-          style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '100px' }}
+          className="absolute inset-0 opacity-[0.08]"
+          style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '150px' }}
         />
         
         {/* Golden glow effect */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-96 h-64 sm:h-96 bg-secondary/10 rounded-full blur-3xl" />
         
         <motion.img
           src={isotipoGold}
           alt=""
-          className="absolute right-8 top-16 w-40 opacity-10 animate-float-slow"
+          className="absolute right-8 top-16 w-32 sm:w-40 opacity-[0.10] animate-float-slow hidden sm:block"
           initial={{ opacity: 0 }}
           animate={inviteInView ? { opacity: 0.1 } : {}}
         />
         <motion.img
           src={isotipoSGold}
           alt=""
-          className="absolute left-8 bottom-16 w-24 opacity-15 animate-float-slow animation-delay-1000"
+          className="absolute left-8 bottom-16 w-20 sm:w-24 opacity-[0.12] animate-float-slow animation-delay-1000 hidden sm:block"
           initial={{ opacity: 0 }}
-          animate={inviteInView ? { opacity: 0.15 } : {}}
+          animate={inviteInView ? { opacity: 0.12 } : {}}
         />
         
-        <div className="container-soberana relative z-10">
+        <div className="container-soberana relative z-10 px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={inviteInView ? { opacity: 1, y: 0 } : {}}
@@ -670,21 +670,21 @@ const ExperienceStartLanding = () => {
             <motion.img
               src={isotipoGold}
               alt=""
-              className="w-16 h-16 mx-auto mb-8 isotipo-glow"
+              className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-6 sm:mb-8 isotipo-glow"
               initial={{ scale: 0 }}
               animate={inviteInView ? { scale: 1 } : {}}
               transition={{ type: "spring", delay: 0.3 }}
             />
 
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-cream mb-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-cream mb-6 sm:mb-8">
               Você foi <span className="text-shimmer-gold">escolhida.</span>
             </h2>
 
-            <p className="text-cream/85 text-lg md:text-xl leading-relaxed mb-10">
+            <p className="text-cream/85 text-base sm:text-lg md:text-xl leading-relaxed mb-8 sm:mb-10">
               Seu 2025 começa de forma estratégica. Para viver tudo isso, você precisa decidir estar no evento.
             </p>
 
-            <div className="flex flex-col md:flex-row gap-6 justify-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8 sm:mb-12">
               {[
                 "A prática vence o medo.",
                 "A constância vence a comparação."
@@ -694,9 +694,9 @@ const ExperienceStartLanding = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={inviteInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ delay: 0.5 + index * 0.2 }}
-                  className="bg-secondary/10 border border-secondary/40 rounded-xl px-8 py-5 hover:bg-secondary/15 transition-colors glow-gold-subtle"
+                  className="bg-secondary/10 border border-secondary/40 rounded-xl px-5 sm:px-8 py-4 sm:py-5 hover:bg-secondary/15 transition-colors glow-gold-subtle"
                 >
-                  <p className="text-secondary text-lg font-serif font-medium italic">
+                  <p className="text-secondary text-base sm:text-lg font-serif font-medium italic">
                     "{quote}"
                   </p>
                 </motion.div>
@@ -711,12 +711,12 @@ const ExperienceStartLanding = () => {
               <Button 
                 asChild 
                 size="lg"
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-lg px-10 py-7 rounded-lg shadow-2xl hover:shadow-secondary/30 transition-all group cta-premium"
+                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-sm sm:text-lg px-6 sm:px-10 py-6 sm:py-7 rounded-lg shadow-2xl hover:shadow-secondary/30 transition-all group cta-premium"
               >
                 <a href={ctaUrl} target="_blank" rel="noopener noreferrer">
-                  <Star className="mr-2 w-5 h-5 fill-secondary-foreground" />
+                  <Star className="mr-2 w-4 h-4 sm:w-5 sm:h-5 fill-secondary-foreground" />
                   QUERO GARANTIR MEU LUGAR
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                 </a>
               </Button>
             </motion.div>
@@ -730,26 +730,26 @@ const ExperienceStartLanding = () => {
       {/* SEÇÃO INVESTIMENTO (Oferta) - Premium Card */}
       <section
         ref={pricingRef}
-        className="py-20 md:py-28 bg-background relative overflow-hidden"
+        className="py-14 sm:py-20 md:py-28 bg-background relative overflow-hidden"
       >
         <div 
           className="absolute inset-0 opacity-5"
           style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '150px' }}
         />
         
-        <div className="container-soberana relative z-10">
+        <div className="container-soberana relative z-10 px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={pricingInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
             className="max-w-2xl mx-auto"
           >
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 bg-secondary/10 border border-secondary/20 rounded-full px-4 py-2 mb-4">
+            <div className="text-center mb-8 sm:mb-10">
+              <div className="inline-flex items-center gap-2 bg-secondary/10 border border-secondary/20 rounded-full px-3 sm:px-4 py-2 mb-4">
                 <Sparkles className="w-4 h-4 text-secondary" />
-                <span className="text-secondary text-sm font-medium tracking-wider">INVESTIMENTO</span>
+                <span className="text-secondary text-xs sm:text-sm font-medium tracking-wider">INVESTIMENTO</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-foreground">
                 Lote 1 — <span className="text-primary">Oportunidade Exclusiva</span>
               </h2>
             </div>
