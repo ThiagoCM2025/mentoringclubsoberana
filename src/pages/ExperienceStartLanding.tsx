@@ -472,7 +472,7 @@ const ExperienceStartLanding = () => {
       {/* SEÇÃO PROBLEMA (A DOR) - Premium Black */}
       <section 
         ref={problemRef}
-        className="py-20 md:py-28 bg-brand-black relative overflow-hidden"
+        className="py-16 md:py-24 lg:py-28 bg-brand-black relative overflow-hidden"
       >
         {/* Golden pattern background - more visible */}
         <div 
@@ -483,11 +483,11 @@ const ExperienceStartLanding = () => {
         {/* Vignette overlay for depth */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_rgba(0,0,0,0.4)_100%)]" />
         
-        {/* Decorative isotipos - more visible gold on black */}
+        {/* Decorative isotipos - hidden on mobile for cleaner look */}
         <motion.img
           src={isotipoGold}
           alt=""
-          className="absolute right-4 md:right-8 top-16 w-24 md:w-40 opacity-[0.12] animate-float-slow"
+          className="absolute right-4 md:right-8 top-16 w-32 md:w-40 opacity-[0.12] animate-float-slow hidden sm:block"
           initial={{ opacity: 0 }}
           animate={problemInView ? { opacity: 0.12 } : {}}
           transition={{ delay: 0.6 }}
@@ -495,41 +495,41 @@ const ExperienceStartLanding = () => {
         <motion.img
           src={isotipoSGold}
           alt=""
-          className="absolute left-4 bottom-8 w-16 md:w-24 opacity-[0.10] animate-float-slow animation-delay-1000"
+          className="absolute left-4 bottom-8 w-20 md:w-24 opacity-[0.10] animate-float-slow animation-delay-1000 hidden sm:block"
           initial={{ opacity: 0 }}
           animate={problemInView ? { opacity: 0.10 } : {}}
           transition={{ delay: 0.8 }}
         />
         
-        <div className="container-soberana relative z-10">
+        <div className="container-soberana relative z-10 px-5 md:px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={problemInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
             className="max-w-3xl mx-auto text-center"
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-cream mb-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-cream mb-6 md:mb-8">
               O erro invisível que trava <span className="text-shimmer-gold">a sua advocacia.</span>
             </h2>
 
-            <p className="text-cream/85 text-lg md:text-xl leading-relaxed mb-12">
+            <p className="text-cream/85 text-base sm:text-lg md:text-xl leading-relaxed mb-8 md:mb-12">
               Muitas advogadas trabalham demais porque trabalham sem estrutura. E sem estrutura, <strong className="text-cream">nenhum resultado se sustenta.</strong>
             </p>
 
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               {[
                 "A maior barreira da advogada não é o mercado. É o que ela acredita sobre si mesma.",
                 "Produtividade não é correr. É fazer o básico muito bem feito."
               ].map((quote, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
+                  initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
                   animate={problemInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ delay: 0.4 + index * 0.2 }}
-                  className="relative bg-secondary/15 border-l-4 border-secondary px-6 py-5 rounded-r-lg group hover:bg-secondary/20 transition-colors"
+                  className="relative bg-secondary/15 border-l-4 border-secondary px-4 sm:px-6 py-4 md:py-5 rounded-r-lg group hover:bg-secondary/20 transition-colors"
                 >
                   <div className="absolute inset-0 rounded-r-lg border border-secondary/30 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <p className="text-secondary text-lg md:text-xl font-serif italic relative z-10">
+                  <p className="text-secondary text-base sm:text-lg md:text-xl font-serif italic relative z-10">
                     "{quote}"
                   </p>
                 </motion.div>
