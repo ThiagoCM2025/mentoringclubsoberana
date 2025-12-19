@@ -129,22 +129,22 @@ export const Navbar = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-background pt-24 lg:hidden"
+            className="fixed inset-0 z-40 bg-background pt-20 overflow-y-auto lg:hidden"
           >
-            <div className="container-soberana px-4 py-8">
+            <div className="container-soberana px-4 py-6 pb-32 min-h-full">
               {/* Mobile Logo */}
-              <div className="flex justify-center mb-8">
+              <div className="flex justify-center mb-6">
                 <SoberanaLogoMark variant="dark" size="lg" />
               </div>
               
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
                 {navLinks.map((link) => (
                   link.isRoute ? (
                     <Link
                       key={link.label}
                       to={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="text-lg font-medium text-foreground py-3 border-b border-border/50 text-left tracking-wide"
+                      className="text-base font-medium text-foreground py-3 px-2 border-b border-border/30 text-left tracking-wide hover:bg-muted/50 rounded-sm transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -152,20 +152,20 @@ export const Navbar = () => {
                     <button
                       key={link.label}
                       onClick={() => scrollToSection(link.href)}
-                      className="text-lg font-medium text-foreground py-3 border-b border-border/50 text-left tracking-wide"
+                      className="text-base font-medium text-foreground py-3 px-2 border-b border-border/30 text-left tracking-wide hover:bg-muted/50 rounded-sm transition-colors"
                     >
                       {link.label}
                     </button>
                   )
                 ))}
-                <div className="flex flex-col gap-3 mt-6">
-                  <Button variant="outline" asChild className="w-full border-foreground/30">
+                <div className="flex flex-col gap-3 mt-8 pt-4 border-t border-border/30">
+                  <Button variant="outline" asChild className="w-full border-foreground/30 h-12 text-base">
                     <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
                       Área do Aluno
                     </Link>
                   </Button>
                   <Button
-                    className="w-full cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+                    className="w-full cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground h-12 text-base"
                     onClick={() => scrollToSection("#jornada")}
                   >
                     Quero Ser Soberana
