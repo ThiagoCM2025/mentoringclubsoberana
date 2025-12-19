@@ -329,7 +329,7 @@ const ExperienceStartLanding = () => {
                 className="mb-8"
               >
                 <p className="text-cream/70 text-sm uppercase tracking-wider mb-4">O evento começa em:</p>
-                <div className="flex justify-center gap-3 md:gap-4">
+                <div className="flex justify-center gap-2 sm:gap-3 md:gap-4">
                   {[
                     { value: timeLeft.days, label: 'DIAS' },
                     { value: timeLeft.hours, label: 'HORAS' },
@@ -343,11 +343,11 @@ const ExperienceStartLanding = () => {
                       {!isMobile && (
                         <div className="absolute -inset-0.5 bg-gradient-to-r from-secondary/50 to-gold-dark/50 rounded-lg blur opacity-60 group-hover:opacity-100 transition duration-500" />
                       )}
-                      <div className="relative bg-brand-black/80 border border-secondary/40 rounded-lg px-3 md:px-5 py-3 md:py-4 min-w-[60px] md:min-w-[80px]">
-                        <span className="block text-2xl md:text-4xl font-bold text-shimmer-gold tabular-nums">
+                      <div className="relative bg-brand-black/80 border border-secondary/40 rounded-lg px-2 sm:px-3 md:px-5 py-2 sm:py-3 md:py-4 min-w-[50px] sm:min-w-[60px] md:min-w-[80px]">
+                        <span className="block text-xl sm:text-2xl md:text-4xl font-bold text-shimmer-gold tabular-nums">
                           {String(item.value).padStart(2, '0')}
                         </span>
-                        <span className="block text-[10px] md:text-xs text-cream/60 mt-1 tracking-wider">
+                        <span className="block text-[9px] sm:text-[10px] md:text-xs text-cream/60 mt-1 tracking-wider">
                           {item.label}
                         </span>
                       </div>
