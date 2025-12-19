@@ -225,7 +225,7 @@ const ExperienceStartLanding = () => {
         
         {/* Background Image - Fabiana Premium - Priority LCP with optimizations */}
         <div 
-          className="absolute inset-0 z-0 bg-brand-black"
+          className="absolute inset-0 z-0"
           aria-hidden="true"
         >
           <img 
@@ -235,7 +235,7 @@ const ExperienceStartLanding = () => {
             loading="eager"
             decoding="async"
             sizes="100vw"
-            className="w-full h-full object-contain sm:object-cover object-top bg-brand-black"
+            className="w-full h-full object-cover object-[center_15%] sm:object-top"
             style={{
               contentVisibility: 'auto',
               containIntrinsicSize: '100vw 100vh'
