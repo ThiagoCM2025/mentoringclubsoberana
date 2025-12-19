@@ -12,27 +12,13 @@ export const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex flex-col overflow-hidden bg-brand-black">
       {/* Background Image - Fabiana */}
-      <div className="absolute inset-0 z-0 bg-brand-black">
-        <div
-          className="w-full h-[60vh] sm:h-full bg-contain sm:bg-cover bg-no-repeat bg-top"
-          style={{
-            backgroundImage: `url(${heroVariations})`,
-          }}
-        />
-      </div>
-      
-      {/* Gradiente lateral para suavizar bordas em mobile */}
       <div 
-        className="absolute inset-0 z-[1] sm:hidden pointer-events-none"
+        className="absolute inset-0 z-0"
         style={{
-          background: `
-            linear-gradient(to right, 
-              rgba(26,26,26,0.4) 0%, 
-              transparent 20%, 
-              transparent 80%, 
-              rgba(26,26,26,0.4) 100%
-            )
-          `
+          backgroundImage: `url(${heroVariations})`,
+          backgroundPosition: 'center top',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
         }}
       />
       
@@ -52,7 +38,7 @@ export const HeroSection = () => {
       />
 
       {/* Content - positioned at bottom */}
-      <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 md:pb-12 pt-12 sm:pt-20 overflow-hidden">
+      <div className="relative z-10 flex-1 flex flex-col justify-end pb-12 md:pb-16 pt-20 overflow-hidden">
         <div className="container-soberana">
           <div className="text-center max-w-4xl mx-auto w-full">
             {/* Logo with Star */}

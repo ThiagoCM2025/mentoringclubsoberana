@@ -215,7 +215,7 @@ const ExperienceStartLanding = () => {
       {/* HERO SECTION - Premium Full Screen */}
       <section 
         ref={heroRef}
-        className="relative min-h-screen flex flex-col bg-brand-black pt-14 sm:pt-16"
+        className="relative min-h-screen flex flex-col bg-brand-black"
       >
         {/* LQIP Placeholder - gradiente que simula a imagem para melhorar percepção de carregamento */}
         <div 
@@ -225,7 +225,7 @@ const ExperienceStartLanding = () => {
         
         {/* Background Image - Fabiana Premium - Priority LCP with optimizations */}
         <div 
-          className="absolute inset-0 z-0 bg-brand-black"
+          className="absolute inset-0 z-0"
           aria-hidden="true"
         >
           <img 
@@ -235,29 +235,13 @@ const ExperienceStartLanding = () => {
             loading="eager"
             decoding="async"
             sizes="100vw"
-            className="w-full h-[55vh] sm:h-full object-contain sm:object-cover object-top bg-brand-black"
+            className="w-full h-full object-cover object-[center_15%] sm:object-top"
             style={{
               contentVisibility: 'auto',
               containIntrinsicSize: '100vw 100vh'
             }}
           />
         </div>
-        
-        {/* Gradiente lateral para suavizar bordas em mobile */}
-        <div 
-          className="absolute inset-0 z-[1] sm:hidden pointer-events-none"
-          aria-hidden="true"
-          style={{
-            background: `
-              linear-gradient(to right, 
-                rgba(26,26,26,0.4) 0%, 
-                transparent 20%, 
-                transparent 80%, 
-                rgba(26,26,26,0.4) 100%
-              )
-            `
-          }}
-        />
         
         {/* Premium gradient overlay for legibility */}
         <div 
@@ -310,7 +294,7 @@ const ExperienceStartLanding = () => {
         )}
 
         {/* Content - positioned at bottom like main page */}
-        <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-8 sm:pt-16">
+        <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-20 sm:pt-24">
           <div className="container-soberana">
             <div className="text-center max-w-4xl mx-auto w-full">
               {/* Badge de urgência */}
