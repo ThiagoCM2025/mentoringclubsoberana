@@ -52,14 +52,14 @@ export const Footer = () => {
       </div>
 
       {/* Main Footer */}
-      <div className="container-soberana section-padding pb-12 relative z-10">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="container-soberana px-4 sm:px-6 py-12 sm:py-16 pb-8 sm:pb-12 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12">
           {/* Brand Column */}
-          <div className="lg:col-span-1">
-            <div className="mb-6">
+          <div className="sm:col-span-2 lg:col-span-1">
+            <div className="mb-5 sm:mb-6">
               <SoberanaLogoMark variant="light" size="md" />
             </div>
-            <p className="text-background/70 mb-6 text-sm leading-relaxed">
+            <p className="text-background/70 mb-5 sm:mb-6 text-sm leading-relaxed max-w-xs">
               Transformando advogadas em CEOs dos seus próprios negócios através 
               da metodologia S.O.B.E.R.A.N.A.
             </p>
@@ -83,7 +83,7 @@ export const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-serif font-bold text-lg mb-4 tracking-wide">Links Rápidos</h4>
+            <h4 className="font-serif font-bold text-base sm:text-lg mb-3 sm:mb-4 tracking-wide">Links Rápidos</h4>
             <ul className="space-y-2">
               {quickLinks.map((link, index) => (
                 <li key={index}>
@@ -108,22 +108,22 @@ export const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h4 className="font-serif font-bold text-lg mb-4 tracking-wide">Contato</h4>
+            <h4 className="font-serif font-bold text-base sm:text-lg mb-3 sm:mb-4 tracking-wide">Contato</h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm text-background/70">
-                <Mail className="w-4 h-4 mt-0.5 text-secondary" />
-                <a href="mailto:contato@soberanamentoria.com.br" className="hover:text-secondary transition-colors">
+                <Mail className="w-4 h-4 mt-0.5 text-secondary flex-shrink-0" />
+                <a href="mailto:contato@soberanamentoria.com.br" className="hover:text-secondary transition-colors break-all sm:break-normal">
                   contato@soberanamentoria.com.br
                 </a>
               </li>
               <li className="flex items-start gap-3 text-sm text-background/70">
-                <Phone className="w-4 h-4 mt-0.5 text-secondary" />
+                <Phone className="w-4 h-4 mt-0.5 text-secondary flex-shrink-0" />
                 <a href="https://wa.me/5511993563468" target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">
                   (11) 99356-3468
                 </a>
               </li>
               <li className="flex items-start gap-3 text-sm text-background/70">
-                <MapPin className="w-4 h-4 mt-0.5 text-secondary" />
+                <MapPin className="w-4 h-4 mt-0.5 text-secondary flex-shrink-0" />
                 <span>São Paulo, SP - Brasil</span>
               </li>
             </ul>
@@ -131,8 +131,8 @@ export const Footer = () => {
 
           {/* Legal & Admin */}
           <div>
-            <h4 className="font-serif font-bold text-lg mb-4 tracking-wide">Legal</h4>
-            <ul className="space-y-2 mb-6">
+            <h4 className="font-serif font-bold text-base sm:text-lg mb-3 sm:mb-4 tracking-wide">Legal</h4>
+            <ul className="space-y-2 mb-4 sm:mb-6">
               {legalLinks.map((link, index) => (
                 <li key={index}>
                   <Link
