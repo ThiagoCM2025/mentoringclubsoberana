@@ -1,24 +1,27 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { Calendar, Clock, MapPin, CheckCircle2, Sparkles, Brain, Settings, Users, TrendingUp, Target, ArrowRight, Star, Crown, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import { Footer } from "@/components/landing/Footer";
 import { SoberanaLogoMark } from "@/components/landing/SoberanaLogoMark";
 import { ExperienceExitPopup } from "@/components/landing/ExperienceExitPopup";
-import { ExperienceFAQ } from "@/components/landing/ExperienceFAQ";
-import { ExperienceTestimonials } from "@/components/landing/ExperienceTestimonials";
 import { useUTMParams } from "@/hooks/useUTMParams";
 import { trackCTAClick } from "@/components/Analytics";
-import { useIsMobile } from "@/components/ui/optimized-image";
+import { useIsMobile, usePrefersReducedMotion } from "@/components/ui/optimized-image";
 
-// Import brand assets
-import isotipoGold from "@/assets/brand/isotipo-gold.png";
-import isotipoWhite from "@/assets/brand/isotipo-white.png";
-import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
-import patternGold from "@/assets/brand/pattern-gold.png";
-import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
+// Lazy load heavy components below the fold
+const ExperienceFAQ = lazy(() => import("@/components/landing/ExperienceFAQ").then(m => ({ default: m.ExperienceFAQ })));
+const ExperienceTestimonials = lazy(() => import("@/components/landing/ExperienceTestimonials").then(m => ({ default: m.ExperienceTestimonials })));
+
+// Import brand assets - hero image is critical for LCP
 import heroImage from "@/assets/experience-start-hero-premium.jpeg";
+
+// Lazy load decorative assets (not critical for LCP)
+const isotipoGold = "/assets/brand/isotipo-gold.png";
+const isotipoSGold = "/assets/brand/isotipo-s-gold.png";
+const patternGold = "/assets/brand/pattern-gold.png";
+const patternCirclesGold = "/assets/brand/pattern-circles-gold.png";
 
 // Countdown Hook
 const useCountdown = (targetDate: Date) => {
@@ -60,16 +63,19 @@ const ExperienceStartLanding = () => {
   const pricingRef = useRef(null);
   
   const isMobile = useIsMobile();
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  const heroInView = useInView(heroRef, { once: true, amount: isMobile ? 0.1 : 0.3 });
-  const problemInView = useInView(problemRef, { once: true, amount: isMobile ? 0.1 : 0.3 });
-  const experienceInView = useInView(experienceRef, { once: true, amount: isMobile ? 0.1 : 0.2 });
-  const inviteInView = useInView(inviteRef, { once: true, amount: isMobile ? 0.1 : 0.3 });
-  const pricingInView = useInView(pricingRef, { once: true, amount: isMobile ? 0.1 : 0.3 });
+  // Simplified inView detection - less resource intensive
+  const heroInView = useInView(heroRef, { once: true, amount: 0.1 });
+  const problemInView = useInView(problemRef, { once: true, amount: 0.1 });
+  const experienceInView = useInView(experienceRef, { once: true, amount: 0.1 });
+  const inviteInView = useInView(inviteRef, { once: true, amount: 0.1 });
+  const pricingInView = useInView(pricingRef, { once: true, amount: 0.1 });
 
-  // Mobile-optimized animation settings
-  const animationDuration = isMobile ? 0.4 : 0.6;
-  const animationY = isMobile ? 10 : 20;
+  // Performance-optimized animation settings
+  const shouldAnimate = !prefersReducedMotion && !isMobile;
+  const animationDuration = shouldAnimate ? 0.6 : 0.3;
+  const animationY = shouldAnimate ? 20 : 0;
 
   // Countdown para 17 de Janeiro de 2026 às 09:00 (horário de São Paulo)
   const eventDate = new Date('2026-01-17T09:00:00-03:00');
@@ -210,16 +216,20 @@ const ExperienceStartLanding = () => {
         ref={heroRef}
         className="relative min-h-screen flex flex-col bg-brand-black"
       >
-        {/* Background Image - Fabiana Premium */}
+        {/* Background Image - Fabiana Premium - Priority LCP */}
         <div 
           className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: `url(${heroImage})`,
-            backgroundPosition: 'center top',
-            backgroundSize: 'cover',
-            backgroundRepeat: 'no-repeat',
-          }}
-        />
+          aria-hidden="true"
+        >
+          <img 
+            src={heroImage}
+            alt=""
+            fetchPriority="high"
+            loading="eager"
+            decoding="async"
+            className="w-full h-full object-cover object-top"
+          />
+        </div>
         
         {/* Premium gradient overlay for legibility */}
         <div 
@@ -236,29 +246,40 @@ const ExperienceStartLanding = () => {
           }}
         />
 
-        {/* Decorative golden circle pattern overlay */}
-        <div 
-          className="absolute inset-0 z-[2] opacity-10"
-          style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '200px' }}
-        />
+        {/* Decorative golden circle pattern overlay - lazy loaded, hidden on mobile */}
+        {!isMobile && (
+          <div 
+            className="absolute inset-0 z-[2] opacity-10 hidden md:block"
+            style={{ 
+              backgroundImage: `url(${patternCirclesGold})`, 
+              backgroundSize: '200px' 
+            }}
+          />
+        )}
 
-        {/* Floating decorative isotipos - hidden on mobile */}
-        <motion.img
-          src={isotipoGold}
-          alt=""
-          className="absolute right-4 md:right-12 top-1/4 w-32 md:w-48 opacity-10 animate-float-slow z-[3] hidden md:block"
-          initial={{ opacity: 0 }}
-          animate={heroInView ? { opacity: 0.1 } : {}}
-          transition={{ duration: 1, delay: 0.5 }}
-        />
-        <motion.img
-          src={isotipoSGold}
-          alt=""
-          className="absolute left-4 md:left-12 bottom-1/3 w-16 md:w-24 opacity-8 animate-float-slow animation-delay-2000 z-[3] hidden md:block"
-          initial={{ opacity: 0 }}
-          animate={heroInView ? { opacity: 0.08 } : {}}
-          transition={{ duration: 1, delay: 0.8 }}
-        />
+        {/* Floating decorative isotipos - hidden on mobile, no animation if reduced motion */}
+        {shouldAnimate && (
+          <>
+            <motion.img
+              src={isotipoGold}
+              alt=""
+              loading="lazy"
+              className="absolute right-4 md:right-12 top-1/4 w-32 md:w-48 opacity-10 animate-float-slow z-[3] hidden md:block"
+              initial={{ opacity: 0 }}
+              animate={heroInView ? { opacity: 0.1 } : {}}
+              transition={{ duration: 1, delay: 0.5 }}
+            />
+            <motion.img
+              src={isotipoSGold}
+              alt=""
+              loading="lazy"
+              className="absolute left-4 md:left-12 bottom-1/3 w-16 md:w-24 opacity-8 animate-float-slow animation-delay-2000 z-[3] hidden md:block"
+              initial={{ opacity: 0 }}
+              animate={heroInView ? { opacity: 0.08 } : {}}
+              transition={{ duration: 1, delay: 0.8 }}
+            />
+          </>
+        )}
 
         {/* Content - positioned at bottom like main page */}
         <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-20 sm:pt-24">
@@ -437,16 +458,23 @@ const ExperienceStartLanding = () => {
 
       {/* SEÇÃO LOGÍSTICA - Premium Cards */}
       <section className="py-12 sm:py-16 md:py-20 bg-background relative overflow-hidden">
-        <div 
-          className="absolute inset-0 opacity-5"
-          style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '150px' }}
-        />
+        {/* Pattern only on desktop for performance */}
+        {!isMobile && (
+          <div 
+            className="absolute inset-0 opacity-5 hidden md:block"
+            style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '150px' }}
+          />
+        )}
         
-        <img 
-          src={isotipoGold} 
-          alt="" 
-          className="absolute right-4 top-8 w-24 opacity-5 animate-float-slow hidden sm:block"
-        />
+        {/* Decorative isotipo - desktop only, lazy loaded */}
+        {!isMobile && (
+          <img 
+            src={isotipoGold} 
+            alt="" 
+            loading="lazy"
+            className="absolute right-4 top-8 w-24 opacity-5 animate-float-slow hidden sm:block"
+          />
+        )}
         
         <div className="container-soberana relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
@@ -499,32 +527,40 @@ const ExperienceStartLanding = () => {
         ref={problemRef}
         className="py-16 md:py-24 lg:py-28 bg-brand-black relative overflow-hidden"
       >
-        {/* Golden pattern background - more visible */}
-        <div 
-          className="absolute inset-0 opacity-[0.08]"
-          style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '180px' }}
-        />
+        {/* Golden pattern background - desktop only */}
+        {!isMobile && (
+          <div 
+            className="absolute inset-0 opacity-[0.08] hidden md:block"
+            style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '180px' }}
+          />
+        )}
         
         {/* Vignette overlay for depth */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_rgba(0,0,0,0.4)_100%)]" />
         
-        {/* Decorative isotipos - hidden on mobile for cleaner look */}
-        <motion.img
-          src={isotipoGold}
-          alt=""
-          className="absolute right-4 md:right-8 top-16 w-32 md:w-40 opacity-[0.12] animate-float-slow hidden sm:block"
-          initial={{ opacity: 0 }}
-          animate={problemInView ? { opacity: 0.12 } : {}}
-          transition={{ delay: 0.6 }}
-        />
-        <motion.img
-          src={isotipoSGold}
-          alt=""
-          className="absolute left-4 bottom-8 w-20 md:w-24 opacity-[0.10] animate-float-slow animation-delay-1000 hidden sm:block"
-          initial={{ opacity: 0 }}
-          animate={problemInView ? { opacity: 0.10 } : {}}
-          transition={{ delay: 0.8 }}
-        />
+        {/* Decorative isotipos - desktop only, conditional rendering */}
+        {shouldAnimate && (
+          <>
+            <motion.img
+              src={isotipoGold}
+              alt=""
+              loading="lazy"
+              className="absolute right-4 md:right-8 top-16 w-32 md:w-40 opacity-[0.12] animate-float-slow hidden sm:block"
+              initial={{ opacity: 0 }}
+              animate={problemInView ? { opacity: 0.12 } : {}}
+              transition={{ delay: 0.6 }}
+            />
+            <motion.img
+              src={isotipoSGold}
+              alt=""
+              loading="lazy"
+              className="absolute left-4 bottom-8 w-20 md:w-24 opacity-[0.10] animate-float-slow animation-delay-1000 hidden sm:block"
+              initial={{ opacity: 0 }}
+              animate={problemInView ? { opacity: 0.10 } : {}}
+              transition={{ delay: 0.8 }}
+            />
+          </>
+        )}
         
         <div className="container-soberana relative z-10">
           <motion.div
@@ -569,21 +605,31 @@ const ExperienceStartLanding = () => {
         ref={experienceRef}
         className="py-14 sm:py-20 md:py-28 bg-background relative overflow-hidden"
       >
-        <div 
-          className="absolute inset-0 opacity-5"
-          style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '180px' }}
-        />
+        {/* Pattern only on desktop */}
+        {!isMobile && (
+          <div 
+            className="absolute inset-0 opacity-5 hidden md:block"
+            style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '180px' }}
+          />
+        )}
         
-        <img 
-          src={isotipoGold} 
-          alt="" 
-          className="absolute left-4 top-20 w-28 opacity-5 animate-float-slow hidden sm:block"
-        />
-        <img 
-          src={isotipoSGold} 
-          alt="" 
-          className="absolute right-8 bottom-20 w-20 opacity-5 animate-float-slow animation-delay-2000 hidden sm:block"
-        />
+        {/* Decorative isotipos - desktop only */}
+        {!isMobile && (
+          <>
+            <img 
+              src={isotipoGold} 
+              alt="" 
+              loading="lazy"
+              className="absolute left-4 top-20 w-28 opacity-5 animate-float-slow hidden sm:block"
+            />
+            <img 
+              src={isotipoSGold} 
+              alt="" 
+              loading="lazy"
+              className="absolute right-8 bottom-20 w-20 opacity-5 animate-float-slow animation-delay-2000 hidden sm:block"
+            />
+          </>
+        )}
         
         <div className="container-soberana relative z-10">
           <motion.div
@@ -654,36 +700,48 @@ const ExperienceStartLanding = () => {
         </div>
       </section>
 
-      {/* SEÇÃO DEPOIMENTOS */}
-      <ExperienceTestimonials />
+      {/* SEÇÃO DEPOIMENTOS - Lazy loaded */}
+      <Suspense fallback={<div className="py-20 bg-cream flex items-center justify-center"><div className="w-8 h-8 border-2 border-secondary border-t-transparent rounded-full animate-spin" /></div>}>
+        <ExperienceTestimonials />
+      </Suspense>
 
       {/* SEÇÃO CONVITE ESPECIAL - Premium Dark with Golden Glow */}
       <section
         ref={inviteRef}
         className="py-14 sm:py-20 md:py-28 bg-brand-black relative overflow-hidden"
       >
-        <div 
-          className="absolute inset-0 opacity-[0.08]"
-          style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '150px' }}
-        />
+        {/* Pattern - desktop only */}
+        {!isMobile && (
+          <div 
+            className="absolute inset-0 opacity-[0.08] hidden md:block"
+            style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '150px' }}
+          />
+        )}
         
-        {/* Golden glow effect */}
+        {/* Golden glow effect - simpler on mobile */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-96 h-64 sm:h-96 bg-secondary/10 rounded-full blur-3xl" />
         
-        <motion.img
-          src={isotipoGold}
-          alt=""
-          className="absolute right-8 top-16 w-32 sm:w-40 opacity-[0.10] animate-float-slow hidden sm:block"
-          initial={{ opacity: 0 }}
-          animate={inviteInView ? { opacity: 0.1 } : {}}
-        />
-        <motion.img
-          src={isotipoSGold}
-          alt=""
-          className="absolute left-8 bottom-16 w-20 sm:w-24 opacity-[0.12] animate-float-slow animation-delay-1000 hidden sm:block"
-          initial={{ opacity: 0 }}
-          animate={inviteInView ? { opacity: 0.12 } : {}}
-        />
+        {/* Decorative isotipos - desktop only */}
+        {shouldAnimate && (
+          <>
+            <motion.img
+              src={isotipoGold}
+              alt=""
+              loading="lazy"
+              className="absolute right-8 top-16 w-32 sm:w-40 opacity-[0.10] animate-float-slow hidden sm:block"
+              initial={{ opacity: 0 }}
+              animate={inviteInView ? { opacity: 0.1 } : {}}
+            />
+            <motion.img
+              src={isotipoSGold}
+              alt=""
+              loading="lazy"
+              className="absolute left-8 bottom-16 w-20 sm:w-24 opacity-[0.12] animate-float-slow animation-delay-1000 hidden sm:block"
+              initial={{ opacity: 0 }}
+              animate={inviteInView ? { opacity: 0.12 } : {}}
+            />
+          </>
+        )}
         
         <div className="container-soberana relative z-10">
           <motion.div
@@ -750,18 +808,23 @@ const ExperienceStartLanding = () => {
         </div>
       </section>
 
-      {/* SEÇÃO FAQ */}
-      <ExperienceFAQ />
+      {/* SEÇÃO FAQ - Lazy loaded */}
+      <Suspense fallback={<div className="py-20 bg-cream flex items-center justify-center"><div className="w-8 h-8 border-2 border-secondary border-t-transparent rounded-full animate-spin" /></div>}>
+        <ExperienceFAQ />
+      </Suspense>
 
       {/* SEÇÃO INVESTIMENTO (Oferta) - Premium Card */}
       <section
         ref={pricingRef}
         className="py-14 sm:py-20 md:py-28 bg-background relative overflow-hidden"
       >
-        <div 
-          className="absolute inset-0 opacity-5"
-          style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '150px' }}
-        />
+        {/* Pattern - desktop only */}
+        {!isMobile && (
+          <div 
+            className="absolute inset-0 opacity-5 hidden md:block"
+            style={{ backgroundImage: `url(${patternCirclesGold})`, backgroundSize: '150px' }}
+          />
+        )}
         
         <div className="container-soberana relative z-10">
           <motion.div
