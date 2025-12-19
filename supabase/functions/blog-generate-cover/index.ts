@@ -23,13 +23,13 @@ serve(async (req) => {
 
     console.log('Generating blog cover for:', title);
 
-    const prompt = `Create a professional blog cover image for a legal marketing article titled: "${title}". 
-Style: ${style}, elegant, sophisticated.
-Theme: ${theme || 'professional woman lawyer, legal, business, success'}.
-Color palette: warm gold (#B6904D), deep marsala, cream, sophisticated neutrals.
-The image should be 16:9 aspect ratio, suitable for a blog header.
-No text in the image. Focus on abstract or conceptual imagery that represents professional growth and legal expertise.
-Ultra high resolution.`;
+    const prompt = `Crie uma imagem de capa profissional para um artigo de blog sobre marketing jurídico com o título: "${title}". 
+Estilo: ${style}, elegante, sofisticado, moderno.
+Tema: ${theme || 'mulher advogada profissional, jurídico, negócios, sucesso, empoderamento feminino'}.
+Paleta de cores: dourado quente (#B6904D), marsala profundo, creme, tons neutros sofisticados.
+A imagem deve ter proporção 16:9, adequada para cabeçalho de blog.
+Sem texto na imagem. Foco em imagens abstratas ou conceituais que representem crescimento profissional e expertise jurídica.
+Resolução ultra alta. Qualidade premium.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
