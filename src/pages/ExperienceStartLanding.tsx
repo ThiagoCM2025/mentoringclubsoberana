@@ -1,5 +1,5 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { Calendar, Clock, MapPin, CheckCircle2, Sparkles, Brain, Settings, Users, TrendingUp, Target, ArrowRight, Star, Crown, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
@@ -10,6 +10,7 @@ import { ExperienceFAQ } from "@/components/landing/ExperienceFAQ";
 import { ExperienceTestimonials } from "@/components/landing/ExperienceTestimonials";
 import { useUTMParams } from "@/hooks/useUTMParams";
 import { trackCTAClick } from "@/components/Analytics";
+import { useIsMobile } from "@/components/ui/optimized-image";
 
 // Import brand assets
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
@@ -57,12 +58,18 @@ const ExperienceStartLanding = () => {
   const experienceRef = useRef(null);
   const inviteRef = useRef(null);
   const pricingRef = useRef(null);
+  
+  const isMobile = useIsMobile();
 
-  const heroInView = useInView(heroRef, { once: true, amount: 0.3 });
-  const problemInView = useInView(problemRef, { once: true, amount: 0.3 });
-  const experienceInView = useInView(experienceRef, { once: true, amount: 0.2 });
-  const inviteInView = useInView(inviteRef, { once: true, amount: 0.3 });
-  const pricingInView = useInView(pricingRef, { once: true, amount: 0.3 });
+  const heroInView = useInView(heroRef, { once: true, amount: isMobile ? 0.1 : 0.3 });
+  const problemInView = useInView(problemRef, { once: true, amount: isMobile ? 0.1 : 0.3 });
+  const experienceInView = useInView(experienceRef, { once: true, amount: isMobile ? 0.1 : 0.2 });
+  const inviteInView = useInView(inviteRef, { once: true, amount: isMobile ? 0.1 : 0.3 });
+  const pricingInView = useInView(pricingRef, { once: true, amount: isMobile ? 0.1 : 0.3 });
+
+  // Mobile-optimized animation settings
+  const animationDuration = isMobile ? 0.4 : 0.6;
+  const animationY = isMobile ? 10 : 20;
 
   // Countdown para 17 de Janeiro de 2026 às 09:00 (horário de São Paulo)
   const eventDate = new Date('2026-01-17T09:00:00-03:00');
@@ -259,9 +266,9 @@ const ExperienceStartLanding = () => {
             <div className="text-center max-w-4xl mx-auto w-full">
               {/* Badge de urgência */}
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, y: isMobile ? -5 : -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: animationDuration }}
                 className="inline-flex items-center gap-2 bg-red-500/20 border border-red-500/40 text-red-400 px-4 py-2 rounded-full mb-4"
               >
                 <AlertCircle className="w-4 h-4" />
@@ -270,9 +277,9 @@ const ExperienceStartLanding = () => {
 
               {/* Logo with Star */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
+                transition={{ duration: animationDuration, delay: isMobile ? 0.1 : 0.3 }}
                 className="flex items-center justify-center gap-3 mb-4 sm:mb-6"
               >
                 <SoberanaLogoMark variant="light" size="lg" />
@@ -280,9 +287,9 @@ const ExperienceStartLanding = () => {
 
               {/* Main Headline */}
               <motion.h1
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
+                transition={{ duration: animationDuration, delay: isMobile ? 0.15 : 0.4 }}
                 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-cream leading-tight mb-4 sm:mb-6"
               >
                 SOBERANA{" "}
@@ -294,9 +301,9 @@ const ExperienceStartLanding = () => {
 
               {/* Subtext */}
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
+                transition={{ duration: animationDuration, delay: isMobile ? 0.2 : 0.5 }}
                 className="text-base sm:text-lg md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto"
               >
                 Um encontro presencial criado para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2025.
@@ -306,7 +313,7 @@ const ExperienceStartLanding = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
+                transition={{ delay: isMobile ? 0.25 : 0.6 }}
                 className="bg-secondary/15 border border-secondary/30 rounded-lg px-6 py-4 mb-8 max-w-2xl mx-auto"
               >
                 <p className="text-secondary text-base md:text-lg italic font-serif">
@@ -316,9 +323,9 @@ const ExperienceStartLanding = () => {
 
               {/* Premium Countdown Timer */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.65 }}
+                transition={{ duration: animationDuration, delay: isMobile ? 0.3 : 0.65 }}
                 className="mb-8"
               >
                 <p className="text-cream/70 text-sm uppercase tracking-wider mb-4">O evento começa em:</p>
@@ -333,7 +340,9 @@ const ExperienceStartLanding = () => {
                       key={index}
                       className="relative group"
                     >
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-secondary/50 to-gold-dark/50 rounded-lg blur opacity-60 group-hover:opacity-100 transition duration-500" />
+                      {!isMobile && (
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-secondary/50 to-gold-dark/50 rounded-lg blur opacity-60 group-hover:opacity-100 transition duration-500" />
+                      )}
                       <div className="relative bg-brand-black/80 border border-secondary/40 rounded-lg px-3 md:px-5 py-3 md:py-4 min-w-[60px] md:min-w-[80px]">
                         <span className="block text-2xl md:text-4xl font-bold text-shimmer-gold tabular-nums">
                           {String(item.value).padStart(2, '0')}
@@ -349,19 +358,23 @@ const ExperienceStartLanding = () => {
 
               {/* Premium CTA */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.7 }}
+                transition={{ duration: animationDuration, delay: isMobile ? 0.35 : 0.7 }}
                 className="flex justify-center mb-8"
               >
                 <div className="relative">
-                  {/* Pulsing rings */}
-                  <div className="absolute inset-0 -m-3 pointer-events-none">
-                    <span className="absolute inset-0 rounded-lg bg-secondary/20 animate-ping" style={{ animationDuration: '2s' }} />
-                  </div>
-                  <div className="absolute inset-0 -m-2 pointer-events-none">
-                    <span className="absolute inset-0 rounded-lg bg-secondary/10 animate-ping" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }} />
-                  </div>
+                  {/* Pulsing rings - simplified on mobile */}
+                  {!isMobile && (
+                    <>
+                      <div className="absolute inset-0 -m-3 pointer-events-none">
+                        <span className="absolute inset-0 rounded-lg bg-secondary/20 animate-ping" style={{ animationDuration: '2s' }} />
+                      </div>
+                      <div className="absolute inset-0 -m-2 pointer-events-none">
+                        <span className="absolute inset-0 rounded-lg bg-secondary/10 animate-ping" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }} />
+                      </div>
+                    </>
+                  )}
                   
                   <Button
                     asChild
@@ -380,9 +393,9 @@ const ExperienceStartLanding = () => {
 
               {/* Trust Indicators with Urgency */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.8 }}
+                transition={{ duration: animationDuration, delay: isMobile ? 0.4 : 0.8 }}
                 className="pt-6 border-t border-cream/10 flex flex-col sm:flex-row sm:flex-wrap justify-center items-center gap-3 sm:gap-6 md:gap-10 text-cream/70"
               >
                 <div className="flex items-center gap-2">
