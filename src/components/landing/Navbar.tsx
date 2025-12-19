@@ -125,40 +125,66 @@ export const Navbar = () => {
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-background pt-20 overflow-y-auto lg:hidden"
-          >
-            <div className="container-soberana px-4 py-6 pb-32 min-h-full">
-              {/* Mobile Logo */}
-              <div className="flex justify-center mb-6">
-                <SoberanaLogoMark variant="dark" size="lg" />
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-sm lg:hidden"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            
+            {/* Menu Panel */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed top-0 right-0 bottom-0 z-50 w-[85%] max-w-sm bg-background shadow-2xl overflow-y-auto lg:hidden"
+            >
+              {/* Header with close button */}
+              <div className="flex items-center justify-between p-4 border-b border-border/30">
+                <SoberanaLogoMark variant="dark" size="sm" />
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 text-foreground hover:bg-muted rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
               
-              <div className="flex flex-col gap-2">
-                {navLinks.map((link) => (
-                  link.isRoute ? (
-                    <Link
+              <div className="px-4 py-6 pb-32">
+                <div className="flex flex-col gap-1">
+                  {navLinks.map((link, index) => (
+                    <motion.div
                       key={link.label}
-                      to={link.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="text-base font-medium text-foreground py-3 px-2 border-b border-border/30 text-left tracking-wide hover:bg-muted/50 rounded-sm transition-colors"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
                     >
-                      {link.label}
-                    </Link>
-                  ) : (
-                    <button
-                      key={link.label}
-                      onClick={() => scrollToSection(link.href)}
-                      className="text-base font-medium text-foreground py-3 px-2 border-b border-border/30 text-left tracking-wide hover:bg-muted/50 rounded-sm transition-colors"
-                    >
-                      {link.label}
-                    </button>
-                  )
-                ))}
-                <div className="flex flex-col gap-3 mt-8 pt-4 border-t border-border/30">
+                      {link.isRoute ? (
+                        <Link
+                          to={link.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block text-base font-medium text-foreground py-3 px-3 rounded-lg hover:bg-muted/50 transition-colors"
+                        >
+                          {link.label}
+                        </Link>
+                      ) : (
+                        <button
+                          onClick={() => scrollToSection(link.href)}
+                          className="block w-full text-base font-medium text-foreground py-3 px-3 rounded-lg text-left hover:bg-muted/50 transition-colors"
+                        >
+                          {link.label}
+                        </button>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+                
+                <div className="flex flex-col gap-3 mt-8 pt-6 border-t border-border/30">
                   <Button variant="outline" asChild className="w-full border-foreground/30 h-12 text-base">
                     <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
                       Área do Aluno
@@ -172,8 +198,8 @@ export const Navbar = () => {
                   </Button>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>
