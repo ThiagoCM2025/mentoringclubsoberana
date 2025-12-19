@@ -43,6 +43,7 @@ export interface Program {
   tier: "entry" | "mid" | "elite";
   featured?: boolean;
   image?: string;
+  customPageUrl?: string;
   testimonials: ProgramTestimonial[];
   faq: ProgramFAQ[];
   modules?: {
@@ -120,6 +121,7 @@ export const programs: Record<string, Program> = {
     titleHighlight: "em um dia exclusivo",
     image: programExperienceStart,
     subtitle: "Soberana Experience Start",
+    customPageUrl: "/experience-start",
     impactPhrase: "O despertar em SP.",
     description: "Oficinas presenciais personalíssimas em São Paulo para apenas 12 mulheres. Um dia de imersão prática para destravar sua visão de negócio.",
     fullDescription: "O Soberana Experience Start é uma oficina presencial exclusiva em São Paulo, limitada a apenas 12 advogadas. Um dia intensivo de imersão prática para destravar sua visão de negócio, com networking de alto nível e estratégias aplicáveis imediatamente.",

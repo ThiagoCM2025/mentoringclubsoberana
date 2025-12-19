@@ -114,7 +114,7 @@ const ProgramCard = ({ program, index, isReversed, isInView }: ProgramCardProps)
           className={isReversed ? "md:flex md:justify-end" : ""}
         >
           <Link 
-            to={`/programa/${program.slug}`}
+            to={program.customPageUrl || `/programa/${program.slug}`}
             className="group/btn relative inline-flex items-center gap-2 sm:gap-3 bg-secondary hover:bg-secondary/90 text-secondary-foreground px-5 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-sm sm:text-base tracking-wide transition-all duration-300 overflow-hidden shadow-lg hover:shadow-[0_0_40px_rgba(166,144,97,0.4)]"
           >
             {/* Shimmer effect */}
