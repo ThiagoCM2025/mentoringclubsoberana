@@ -6,6 +6,7 @@ import SEO from "@/components/SEO";
 import { Footer } from "@/components/landing/Footer";
 import { SoberanaLogoMark } from "@/components/landing/SoberanaLogoMark";
 import { ExperienceExitPopup } from "@/components/landing/ExperienceExitPopup";
+import { SectionSkeleton } from "@/components/landing/SectionSkeleton";
 import { useUTMParams } from "@/hooks/useUTMParams";
 import { trackCTAClick } from "@/components/Analytics";
 import { useIsMobile, usePrefersReducedMotion } from "@/components/ui/optimized-image";
@@ -227,7 +228,7 @@ const ExperienceStartLanding = () => {
             fetchPriority="high"
             loading="eager"
             decoding="async"
-            className="w-full h-full object-cover object-top"
+            className="w-full h-full object-cover object-[center_15%] sm:object-top"
           />
         </div>
         
@@ -701,7 +702,7 @@ const ExperienceStartLanding = () => {
       </section>
 
       {/* SEÇÃO DEPOIMENTOS - Lazy loaded */}
-      <Suspense fallback={<div className="py-20 bg-cream flex items-center justify-center"><div className="w-8 h-8 border-2 border-secondary border-t-transparent rounded-full animate-spin" /></div>}>
+      <Suspense fallback={<SectionSkeleton variant="testimonials" />}>
         <ExperienceTestimonials />
       </Suspense>
 
@@ -809,7 +810,7 @@ const ExperienceStartLanding = () => {
       </section>
 
       {/* SEÇÃO FAQ - Lazy loaded */}
-      <Suspense fallback={<div className="py-20 bg-cream flex items-center justify-center"><div className="w-8 h-8 border-2 border-secondary border-t-transparent rounded-full animate-spin" /></div>}>
+      <Suspense fallback={<SectionSkeleton variant="faq" />}>
         <ExperienceFAQ />
       </Suspense>
 
