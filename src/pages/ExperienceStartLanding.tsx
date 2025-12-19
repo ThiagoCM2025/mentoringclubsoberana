@@ -469,38 +469,35 @@ const ExperienceStartLanding = () => {
         </div>
       </section>
 
-      {/* SEÇÃO PROBLEMA (A DOR) - Premium Dark */}
+      {/* SEÇÃO PROBLEMA (A DOR) - Premium Black */}
       <section 
         ref={problemRef}
-        className="py-20 md:py-28 bg-primary relative overflow-hidden"
+        className="py-20 md:py-28 bg-brand-black relative overflow-hidden"
       >
-        {/* Subtle pattern background */}
+        {/* Golden pattern background - more visible */}
         <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '200px' }}
+          className="absolute inset-0 opacity-[0.08]"
+          style={{ backgroundImage: `url(${patternGold})`, backgroundSize: '180px' }}
         />
         
         {/* Vignette overlay for depth */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_50%,_rgba(0,0,0,0.15)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_rgba(0,0,0,0.4)_100%)]" />
         
-        {/* Top/bottom gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-marsala-dark/10 via-transparent to-marsala-dark/10" />
-        
-        {/* Decorative isotipos - desktop only, subtle */}
+        {/* Decorative isotipos - more visible gold on black */}
         <motion.img
-          src={isotipoWhite}
+          src={isotipoGold}
           alt=""
-          className="absolute right-8 top-16 w-32 opacity-[0.04] animate-float-slow hidden lg:block"
+          className="absolute right-4 md:right-8 top-16 w-24 md:w-40 opacity-[0.12] animate-float-slow"
           initial={{ opacity: 0 }}
-          animate={problemInView ? { opacity: 0.04 } : {}}
+          animate={problemInView ? { opacity: 0.12 } : {}}
           transition={{ delay: 0.6 }}
         />
         <motion.img
           src={isotipoSGold}
           alt=""
-          className="absolute left-4 bottom-8 w-20 opacity-[0.05] animate-float-slow animation-delay-1000 hidden lg:block"
+          className="absolute left-4 bottom-8 w-16 md:w-24 opacity-[0.10] animate-float-slow animation-delay-1000"
           initial={{ opacity: 0 }}
-          animate={problemInView ? { opacity: 0.05 } : {}}
+          animate={problemInView ? { opacity: 0.10 } : {}}
           transition={{ delay: 0.8 }}
         />
         
@@ -511,12 +508,12 @@ const ExperienceStartLanding = () => {
             transition={{ duration: 0.8 }}
             className="max-w-3xl mx-auto text-center"
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-primary-foreground mb-8">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-cream mb-8">
               O erro invisível que trava <span className="text-shimmer-gold">a sua advocacia.</span>
             </h2>
 
-            <p className="text-primary-foreground/85 text-lg md:text-xl leading-relaxed mb-12">
-              Muitas advogadas trabalham demais porque trabalham sem estrutura. E sem estrutura, <strong className="text-primary-foreground">nenhum resultado se sustenta.</strong>
+            <p className="text-cream/85 text-lg md:text-xl leading-relaxed mb-12">
+              Muitas advogadas trabalham demais porque trabalham sem estrutura. E sem estrutura, <strong className="text-cream">nenhum resultado se sustenta.</strong>
             </p>
 
             <div className="space-y-6">
@@ -529,9 +526,9 @@ const ExperienceStartLanding = () => {
                   initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
                   animate={problemInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ delay: 0.4 + index * 0.2 }}
-                  className="relative bg-secondary/10 border-l-4 border-secondary px-6 py-5 rounded-r-lg group hover:bg-secondary/15 transition-colors"
+                  className="relative bg-secondary/15 border-l-4 border-secondary px-6 py-5 rounded-r-lg group hover:bg-secondary/20 transition-colors"
                 >
-                  <div className="absolute inset-0 rounded-r-lg border border-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 rounded-r-lg border border-secondary/30 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <p className="text-secondary text-lg md:text-xl font-serif italic relative z-10">
                     "{quote}"
                   </p>
