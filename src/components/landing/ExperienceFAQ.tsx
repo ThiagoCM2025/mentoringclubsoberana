@@ -76,12 +76,12 @@ export const ExperienceFAQ = () => {
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-cream via-transparent to-white/60" />
 
-      <div className="container-soberana relative z-10">
+      <div className="container-soberana relative z-10 px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
         >
           {/* Isotipo S decoration */}
           <motion.div 
@@ -90,14 +90,14 @@ export const ExperienceFAQ = () => {
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.5 }}
           >
-            <img src={isotipoSGold} alt="" className="w-10 h-10 isotipo-glow" />
+            <img src={isotipoSGold} alt="" className="w-8 h-8 sm:w-10 sm:h-10 isotipo-glow" />
           </motion.div>
           
           <span className="badge-gold mb-4">Dúvidas Frequentes</span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4 sm:mb-6">
             Tudo o que você <span className="text-primary">precisa saber</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
             Preparamos as respostas para as perguntas mais comuns sobre o Experience Start.
           </p>
         </motion.div>
@@ -108,17 +108,17 @@ export const ExperienceFAQ = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="max-w-3xl mx-auto"
         >
-          <Accordion type="single" collapsible className="space-y-4">
+          <Accordion type="single" collapsible className="space-y-3 sm:space-y-4">
             {faqs.map((faq, index) => (
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
-                className="bg-background border border-secondary/20 rounded-lg px-6 data-[state=open]:border-secondary/50 data-[state=open]:shadow-md transition-all duration-300"
+                className="bg-background border border-secondary/20 rounded-lg px-4 sm:px-6 data-[state=open]:border-secondary/50 data-[state=open]:shadow-md transition-all duration-300"
               >
-                <AccordionTrigger className="text-left font-serif text-lg hover:text-primary hover:no-underline py-5">
+                <AccordionTrigger className="text-left font-serif text-base sm:text-lg hover:text-primary hover:no-underline py-4 sm:py-5">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pb-5">
+                <AccordionContent className="text-muted-foreground text-sm sm:text-base pb-4 sm:pb-5">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
