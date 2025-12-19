@@ -261,7 +261,7 @@ const ExperienceStartLanding = () => {
         />
 
         {/* Content - positioned at bottom like main page */}
-        <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-20 sm:pt-24 overflow-hidden">
+        <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-20 sm:pt-24">
           <div className="container-soberana">
             <div className="text-center max-w-4xl mx-auto w-full">
               {/* Badge de urgência */}
@@ -290,7 +290,7 @@ const ExperienceStartLanding = () => {
                 initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: animationDuration, delay: isMobile ? 0.15 : 0.4 }}
-                className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-cream leading-tight mb-4 sm:mb-6"
+                className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-cream leading-tight mb-4 sm:mb-6 break-words px-2 sm:px-0"
               >
                 SOBERANA{" "}
                 <span className="text-shimmer-gold">
@@ -304,7 +304,7 @@ const ExperienceStartLanding = () => {
                 initial={{ opacity: 0, y: animationY }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: animationDuration, delay: isMobile ? 0.2 : 0.5 }}
-                className="text-base sm:text-lg md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto"
+                className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto px-2 sm:px-0"
               >
                 Um encontro presencial criado para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2025.
               </motion.p>
