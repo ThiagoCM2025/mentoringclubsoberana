@@ -17,3 +17,15 @@ verify_jwt = false
 
 [functions.send-admin-notification-email]
 verify_jwt = true
+
+[functions.blog-generate-content]
+verify_jwt = true
+
+[functions.blog-generate-cover]
+verify_jwt = true
+
+[functions.blog-optimize-seo]
+verify_jwt = true
+
+[functions.blog-analyze-tags]
+verify_jwt = true
