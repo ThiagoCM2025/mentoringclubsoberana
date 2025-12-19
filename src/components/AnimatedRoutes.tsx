@@ -35,6 +35,8 @@ import AdminEngagement from "@/pages/admin/AdminEngagement";
 import AdminBlog from "@/pages/admin/AdminBlog";
 import BlogEditor from "@/pages/admin/BlogEditor";
 import ExperienceStartLanding from "@/pages/ExperienceStartLanding";
+import Privacidade from "@/pages/Privacidade";
+import Termos from "@/pages/Termos";
 import NotFound from "@/pages/NotFound";
 
 export const AnimatedRoutes = () => {
@@ -51,6 +53,8 @@ export const AnimatedRoutes = () => {
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
         <Route path="/experience-start" element={<PageTransition><ExperienceStartLanding /></PageTransition>} />
+        <Route path="/privacidade" element={<PageTransition><Privacidade /></PageTransition>} />
+        <Route path="/termos" element={<PageTransition><Termos /></PageTransition>} />
         
         {/* Student Routes */}
         <Route
