@@ -1,8 +1,11 @@
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
-import { Star, ChevronLeft, ChevronRight, Quote, Users, ThumbsUp, Award } from "lucide-react";
-import patternWhite from "@/assets/brand/pattern-circles-white.png";
-import isotipoWhite from "@/assets/brand/isotipo-s-white.png";
+import { Quote, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import patternCirclesWhite from "@/assets/brand/pattern-circles-white.png";
+import isotipoWhite from "@/assets/brand/isotipo-white.png";
+import isotipoSWhite from "@/assets/brand/isotipo-s-white.png";
 
 const testimonials = [
   {
@@ -10,31 +13,25 @@ const testimonials = [
     role: "Advogada Cível",
     location: "São Paulo, SP",
     content: "O Experience Start foi um divisor de águas na minha carreira. Saí de lá com um plano de ação claro e já implementei 80% das estratégias em apenas 30 dias. A Fabiana entrega muito mais do que promete!",
+    rating: 5,
     result: "Faturamento +40% em 3 meses",
-    rating: 5
   },
   {
     name: "Dra. Beatriz Mendes",
     role: "Advogada Trabalhista",
     location: "Campinas, SP",
     content: "A energia do evento presencial é completamente diferente. O networking foi incrível e o conteúdo extremamente prático. Fechei 3 parcerias estratégicas com advogadas que conheci lá!",
+    rating: 5,
     result: "3 parcerias fechadas no evento",
-    rating: 5
   },
   {
     name: "Dra. Carolina Souza",
     role: "Advogada Previdenciarista",
     location: "Ribeirão Preto, SP",
     content: "Investi no Experience Start quando estava completamente perdida na advocacia. Voltei com clareza, motivação e um passo a passo que me fez contratar minha primeira funcionária em 60 dias!",
+    rating: 5,
     result: "Equipe contratada em 60 dias",
-    rating: 5
-  }
-];
-
-const stats = [
-  { icon: ThumbsUp, value: "98%", label: "Recomendam" },
-  { icon: Users, value: "+200", label: "Participantes" },
-  { icon: Award, value: "4.9", label: "Avaliação" }
+  },
 ];
 
 export const ExperienceTestimonials = () => {
@@ -50,170 +47,140 @@ export const ExperienceTestimonials = () => {
     setActiveIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
-  const currentTestimonial = testimonials[activeIndex];
-
   return (
-    <section
-      ref={ref}
-      className="relative py-20 md:py-28 bg-primary overflow-hidden"
-    >
-      {/* Background pattern */}
-      <div
-        className="absolute inset-0 opacity-5"
+    <section ref={ref} className="section-padding bg-primary relative overflow-hidden">
+      {/* Circle Pattern Background - White */}
+      <div 
+        className="absolute inset-0 opacity-[0.12]"
         style={{
-          backgroundImage: `url(${patternWhite})`,
-          backgroundSize: "300px",
-          backgroundRepeat: "repeat",
+          backgroundImage: `url(${patternCirclesWhite})`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '280px',
         }}
       />
 
-      {/* Decorative isotipos */}
-      <motion.img
-        src={isotipoWhite}
-        alt=""
-        className="absolute top-10 left-10 w-24 h-24 opacity-10"
-        animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 4, repeat: Infinity }}
-      />
-      <motion.img
-        src={isotipoWhite}
-        alt=""
-        className="absolute bottom-10 right-10 w-20 h-20 opacity-10"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 5, repeat: Infinity }}
-      />
+      {/* Isotipo White - corners */}
+      <div className="absolute top-16 left-12 opacity-[0.18] hidden lg:block animate-float-slow">
+        <img src={isotipoWhite} alt="" className="w-28 h-28" />
+      </div>
+      <div className="absolute bottom-16 right-12 opacity-[0.18] hidden lg:block animate-float-slow animation-delay-1000">
+        <img src={isotipoWhite} alt="" className="w-24 h-24" />
+      </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        {/* Header */}
+      {/* Vignette for depth */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_50%,_rgba(0,0,0,0.15)_100%)]" />
+
+      <div className="container-soberana relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-1.5 rounded-full bg-gold/20 text-gold text-sm font-medium tracking-wider uppercase mb-4">
-            Depoimentos Reais
+          {/* Isotipo S decoration */}
+          <motion.div 
+            className="flex justify-center mb-4"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            <img src={isotipoSWhite} alt="" className="w-10 h-10 isotipo-glow-white" />
+          </motion.div>
+          
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-secondary/20 text-secondary border border-secondary/30 mb-4">
+            Depoimentos
           </span>
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold text-white mb-4">
-            O que dizem as advogadas que já participaram
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-primary-foreground mb-6">
+            Histórias de{" "}
+            <span className="text-secondary">Transformação</span>
           </h2>
-          <p className="text-lg text-white/70 max-w-2xl mx-auto">
-            Resultados reais de profissionais que transformaram suas carreiras
+          <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
+            Advogadas reais que transformaram suas carreiras no Experience Start.
           </p>
         </motion.div>
 
-        {/* Testimonial Card */}
+        {/* Featured Testimonial */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-3xl mx-auto"
+          className="max-w-4xl mx-auto mb-12"
         >
-          <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 md:p-10 border border-white/20">
-            {/* Quote icon */}
-            <Quote className="absolute top-6 left-6 w-12 h-12 text-gold/30" />
-
-            {/* Stars */}
-            <div className="flex justify-center gap-1 mb-6">
-              {[...Array(currentTestimonial.rating)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 fill-gold text-gold" />
-              ))}
-            </div>
-
-            {/* Content */}
-            <motion.p
-              key={activeIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4 }}
-              className="text-lg md:text-xl text-white text-center leading-relaxed mb-8 italic"
-            >
-              "{currentTestimonial.content}"
-            </motion.p>
-
-            {/* Result badge */}
-            <motion.div
-              key={`result-${activeIndex}`}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-              className="flex justify-center mb-6"
-            >
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-gold/20 rounded-full text-gold font-semibold text-sm">
-                <Award className="w-4 h-4" />
-                {currentTestimonial.result}
-              </span>
-            </motion.div>
-
-            {/* Author */}
-            <motion.div
-              key={`author-${activeIndex}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-              className="text-center"
-            >
-              <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center text-white text-xl font-bold">
-                {currentTestimonial.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
-              </div>
-              <h4 className="text-lg font-semibold text-white">
-                {currentTestimonial.name}
-              </h4>
-              <p className="text-white/70 text-sm">
-                {currentTestimonial.role} • {currentTestimonial.location}
-              </p>
-            </motion.div>
-
-            {/* Navigation */}
-            <div className="flex items-center justify-center gap-4 mt-8">
-              <button
-                onClick={prevTestimonial}
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              
-              {/* Dots */}
-              <div className="flex gap-2">
-                {testimonials.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveIndex(i)}
-                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                      i === activeIndex 
-                        ? "bg-gold w-8" 
-                        : "bg-white/30 hover:bg-white/50"
-                    }`}
-                  />
+          <div className="relative bg-cream rounded-2xl p-8 md:p-12 shadow-2xl">
+            <Quote className="absolute top-6 left-6 w-12 h-12 text-secondary/30" />
+            
+            <div className="relative">
+              <div className="flex items-center gap-1 mb-6">
+                {[...Array(testimonials[activeIndex].rating)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 text-secondary fill-secondary" />
                 ))}
               </div>
 
-              <button
-                onClick={nextTestimonial}
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+              <p className="text-xl md:text-2xl font-serif text-foreground mb-8 leading-relaxed">
+                "{testimonials[activeIndex].content}"
+              </p>
+
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <p className="font-semibold text-foreground">{testimonials[activeIndex].name}</p>
+                  <p className="text-sm text-muted-foreground">{testimonials[activeIndex].role}</p>
+                  <p className="text-xs text-muted-foreground">{testimonials[activeIndex].location}</p>
+                </div>
+                <div className="px-4 py-2 bg-secondary/10 rounded-full">
+                  <p className="text-sm font-medium text-secondary">{testimonials[activeIndex].result}</p>
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={prevTestimonial}
+              className="rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:border-secondary hover:text-secondary"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            <div className="flex gap-2">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveIndex(index)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    index === activeIndex ? "w-8 bg-secondary" : "bg-primary-foreground/30"
+                  }`}
+                />
+              ))}
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={nextTestimonial}
+              className="rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:border-secondary hover:text-secondary"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
           </div>
         </motion.div>
 
         {/* Stats */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="flex flex-wrap justify-center gap-8 md:gap-16 mt-12"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto"
         >
-          {stats.map((stat, index) => (
+          {[
+            { value: "98%", label: "Recomendam" },
+            { value: "+200", label: "Participantes" },
+            { value: "4.9", label: "Avaliação" },
+            { value: "100%", label: "Satisfação" },
+          ].map((stat, index) => (
             <div key={index} className="text-center">
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <stat.icon className="w-5 h-5 text-gold" />
-                <span className="text-3xl md:text-4xl font-bold text-white">
-                  {stat.value}
-                </span>
-              </div>
-              <span className="text-white/70 text-sm">{stat.label}</span>
+              <p className="text-3xl md:text-4xl font-serif font-bold text-secondary">{stat.value}</p>
+              <p className="text-sm text-primary-foreground/70">{stat.label}</p>
             </div>
           ))}
         </motion.div>
