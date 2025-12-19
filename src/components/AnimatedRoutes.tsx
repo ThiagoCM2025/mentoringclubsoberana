@@ -34,6 +34,7 @@ import AdminReports from "@/pages/admin/AdminReports";
 import AdminEngagement from "@/pages/admin/AdminEngagement";
 import AdminBlog from "@/pages/admin/AdminBlog";
 import BlogEditor from "@/pages/admin/BlogEditor";
+import ExperienceStartLanding from "@/pages/ExperienceStartLanding";
 import NotFound from "@/pages/NotFound";
 
 export const AnimatedRoutes = () => {
@@ -49,6 +50,7 @@ export const AnimatedRoutes = () => {
         <Route path="/blog/:slug" element={<PageTransition><BlogPost /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
+        <Route path="/experience-start" element={<PageTransition><ExperienceStartLanding /></PageTransition>} />
         
         {/* Student Routes */}
         <Route
