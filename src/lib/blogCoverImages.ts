@@ -8,13 +8,14 @@ import coverCasesSucesso from "@/assets/blog/cover-cases-sucesso.jpg";
 import coverTendencias2025 from "@/assets/blog/cover-tendencias-2025.jpg";
 
 export const blogCoverImages: Record<string, string> = {
-  "marketing-juridico-digital-guia-completo-advogados-2024": coverMarketingJuridicoGuia,
-  "como-atrair-clientes-internet-estrategias-advogados": coverAtrairClientes,
-  "redes-sociais-advogados-linkedin-instagram": coverRedesSociais,
-  "seo-escritorios-advocacia-aparecer-google": coverSeoAdvocacia,
-  "etica-marketing-juridico-permitido-proibido": coverEticaMarketing,
-  "cases-sucesso-advogadas-transformaram-carreiras": coverCasesSucesso,
-  "tendencias-marketing-juridico-2025": coverTendencias2025,
+  // Slugs corretos do banco de dados
+  "como-captar-clientes-advocacia-guia-completo-2025": coverAtrairClientes,
+  "marketing-digital-advogados-estrategias-funcionam": coverMarketingJuridicoGuia,
+  "como-usar-ia-advocacia-aumentar-produtividade": coverTendencias2025,
+  "trafego-pago-advogados-vale-pena": coverSeoAdvocacia,
+  "como-precificar-honorarios-advocaticios-corretamente": coverCasesSucesso,
+  "instagram-advogadas-como-atrair-clientes": coverRedesSociais,
+  "oab-marketing-juridico-o-que-pode-nao-pode": coverEticaMarketing,
 };
 
 export const getBlogCoverImage = (slug: string, coverImageUrl: string | null): string => {

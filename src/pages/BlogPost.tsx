@@ -145,28 +145,148 @@ const BlogPostPage = () => {
     }
   };
 
+  const renderInlineFormatting = (text: string) => {
+    // Handle inline bold and italic
+    const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith("**") && part.endsWith("**")) {
+        return <strong key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith("*") && part.endsWith("*")) {
+        return <em key={i} className="italic">{part.slice(1, -1)}</em>;
+      }
+      return part;
+    });
+  };
+
   const renderContent = (content: string) => {
-    // Simple markdown-like rendering
-    return content
-      .split("\n")
-      .map((line, i) => {
-        if (line.startsWith("### ")) {
-          return <h3 key={i} className="text-xl font-serif font-semibold mt-8 mb-4">{line.replace("### ", "")}</h3>;
+    const lines = content.split("\n");
+    const elements: JSX.Element[] = [];
+    let listItems: JSX.Element[] = [];
+    let listType: "ul" | "ol" | null = null;
+
+    const flushList = () => {
+      if (listItems.length > 0) {
+        if (listType === "ol") {
+          elements.push(
+            <ol key={`list-${elements.length}`} className="my-6 ml-6 space-y-3 list-decimal marker:text-secondary marker:font-semibold">
+              {listItems}
+            </ol>
+          );
+        } else {
+          elements.push(
+            <ul key={`list-${elements.length}`} className="my-6 ml-6 space-y-3">
+              {listItems}
+            </ul>
+          );
         }
-        if (line.startsWith("## ")) {
-          return <h2 key={i} className="text-2xl font-serif font-semibold mt-10 mb-4">{line.replace("## ", "")}</h2>;
+        listItems = [];
+        listType = null;
+      }
+    };
+
+    lines.forEach((line, i) => {
+      // Heading 2
+      if (line.startsWith("## ")) {
+        flushList();
+        elements.push(
+          <h2 key={i} className="text-2xl md:text-3xl font-serif font-semibold mt-12 mb-6 pb-4 border-b-2 border-secondary/30 text-foreground">
+            {line.replace("## ", "")}
+          </h2>
+        );
+        return;
+      }
+
+      // Heading 3
+      if (line.startsWith("### ")) {
+        flushList();
+        elements.push(
+          <h3 key={i} className="text-xl md:text-2xl font-serif font-semibold mt-10 mb-4 text-foreground flex items-center gap-3">
+            <span className="w-1 h-6 bg-secondary rounded-full" />
+            {line.replace("### ", "")}
+          </h3>
+        );
+        return;
+      }
+
+      // Heading 4
+      if (line.startsWith("#### ")) {
+        flushList();
+        elements.push(
+          <h4 key={i} className="text-lg font-semibold mt-8 mb-3 text-foreground">
+            {line.replace("#### ", "")}
+          </h4>
+        );
+        return;
+      }
+
+      // Blockquote
+      if (line.startsWith("> ")) {
+        flushList();
+        elements.push(
+          <blockquote key={i} className="my-8 pl-6 py-4 border-l-4 border-secondary bg-secondary/5 rounded-r-lg italic text-lg text-muted-foreground">
+            {renderInlineFormatting(line.replace("> ", ""))}
+          </blockquote>
+        );
+        return;
+      }
+
+      // Ordered list
+      const orderedMatch = line.match(/^(\d+)\.\s(.+)/);
+      if (orderedMatch) {
+        if (listType !== "ol") {
+          flushList();
+          listType = "ol";
         }
-        if (line.startsWith("- ")) {
-          return <li key={i} className="ml-6 mb-2">{line.replace("- ", "")}</li>;
+        listItems.push(
+          <li key={i} className="text-lg leading-relaxed text-muted-foreground pl-2">
+            {renderInlineFormatting(orderedMatch[2])}
+          </li>
+        );
+        return;
+      }
+
+      // Unordered list
+      if (line.startsWith("- ")) {
+        if (listType !== "ul") {
+          flushList();
+          listType = "ul";
         }
-        if (line.startsWith("**") && line.endsWith("**")) {
-          return <p key={i} className="font-semibold my-4">{line.replace(/\*\*/g, "")}</p>;
-        }
-        if (line.trim() === "") {
-          return <br key={i} />;
-        }
-        return <p key={i} className="mb-4 leading-relaxed">{line}</p>;
-      });
+        listItems.push(
+          <li key={i} className="text-lg leading-relaxed text-muted-foreground pl-2 flex items-start gap-3">
+            <span className="w-2 h-2 rounded-full bg-secondary mt-2.5 flex-shrink-0" />
+            <span>{renderInlineFormatting(line.replace("- ", ""))}</span>
+          </li>
+        );
+        return;
+      }
+
+      // Horizontal rule
+      if (line.trim() === "---") {
+        flushList();
+        elements.push(
+          <hr key={i} className="my-10 border-t border-border/50" />
+        );
+        return;
+      }
+
+      // Empty line
+      if (line.trim() === "") {
+        flushList();
+        return;
+      }
+
+      // Regular paragraph
+      flushList();
+      elements.push(
+        <p key={i} className="text-lg leading-relaxed text-muted-foreground mb-6">
+          {renderInlineFormatting(line)}
+        </p>
+      );
+    });
+
+    flushList();
+    return elements;
   };
 
   if (loading) {
