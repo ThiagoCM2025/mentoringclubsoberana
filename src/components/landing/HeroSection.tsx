@@ -111,18 +111,23 @@ export const HeroSection = () => {
           />
           {/* Gradiente inferior para transição suave */}
           <div 
-            className="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
+            className="absolute inset-x-0 bottom-0 h-32 pointer-events-none"
             style={{
-              background: 'linear-gradient(to top, hsl(var(--brand-black)) 0%, transparent 100%)'
+              background: 'linear-gradient(to top, hsl(var(--brand-black)) 0%, hsl(var(--brand-black) / 0.6) 40%, transparent 100%)'
             }}
             aria-hidden="true"
           />
         </div>
         
-        {/* Conteúdo do texto abaixo da imagem */}
-        <div className="flex-1 flex flex-col justify-center py-6 bg-brand-black">
+        {/* Conteúdo do texto abaixo da imagem - com animação fade-in */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+          className="flex-1 flex flex-col justify-center py-6 bg-brand-black"
+        >
           <HeroContent isMobile={true} />
-        </div>
+        </motion.div>
       </div>
 
       {/* ===== DESKTOP: Layout Original com Overlay ===== */}

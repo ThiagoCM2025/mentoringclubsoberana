@@ -232,16 +232,21 @@ const ExperienceStartLanding = () => {
             />
             {/* Gradiente inferior para transição suave */}
             <div 
-              className="absolute inset-x-0 bottom-0 h-28 pointer-events-none"
+              className="absolute inset-x-0 bottom-0 h-36 pointer-events-none"
               style={{
-                background: 'linear-gradient(to top, hsl(var(--brand-black)) 0%, transparent 100%)'
+                background: 'linear-gradient(to top, hsl(var(--brand-black)) 0%, hsl(var(--brand-black) / 0.6) 40%, transparent 100%)'
               }}
               aria-hidden="true"
             />
           </div>
           
-          {/* Conteúdo do texto abaixo da imagem - Mobile */}
-          <div className="flex-1 flex flex-col justify-start px-4 py-4 bg-brand-black text-center">
+          {/* Conteúdo do texto abaixo da imagem - Mobile com fade-in */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+            className="flex-1 flex flex-col justify-start px-4 py-4 bg-brand-black text-center"
+          >
             {/* Badge de urgência */}
             <motion.div
               initial={{ opacity: 0, y: -5 }}
@@ -345,7 +350,7 @@ const ExperienceStartLanding = () => {
                 <span>9h às 17h</span>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         </div>
 
         {/* ===== DESKTOP: Layout Original com Overlay ===== */}
