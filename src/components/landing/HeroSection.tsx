@@ -14,7 +14,7 @@ export const HeroSection = () => {
       {/* Background Image - Fabiana */}
       <div className="absolute inset-0 z-0 bg-brand-black">
         <div
-          className="w-full h-full bg-contain sm:bg-cover bg-no-repeat bg-top"
+          className="w-full h-[60vh] sm:h-full bg-contain sm:bg-cover bg-no-repeat bg-top"
           style={{
             backgroundImage: `url(${heroVariations})`,
           }}
@@ -52,7 +52,7 @@ export const HeroSection = () => {
       />
 
       {/* Content - positioned at bottom */}
-      <div className="relative z-10 flex-1 flex flex-col justify-end pb-12 md:pb-16 pt-20 overflow-hidden">
+      <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 md:pb-12 pt-12 sm:pt-20 overflow-hidden">
         <div className="container-soberana">
           <div className="text-center max-w-4xl mx-auto w-full">
             {/* Logo with Star */}

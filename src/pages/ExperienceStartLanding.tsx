@@ -215,7 +215,7 @@ const ExperienceStartLanding = () => {
       {/* HERO SECTION - Premium Full Screen */}
       <section 
         ref={heroRef}
-        className="relative min-h-screen flex flex-col bg-brand-black"
+        className="relative min-h-screen flex flex-col bg-brand-black pt-14 sm:pt-16"
       >
         {/* LQIP Placeholder - gradiente que simula a imagem para melhorar percepção de carregamento */}
         <div 
@@ -235,7 +235,7 @@ const ExperienceStartLanding = () => {
             loading="eager"
             decoding="async"
             sizes="100vw"
-            className="w-full h-full object-contain sm:object-cover object-top bg-brand-black"
+            className="w-full h-[55vh] sm:h-full object-contain sm:object-cover object-top bg-brand-black"
             style={{
               contentVisibility: 'auto',
               containIntrinsicSize: '100vw 100vh'
@@ -310,7 +310,7 @@ const ExperienceStartLanding = () => {
         )}
 
         {/* Content - positioned at bottom like main page */}
-        <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-20 sm:pt-24">
+        <div className="relative z-10 flex-1 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 pt-8 sm:pt-16">
           <div className="container-soberana">
             <div className="text-center max-w-4xl mx-auto w-full">
               {/* Badge de urgência */}
