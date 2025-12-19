@@ -12,6 +12,7 @@ const navLinks = [
   { label: "Trajetória", href: "#trajetoria" },
   { label: "Depoimentos", href: "#depoimentos" },
   { label: "FAQ", href: "#faq" },
+  { label: "Blog", href: "/blog", isRoute: true },
 ];
 
 export const Navbar = () => {
@@ -60,16 +61,29 @@ export const Navbar = () => {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
-                <button
-                  key={link.label}
-                  onClick={() => scrollToSection(link.href)}
-                  className={`text-sm font-medium tracking-wide transition-all duration-300 hover:text-secondary relative group ${
-                    isScrolled ? "text-foreground" : "text-primary-foreground"
-                  }`}
-                >
-                  {link.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-secondary transition-all duration-300 group-hover:w-full" />
-                </button>
+                link.isRoute ? (
+                  <Link
+                    key={link.label}
+                    to={link.href}
+                    className={`text-sm font-medium tracking-wide transition-all duration-300 hover:text-secondary relative group ${
+                      isScrolled ? "text-foreground" : "text-primary-foreground"
+                    }`}
+                  >
+                    {link.label}
+                    <span className="absolute -bottom-1 left-0 w-0 h-px bg-secondary transition-all duration-300 group-hover:w-full" />
+                  </Link>
+                ) : (
+                  <button
+                    key={link.label}
+                    onClick={() => scrollToSection(link.href)}
+                    className={`text-sm font-medium tracking-wide transition-all duration-300 hover:text-secondary relative group ${
+                      isScrolled ? "text-foreground" : "text-primary-foreground"
+                    }`}
+                  >
+                    {link.label}
+                    <span className="absolute -bottom-1 left-0 w-0 h-px bg-secondary transition-all duration-300 group-hover:w-full" />
+                  </button>
+                )
               ))}
             </div>
 
@@ -125,13 +139,24 @@ export const Navbar = () => {
               
               <div className="flex flex-col gap-4">
                 {navLinks.map((link) => (
-                  <button
-                    key={link.label}
-                    onClick={() => scrollToSection(link.href)}
-                    className="text-lg font-medium text-foreground py-3 border-b border-border/50 text-left tracking-wide"
-                  >
-                    {link.label}
-                  </button>
+                  link.isRoute ? (
+                    <Link
+                      key={link.label}
+                      to={link.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-lg font-medium text-foreground py-3 border-b border-border/50 text-left tracking-wide"
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <button
+                      key={link.label}
+                      onClick={() => scrollToSection(link.href)}
+                      className="text-lg font-medium text-foreground py-3 border-b border-border/50 text-left tracking-wide"
+                    >
+                      {link.label}
+                    </button>
+                  )
                 ))}
                 <div className="flex flex-col gap-3 mt-6">
                   <Button variant="outline" asChild className="w-full border-foreground/30">

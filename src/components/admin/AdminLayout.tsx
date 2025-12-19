@@ -16,7 +16,8 @@ import {
   Target,
   Bell,
   Mail,
-  Activity
+  Activity,
+  FileText
 } from "lucide-react";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
@@ -29,6 +30,7 @@ interface AdminLayoutProps {
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
   { icon: BookOpen, label: "Cursos", href: "/admin/courses" },
+  { icon: FileText, label: "Blog", href: "/admin/blog" },
   { icon: Users, label: "Alunos", href: "/admin/students" },
   { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments" },
   { icon: Target, label: "Leads", href: "/admin/leads" },

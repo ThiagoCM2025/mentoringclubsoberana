@@ -8,6 +8,8 @@ import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ProgramDetail from "@/pages/ProgramDetail";
+import Blog from "@/pages/Blog";
+import BlogPost from "@/pages/BlogPost";
 import StudentDashboard from "@/pages/student/StudentDashboard";
 import CourseDetail from "@/pages/student/CourseDetail";
 import LessonPlayer from "@/pages/student/LessonPlayer";
@@ -30,6 +32,8 @@ import AdminCommunity from "@/pages/admin/AdminCommunity";
 import AdminMessaging from "@/pages/admin/AdminMessaging";
 import AdminReports from "@/pages/admin/AdminReports";
 import AdminEngagement from "@/pages/admin/AdminEngagement";
+import AdminBlog from "@/pages/admin/AdminBlog";
+import BlogEditor from "@/pages/admin/BlogEditor";
 import NotFound from "@/pages/NotFound";
 
 export const AnimatedRoutes = () => {
@@ -41,6 +45,8 @@ export const AnimatedRoutes = () => {
         {/* Public Routes */}
         <Route path="/" element={<PageTransition><Index /></PageTransition>} />
         <Route path="/programa/:slug" element={<PageTransition><ProgramDetail /></PageTransition>} />
+        <Route path="/blog" element={<PageTransition><Blog /></PageTransition>} />
+        <Route path="/blog/:slug" element={<PageTransition><BlogPost /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
         
@@ -220,6 +226,22 @@ export const AnimatedRoutes = () => {
           element={
             <ProtectedRoute requireAdmin>
               <PageTransition><AdminEngagement /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/blog"
+          element={
+            <ProtectedRoute requireAdmin>
+              <PageTransition><AdminBlog /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/blog/:id"
+          element={
+            <ProtectedRoute requireAdmin>
+              <PageTransition><BlogEditor /></PageTransition>
             </ProtectedRoute>
           }
         />
