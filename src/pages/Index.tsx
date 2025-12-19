@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { ProblemSection } from "@/components/landing/ProblemSection";
@@ -24,6 +25,7 @@ const faqItems = [
 ];
 
 const Index = () => {
+  const location = useLocation();
   const [showSplash, setShowSplash] = useState(() => {
     // Only show splash on first visit (per session)
     const hasVisited = sessionStorage.getItem("soberana_visited");
@@ -34,6 +36,17 @@ const Index = () => {
     if (!showSplash) return;
     sessionStorage.setItem("soberana_visited", "true");
   }, [showSplash]);
+
+  // Handle anchor scroll when navigating from other pages
+  useEffect(() => {
+    if (location.hash) {
+      // Small delay to ensure page is fully loaded
+      setTimeout(() => {
+        const element = document.querySelector(location.hash);
+        element?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, [location.hash]);
 
   const handleSplashComplete = () => {
     setShowSplash(false);

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { SoberanaLogoMark } from "./SoberanaLogoMark";
 
 const navLinks = [
@@ -18,6 +18,8 @@ const navLinks = [
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,6 +32,14 @@ export const Navbar = () => {
 
   const scrollToSection = (href: string) => {
     setIsMobileMenuOpen(false);
+    
+    // Se não está na página principal, navega para ela com a âncora
+    if (location.pathname !== "/") {
+      navigate(`/${href}`);
+      return;
+    }
+    
+    // Se está na página principal, faz scroll suave
     const element = document.querySelector(href);
     element?.scrollIntoView({ behavior: "smooth" });
   };
@@ -47,16 +57,16 @@ export const Navbar = () => {
       >
         <div className="container-soberana px-4">
           <div className="flex items-center justify-between">
-            {/* Logo */}
-            <button 
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            {/* Logo - Always navigates to Home */}
+            <Link 
+              to="/"
               className="flex items-center cursor-pointer"
             >
               <SoberanaLogoMark 
                 variant={isScrolled ? "scrolled" : "light"} 
                 size="md" 
               />
-            </button>
+            </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-8">
