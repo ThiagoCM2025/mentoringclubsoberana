@@ -24,6 +24,7 @@ import {
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import { CourseSplashScreen } from "@/components/CourseSplashScreen";
+import { SkeletonList } from "@/components/ui/premium-skeleton";
 
 interface Course {
   id: string;

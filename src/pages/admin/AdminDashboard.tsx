@@ -3,6 +3,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { StatsCardSkeleton, ChartSkeleton, PieChartSkeleton, ActivityTimelineSkeleton } from "@/components/admin/skeletons/AdminSkeletons";
+import { LeadFunnelChart } from "@/components/admin/leads/LeadFunnelChart";
 import { 
   BookOpen, 
   Users, 
@@ -33,7 +34,9 @@ import {
   Bar,
   Legend,
   AreaChart,
-  Area
+  Area,
+  FunnelChart,
+  Funnel
 } from "recharts";
 import {
   Table,
@@ -54,6 +57,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import type { Database } from "@/integrations/supabase/types";
+
+type LeadStatus = Database["public"]["Enums"]["lead_status"];
 
 type PeriodFilter = '7d' | '30d' | '6m' | '1y';
 
@@ -150,6 +156,7 @@ const AdminDashboard = () => {
   });
   const [enrollmentTrends, setEnrollmentTrends] = useState<EnrollmentTrend[]>([]);
   const [leadsByStatus, setLeadsByStatus] = useState<LeadByStatus[]>([]);
+  const [allLeads, setAllLeads] = useState<{ id: string; status: LeadStatus | null }[]>([]);
   const [studentProgress, setStudentProgress] = useState<StudentProgress[]>([]);
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -160,6 +167,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchStats();
     fetchRecentActivities();
+    fetchAllLeads();
   }, []);
 
   useEffect(() => {
@@ -476,6 +484,17 @@ const AdminDashboard = () => {
 
     activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     setRecentActivities(activities.slice(0, 8));
+  };
+
+  const fetchAllLeads = async () => {
+    const { data } = await supabase
+      .from("leads")
+      .select("id, status")
+      .order("created_at", { ascending: false });
+    
+    if (data) {
+      setAllLeads(data);
+    }
   };
 
   const statCards = [
@@ -910,6 +929,16 @@ const AdminDashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </motion.div>
+
+        {/* Lead Funnel Chart - Compacto */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mb-8"
+        >
+          <LeadFunnelChart leads={allLeads} />
         </motion.div>
 
         {/* Bottom Row */}

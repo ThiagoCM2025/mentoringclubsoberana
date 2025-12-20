@@ -34,6 +34,7 @@ import CommunityPost from "@/components/student/CommunityPost";
 import MentionAutocomplete from "@/components/student/MentionAutocomplete";
 import ImageUpload from "@/components/student/ImageUpload";
 import PollCreator from "@/components/student/PollCreator";
+import { SkeletonList } from "@/components/ui/premium-skeleton";
 
 interface PollOption {
   text: string;
@@ -407,8 +408,8 @@ const StudentCommunity = () => {
 
         {/* Posts */}
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-secondary border-t-transparent rounded-full" />
+          <div className="space-y-4">
+            <SkeletonList count={4} className="[&>div]:bg-zinc-900 [&>div]:border-secondary/20 [&>div]:p-4 [&>div]:rounded-xl" />
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-16 px-4">

@@ -41,6 +41,7 @@ import StudyReminderButton from "@/components/student/StudyReminderButton";
 import { SoberanaLogo } from "@/components/brand/SoberanaLogo";
 import ProgramCard from "@/components/student/ProgramCard";
 import { programsList } from "@/data/programs";
+import { SkeletonCourseGrid, SkeletonHero, SkeletonStats } from "@/components/ui/premium-skeleton";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import heroVariations from "@/assets/hero-variations.jpeg";
 
@@ -899,11 +900,7 @@ const StudentDashboard = () => {
           </div>
 
           {loading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="aspect-[4/3] rounded-xl bg-zinc-900 animate-pulse" />
-              ))}
-            </div>
+            <SkeletonCourseGrid count={3} className="[&>div]:bg-zinc-900 [&>div]:border-secondary/20" />
           ) : enrollments.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {enrollments.map((enrollment, index) => (
