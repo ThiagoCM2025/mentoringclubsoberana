@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
 import { AIAssistant } from "@/components/student/AIAssistant";
+import { LessonQuiz } from "@/components/student/LessonQuiz";
+import { LessonNotes } from "@/components/student/LessonNotes";
 
 interface Lesson {
   id: string;
@@ -438,6 +440,18 @@ const LessonPlayer = () => {
                   >
                     Materiais ({materials.length})
                   </TabsTrigger>
+                  <TabsTrigger 
+                    value="quiz"
+                    className="data-[state=active]:bg-zinc-800 data-[state=active]:text-cream"
+                  >
+                    Quiz
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="notes"
+                    className="data-[state=active]:bg-zinc-800 data-[state=active]:text-cream"
+                  >
+                    Anotações
+                  </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="description">
@@ -497,6 +511,14 @@ const LessonPlayer = () => {
                       </p>
                     </div>
                   )}
+                </TabsContent>
+
+                <TabsContent value="quiz">
+                  {lessonId && <LessonQuiz lessonId={lessonId} />}
+                </TabsContent>
+
+                <TabsContent value="notes">
+                  {lessonId && <LessonNotes lessonId={lessonId} currentTime={progressSeconds} />}
                 </TabsContent>
               </Tabs>
 

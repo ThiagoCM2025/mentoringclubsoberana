@@ -19,6 +19,7 @@ import StudentFavorites from "@/pages/student/StudentFavorites";
 import StudentCommunity from "@/pages/student/StudentCommunity";
 import StudentProfile from "@/pages/student/StudentProfile";
 import StudentAnalytics from "@/pages/student/StudentAnalytics";
+import StudentRewards from "@/pages/student/StudentRewards";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminCourses from "@/pages/admin/AdminCourses";
 import CourseEditor from "@/pages/admin/CourseEditor";
@@ -130,8 +131,14 @@ export const AnimatedRoutes = () => {
             </ProtectedRoute>
           }
         />
-
-        {/* Admin Routes */}
+        <Route
+          path="/student/rewards"
+          element={
+            <ProtectedRoute requireStudent>
+              <PageTransition><StudentRewards /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/admin"
           element={
