@@ -9,6 +9,39 @@ import { DiagnosticForm } from "./DiagnosticForm";
 // Total de campos do diagnóstico
 const TOTAL_DIAGNOSTIC_FIELDS = 12;
 
+// Função para calcular o step correto baseado em campos preenchidos
+function calculateResumeStep(data: {
+  years_practicing?: string | null;
+  practice_area?: string | null;
+  has_office?: boolean | null;
+  office_size?: string | null;
+  monthly_revenue?: string | null;
+  revenue_goal?: string | null;
+  main_challenges?: string[] | null;
+  main_goals?: string[] | null;
+  marketing_knowledge?: string | null;
+  digital_presence?: string | null;
+  referral_source?: string | null;
+  weekly_study_hours?: string | null;
+}): number {
+  // Step 1: years_practicing, practice_area, has_office
+  if (!data.years_practicing || !data.practice_area || data.has_office === null) return 1;
+  
+  // Step 2: office_size, monthly_revenue
+  if (!data.office_size || !data.monthly_revenue) return 2;
+  
+  // Step 3: revenue_goal, main_challenges, main_goals
+  if (!data.revenue_goal || !data.main_challenges?.length || !data.main_goals?.length) return 3;
+  
+  // Step 4: marketing_knowledge, digital_presence, referral_source
+  if (!data.marketing_knowledge || !data.digital_presence || !data.referral_source) return 4;
+  
+  // Step 5: weekly_study_hours
+  if (!data.weekly_study_hours) return 5;
+  
+  return 5; // Completed all
+}
+
 // Função para calcular progresso baseado em campos preenchidos
 function calculateProgress(data: {
   years_practicing?: string | null;
@@ -71,9 +104,10 @@ export function DiagnosticBanner() {
       setCurrentStep(1);
       setProgressPercent(0);
     } else if (!data.completed) {
-      // Diagnostic started but not completed - calculate real progress
+      // Diagnostic started but not completed - calculate real step based on filled fields
+      const resumeStep = calculateResumeStep(data);
       setShowBanner(true);
-      setCurrentStep(data.current_step || 1);
+      setCurrentStep(resumeStep);
       setProgressPercent(calculateProgress(data));
     } else {
       setShowBanner(false);
