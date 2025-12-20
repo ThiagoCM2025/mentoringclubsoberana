@@ -5,8 +5,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import StudentSidebar from "@/components/student/StudentSidebar";
-import MobileBottomNav from "@/components/student/MobileBottomNav";
-import StudyCalendar from "@/components/student/StudyCalendar";
+import { MobileBottomNav } from "@/components/student/MobileBottomNav";
+import { StudyCalendar } from "@/components/student/StudyCalendar";
 import { 
   ArrowLeft,
   Clock,
