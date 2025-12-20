@@ -207,7 +207,7 @@ export function RecipientSelector() {
         {/* Audience Type Selection */}
         <Card className="admin-card">
           <CardHeader>
-            <CardTitle className="text-lg text-cream">Selecione o Público</CardTitle>
+            <CardTitle className="text-lg text-foreground">Selecione o Público</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <button
@@ -215,13 +215,13 @@ export function RecipientSelector() {
               className={`w-full p-4 rounded-lg border-2 transition-colors flex items-center gap-3 ${
                 audienceType === "student"
                   ? "border-secondary bg-secondary/10"
-                  : "border-secondary/30 hover:border-secondary/60 bg-zinc-900/50"
+                  : "border-border hover:border-secondary/60 bg-card"
               }`}
             >
               <Users className="h-8 w-8 text-primary" />
               <div className="text-left">
-                <div className="font-semibold text-cream">Alunos</div>
-                <div className="text-sm text-cream/60">
+                <div className="font-semibold text-foreground">Alunos</div>
+                <div className="text-sm text-muted-foreground">
                   {students.length} disponíveis
                 </div>
               </div>
@@ -232,13 +232,13 @@ export function RecipientSelector() {
               className={`w-full p-4 rounded-lg border-2 transition-colors flex items-center gap-3 ${
                 audienceType === "lead"
                   ? "border-secondary bg-secondary/10"
-                  : "border-secondary/30 hover:border-secondary/60 bg-zinc-900/50"
+                  : "border-border hover:border-secondary/60 bg-card"
               }`}
             >
               <Target className="h-8 w-8 text-secondary" />
               <div className="text-left">
-                <div className="font-semibold text-cream">Leads</div>
-                <div className="text-sm text-cream/60">
+                <div className="font-semibold text-foreground">Leads</div>
+                <div className="text-sm text-muted-foreground">
                   {leads.length} disponíveis
                 </div>
               </div>
@@ -250,21 +250,21 @@ export function RecipientSelector() {
         <Card className="admin-card">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg text-cream">
+              <CardTitle className="text-lg text-foreground">
                 {audienceType === "student" ? "Alunos" : "Leads"}
               </CardTitle>
-              <Badge variant="outline" className="border-secondary/40 text-cream">
+              <Badge variant="outline" className="border-border text-foreground">
                 {selectedIds.size} selecionado(s)
               </Badge>
             </div>
             <div className="flex gap-2 mt-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-cream/50" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Buscar por nome ou email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
+                  className="pl-10 bg-card border-border text-foreground placeholder:text-muted-foreground"
                 />
               </div>
             </div>
@@ -275,22 +275,22 @@ export function RecipientSelector() {
                 <Loader2 className="h-6 w-6 animate-spin text-secondary" />
               </div>
             ) : filteredList.length === 0 ? (
-              <div className="text-center py-8 text-cream/60">
+              <div className="text-center py-8 text-muted-foreground">
                 Nenhum {audienceType === "student" ? "aluno" : "lead"} encontrado
               </div>
             ) : (
               <>
-                <div className="flex items-center gap-2 pb-4 border-b border-secondary/20">
+                <div className="flex items-center gap-2 pb-4 border-b border-border">
                   <Checkbox
                     checked={selectedIds.size === filteredList.length && filteredList.length > 0}
                     onCheckedChange={toggleSelectAll}
                   />
-                  <span className="text-sm text-cream/70">
+                  <span className="text-sm text-muted-foreground">
                     Selecionar todos ({filteredList.length})
                   </span>
                 </div>
 
-                <div className="divide-y divide-secondary/10 max-h-[400px] overflow-y-auto">
+                <div className="divide-y divide-border max-h-[400px] overflow-y-auto">
                   {filteredList.map((item) => {
                     const id = audienceType === "student" 
                       ? (item as Student).user_id 
@@ -308,7 +308,7 @@ export function RecipientSelector() {
                     return (
                       <div
                         key={id}
-                        className="flex items-center gap-3 py-3 hover:bg-secondary/5 px-2 rounded cursor-pointer"
+                        className="flex items-center gap-3 py-3 hover:bg-muted/50 px-2 rounded cursor-pointer"
                         onClick={() => toggleSelect(id)}
                       >
                         <Checkbox
@@ -316,10 +316,10 @@ export function RecipientSelector() {
                           onCheckedChange={() => toggleSelect(id)}
                         />
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium truncate text-cream">
+                          <div className="font-medium truncate text-foreground">
                             {name || "Sem nome"}
                           </div>
-                          <div className="flex items-center gap-4 text-sm text-cream/60">
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
                             <span className="flex items-center gap-1 truncate">
                               <Mail className="h-3 w-3" />
                               {email}
@@ -333,7 +333,7 @@ export function RecipientSelector() {
                           </div>
                         </div>
                         {audienceType === "lead" && (
-                          <Badge variant="outline" className="text-xs border-secondary/40 text-cream/80">
+                          <Badge variant="outline" className="text-xs border-border text-foreground">
                             {(item as Lead).temperature || "cold"}
                           </Badge>
                         )}
@@ -344,7 +344,7 @@ export function RecipientSelector() {
               </>
             )}
 
-            <div className="pt-4 border-t border-secondary/20 mt-4">
+            <div className="pt-4 border-t border-border mt-4">
               <Button
                 variant="gold"
                 onClick={() => setIsComposerOpen(true)}
