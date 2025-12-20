@@ -254,20 +254,20 @@ export function MessageComposer({
 
           {/* Channel Selection */}
           <div className="space-y-3">
-            <Label className="text-cream">Canal de envio</Label>
+            <Label className="text-foreground">Canal de envio</Label>
             <div className="flex gap-2">
               {channelOptions.map((opt) => (
                 <Button
                   key={opt.id}
-                  variant={channel === opt.id ? "gold" : "premium"}
+                  variant={channel === opt.id ? "gold" : "outline"}
                   onClick={() => handleChannelChange(opt.id)}
                   disabled={!opt.available}
-                  className="flex-1"
+                  className={`flex-1 ${channel !== opt.id ? 'bg-card border-border text-foreground hover:bg-muted' : ''}`}
                 >
                   <opt.icon className="h-4 w-4 mr-2" />
                   {opt.label}
                   {!opt.available && opt.id === "whatsapp" && (
-                    <Badge variant="secondary" className="ml-2 text-xs bg-zinc-800 text-cream/60">
+                    <Badge variant="secondary" className="ml-2 text-xs bg-muted text-muted-foreground">
                       Sem telefone
                     </Badge>
                   )}
@@ -279,36 +279,36 @@ export function MessageComposer({
           {/* Subject (for email/notification) */}
           {(channel === "email" || channel === "notification") && (
             <div className="space-y-2">
-              <Label htmlFor="subject" className="text-cream">Assunto</Label>
+              <Label htmlFor="subject" className="text-foreground">Assunto</Label>
               <Input
                 id="subject"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Digite o assunto..."
-                className="bg-zinc-800 border-secondary/30 text-cream placeholder:text-cream/40"
+                className="bg-card border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>
           )}
 
           {/* Message */}
           <div className="space-y-2">
-            <Label htmlFor="message" className="text-cream">Mensagem</Label>
+            <Label htmlFor="message" className="text-foreground">Mensagem</Label>
             <Textarea
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Digite sua mensagem..."
               rows={8}
-              className="bg-zinc-800 border-secondary/30 text-cream placeholder:text-cream/40"
+              className="bg-card border-border text-foreground placeholder:text-muted-foreground"
             />
-            <p className="text-xs text-cream/60">
+            <p className="text-xs text-muted-foreground">
               Variáveis disponíveis: <code className="text-secondary">{"{nome}"}</code>, <code className="text-secondary">{"{email}"}</code>, <code className="text-secondary">{"{telefone}"}</code>
             </p>
           </div>
 
           {/* WhatsApp info */}
           {channel === "whatsapp" && (
-            <div className="bg-zinc-800 rounded-lg p-3 text-sm text-cream/70 flex items-start gap-2 border border-secondary/20">
+            <div className="bg-muted rounded-lg p-3 text-sm text-muted-foreground flex items-start gap-2 border border-border">
               <ExternalLink className="h-4 w-4 mt-0.5 flex-shrink-0 text-secondary" />
               <span>
                 O WhatsApp será aberto em uma nova aba para cada destinatário com a mensagem pré-preenchida. 
@@ -318,8 +318,8 @@ export function MessageComposer({
           )}
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-secondary/20">
-            <Button variant="premium" onClick={onClose} disabled={sending}>
+          <div className="flex justify-end gap-3 pt-4 border-t border-border">
+            <Button variant="outline" onClick={onClose} disabled={sending} className="bg-card border-border text-foreground hover:bg-muted">
               Cancelar
             </Button>
             <Button variant="gold" onClick={handleSend} disabled={sending}>
