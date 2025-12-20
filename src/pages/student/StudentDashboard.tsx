@@ -253,37 +253,44 @@ const StudentDashboard = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Header - Premium Navbar */}
-      <header className="bg-black/95 backdrop-blur-sm border-b border-secondary/20 py-3 px-4 sticky top-0 z-50">
+      {/* Header - Premium Navbar with Gradient */}
+      <motion.header 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-gradient-to-r from-black via-zinc-900/90 to-black backdrop-blur-md border-b border-secondary/30 py-3 px-4 sticky top-0 z-50 shadow-[0_4px_30px_rgba(166,144,97,0.08)]"
+      >
         <div className="container-soberana flex items-center justify-between">
           {/* Logo */}
           <SoberanaLogo size="md" />
           
-          {/* Desktop Nav - Centro */}
+          {/* Desktop Nav - Centro with Animated Underline */}
           <nav className="hidden md:flex items-center gap-1">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/student")}
-              className="text-cream hover:text-secondary hover:bg-secondary/10"
+              className="relative text-secondary font-medium hover:bg-secondary/10 group"
             >
               Início
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4/5 h-0.5 bg-secondary rounded-full" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/student/favorites")}
-              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
+              className="relative text-cream/70 hover:text-secondary hover:bg-secondary/10 group"
             >
               Favoritos
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-secondary rounded-full transition-all duration-300 group-hover:w-4/5" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/student/community")}
-              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
+              className="relative text-cream/70 hover:text-secondary hover:bg-secondary/10 group"
             >
-              Comunidades
+              Comunidade
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-secondary rounded-full transition-all duration-300 group-hover:w-4/5" />
             </Button>
           </nav>
 
@@ -389,6 +396,7 @@ const StudentDashboard = () => {
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </Button>
         </div>
+      </motion.header>
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
@@ -479,8 +487,6 @@ const StudentDashboard = () => {
             </nav>
           </motion.div>
         )}
-      </header>
-
       {/* Hero Banner Full-Width - Estilo MestresAI */}
       <section className="relative h-[420px] md:h-[480px] w-full overflow-hidden">
         {/* Background Image */}
