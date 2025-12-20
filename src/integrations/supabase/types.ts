@@ -621,6 +621,56 @@ export type Database = {
           },
         ]
       }
+      follow_up_rules: {
+        Row: {
+          channel: string
+          created_at: string
+          days_without_contact: number
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          target_status: string[] | null
+          target_temperature: string[] | null
+          template_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          channel?: string
+          created_at?: string
+          days_without_contact?: number
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          target_status?: string[] | null
+          target_temperature?: string[] | null
+          template_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          days_without_contact?: number
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          target_status?: string[] | null
+          target_temperature?: string[] | null
+          template_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follow_up_rules_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_conversions: {
         Row: {
           converted_at: string
@@ -665,6 +715,41 @@ export type Database = {
           },
           {
             foreignKeyName: "lead_conversions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_engagement_events: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          lead_id: string
+          points: number
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          lead_id: string
+          points?: number
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          lead_id?: string
+          points?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_engagement_events_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
@@ -1365,6 +1450,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_lead_score: { Args: { p_lead_id: string }; Returns: number }
       create_admin_notification: {
         Args: {
           p_event_type: string

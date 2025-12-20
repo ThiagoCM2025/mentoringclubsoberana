@@ -29,13 +29,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download, Columns, TableIcon } from "lucide-react";
+import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download, Columns, TableIcon, TrendingUp } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { Database } from "@/integrations/supabase/types";
 import { NewLeadDialog } from "@/components/admin/NewLeadDialog";
 import { LeadPipelineView } from "@/components/admin/leads/LeadPipelineView";
 import { LeadMetrics } from "@/components/admin/leads/LeadMetrics";
+import { LeadFunnelChart } from "@/components/admin/leads/LeadFunnelChart";
+import { LeadScoreDisplay } from "@/components/admin/leads/LeadScoreDisplay";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
@@ -269,8 +271,11 @@ const AdminLeads = () => {
           </p>
         </motion.div>
 
-        {/* Metrics */}
-        <LeadMetrics leads={leads} />
+        {/* Metrics and Funnel */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <LeadMetrics leads={leads} />
+          <LeadFunnelChart leads={leads} />
+        </div>
 
         {/* View Mode Toggle */}
         <div className="flex items-center justify-between mb-6">
@@ -538,8 +543,17 @@ const AdminLeads = () => {
                   </div>
                 </div>
 
+                {/* Lead Engagement Score */}
+                <div className="border-t pt-4">
+                  <Label className="flex items-center gap-2 mb-3">
+                    <TrendingUp className="w-4 h-4" />
+                    Engajamento
+                  </Label>
+                  <LeadScoreDisplay leadId={selectedLead.id} score={selectedLead.score} />
+                </div>
+
                 {/* Notes */}
-                <div>
+                <div className="border-t pt-4">
                   <Label>Notas</Label>
                   <Textarea
                     placeholder="Adicione notas sobre este lead..."
