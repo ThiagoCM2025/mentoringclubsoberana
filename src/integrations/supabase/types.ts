@@ -509,6 +509,9 @@ export type Database = {
           content: string
           created_at: string | null
           id: string
+          is_hidden: boolean | null
+          moderated_at: string | null
+          moderated_by: string | null
           post_id: string
           user_id: string
         }
@@ -516,6 +519,9 @@ export type Database = {
           content: string
           created_at?: string | null
           id?: string
+          is_hidden?: boolean | null
+          moderated_at?: string | null
+          moderated_by?: string | null
           post_id: string
           user_id: string
         }
@@ -523,6 +529,9 @@ export type Database = {
           content?: string
           created_at?: string | null
           id?: string
+          is_hidden?: boolean | null
+          moderated_at?: string | null
+          moderated_by?: string | null
           post_id?: string
           user_id?: string
         }
