@@ -84,7 +84,8 @@ export function DiagnosticForm({ onComplete, onClose, initialStep = 1 }: Diagnos
         referral_source: existing.referral_source || "",
         weekly_study_hours: existing.weekly_study_hours || ""
       });
-      setCurrentStep(existing.current_step || 1);
+      // Use initialStep from props (calculated by Banner), don't override with saved current_step
+      // The Banner already calculates the correct step based on filled fields
     }
   };
 

@@ -59,6 +59,7 @@ import { LearningPaths } from "@/components/student/LearningPaths";
 import { StudyCalendar } from "@/components/student/StudyCalendar";
 import { AIAssistant } from "@/components/student/AIAssistant";
 import PushNotificationPrompt from "@/components/student/PushNotificationPrompt";
+import { useAchievementNotification } from "@/hooks/useAchievementNotification";
 
 
 interface Course {
@@ -100,6 +101,9 @@ const StudentDashboard = () => {
   const [totalCompleted, setTotalCompleted] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [previewCourseId, setPreviewCourseId] = useState<string | null>(null);
+
+  // Achievement notification - monitors and sends push when close to new badge/level
+  useAchievementNotification();
 
   const level = gamificationStats ? calculateLevel(gamificationStats.xp) : 1;
   const levelProgress = gamificationStats ? getCurrentLevelProgress(gamificationStats.xp) : 0;
