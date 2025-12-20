@@ -357,7 +357,7 @@ const AdminLeads = () => {
         <div className="admin-card overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="border-secondary/20 hover:bg-zinc-800/50">
+              <TableRow className="border-border hover:bg-muted/50">
                 <TableHead>Lead</TableHead>
                 <TableHead>Contato</TableHead>
                 <TableHead className="text-center">Nurturing</TableHead>

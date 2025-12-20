@@ -209,11 +209,11 @@ export default function AdminSettings() {
       <div className="p-6 lg:p-8 space-y-6 admin-area">
         <div className="flex items-center gap-3">
           <Settings className="w-8 h-8 text-secondary" />
-          <h1 className="text-3xl font-serif font-bold text-cream">Configurações</h1>
+          <h1 className="text-3xl font-serif font-bold text-foreground">Configurações</h1>
         </div>
 
         <Tabs defaultValue="admins" className="space-y-6">
-          <TabsList className="bg-zinc-900 border border-secondary/20">
+          <TabsList className="bg-muted border border-border">
             <TabsTrigger value="admins" className="flex items-center gap-2 data-[state=active]:bg-secondary data-[state=active]:text-black">
               <Users className="w-4 h-4" />
               Administradores
@@ -232,11 +232,11 @@ export default function AdminSettings() {
             <Card className="admin-card">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="flex items-center gap-2 text-cream">
+                  <CardTitle className="flex items-center gap-2 text-foreground">
                     <ShieldCheck className="w-5 h-5 text-secondary" />
                     Administradores do Sistema
                   </CardTitle>
-                  <CardDescription className="text-cream/60">
+                  <CardDescription className="text-muted-foreground">
                     Gerencie quem tem acesso ao painel administrativo e suas permissões
                   </CardDescription>
                 </div>
@@ -261,12 +261,12 @@ export default function AdminSettings() {
                     {admins.map((admin) => (
                       <div
                         key={admin.user_id}
-                        className="border border-secondary/20 rounded-lg p-4 space-y-3 bg-zinc-900/50"
+                        className="border border-border rounded-lg p-4 space-y-3 bg-card"
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <h4 className="font-medium text-cream">{admin.full_name}</h4>
-                            <p className="text-sm text-cream/60">
+                            <h4 className="font-medium text-foreground">{admin.full_name}</h4>
+                            <p className="text-sm text-muted-foreground">
                               ID: {admin.user_id.slice(0, 8)}...
                             </p>
                           </div>
