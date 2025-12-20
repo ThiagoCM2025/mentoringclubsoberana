@@ -27,8 +27,10 @@ const Auth = () => {
   const { user, isAdmin, loading } = useAuth();
 
   useEffect(() => {
+    // Only redirect if user is authenticated and we're done loading
     if (!loading && user) {
-      navigate(isAdmin ? "/admin" : "/student");
+      // Use replace to prevent back button issues
+      navigate(isAdmin ? "/admin" : "/student", { replace: true });
     }
   }, [user, isAdmin, loading, navigate]);
 
