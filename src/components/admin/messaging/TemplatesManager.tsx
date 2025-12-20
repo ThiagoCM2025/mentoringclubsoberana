@@ -118,15 +118,15 @@ export function TemplatesManager() {
     return (
       <div className="grid gap-4 md:grid-cols-2">
         {templateList.map((template) => (
-          <Card key={template.id} className="relative bg-zinc-900/80 border border-secondary/20">
+          <Card key={template.id} className="relative bg-card border border-border">
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">{template.icon || "📧"}</span>
                   <div>
-                    <CardTitle className="text-base text-cream">{template.name}</CardTitle>
+                    <CardTitle className="text-base text-foreground">{template.name}</CardTitle>
                     {template.description && (
-                      <CardDescription className="text-xs mt-1 text-cream/60">
+                      <CardDescription className="text-xs mt-1 text-muted-foreground">
                         {template.description}
                       </CardDescription>
                     )}
@@ -140,14 +140,14 @@ export function TemplatesManager() {
             <CardContent className="space-y-3">
               {template.email_subject && (
                 <div className="text-sm">
-                  <span className="text-cream/60">Email:</span>
-                  <p className="truncate font-medium text-cream">{template.email_subject}</p>
+                  <span className="text-muted-foreground">Email:</span>
+                  <p className="truncate font-medium text-foreground">{template.email_subject}</p>
                 </div>
               )}
               {template.whatsapp_message && (
                 <div className="text-sm">
-                  <span className="text-cream/60">WhatsApp:</span>
-                  <p className="truncate text-cream/70">
+                  <span className="text-muted-foreground">WhatsApp:</span>
+                  <p className="truncate text-muted-foreground">
                     {template.whatsapp_message.slice(0, 60)}...
                   </p>
                 </div>
@@ -185,8 +185,8 @@ export function TemplatesManager() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg text-cream">Templates de Mensagem</CardTitle>
-              <CardDescription className="text-cream/60">
+              <CardTitle className="text-lg text-foreground">Templates de Mensagem</CardTitle>
+              <CardDescription className="text-muted-foreground">
                 Gerencie os modelos de mensagem para cada cenário
               </CardDescription>
             </div>
@@ -203,12 +203,12 @@ export function TemplatesManager() {
             </div>
           ) : (
             <Tabs value={audienceTab} onValueChange={(v) => setAudienceTab(v as "student" | "lead")}>
-              <TabsList className="mb-4 bg-zinc-900 border border-secondary/20">
-                <TabsTrigger value="student" className="flex items-center gap-2 text-cream/80 data-[state=active]:bg-secondary data-[state=active]:text-black">
+              <TabsList className="mb-4 bg-muted border border-border">
+                <TabsTrigger value="student" className="flex items-center gap-2 text-muted-foreground data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
                   <Users className="h-4 w-4" />
                   Alunos ({studentTemplates.length})
                 </TabsTrigger>
-                <TabsTrigger value="lead" className="flex items-center gap-2 text-cream/80 data-[state=active]:bg-secondary data-[state=active]:text-black">
+                <TabsTrigger value="lead" className="flex items-center gap-2 text-muted-foreground data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
                   <Target className="h-4 w-4" />
                   Leads ({leadTemplates.length})
                 </TabsTrigger>

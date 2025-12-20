@@ -126,11 +126,11 @@ export function NotificationTemplatesTab() {
     <Card className="admin-card">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="flex items-center gap-2 text-cream">
+          <CardTitle className="flex items-center gap-2 text-foreground">
             <FileText className="w-5 h-5" />
             Templates de Notificações
           </CardTitle>
-          <CardDescription className="text-cream/60">
+          <CardDescription className="text-muted-foreground">
             Crie e gerencie templates pré-configurados para envio rápido de notificações
           </CardDescription>
         </div>
@@ -145,7 +145,7 @@ export function NotificationTemplatesTab() {
             <Loader2 className="w-6 h-6 animate-spin text-secondary" />
           </div>
         ) : templates.length === 0 ? (
-          <p className="text-center text-cream/60 py-8">
+          <p className="text-center text-muted-foreground py-8">
             Nenhum template cadastrado
           </p>
         ) : (
@@ -153,30 +153,30 @@ export function NotificationTemplatesTab() {
             {templates.map((template) => (
               <div
                 key={template.id}
-                className="border border-secondary/20 rounded-lg p-4 space-y-3 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors"
+                className="border border-border rounded-lg p-4 space-y-3 bg-card hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="font-medium text-cream">{template.name}</h4>
+                      <h4 className="font-medium text-foreground">{template.name}</h4>
                       {template.is_default && (
-                        <Badge variant="outline" className="text-xs border-secondary/40 text-cream/70">
+                        <Badge variant="outline" className="text-xs border-border text-muted-foreground">
                           Padrão
                         </Badge>
                       )}
                       {getTypeBadge(template.type)}
                     </div>
-                    <p className="text-sm font-medium text-cream/70 mt-1">
+                    <p className="text-sm font-medium text-foreground/80 mt-1">
                       "{template.title}"
                     </p>
-                    <p className="text-sm text-cream/60 mt-2 line-clamp-2">
+                    <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
                       {template.message}
                     </p>
                   </div>
                   <div className="flex gap-2 shrink-0">
                     <Button
                       size="sm"
-                      className="bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary"
+                      className="bg-muted border border-border text-foreground hover:bg-secondary/20 hover:border-secondary"
                       onClick={() => handleEdit(template)}
                     >
                       <Edit className="w-4 h-4" />
