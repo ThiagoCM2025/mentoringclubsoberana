@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LessonSidebar from "@/components/student/LessonSidebar";
 import FavoriteButton from "@/components/student/FavoriteButton";
 import VideoPlayer from "@/components/student/VideoPlayer";
+import { useConfetti } from "@/hooks/useConfetti";
+import { PremiumSkeleton } from "@/components/ui/premium-skeleton";
 import {
   ArrowLeft,
   CheckCircle,
@@ -67,6 +69,7 @@ const LessonPlayer = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { fireSuccessConfetti, fireCelebration } = useConfetti();
   const videoRef = useRef<HTMLVideoElement>(null);
   
   const [lesson, setLesson] = useState<Lesson | null>(null);
@@ -273,10 +276,27 @@ const LessonPlayer = () => {
     await saveProgress(currentTime, true);
     setIsCompleted(true);
     
+    // Fire confetti celebration
+    fireSuccessConfetti();
+    
     toast({
       title: "Aula concluída! 🎉",
       description: "Seu progresso foi salvo.",
     });
+
+    // Check if this completes a module
+    const currentModule = modulesWithLessons.find(m => m.lessons.some(l => l.id === lessonId));
+    if (currentModule) {
+      const completedCount = currentModule.lessons.filter(l => l.completed || l.id === lessonId).length;
+      if (completedCount === currentModule.lessons.length) {
+        // Module completed - fire big celebration
+        setTimeout(() => fireCelebration(), 500);
+        toast({
+          title: "Módulo concluído! 🏆",
+          description: `Você completou "${currentModule.title}"`,
+        });
+      }
+    }
 
     setModulesWithLessons(prev => 
       prev.map(m => ({
@@ -304,7 +324,7 @@ const LessonPlayer = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-6">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
         <motion.img
           src={isotipoGold}
           alt="Carregando"
@@ -324,16 +344,16 @@ const LessonPlayer = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      {/* Header - Premium Black/Gold Theme */}
-      <header className="bg-black/95 backdrop-blur-sm py-3 px-4 sticky top-0 z-50 border-b border-secondary/20">
+    <div className="min-h-screen bg-background">
+      {/* Header - Premium Theme */}
+      <header className="bg-card/95 backdrop-blur-sm py-3 px-4 sticky top-0 z-50 border-b border-border">
         <div className="flex items-center justify-between max-w-[1920px] mx-auto">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={goBack}
-              className="text-cream/80 hover:text-cream hover:bg-secondary/10"
+              className="text-muted-foreground hover:text-foreground hover:bg-muted"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
@@ -345,7 +365,7 @@ const LessonPlayer = () => {
               />
               <div className="hidden sm:block">
                 <p className="text-xs text-secondary font-medium">{module?.title}</p>
-                <p className="font-medium text-cream text-sm line-clamp-1">{lesson?.title}</p>
+                <p className="font-medium text-foreground text-sm line-clamp-1">{lesson?.title}</p>
               </div>
             </div>
           </div>
@@ -354,14 +374,14 @@ const LessonPlayer = () => {
             {lessonId && (
               <FavoriteButton 
                 lessonId={lessonId} 
-                className="text-cream/70 hover:text-red-400 hover:bg-secondary/10"
+                className="text-muted-foreground hover:text-red-500 hover:bg-muted"
               />
             )}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-cream/70 hover:text-cream hover:bg-secondary/10"
+              className="text-muted-foreground hover:text-foreground hover:bg-muted"
             >
               <List className="w-5 h-5" />
             </Button>
@@ -371,7 +391,7 @@ const LessonPlayer = () => {
               size="sm"
               className={isCompleted 
                 ? "bg-green-600 hover:bg-green-600 text-white" 
-                : "bg-secondary hover:bg-secondary-light text-black font-semibold btn-glow-gold"
+                : "bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold"
               }
             >
               {isCompleted ? (
@@ -391,7 +411,7 @@ const LessonPlayer = () => {
       <div className="flex">
         {/* Main Content */}
         <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? "lg:mr-80" : ""}`}>
-          {/* Video Player - Immersive Black Background */}
+          {/* Video Player - Black Background for immersion */}
           <div className={`bg-black relative ${theaterMode ? "h-[80vh]" : "aspect-video max-h-[70vh]"}`}>
             <VideoPlayer
               url={lesson?.video_url || null}
@@ -401,41 +421,41 @@ const LessonPlayer = () => {
             />
           </div>
 
-          {/* Lesson Content - Premium Dark Theme */}
-          <div className="bg-zinc-950">
+          {/* Lesson Content - Light Theme */}
+          <div className="bg-background">
             <div className="max-w-4xl mx-auto p-6">
               <Tabs defaultValue="description" className="w-full">
-                <TabsList className="mb-6 bg-zinc-900/80 border border-secondary/20">
+                <TabsList className="mb-6 bg-muted border border-border">
                   <TabsTrigger 
                     value="description" 
-                    className="data-[state=active]:bg-secondary/20 data-[state=active]:text-secondary"
+                    className="data-[state=active]:bg-card data-[state=active]:text-foreground"
                   >
                     Descrição
                   </TabsTrigger>
                   <TabsTrigger 
                     value="materials"
-                    className="data-[state=active]:bg-secondary/20 data-[state=active]:text-secondary"
+                    className="data-[state=active]:bg-card data-[state=active]:text-foreground"
                   >
                     Materiais ({materials.length})
                   </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="description">
-                  <h1 className="text-2xl font-serif font-bold text-cream mb-3">
+                  <h1 className="text-2xl font-serif font-bold text-foreground mb-3">
                     {lesson?.title}
                   </h1>
                   {lesson?.duration_minutes && (
-                    <p className="text-sm text-cream/60 flex items-center gap-2 mb-4">
+                    <p className="text-sm text-muted-foreground flex items-center gap-2 mb-4">
                       <Clock className="w-4 h-4 text-secondary" />
                       {lesson.duration_minutes} minutos
                     </p>
                   )}
                   {lesson?.description ? (
-                    <p className="text-cream/80 leading-relaxed">
+                    <p className="text-foreground/80 leading-relaxed">
                       {lesson.description}
                     </p>
                   ) : (
-                    <p className="text-cream/50 italic">
+                    <p className="text-muted-foreground italic">
                       Nenhuma descrição disponível para esta aula.
                     </p>
                   )}
@@ -450,16 +470,16 @@ const LessonPlayer = () => {
                           href={material.file_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-4 p-4 rounded-xl bg-zinc-900/80 border border-secondary/10 hover:border-secondary/30 transition-all group"
+                          className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-secondary/50 transition-all group hover:shadow-md"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-secondary-light flex items-center justify-center shadow-lg">
-                            <Download className="w-5 h-5 text-black" />
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center shadow-lg">
+                            <Download className="w-5 h-5 text-secondary-foreground" />
                           </div>
                           <div className="flex-1">
-                            <p className="font-medium text-cream">
+                            <p className="font-medium text-foreground">
                               {material.title}
                             </p>
-                            <p className="text-sm text-cream/50 uppercase">
+                            <p className="text-sm text-muted-foreground uppercase">
                               {material.file_type || "Arquivo"}
                             </p>
                           </div>
@@ -471,8 +491,8 @@ const LessonPlayer = () => {
                     </div>
                   ) : (
                     <div className="text-center py-12">
-                      <FileText className="w-12 h-12 text-cream/30 mx-auto mb-3" />
-                      <p className="text-cream/50">
+                      <FileText className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
+                      <p className="text-muted-foreground">
                         Nenhum material disponível para esta aula.
                       </p>
                     </div>
@@ -481,12 +501,12 @@ const LessonPlayer = () => {
               </Tabs>
 
               {/* Navigation - Premium Buttons */}
-              <div className="flex items-center justify-between mt-8 pt-6 border-t border-secondary/20">
+              <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
                 {prevLesson ? (
                   <Button
                     variant="outline"
                     onClick={() => navigate(`/student/lesson/${prevLesson.id}`)}
-                    className="group border-secondary/30 text-cream hover:bg-secondary/10 hover:border-secondary/50"
+                    className="group"
                   >
                     <ChevronLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
                     <span className="hidden sm:inline">Anterior</span>
@@ -497,7 +517,7 @@ const LessonPlayer = () => {
                 {nextLesson ? (
                   <Button
                     onClick={() => navigate(`/student/lesson/${nextLesson.id}`)}
-                    className="bg-secondary hover:bg-secondary-light text-black font-semibold group btn-glow-gold"
+                    className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold group"
                   >
                     <span className="hidden sm:inline">Próxima</span>
                     <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -505,7 +525,7 @@ const LessonPlayer = () => {
                 ) : (
                   <Button 
                     onClick={goBack} 
-                    className="bg-secondary hover:bg-secondary-light text-black font-semibold btn-glow-gold"
+                    className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold"
                   >
                     Voltar ao curso
                   </Button>
@@ -515,7 +535,7 @@ const LessonPlayer = () => {
           </div>
         </main>
 
-        {/* Sidebar - Premium Dark Theme */}
+        {/* Sidebar - Light Theme */}
         <AnimatePresence>
           {sidebarOpen && (
             <motion.aside
@@ -523,7 +543,7 @@ const LessonPlayer = () => {
               animate={{ x: 0 }}
               exit={{ x: 320 }}
               transition={{ type: "spring", damping: 20 }}
-              className="fixed right-0 top-[57px] bottom-0 w-80 hidden lg:block bg-zinc-950 border-l border-secondary/20"
+              className="fixed right-0 top-[57px] bottom-0 w-80 hidden lg:block bg-card border-l border-border"
             >
               <LessonSidebar
                 modules={modulesWithLessons}
