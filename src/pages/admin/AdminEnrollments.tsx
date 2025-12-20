@@ -173,10 +173,10 @@ const AdminEnrollments = () => {
         y: 0
       }} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-serif font-bold text-cream mb-2">
+            <h1 className="text-3xl font-serif font-bold text-foreground mb-2">
               Matrículas
             </h1>
-            <p className="text-cream/60">
+            <p className="text-muted-foreground">
               Gerencie as matrículas dos alunos
             </p>
           </div>
@@ -212,21 +212,21 @@ const AdminEnrollments = () => {
                 </TableRow> : filteredEnrollments.length === 0 ? <TableRow>
                   <TableCell colSpan={5} className="text-center py-8">
                     <UserCheck className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-cream/70">Nenhuma matrícula encontrada</p>
+                    <p className="text-muted-foreground">Nenhuma matrícula encontrada</p>
                   </TableCell>
                 </TableRow> : filteredEnrollments.map(enrollment => <TableRow key={enrollment.id} className="border-secondary/10">
                     <TableCell>
-                      <p className="font-medium text-secondary-foreground">
+                      <p className="font-medium text-foreground">
                         {enrollment.profiles?.full_name || "Sem nome"}
                       </p>
                     </TableCell>
-                    <TableCell className="text-cream/80">{enrollment.courses?.title || "-"}</TableCell>
+                    <TableCell className="text-muted-foreground">{enrollment.courses?.title || "-"}</TableCell>
                     <TableCell>
                       <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${enrollment.payment_source === "manual" ? "bg-blue-500/20 text-blue-400" : "bg-green-500/20 text-green-400"}`}>
                         {enrollment.payment_source === "manual" ? "Manual" : enrollment.payment_source || "Automático"}
                       </span>
                     </TableCell>
-                    <TableCell className="text-cream/70">
+                    <TableCell className="text-muted-foreground">
                       {new Date(enrollment.enrolled_at).toLocaleDateString("pt-BR")}
                     </TableCell>
                     <TableCell>
