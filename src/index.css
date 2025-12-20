@@ -113,6 +113,56 @@
     --sidebar-border: 0 0% 20%;
     --sidebar-ring: 43 100% 83%;
   }
+
+  /* ============ ADMIN LIGHT THEME ============ */
+  .admin-light-theme {
+    /* Fundo principal - Cream/Off-white elegante */
+    --background: 30 15% 97%; /* Cream mais claro */
+    --foreground: 0 0% 15%; /* Cinza escuro para texto */
+
+    /* Cards - Branco puro */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 15%;
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 15%;
+
+    /* Primary - Marsala (identidade da marca) */
+    --primary: 350 100% 27%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Dourado */
+    --secondary: 38 30% 51%;
+    --secondary-foreground: 0 0% 15%;
+
+    /* Muted - Cinza claro elegante */
+    --muted: 30 15% 92%;
+    --muted-foreground: 0 0% 40%;
+
+    /* Accent - Dourado claro */
+    --accent: 43 100% 93%;
+    --accent-foreground: 0 0% 15%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders - Suave */
+    --border: 30 15% 85%;
+    --input: 30 15% 92%;
+    --ring: 350 100% 27%;
+
+    /* Sidebar - Cream claro com bordas douradas */
+    --sidebar-background: 30 20% 98%;
+    --sidebar-foreground: 0 0% 20%;
+    --sidebar-primary: 38 30% 51%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 43 100% 96%;
+    --sidebar-accent-foreground: 0 0% 20%;
+    --sidebar-border: 30 20% 88%;
+    --sidebar-ring: 350 100% 27%;
+  }
 }
 
 @layer base {
