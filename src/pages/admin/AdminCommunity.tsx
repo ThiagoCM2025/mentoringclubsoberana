@@ -364,22 +364,22 @@ const AdminCommunity = () => {
           </div>
         </div>
 
-        {/* Stats */}
+        {/* Stats - FIXED CONTRAST */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="admin-stat-card">
-            <p className="text-2xl font-bold text-cream">{posts.length}</p>
-            <p className="text-sm text-cream/60">Total de posts</p>
+          <div className="bg-card border border-border rounded-xl p-4">
+            <p className="text-2xl font-bold text-foreground">{posts.length}</p>
+            <p className="text-sm text-muted-foreground">Total de posts</p>
           </div>
-          <div className="admin-stat-card">
+          <div className="bg-card border border-secondary/30 rounded-xl p-4">
             <p className="text-2xl font-bold text-secondary">{posts.filter(p => p.is_pinned).length}</p>
-            <p className="text-sm text-cream/60">Fixados</p>
+            <p className="text-sm text-muted-foreground">Fixados</p>
           </div>
-          <div className="admin-stat-card">
-            <p className="text-2xl font-bold text-emerald-400">{posts.filter(p => p.is_highlighted).length}</p>
-            <p className="text-sm text-cream/60">Destacados</p>
+          <div className="bg-card border border-emerald-500/30 rounded-xl p-4">
+            <p className="text-2xl font-bold text-emerald-500">{posts.filter(p => p.is_highlighted).length}</p>
+            <p className="text-sm text-muted-foreground">Destacados</p>
           </div>
-          <div className="admin-stat-card">
-            <p className="text-2xl font-bold text-red-400">{posts.filter(p => p.is_hidden).length}</p>
+          <div className="bg-card border border-red-500/30 rounded-xl p-4">
+            <p className="text-2xl font-bold text-red-500">{posts.filter(p => p.is_hidden).length}</p>
             <p className="text-sm text-muted-foreground">Ocultos</p>
           </div>
         </div>

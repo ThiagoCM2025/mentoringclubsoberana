@@ -418,7 +418,7 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
             className="flex items-center gap-2 text-sm text-cream/60 hover:text-cream transition-colors"
           >
             <MessageCircle className="w-5 h-5" />
-            <span>{post.comments_count}</span>
+            <span>{showComments ? comments.length : post.comments_count}</span>
             {showComments ? (
               <ChevronUp className="w-4 h-4" />
             ) : (
