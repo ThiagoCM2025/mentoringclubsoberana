@@ -690,6 +690,115 @@ const StudentDashboard = () => {
           </motion.div>
         </section>
 
+        {/* Continue Watching */}
+        <ContinueWatching items={continueWatching} />
+
+        {/* My Courses */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-serif font-bold text-cream">
+              Meus Cursos
+            </h2>
+          </div>
+          {loading ? (
+            <SkeletonCourseGrid count={3} className="[&>div]:bg-zinc-900 [&>div]:border-secondary/20" />
+          ) : enrollments.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {enrollments.map((enrollment, index) => (
+                <CourseCard
+                  key={enrollment.course_id}
+                  id={enrollment.courses.id}
+                  title={enrollment.courses.title}
+                  description={enrollment.courses.description}
+                  thumbnail={enrollment.courses.thumbnail_url}
+                  progress={progress[enrollment.course_id] || 0}
+                  totalLessons={courseStats[enrollment.course_id]?.total || 0}
+                  completedLessons={courseStats[enrollment.course_id]?.completed || 0}
+                  index={index}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-zinc-900/50 rounded-2xl border border-secondary/10">
+              <BookOpen className="w-16 h-16 text-secondary/40 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-cream mb-2">
+                Nenhum curso ainda
+              </h3>
+              <p className="text-cream/60 max-w-md mx-auto">
+                Você ainda não está matriculada em nenhum curso. Explore os cursos disponíveis abaixo.
+              </p>
+            </div>
+          )}
+        </section>
+
+        {/* Daily Challenges & Study Calendar */}
+        <section className="mb-12 grid md:grid-cols-2 gap-6">
+          <DailyChallenges />
+          <StudyCalendar />
+        </section>
+
+        {/* A Jornada Soberana - Programas */}
+        <section className="mb-12">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex items-center justify-between mb-6"
+          >
+            <div>
+              <h2 className="text-2xl font-serif font-bold text-cream">
+                A Jornada Soberana
+              </h2>
+              <p className="text-cream/50 text-sm mt-1">
+                Conheça nossos programas e evolua sua carreira
+              </p>
+            </div>
+            <a 
+              href="/#jornada"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="border-secondary/30 text-secondary hover:bg-secondary/10"
+              >
+                Ver no Site
+                <ExternalLink className="w-4 h-4 ml-2" />
+              </Button>
+            </a>
+          </motion.div>
+
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.12,
+                  delayChildren: 0.4
+                }
+              }
+            }}
+          >
+            {programsList.map((program, index) => (
+              <ProgramCard 
+                key={program.slug} 
+                program={program} 
+                index={index} 
+              />
+            ))}
+          </motion.div>
+        </section>
+
+        {/* Learning Paths */}
+        <section className="mb-12">
+          <LearningPaths />
+        </section>
+
         {/* Quick Actions Section */}
         <section className="mb-12">
           <motion.div
@@ -899,113 +1008,18 @@ const StudentDashboard = () => {
           </motion.div>
         </motion.div>
 
-        {/* Continue Watching */}
-        <ContinueWatching items={continueWatching} />
-
-        {/* Daily Challenges & Study Calendar */}
-        <section className="mb-12 grid md:grid-cols-2 gap-6">
-          <DailyChallenges />
-          <StudyCalendar />
-        </section>
-
-        {/* Learning Paths */}
-        <section className="mb-12">
-          <LearningPaths />
-        </section>
-
-        {/* My Courses */}
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-serif font-bold text-cream">
-              Meus Cursos
-            </h2>
-          </div>
-          {loading ? (
-            <SkeletonCourseGrid count={3} className="[&>div]:bg-zinc-900 [&>div]:border-secondary/20" />
-          ) : enrollments.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {enrollments.map((enrollment, index) => (
-                <CourseCard
-                  key={enrollment.course_id}
-                  id={enrollment.courses.id}
-                  title={enrollment.courses.title}
-                  description={enrollment.courses.description}
-                  thumbnail={enrollment.courses.thumbnail_url}
-                  progress={progress[enrollment.course_id] || 0}
-                  totalLessons={courseStats[enrollment.course_id]?.total || 0}
-                  completedLessons={courseStats[enrollment.course_id]?.completed || 0}
-                  index={index}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16 bg-zinc-900/50 rounded-2xl border border-secondary/10">
-              <BookOpen className="w-16 h-16 text-secondary/40 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-cream mb-2">
-                Nenhum curso ainda
-              </h3>
-              <p className="text-cream/60 max-w-md mx-auto">
-                Você ainda não está matriculada em nenhum curso. Explore os cursos disponíveis abaixo.
-              </p>
-            </div>
-          )}
-        </section>
-
-        {/* A Jornada Soberana - Programas */}
-        <section className="mb-12">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex items-center justify-between mb-6"
+        {/* Support Section */}
+        <section className="py-8 text-center border-t border-secondary/10 mt-8">
+          <p className="text-cream/60 text-sm mb-3">Precisa de ajuda?</p>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-secondary hover:bg-secondary/10"
+            onClick={() => window.open("https://wa.me/5511993563468?text=Olá! Preciso de ajuda com a plataforma Soberana.", "_blank")}
           >
-            <div>
-              <h2 className="text-2xl font-serif font-bold text-cream">
-                A Jornada Soberana
-              </h2>
-              <p className="text-cream/50 text-sm mt-1">
-                Conheça nossos programas e evolua sua carreira
-              </p>
-            </div>
-            <a 
-              href="/#jornada"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="border-secondary/30 text-secondary hover:bg-secondary/10"
-              >
-                Ver no Site
-                <ExternalLink className="w-4 h-4 ml-2" />
-              </Button>
-            </a>
-          </motion.div>
-
-          <motion.div 
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6"
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.12,
-                  delayChildren: 0.4
-                }
-              }
-            }}
-          >
-            {programsList.map((program, index) => (
-              <ProgramCard 
-                key={program.slug} 
-                program={program} 
-                index={index} 
-              />
-            ))}
-          </motion.div>
+            <MessageCircle className="w-4 h-4 mr-2" />
+            Falar com Suporte
+          </Button>
         </section>
       </main>
 
