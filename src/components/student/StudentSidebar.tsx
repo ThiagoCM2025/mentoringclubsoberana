@@ -11,7 +11,8 @@ import {
   ChevronRight,
   Flame,
   Trophy,
-  Star
+  Star,
+  BarChart2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,7 @@ interface StudentSidebarProps {
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/student" },
   { icon: BookOpen, label: "Meus Cursos", path: "/student/courses" },
+  { icon: BarChart2, label: "Analytics", path: "/student/analytics" },
   { icon: Trophy, label: "Conquistas", path: "/student/achievements" },
   { icon: Award, label: "Certificados", path: "/student/certificates" },
   { icon: User, label: "Perfil", path: "/student/profile" },

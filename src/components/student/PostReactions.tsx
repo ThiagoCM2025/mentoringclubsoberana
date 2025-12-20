@@ -128,17 +128,21 @@ export const PostReactions = ({ postId, onReactionChange }: PostReactionsProps) 
         })}
       </div>
 
-      {/* Add reaction button */}
+      {/* Add reaction button - IMPROVED VISIBILITY */}
       <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.15 }}
+        whileTap={{ scale: 0.9 }}
         onClick={() => setShowPicker(!showPicker)}
         className={cn(
-          "w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors",
-          userHasReacted
-            ? "bg-secondary/20 text-secondary"
-            : "bg-zinc-800 text-cream/60 hover:text-cream hover:bg-zinc-700"
+          "w-9 h-9 rounded-full flex items-center justify-center text-lg font-bold transition-all",
+          "border-2 border-dashed",
+          showPicker
+            ? "bg-secondary text-secondary-foreground border-secondary"
+            : userHasReacted
+              ? "bg-secondary/20 text-secondary border-secondary/40 hover:bg-secondary/30"
+              : "bg-zinc-800 text-cream border-cream/30 hover:border-secondary hover:text-secondary hover:bg-secondary/10"
         )}
+        title="Adicionar reação"
       >
         +
       </motion.button>

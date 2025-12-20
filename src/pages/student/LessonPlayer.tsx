@@ -21,6 +21,7 @@ import {
   List
 } from "lucide-react";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
+import AIAssistant from "@/components/student/AIAssistant";
 
 interface Lesson {
   id: string;
@@ -553,6 +554,13 @@ const LessonPlayer = () => {
           )}
         </AnimatePresence>
       </div>
+      
+      {/* AI Assistant - Contextual help for the lesson */}
+      <AIAssistant 
+        contextType="lesson" 
+        contextId={lessonId} 
+        contextTitle={lesson?.title} 
+      />
     </div>
   );
 };
