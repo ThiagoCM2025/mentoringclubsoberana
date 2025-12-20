@@ -48,6 +48,7 @@ import { DailyChallenges } from "@/components/student/DailyChallenges";
 import { LearningPaths } from "@/components/student/LearningPaths";
 import { StudyCalendar } from "@/components/student/StudyCalendar";
 import { AIAssistant } from "@/components/student/AIAssistant";
+import PushNotificationPrompt from "@/components/student/PushNotificationPrompt";
 
 interface Course {
   id: string;
@@ -1017,6 +1018,9 @@ const StudentDashboard = () => {
 
       {/* AI Assistant */}
       <AIAssistant />
+      
+      {/* Push Notification Prompt */}
+      <PushNotificationPrompt />
     </div>
   );
 };
