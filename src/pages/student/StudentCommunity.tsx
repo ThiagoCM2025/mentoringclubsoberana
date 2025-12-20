@@ -256,8 +256,12 @@ const StudentCommunity = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Header */}
-      <header className="bg-black border-b border-secondary/20 py-4 px-4 sticky top-0 z-50">
+      {/* Header - Premium Navbar with Gradient */}
+      <motion.header 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-gradient-to-r from-black via-zinc-900/90 to-black backdrop-blur-md border-b border-secondary/30 py-4 px-4 sticky top-0 z-50 shadow-[0_4px_30px_rgba(166,144,97,0.08)]"
+      >
         <div className="container-soberana flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
@@ -372,7 +376,7 @@ const StudentCommunity = () => {
             </DialogContent>
           </Dialog>
         </div>
-      </header>
+      </motion.header>
 
       <main className="container-soberana py-8">
         {/* Header section */}

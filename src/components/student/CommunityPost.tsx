@@ -5,6 +5,23 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Heart, 
@@ -14,7 +31,12 @@ import {
   ChevronUp,
   Pin,
   Star,
-  Image as ImageIcon
+  Image as ImageIcon,
+  MoreVertical,
+  Edit,
+  Trash2,
+  X,
+  Check
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -22,6 +44,7 @@ import { cn } from "@/lib/utils";
 import PostReactions from "./PostReactions";
 import PostPoll from "./PostPoll";
 import MentionAutocomplete from "./MentionAutocomplete";
+import CommentReactions from "./CommentReactions";
 
 interface Comment {
   id: string;
@@ -84,6 +107,10 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
   const [submittingComment, setSubmittingComment] = useState(false);
   const [mentionedUsers, setMentionedUsers] = useState<{ userId: string; userName: string }[]>([]);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editingContent, setEditingContent] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
 
   const authorName = post.profiles?.full_name || "Aluna";
   const authorInitials = authorName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
@@ -198,8 +225,77 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
       }
       onRefresh();
     }
-
     setSubmittingComment(false);
+  };
+
+  const handleEditComment = async (commentId: string) => {
+    if (!editingContent.trim()) return;
+
+    const { error } = await supabase
+      .from("community_comments")
+      .update({ content: editingContent.trim() })
+      .eq("id", commentId);
+
+    if (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível editar o comentário.",
+        variant: "destructive",
+      });
+    } else {
+      setComments((prev) =>
+        prev.map((c) =>
+          c.id === commentId ? { ...c, content: editingContent.trim() } : c
+        )
+      );
+      setEditingCommentId(null);
+      setEditingContent("");
+      toast({
+        title: "Comentário editado",
+        description: "Seu comentário foi atualizado.",
+      });
+    }
+  };
+
+  const handleDeleteComment = async () => {
+    if (!commentToDelete) return;
+
+    const { error } = await supabase
+      .from("community_comments")
+      .delete()
+      .eq("id", commentToDelete);
+
+    if (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir o comentário.",
+        variant: "destructive",
+      });
+    } else {
+      setComments((prev) => prev.filter((c) => c.id !== commentToDelete));
+      setDeleteDialogOpen(false);
+      setCommentToDelete(null);
+      onRefresh();
+      toast({
+        title: "Comentário excluído",
+        description: "O comentário foi removido.",
+      });
+    }
+  };
+
+  const startEditComment = (comment: Comment) => {
+    setEditingCommentId(comment.id);
+    setEditingContent(comment.content);
+  };
+
+  const cancelEditComment = () => {
+    setEditingCommentId(null);
+    setEditingContent("");
+  };
+
+  const confirmDeleteComment = (commentId: string) => {
+    setCommentToDelete(commentId);
+    setDeleteDialogOpen(true);
   };
 
   // Render content with mentions highlighted
@@ -370,6 +466,8 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
                   {comments.map((comment, commentIndex) => {
                     const commentAuthor = comment.profiles?.full_name || "Aluna";
                     const commentInitials = commentAuthor.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+                    const isOwnComment = user?.id === comment.user_id;
+                    const isEditing = editingCommentId === comment.id;
                     
                     return (
                       <motion.div 
@@ -377,27 +475,93 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: commentIndex * 0.05 }}
-                        className="flex gap-3"
+                        className="flex gap-3 group"
                       >
-                        <Avatar className="w-8 h-8 ring-2 ring-secondary/10">
+                        <Avatar className="w-8 h-8 ring-2 ring-secondary/10 flex-shrink-0">
                           <AvatarImage src={comment.profiles?.avatar_url || undefined} />
                           <AvatarFallback className="bg-zinc-800 text-cream/70 text-xs">
                             {commentInitials}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 bg-gradient-to-br from-zinc-800 to-zinc-800/50 rounded-xl p-3 border border-secondary/10">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-sm text-cream">
-                              {commentAuthor}
-                            </span>
-                            <span className="text-xs text-cream/40">
-                              {formatDistanceToNow(new Date(comment.created_at), { 
-                                addSuffix: true, 
-                                locale: ptBR 
-                              })}
-                            </span>
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-sm text-cream">
+                                {commentAuthor}
+                              </span>
+                              <span className="text-xs text-cream/40">
+                                {formatDistanceToNow(new Date(comment.created_at), { 
+                                  addSuffix: true, 
+                                  locale: ptBR 
+                                })}
+                              </span>
+                            </div>
+                            {isOwnComment && !isEditing && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <button className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-secondary/10 transition-all">
+                                    <MoreVertical className="w-4 h-4 text-cream/50" />
+                                  </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="bg-zinc-900 border-secondary/20">
+                                  <DropdownMenuItem 
+                                    onClick={() => startEditComment(comment)}
+                                    className="text-cream hover:bg-secondary/10 cursor-pointer"
+                                  >
+                                    <Edit className="w-4 h-4 mr-2" />
+                                    Editar
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    onClick={() => confirmDeleteComment(comment.id)}
+                                    className="text-red-400 hover:bg-red-400/10 cursor-pointer"
+                                  >
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Excluir
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
                           </div>
-                          <p className="text-sm text-cream/80 leading-relaxed">{renderContent(comment.content)}</p>
+                          
+                          {isEditing ? (
+                            <div className="space-y-2">
+                              <Textarea
+                                value={editingContent}
+                                onChange={(e) => setEditingContent(e.target.value)}
+                                className="bg-zinc-700/50 border-secondary/20 text-cream text-sm resize-none"
+                                rows={2}
+                              />
+                              <div className="flex items-center justify-end gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={cancelEditComment}
+                                  className="text-cream/60 hover:text-cream h-7 px-2"
+                                >
+                                  <X className="w-3.5 h-3.5 mr-1" />
+                                  Cancelar
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleEditComment(comment.id)}
+                                  disabled={!editingContent.trim()}
+                                  className="bg-secondary hover:bg-secondary/90 h-7 px-2"
+                                >
+                                  <Check className="w-3.5 h-3.5 mr-1" />
+                                  Salvar
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-cream/80 leading-relaxed">{renderContent(comment.content)}</p>
+                          )}
+                          
+                          {/* Comment Reactions */}
+                          {!isEditing && (
+                            <div className="mt-2 pt-2 border-t border-secondary/5">
+                              <CommentReactions commentId={comment.id} />
+                            </div>
+                          )}
                         </div>
                       </motion.div>
                     );
@@ -455,6 +619,29 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
           )}
         </motion.div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-zinc-900 border-secondary/20">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-cream">Excluir comentário?</AlertDialogTitle>
+            <AlertDialogDescription className="text-cream/60">
+              Esta ação não pode ser desfeita. O comentário será permanentemente removido.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-cream hover:bg-zinc-700">
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteComment}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.div>
   );
 };
