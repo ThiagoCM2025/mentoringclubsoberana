@@ -355,10 +355,10 @@ const AdminCommunity = () => {
             <Users className="w-6 h-6 text-secondary" />
           </div>
           <div>
-            <h1 className="text-2xl font-serif font-bold text-cream">
+            <h1 className="text-2xl font-serif font-bold text-foreground">
               Moderação da Comunidade
             </h1>
-            <p className="text-cream/60">
+            <p className="text-muted-foreground">
               Gerencie publicações, fixe conteúdos e destaque histórias de sucesso
             </p>
           </div>

@@ -337,7 +337,7 @@ export default function AdminSettings() {
                                 />
                                 <Label
                                   htmlFor={`${admin.user_id}-${key}`}
-                                  className="text-sm cursor-pointer text-cream/80"
+                                  className="text-sm cursor-pointer text-muted-foreground"
                                 >
                                   {label}
                                 </Label>
@@ -374,13 +374,13 @@ export default function AdminSettings() {
           <TabsContent value="general">
             <Card className="admin-card">
               <CardHeader>
-                <CardTitle className="text-cream">Configurações Gerais</CardTitle>
-                <CardDescription className="text-cream/60">
+                <CardTitle className="text-foreground">Configurações Gerais</CardTitle>
+                <CardDescription className="text-muted-foreground">
                   Configurações gerais da plataforma (em breve)
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-cream/60 text-center py-8">
+                <p className="text-muted-foreground text-center py-8">
                   Funcionalidades adicionais serão adicionadas em breve.
                 </p>
               </CardContent>
