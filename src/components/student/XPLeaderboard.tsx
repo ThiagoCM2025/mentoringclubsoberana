@@ -49,7 +49,7 @@ export function XPLeaderboard({ leaderboard, loading }: XPLeaderboardProps) {
 
   if (loading) {
     return (
-      <div className="bg-card rounded-xl border border-border p-5 h-full">
+      <div className="bg-zinc-900/95 rounded-xl border border-secondary/20 p-5 h-full">
         <div className="flex items-center gap-2 mb-4">
           <Trophy className="w-5 h-5 text-secondary" />
           <h3 className="font-semibold text-cream">Top Alunas</h3>
@@ -71,7 +71,7 @@ export function XPLeaderboard({ leaderboard, loading }: XPLeaderboardProps) {
 
   if (leaderboard.length === 0) {
     return (
-      <div className="bg-card rounded-xl border border-border p-5 h-full">
+      <div className="bg-zinc-900/95 rounded-xl border border-secondary/20 p-5 h-full">
         <div className="flex items-center gap-2 mb-4">
           <Trophy className="w-5 h-5 text-secondary" />
           <h3 className="font-semibold text-cream">Top Alunas</h3>
@@ -85,7 +85,7 @@ export function XPLeaderboard({ leaderboard, loading }: XPLeaderboardProps) {
   }
 
   return (
-    <div className="bg-card rounded-xl border border-border p-5 h-full">
+    <div className="bg-zinc-900/95 rounded-xl border border-secondary/20 p-5 h-full">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Trophy className="w-5 h-5 text-secondary" />

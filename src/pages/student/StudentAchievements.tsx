@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
+import { XPLeaderboard } from "@/components/student/XPLeaderboard";
 
 const iconMap: Record<string, any> = {
   "play-circle": PlayCircle,
@@ -138,7 +139,7 @@ const StudentAchievements = () => {
           </div>
         </motion.div>
 
-        {/* Leaderboard */}
+        {/* Leaderboard - Using XPLeaderboard component */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -147,52 +148,10 @@ const StudentAchievements = () => {
         >
           <h2 className="text-2xl font-serif font-bold text-cream mb-4 flex items-center gap-2">
             <Trophy className="w-6 h-6 text-secondary" />
-            Ranking
+            Ranking das Alunas
           </h2>
           
-          <div className="bg-zinc-900 rounded-xl border border-secondary/10 overflow-hidden">
-            {leaderboard.map((entry, index) => {
-              const isCurrentUser = entry.user_id === user?.id;
-              return (
-                <div
-                  key={entry.user_id}
-                  className={cn(
-                    "flex items-center gap-4 p-4 border-b border-secondary/10 last:border-b-0",
-                    isCurrentUser && "bg-secondary/10"
-                  )}
-                >
-                  <div className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center font-bold",
-                    index === 0 && "bg-yellow-500/20 text-yellow-500",
-                    index === 1 && "bg-gray-400/20 text-gray-400",
-                    index === 2 && "bg-orange-500/20 text-orange-500",
-                    index > 2 && "bg-zinc-800 text-cream/60"
-                  )}>
-                    {index === 0 ? <Crown className="w-5 h-5" /> : entry.rank}
-                  </div>
-                  <div className="flex-1">
-                    <p className={cn(
-                      "font-medium",
-                      isCurrentUser ? "text-secondary" : "text-cream"
-                    )}>
-                      {entry.full_name || "Estudante"}
-                      {isCurrentUser && " (você)"}
-                    </p>
-                    <p className="text-sm text-cream/50">
-                      Nível {calculateLevel(entry.xp)}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-cream">{entry.xp} XP</p>
-                    <p className="text-xs text-cream/50 flex items-center gap-1 justify-end">
-                      <Flame className="w-3 h-3 text-orange-400" />
-                      {entry.streak_days} dias
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <XPLeaderboard leaderboard={leaderboard} loading={loading} />
         </motion.div>
 
         {/* Badges */}
