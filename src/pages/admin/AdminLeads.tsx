@@ -24,15 +24,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download } from "lucide-react";
+import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download, Columns, TableIcon } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { Database } from "@/integrations/supabase/types";
 import { NewLeadDialog } from "@/components/admin/NewLeadDialog";
+import { LeadPipelineView } from "@/components/admin/leads/LeadPipelineView";
+import { LeadMetrics } from "@/components/admin/leads/LeadMetrics";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
@@ -98,6 +101,7 @@ const AdminLeads = () => {
   const [communicationHistory, setCommunicationHistory] = useState<CommunicationHistory[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [newLeadDialogOpen, setNewLeadDialogOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"pipeline" | "table">("pipeline");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
@@ -265,29 +269,31 @@ const AdminLeads = () => {
           </p>
         </motion.div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="admin-stat-card p-5">
-            <p className="text-2xl font-bold text-foreground">{leads.length}</p>
-            <p className="text-sm text-muted-foreground font-medium">Total</p>
-          </div>
-          <div className="admin-stat-card p-5">
-            <p className="text-2xl font-bold text-secondary">
-              {leads.filter((l) => l.status === "new").length}
-            </p>
-            <p className="text-sm text-muted-foreground font-medium">Novos</p>
-          </div>
-          <div className="admin-stat-card p-5">
-            <p className="text-2xl font-bold text-red-400">
-              {leads.filter((l) => l.temperature === "hot").length}
-            </p>
-            <p className="text-sm text-muted-foreground font-medium">Quentes</p>
-          </div>
-          <div className="admin-stat-card p-5">
-            <p className="text-2xl font-bold text-emerald-400">
-              {leads.filter((l) => l.status === "converted").length}
-            </p>
-            <p className="text-sm text-muted-foreground font-medium">Convertidos</p>
+        {/* Metrics */}
+        <LeadMetrics leads={leads} />
+
+        {/* View Mode Toggle */}
+        <div className="flex items-center justify-between mb-6">
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "pipeline" | "table")}>
+            <TabsList className="bg-muted border border-border">
+              <TabsTrigger 
+                value="pipeline" 
+                className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+              >
+                <Columns className="w-4 h-4 mr-2" />
+                Pipeline
+              </TabsTrigger>
+              <TabsTrigger 
+                value="table"
+                className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+              >
+                <TableIcon className="w-4 h-4 mr-2" />
+                Tabela
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <div className="text-sm text-muted-foreground">
+            {leads.length} leads no total
           </div>
         </div>
 
@@ -353,87 +359,94 @@ const AdminLeads = () => {
           </Select>
         </div>
 
-        {/* Table */}
-        <div className="admin-card overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-border hover:bg-muted/50">
-                <TableHead>Lead</TableHead>
-                <TableHead>Contato</TableHead>
-                <TableHead className="text-center">Nurturing</TableHead>
-                <TableHead>Temperatura</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Data</TableHead>
-                <TableHead className="w-[70px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
-                    Carregando...
-                  </TableCell>
+        {/* Pipeline View */}
+        {viewMode === "pipeline" && (
+          <LeadPipelineView leads={filteredLeads} onRefresh={fetchLeads} />
+        )}
+
+        {/* Table View */}
+        {viewMode === "table" && (
+          <div className="admin-card overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border hover:bg-muted/50">
+                  <TableHead>Lead</TableHead>
+                  <TableHead>Contato</TableHead>
+                  <TableHead className="text-center">Nurturing</TableHead>
+                  <TableHead>Temperatura</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Data</TableHead>
+                  <TableHead className="w-[70px]"></TableHead>
                 </TableRow>
-              ) : filteredLeads.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
-                    <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">Nenhum lead encontrado</p>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredLeads.map((lead) => {
-                  const temp = lead.temperature ? temperatureConfig[lead.temperature] : null;
-                  const status = lead.status ? statusConfig[lead.status] : null;
-                  return (
-                    <TableRow key={lead.id} className="cursor-pointer hover:bg-muted/50" onClick={() => openLeadDetails(lead)}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                            <span className="text-primary font-medium">
-                              {lead.full_name.charAt(0).toUpperCase()}
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8">
+                      Carregando...
+                    </TableCell>
+                  </TableRow>
+                ) : filteredLeads.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8">
+                      <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                      <p className="text-muted-foreground">Nenhum lead encontrado</p>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredLeads.map((lead) => {
+                    const temp = lead.temperature ? temperatureConfig[lead.temperature] : null;
+                    const status = lead.status ? statusConfig[lead.status] : null;
+                    return (
+                      <TableRow key={lead.id} className="cursor-pointer hover:bg-muted/50" onClick={() => openLeadDetails(lead)}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                              <span className="text-primary font-medium">
+                                {lead.full_name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div>
+                              <p className="font-medium">{lead.full_name}</p>
+                              <p className="text-xs text-muted-foreground">{lead.source || "Direto"}</p>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm">{lead.email}</p>
+                          <p className="text-xs text-muted-foreground">{lead.phone || "-"}</p>
+                        </TableCell>
+                        <TableCell>
+                          {temp && (
+                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${temp.color}`}>
+                              <temp.icon className="w-3 h-3" />
+                              {temp.label}
                             </span>
-                          </div>
-                          <div>
-                            <p className="font-medium">{lead.full_name}</p>
-                            <p className="text-xs text-muted-foreground">{lead.source || "Direto"}</p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <p className="text-sm">{lead.email}</p>
-                        <p className="text-xs text-muted-foreground">{lead.phone || "-"}</p>
-                      </TableCell>
-                      <TableCell>
-                        {temp && (
-                          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${temp.color}`}>
-                            <temp.icon className="w-3 h-3" />
-                            {temp.label}
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {status && (
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${status.color}`}>
-                            {status.label}
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {new Date(lead.created_at).toLocaleDateString("pt-BR")}
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); openLeadDetails(lead); }}>
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {status && (
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${status.color}`}>
+                              {status.label}
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {new Date(lead.created_at).toLocaleDateString("pt-BR")}
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); openLeadDetails(lead); }}>
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        )}
 
         {/* Lead Details Dialog */}
         <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setCommunicationHistory([]); }}>
