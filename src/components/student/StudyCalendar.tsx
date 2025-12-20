@@ -79,12 +79,12 @@ export function StudyCalendar() {
   };
 
   const getHeatmapColor = (day: StudyDay | undefined): string => {
-    if (!day) return "bg-zinc-800/50";
-    if (day.lessonsCompleted >= 5) return "bg-green-500";
-    if (day.lessonsCompleted >= 3) return "bg-green-500/80";
-    if (day.lessonsCompleted >= 2) return "bg-green-500/60";
-    if (day.lessonsCompleted >= 1) return "bg-green-500/40";
-    return "bg-zinc-800/50";
+    if (!day) return "bg-zinc-700/60";
+    if (day.lessonsCompleted >= 5) return "bg-emerald-500";
+    if (day.lessonsCompleted >= 3) return "bg-emerald-500/85";
+    if (day.lessonsCompleted >= 2) return "bg-emerald-500/70";
+    if (day.lessonsCompleted >= 1) return "bg-emerald-500/55";
+    return "bg-zinc-700/60";
   };
 
   const monthNames = [
@@ -111,7 +111,7 @@ export function StudyCalendar() {
   today.setHours(0, 0, 0, 0);
 
   return (
-    <div className="bg-zinc-900/50 rounded-2xl border border-secondary/20 p-4">
+    <div className="bg-card rounded-2xl border border-border p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-cream flex items-center gap-2">
@@ -123,7 +123,7 @@ export function StudyCalendar() {
             variant="ghost"
             size="icon"
             onClick={goToPreviousMonth}
-            className="h-8 w-8 text-cream/70 hover:text-cream"
+            className="h-8 w-8 text-cream/80 hover:text-cream hover:bg-secondary/10"
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
@@ -134,7 +134,7 @@ export function StudyCalendar() {
             variant="ghost"
             size="icon"
             onClick={goToNextMonth}
-            className="h-8 w-8 text-cream/70 hover:text-cream"
+            className="h-8 w-8 text-cream/80 hover:text-cream hover:bg-secondary/10"
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
@@ -143,24 +143,24 @@ export function StudyCalendar() {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-2 mb-4">
-        <div className="bg-zinc-800/50 rounded-lg p-2 text-center">
+        <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-2.5 text-center">
           <p className="text-lg font-bold text-secondary">{daysStudied}</p>
-          <p className="text-xs text-cream/50">dias</p>
+          <p className="text-xs text-cream/70 font-medium">dias</p>
         </div>
-        <div className="bg-zinc-800/50 rounded-lg p-2 text-center">
+        <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-2.5 text-center">
           <p className="text-lg font-bold text-secondary">{totalLessons}</p>
-          <p className="text-xs text-cream/50">aulas</p>
+          <p className="text-xs text-cream/70 font-medium">aulas</p>
         </div>
-        <div className="bg-zinc-800/50 rounded-lg p-2 text-center">
+        <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-2.5 text-center">
           <p className="text-lg font-bold text-secondary">{Math.round(totalMinutes / 60)}h</p>
-          <p className="text-xs text-cream/50">estudo</p>
+          <p className="text-xs text-cream/70 font-medium">estudo</p>
         </div>
       </div>
 
       {/* Week days header */}
       <div className="grid grid-cols-7 gap-1 mb-1">
         {weekDays.map((day, i) => (
-          <div key={i} className="text-center text-xs text-cream/50 py-1">
+          <div key={i} className="text-center text-xs text-cream/80 font-medium py-1">
             {day}
           </div>
         ))}
@@ -186,9 +186,10 @@ export function StudyCalendar() {
                     whileHover={{ scale: 1.1 }}
                     className={cn(
                       "aspect-square rounded-md flex items-center justify-center text-xs transition-colors cursor-pointer",
-                      isFuture ? "bg-zinc-800/30 text-cream/30" : getHeatmapColor(studyDay),
-                      isToday && "ring-2 ring-secondary ring-offset-1 ring-offset-zinc-900",
-                      studyDay && "text-white font-medium"
+                      isFuture ? "bg-zinc-800/40 text-cream/40" : getHeatmapColor(studyDay),
+                      !isFuture && "hover:ring-1 hover:ring-secondary/50",
+                      isToday && "ring-2 ring-secondary ring-offset-1 ring-offset-card",
+                      studyDay ? "text-white font-semibold" : "text-cream/80"
                     )}
                   >
                     {day.getDate()}
@@ -218,14 +219,14 @@ export function StudyCalendar() {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-end gap-1 mt-3">
-        <span className="text-xs text-cream/50 mr-2">Menos</span>
-        <div className="w-3 h-3 rounded-sm bg-zinc-800/50" />
-        <div className="w-3 h-3 rounded-sm bg-green-500/40" />
-        <div className="w-3 h-3 rounded-sm bg-green-500/60" />
-        <div className="w-3 h-3 rounded-sm bg-green-500/80" />
-        <div className="w-3 h-3 rounded-sm bg-green-500" />
-        <span className="text-xs text-cream/50 ml-2">Mais</span>
+      <div className="flex items-center justify-end gap-1.5 mt-4">
+        <span className="text-xs text-cream/70 mr-2 font-medium">Menos</span>
+        <div className="w-4 h-4 rounded-sm bg-zinc-700/60" />
+        <div className="w-4 h-4 rounded-sm bg-emerald-500/55" />
+        <div className="w-4 h-4 rounded-sm bg-emerald-500/70" />
+        <div className="w-4 h-4 rounded-sm bg-emerald-500/85" />
+        <div className="w-4 h-4 rounded-sm bg-emerald-500" />
+        <span className="text-xs text-cream/70 ml-2 font-medium">Mais</span>
       </div>
     </div>
   );
