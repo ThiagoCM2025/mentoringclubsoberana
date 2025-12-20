@@ -111,6 +111,7 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
   const [editingContent, setEditingContent] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
+  const [localCommentsCount, setLocalCommentsCount] = useState(post.comments_count);
 
   const authorName = post.profiles?.full_name || "Aluna";
   const authorInitials = authorName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
@@ -154,6 +155,7 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
         }));
 
         setComments(commentsWithProfiles as Comment[]);
+        setLocalCommentsCount(commentsWithProfiles.length);
       }
       setLoadingComments(false);
     } else {
@@ -418,7 +420,7 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
             className="flex items-center gap-2 text-sm text-cream/60 hover:text-cream transition-colors"
           >
             <MessageCircle className="w-5 h-5" />
-            <span>{showComments ? comments.length : post.comments_count}</span>
+            <span>{showComments ? comments.length : localCommentsCount}</span>
             {showComments ? (
               <ChevronUp className="w-4 h-4" />
             ) : (

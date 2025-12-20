@@ -41,7 +41,17 @@ import StudyReminderButton from "@/components/student/StudyReminderButton";
 import { SoberanaLogo } from "@/components/brand/SoberanaLogo";
 import ProgramCard from "@/components/student/ProgramCard";
 import { programsList } from "@/data/programs";
-import { SkeletonCourseGrid, SkeletonHero, SkeletonStats } from "@/components/ui/premium-skeleton";
+import { 
+  SkeletonCourseGrid, 
+  SkeletonHero, 
+  SkeletonStats, 
+  SkeletonWelcomeBanner,
+  SkeletonChallenges,
+  SkeletonCalendar,
+  SkeletonLeaderboard,
+  SkeletonLearningPaths,
+  SkeletonQuickActions 
+} from "@/components/ui/premium-skeleton";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import heroVariations from "@/assets/hero-variations.jpeg";
 import { DailyChallenges } from "@/components/student/DailyChallenges";
@@ -49,6 +59,7 @@ import { LearningPaths } from "@/components/student/LearningPaths";
 import { StudyCalendar } from "@/components/student/StudyCalendar";
 import { AIAssistant } from "@/components/student/AIAssistant";
 import PushNotificationPrompt from "@/components/student/PushNotificationPrompt";
+import { XPLeaderboard } from "@/components/student/XPLeaderboard";
 
 interface Course {
   id: string;
@@ -75,7 +86,7 @@ interface ContinueItem {
 const StudentDashboard = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { stats: gamificationStats, calculateLevel, getCurrentLevelProgress, getXpForNextLevel, hasNearbyAchievement } = useGamification();
+  const { stats: gamificationStats, calculateLevel, getCurrentLevelProgress, getXpForNextLevel, hasNearbyAchievement, leaderboard, loading: gamificationLoading } = useGamification();
   const showPulse = hasNearbyAchievement();
   const xpForNextLevel = gamificationStats ? getXpForNextLevel(calculateLevel(gamificationStats.xp)) : 500;
   const xpRemaining = gamificationStats ? xpForNextLevel - gamificationStats.xp : 500;
@@ -731,10 +742,11 @@ const StudentDashboard = () => {
           )}
         </section>
 
-        {/* Daily Challenges & Study Calendar */}
-        <section className="mb-12 grid md:grid-cols-2 gap-6">
+        {/* Daily Challenges, Study Calendar & XP Leaderboard */}
+        <section className="mb-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <DailyChallenges />
           <StudyCalendar />
+          <XPLeaderboard leaderboard={leaderboard} loading={gamificationLoading} />
         </section>
 
         {/* A Jornada Soberana - Programas */}
