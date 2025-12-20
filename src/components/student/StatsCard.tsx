@@ -11,14 +11,6 @@ interface StatsCardProps {
   index?: number;
 }
 
-const colorClasses = {
-  primary: "bg-secondary/10 text-secondary",
-  secondary: "bg-secondary/10 text-secondary",
-  accent: "bg-secondary/10 text-secondary",
-  green: "bg-green-500/10 text-green-400",
-  orange: "bg-orange-500/10 text-orange-400",
-};
-
 const StatsCard = ({
   icon: Icon,
   label,
@@ -33,7 +25,7 @@ const StatsCard = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="admin-stat-card p-5"
+      className="p-5 bg-zinc-900 rounded-xl border border-secondary/20 hover:border-secondary/40 transition-all"
     >
       <div className={cn(
         "w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-lg",
