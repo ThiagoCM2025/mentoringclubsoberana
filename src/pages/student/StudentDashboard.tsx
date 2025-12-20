@@ -44,6 +44,10 @@ import { programsList } from "@/data/programs";
 import { SkeletonCourseGrid, SkeletonHero, SkeletonStats } from "@/components/ui/premium-skeleton";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import heroVariations from "@/assets/hero-variations.jpeg";
+import { DailyChallenges } from "@/components/student/DailyChallenges";
+import { LearningPaths } from "@/components/student/LearningPaths";
+import { StudyCalendar } from "@/components/student/StudyCalendar";
+import { AIAssistant } from "@/components/student/AIAssistant";
 
 interface Course {
   id: string;
@@ -897,6 +901,17 @@ const StudentDashboard = () => {
         {/* Continue Watching */}
         <ContinueWatching items={continueWatching} />
 
+        {/* Daily Challenges & Study Calendar */}
+        <section className="mb-12 grid md:grid-cols-2 gap-6">
+          <DailyChallenges />
+          <StudyCalendar />
+        </section>
+
+        {/* Learning Paths */}
+        <section className="mb-12">
+          <LearningPaths />
+        </section>
+
         {/* My Courses */}
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
@@ -904,7 +919,6 @@ const StudentDashboard = () => {
               Meus Cursos
             </h2>
           </div>
-
           {loading ? (
             <SkeletonCourseGrid count={3} className="[&>div]:bg-zinc-900 [&>div]:border-secondary/20" />
           ) : enrollments.length > 0 ? (
@@ -1000,6 +1014,9 @@ const StudentDashboard = () => {
         isOpen={!!previewCourseId}
         onClose={() => setPreviewCourseId(null)}
       />
+
+      {/* AI Assistant */}
+      <AIAssistant />
     </div>
   );
 };
