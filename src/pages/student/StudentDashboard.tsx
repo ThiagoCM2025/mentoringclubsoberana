@@ -58,6 +58,8 @@ import { LearningPaths } from "@/components/student/LearningPaths";
 import { AIAssistant } from "@/components/student/AIAssistant";
 import PushNotificationPrompt from "@/components/student/PushNotificationPrompt";
 import { useAchievementNotification } from "@/hooks/useAchievementNotification";
+import { useRealtimeAchievements } from "@/hooks/useRealtimeAchievements";
+import { BadgeCelebrationModal } from "@/components/student/BadgeCelebrationModal";
 
 
 interface Course {
@@ -103,6 +105,9 @@ const StudentDashboard = () => {
 
   // Achievement notification - monitors and sends push when close to new badge/level
   useAchievementNotification();
+
+  // Realtime achievements - listens for new badges and shows celebration modal
+  const { newBadge, showCelebration, closeCelebration } = useRealtimeAchievements();
 
   const level = gamificationStats ? calculateLevel(gamificationStats.xp) : 1;
   const levelProgress = gamificationStats ? getCurrentLevelProgress(gamificationStats.xp) : 0;
@@ -1107,6 +1112,13 @@ const StudentDashboard = () => {
       
       {/* Push Notification Prompt */}
       <PushNotificationPrompt />
+
+      {/* Badge Celebration Modal */}
+      <BadgeCelebrationModal 
+        badge={newBadge}
+        isOpen={showCelebration}
+        onClose={closeCelebration}
+      />
     </div>
   );
 };
