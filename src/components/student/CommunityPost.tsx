@@ -335,80 +335,125 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
         <PostReactions postId={post.id} onReactionChange={onRefresh} />
       </div>
 
-      {/* Comments Section */}
+      {/* Comments Section - REDESIGNED */}
       {showComments && (
-        <div className="mt-4 pt-4 border-t border-secondary/20 space-y-4">
+        <motion.div 
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          className="mt-4 pt-4 border-t border-secondary/20"
+        >
+          {/* Comments Header */}
+          <div className="flex items-center gap-2 mb-4">
+            <MessageCircle className="w-4 h-4 text-secondary" />
+            <h4 className="text-sm font-medium text-cream">
+              Comentários ({comments.length})
+            </h4>
+          </div>
+
           {loadingComments ? (
-            <div className="flex items-center justify-center py-4">
+            <div className="flex items-center justify-center py-6">
               <div className="animate-spin w-5 h-5 border-2 border-secondary border-t-transparent rounded-full" />
             </div>
           ) : (
             <>
+              {/* Comments List */}
               {comments.length === 0 ? (
-                <p className="text-sm text-cream/50 text-center py-2">
-                  Nenhum comentário ainda. Seja o primeiro!
-                </p>
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <MessageCircle className="w-8 h-8 text-cream/20 mb-2" />
+                  <p className="text-sm text-cream/50">
+                    Nenhum comentário ainda. Seja a primeira!
+                  </p>
+                </div>
               ) : (
-                <div className="space-y-3">
-                  {comments.map((comment) => {
+                <div className="space-y-3 mb-4">
+                  {comments.map((comment, commentIndex) => {
                     const commentAuthor = comment.profiles?.full_name || "Aluna";
                     const commentInitials = commentAuthor.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
                     
                     return (
-                      <div key={comment.id} className="flex gap-3">
-                        <Avatar className="w-8 h-8">
+                      <motion.div 
+                        key={comment.id} 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: commentIndex * 0.05 }}
+                        className="flex gap-3"
+                      >
+                        <Avatar className="w-8 h-8 ring-2 ring-secondary/10">
                           <AvatarImage src={comment.profiles?.avatar_url || undefined} />
                           <AvatarFallback className="bg-zinc-800 text-cream/70 text-xs">
                             {commentInitials}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="flex-1 bg-zinc-800 rounded-lg p-3">
+                        <div className="flex-1 bg-gradient-to-br from-zinc-800 to-zinc-800/50 rounded-xl p-3 border border-secondary/10">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="font-medium text-sm text-cream">
                               {commentAuthor}
                             </span>
-                            <span className="text-xs text-cream/50">
+                            <span className="text-xs text-cream/40">
                               {formatDistanceToNow(new Date(comment.created_at), { 
                                 addSuffix: true, 
                                 locale: ptBR 
                               })}
                             </span>
                           </div>
-                          <p className="text-sm text-cream/80">{renderContent(comment.content)}</p>
+                          <p className="text-sm text-cream/80 leading-relaxed">{renderContent(comment.content)}</p>
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })}
                 </div>
               )}
 
-              {/* New Comment Input */}
-              <div className="flex gap-2">
+              {/* New Comment Input - REDESIGNED */}
+              <div className="rounded-xl bg-gradient-to-br from-zinc-800/80 to-zinc-800/40 border border-secondary/20 overflow-hidden focus-within:border-secondary/40 focus-within:shadow-[0_0_15px_rgba(198,161,97,0.1)] transition-all duration-300">
                 <MentionAutocomplete
                   value={newComment}
                   onChange={setNewComment}
                   onMention={handleMention}
-                  placeholder="Escreva um comentário... Use @nome para mencionar"
-                  className="bg-zinc-800 border-zinc-700 text-cream"
-                  rows={2}
+                  placeholder="Escreva um comentário..."
+                  className="border-0 bg-transparent text-cream focus:ring-0 focus-visible:ring-0 resize-none"
+                  rows={3}
                 />
-                <Button
-                  size="icon"
-                  onClick={handleSubmitComment}
-                  disabled={!newComment.trim() || submittingComment}
-                  className="bg-secondary hover:bg-secondary/90 self-end"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
+                <div className="flex items-center justify-between px-3 py-2.5 border-t border-secondary/10 bg-zinc-900/30">
+                  <div className="flex items-center gap-1.5 text-xs text-cream/40">
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded bg-secondary/20 text-secondary font-medium">@</span>
+                    <span>para mencionar</span>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={handleSubmitComment}
+                    disabled={!newComment.trim() || submittingComment}
+                    className="bg-secondary hover:bg-secondary/90 text-secondary-foreground gap-1.5 transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+                  >
+                    {submittingComment ? (
+                      <div className="animate-spin w-4 h-4 border-2 border-secondary-foreground border-t-transparent rounded-full" />
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        Enviar
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
+
+              {/* Mentioned Users Indicator */}
               {mentionedUsers.length > 0 && (
-                <p className="text-xs text-secondary">
-                  Mencionando: {mentionedUsers.map(m => m.userName).join(", ")}
-                </p>
+                <motion.div 
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-2 flex items-center gap-2 text-xs text-secondary"
+                >
+                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-secondary/20">
+                    <span className="text-[10px]">@</span>
+                  </span>
+                  <span>Mencionando: {mentionedUsers.map(m => m.userName).join(", ")}</span>
+                </motion.div>
               )}
             </>
           )}
-        </div>
+        </motion.div>
       )}
     </motion.div>
   );
