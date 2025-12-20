@@ -5,7 +5,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -26,15 +25,19 @@ import {
   ArrowLeft, 
   Users, 
   Plus, 
-  Heart,
   MessageCircle,
   Send,
   Filter
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import CommunityPost from "@/components/student/CommunityPost";
+import MentionAutocomplete from "@/components/student/MentionAutocomplete";
+import ImageUpload from "@/components/student/ImageUpload";
+import PollCreator from "@/components/student/PollCreator";
+
+interface PollOption {
+  text: string;
+}
 
 interface Post {
   id: string;
@@ -48,6 +51,9 @@ interface Post {
   is_pinned: boolean;
   is_highlighted: boolean;
   is_hidden: boolean;
+  image_url: string | null;
+  poll_question: string | null;
+  poll_options: PollOption[] | null;
   profiles?: {
     full_name: string | null;
     avatar_url: string | null;
@@ -74,11 +80,34 @@ const StudentCommunity = () => {
   const [newPostTitle, setNewPostTitle] = useState("");
   const [newPostContent, setNewPostContent] = useState("");
   const [newPostCategory, setNewPostCategory] = useState("general");
+  const [newPostImage, setNewPostImage] = useState<string | null>(null);
+  const [newPostPoll, setNewPostPoll] = useState<{ question: string; options: PollOption[] } | null>(null);
+  const [mentionedUsers, setMentionedUsers] = useState<{ userId: string; userName: string }[]>([]);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (user) {
       fetchPosts();
+      
+      // Real-time subscription for new posts
+      const channel = supabase
+        .channel('community-posts-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'community_posts'
+          },
+          () => {
+            fetchPosts();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [user, selectedCategory]);
 
@@ -120,6 +149,7 @@ const StudentCommunity = () => {
 
       const postsWithData = postsData.map(post => ({
         ...post,
+        poll_options: post.poll_options as unknown as PollOption[] | null,
         profiles: profilesMap.get(post.user_id) || null,
         user_liked: likedPostIds.has(post.id),
       }));
@@ -130,19 +160,33 @@ const StudentCommunity = () => {
     setLoading(false);
   };
 
+  const handleMention = (userId: string, userName: string) => {
+    setMentionedUsers(prev => {
+      if (!prev.some(m => m.userId === userId)) {
+        return [...prev, { userId, userName }];
+      }
+      return prev;
+    });
+  };
+
   const handleCreatePost = async () => {
     if (!user || !newPostTitle.trim() || !newPostContent.trim()) return;
 
     setCreating(true);
 
-    const { error } = await supabase
+    const { data: postData, error } = await supabase
       .from("community_posts")
-      .insert({
+      .insert([{
         user_id: user.id,
         title: newPostTitle.trim(),
         content: newPostContent.trim(),
         category: newPostCategory,
-      });
+        image_url: newPostImage,
+        poll_question: newPostPoll?.question || null,
+        poll_options: newPostPoll?.options ? JSON.parse(JSON.stringify(newPostPoll.options)) : null,
+      }])
+      .select()
+      .single();
 
     if (error) {
       toast({
@@ -151,6 +195,16 @@ const StudentCommunity = () => {
         variant: "destructive",
       });
     } else {
+      // Create mentions
+      if (mentionedUsers.length > 0 && postData) {
+        const mentionsToInsert = mentionedUsers.map(m => ({
+          post_id: postData.id,
+          mentioned_user_id: m.userId,
+          mentioner_user_id: user.id,
+        }));
+        await supabase.from("community_mentions").insert(mentionsToInsert);
+      }
+
       toast({
         title: "Publicação criada! 🎉",
         description: "Sua publicação está visível para a comunidade.",
@@ -159,6 +213,9 @@ const StudentCommunity = () => {
       setNewPostTitle("");
       setNewPostContent("");
       setNewPostCategory("general");
+      setNewPostImage(null);
+      setNewPostPoll(null);
+      setMentionedUsers([]);
       fetchPosts();
     }
 
@@ -236,37 +293,43 @@ const StudentCommunity = () => {
                 <span className="hidden sm:inline">Nova Publicação</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-lg">
+            <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto bg-zinc-900 border-secondary/30">
               <DialogHeader>
-                <DialogTitle>Nova Publicação</DialogTitle>
+                <DialogTitle className="text-cream">Nova Publicação</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="post-title">Título</Label>
+                  <Label htmlFor="post-title" className="text-cream">Título</Label>
                   <Input
                     id="post-title"
                     value={newPostTitle}
                     onChange={(e) => setNewPostTitle(e.target.value)}
                     placeholder="Qual é o assunto?"
+                    className="bg-zinc-800 border-zinc-700 text-cream"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="post-content">Conteúdo</Label>
-                  <Textarea
-                    id="post-content"
+                  <Label htmlFor="post-content" className="text-cream">Conteúdo</Label>
+                  <MentionAutocomplete
                     value={newPostContent}
-                    onChange={(e) => setNewPostContent(e.target.value)}
-                    placeholder="Compartilhe sua experiência, dúvida ou dica..."
-                    rows={5}
+                    onChange={setNewPostContent}
+                    onMention={handleMention}
+                    placeholder="Compartilhe sua experiência, dúvida ou dica... Use @nome para mencionar alguém"
+                    className="bg-zinc-800 border-zinc-700 text-cream min-h-[120px]"
                   />
+                  {mentionedUsers.length > 0 && (
+                    <p className="text-xs text-secondary">
+                      Mencionando: {mentionedUsers.map(m => m.userName).join(", ")}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  <Label>Categoria</Label>
+                  <Label className="text-cream">Categoria</Label>
                   <Select value={newPostCategory} onValueChange={setNewPostCategory}>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-zinc-800 border-zinc-700 text-cream">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-zinc-800 border-zinc-700">
                       <SelectItem value="general">Geral</SelectItem>
                       <SelectItem value="duvidas">Dúvidas</SelectItem>
                       <SelectItem value="sucesso">Histórias de Sucesso</SelectItem>
@@ -274,9 +337,26 @@ const StudentCommunity = () => {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Image Upload */}
+                <ImageUpload
+                  currentImage={newPostImage}
+                  onImageUpload={setNewPostImage}
+                  onRemove={() => setNewPostImage(null)}
+                />
+
+                {/* Poll Creator */}
+                <PollCreator
+                  onPollCreate={setNewPostPoll}
+                  initialPoll={newPostPoll}
+                />
               </div>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setCreateDialogOpen(false)}
+                  className="border-zinc-700 text-cream hover:bg-zinc-800"
+                >
                   Cancelar
                 </Button>
                 <Button
