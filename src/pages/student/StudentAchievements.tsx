@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useGamification } from "@/hooks/useGamification";
+import { useConfetti } from "@/hooks/useConfetti";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -24,6 +25,7 @@ import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import { XPLeaderboard } from "@/components/student/XPLeaderboard";
 import { DailyChallenges } from "@/components/student/DailyChallenges";
 import { StudyCalendar } from "@/components/student/StudyCalendar";
+import { toast } from "sonner";
 
 const iconMap: Record<string, any> = {
   "play-circle": PlayCircle,
@@ -50,10 +52,27 @@ const StudentAchievements = () => {
     getCurrentLevelProgress,
     userRank
   } = useGamification();
+  const { fireCelebration } = useConfetti();
+  
+  // Track previous level to detect level ups
+  const previousLevelRef = useRef<number | null>(null);
 
   const earnedBadgeIds = new Set(earnedBadges.map(b => b.badge_id));
   const level = stats ? calculateLevel(stats.xp) : 1;
   const levelProgress = stats ? getCurrentLevelProgress(stats.xp) : 0;
+
+  // Check for level up and fire confetti
+  useEffect(() => {
+    if (previousLevelRef.current !== null && level > previousLevelRef.current) {
+      // Level up detected!
+      fireCelebration();
+      toast.success(`🎉 Parabéns! Você subiu para o nível ${level}!`, {
+        description: "Continue assim, você está arrasando!",
+        duration: 5000,
+      });
+    }
+    previousLevelRef.current = level;
+  }, [level, fireCelebration]);
 
   if (loading) {
     return (
