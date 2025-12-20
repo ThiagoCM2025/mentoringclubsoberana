@@ -35,8 +35,6 @@ import { ptBR } from "date-fns/locale";
 import type { Database } from "@/integrations/supabase/types";
 import { NewLeadDialog } from "@/components/admin/NewLeadDialog";
 import { LeadPipelineView } from "@/components/admin/leads/LeadPipelineView";
-import { LeadMetrics } from "@/components/admin/leads/LeadMetrics";
-import { LeadFunnelChart } from "@/components/admin/leads/LeadFunnelChart";
 import { LeadScoreDisplay } from "@/components/admin/leads/LeadScoreDisplay";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
