@@ -59,7 +59,7 @@ import { LearningPaths } from "@/components/student/LearningPaths";
 import { StudyCalendar } from "@/components/student/StudyCalendar";
 import { AIAssistant } from "@/components/student/AIAssistant";
 import PushNotificationPrompt from "@/components/student/PushNotificationPrompt";
-import { XPLeaderboard } from "@/components/student/XPLeaderboard";
+
 
 interface Course {
   id: string;
@@ -742,11 +742,10 @@ const StudentDashboard = () => {
           )}
         </section>
 
-        {/* Daily Challenges, Study Calendar & XP Leaderboard */}
-        <section className="mb-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Daily Challenges & Study Calendar */}
+        <section className="mb-12 grid md:grid-cols-2 gap-6">
           <DailyChallenges />
           <StudyCalendar />
-          <XPLeaderboard leaderboard={leaderboard} loading={gamificationLoading} />
         </section>
 
         {/* A Jornada Soberana - Programas */}

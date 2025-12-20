@@ -111,7 +111,7 @@ export function StudyCalendar() {
   today.setHours(0, 0, 0, 0);
 
   return (
-    <div className="bg-card rounded-2xl border border-border p-4">
+    <div className="bg-zinc-900/95 rounded-2xl border border-secondary/20 p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-cream flex items-center gap-2">
