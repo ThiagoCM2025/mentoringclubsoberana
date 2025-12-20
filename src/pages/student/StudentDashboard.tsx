@@ -54,9 +54,7 @@ import {
 } from "@/components/ui/premium-skeleton";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import heroVariations from "@/assets/hero-variations.jpeg";
-import { DailyChallenges } from "@/components/student/DailyChallenges";
 import { LearningPaths } from "@/components/student/LearningPaths";
-import { StudyCalendar } from "@/components/student/StudyCalendar";
 import { AIAssistant } from "@/components/student/AIAssistant";
 import PushNotificationPrompt from "@/components/student/PushNotificationPrompt";
 import { useAchievementNotification } from "@/hooks/useAchievementNotification";
@@ -746,11 +744,53 @@ const StudentDashboard = () => {
           )}
         </section>
 
-        {/* Daily Challenges & Study Calendar */}
-        <section className="mb-12 grid md:grid-cols-2 gap-6">
-          <DailyChallenges />
-          <StudyCalendar />
-        </section>
+        {/* Card Pulsante - Sua Evolução */}
+        <motion.section 
+          className="mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate("/student/achievements")}
+            className="relative cursor-pointer bg-gradient-to-br from-zinc-900 via-black to-zinc-900 rounded-2xl p-6 border border-secondary/30 overflow-hidden group"
+          >
+            {/* Efeito shimmer animado de fundo */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-secondary/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+            
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                {/* Ícone pulsante */}
+                <div className="relative">
+                  <div className={`w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center ${showPulse ? 'animate-pulse' : ''}`}>
+                    <Trophy className="w-8 h-8 text-secondary" />
+                  </div>
+                  {/* Ping indicator quando há conquistas próximas */}
+                  {showPulse && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full animate-ping" />
+                  )}
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-serif font-bold text-cream mb-1">
+                    Sua Evolução
+                  </h3>
+                  <p className="text-cream/60 text-sm">
+                    Desafios, calendário de estudos e conquistas
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2 text-secondary">
+                <span className="text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                  Acessar
+                </span>
+                <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </motion.div>
+        </motion.section>
 
         {/* A Jornada Soberana - Programas */}
         <section className="mb-12">

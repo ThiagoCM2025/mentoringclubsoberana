@@ -22,6 +22,8 @@ import {
 import { cn } from "@/lib/utils";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import { XPLeaderboard } from "@/components/student/XPLeaderboard";
+import { DailyChallenges } from "@/components/student/DailyChallenges";
+import { StudyCalendar } from "@/components/student/StudyCalendar";
 
 const iconMap: Record<string, any> = {
   "play-circle": PlayCircle,
@@ -153,6 +155,17 @@ const StudentAchievements = () => {
           
           <XPLeaderboard leaderboard={leaderboard} loading={loading} />
         </motion.div>
+
+        {/* Desafios Diários & Calendário de Estudos */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mb-10 grid md:grid-cols-2 gap-6"
+        >
+          <DailyChallenges />
+          <StudyCalendar />
+        </motion.section>
 
         {/* Badges */}
         <motion.div
