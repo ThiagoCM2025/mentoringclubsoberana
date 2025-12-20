@@ -21,7 +21,7 @@ import {
   List
 } from "lucide-react";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
-import AIAssistant from "@/components/student/AIAssistant";
+import { AIAssistant } from "@/components/student/AIAssistant";
 
 interface Lesson {
   id: string;
