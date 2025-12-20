@@ -23,26 +23,26 @@ export default function AdminMessaging() {
           <h1 className="text-3xl font-serif font-bold text-cream title-premium">
             Central de Comunicação
           </h1>
-          <p className="text-cream/80 mt-1">
+          <p className="text-muted-foreground mt-1">
             Envie emails, WhatsApp e notificações para alunos e leads
           </p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-lg grid-cols-4 bg-zinc-900 border border-secondary/20">
-            <TabsTrigger value="send" className="flex items-center gap-2 text-cream/80 data-[state=active]:bg-secondary data-[state=active]:text-black">
+          <TabsList className="grid w-full max-w-lg grid-cols-4 bg-muted border border-border">
+            <TabsTrigger value="send" className="flex items-center gap-2 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
               <Mail className="h-4 w-4" />
               Enviar
             </TabsTrigger>
-            <TabsTrigger value="nurturing" className="flex items-center gap-2 text-cream/80 data-[state=active]:bg-secondary data-[state=active]:text-black">
+            <TabsTrigger value="nurturing" className="flex items-center gap-2 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
               <Zap className="h-4 w-4" />
               Automação
             </TabsTrigger>
-            <TabsTrigger value="templates" className="flex items-center gap-2 text-cream/80 data-[state=active]:bg-secondary data-[state=active]:text-black">
+            <TabsTrigger value="templates" className="flex items-center gap-2 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
               <FileText className="h-4 w-4" />
               Templates
             </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2 text-cream/80 data-[state=active]:bg-secondary data-[state=active]:text-black">
+            <TabsTrigger value="history" className="flex items-center gap-2 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
               <History className="h-4 w-4" />
               Histórico
             </TabsTrigger>

@@ -206,12 +206,12 @@ const AdminEnrollments = () => {
 
         {/* Search */}
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cream/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Buscar matrículas..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-zinc-900 border-secondary/30 text-cream placeholder:text-cream/40"
+            className="pl-10 bg-card border-border text-foreground placeholder:text-muted-foreground"
           />
         </div>
 
@@ -219,25 +219,25 @@ const AdminEnrollments = () => {
         <div className="admin-card overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="border-secondary/20 hover:bg-zinc-800/50">
-                <TableHead className="text-cream/80">Aluno</TableHead>
-                <TableHead className="text-cream/80">Curso</TableHead>
-                <TableHead className="text-cream/80">Origem</TableHead>
-                <TableHead className="text-cream/80">Data</TableHead>
+              <TableRow className="border-border hover:bg-muted/50">
+                <TableHead className="text-foreground">Aluno</TableHead>
+                <TableHead className="text-foreground">Curso</TableHead>
+                <TableHead className="text-foreground">Origem</TableHead>
+                <TableHead className="text-foreground">Data</TableHead>
                 <TableHead className="w-[70px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-cream/70">
+                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredEnrollments.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8">
-                    <UserCheck className="w-12 h-12 text-cream/40 mx-auto mb-3" />
+                    <UserCheck className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                     <p className="text-cream/70">Nenhuma matrícula encontrada</p>
                   </TableCell>
                 </TableRow>

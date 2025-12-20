@@ -405,7 +405,7 @@ const AdminStudents = () => {
         <div className="admin-table-container">
           <Table>
             <TableHeader>
-              <TableRow className="border-secondary/20 hover:bg-zinc-800/50">
+              <TableRow className="border-border hover:bg-muted/50">
                 <TableHead>Aluno</TableHead>
                 <TableHead>Telefone</TableHead>
                 <TableHead>Cursos</TableHead>
@@ -482,7 +482,7 @@ const AdminStudents = () => {
                         <Button
                           size="sm"
                           onClick={() => openEnrollDialog(student)}
-                          className="gap-2 bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary"
+                          className="gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/90"
                         >
                           <GraduationCap className="w-4 h-4" />
                           Matricular

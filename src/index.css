@@ -1031,51 +1031,48 @@
     filter: drop-shadow(0 0 8px hsla(38, 30%, 51%, 0.6));
   }
   
-  /* ============ ADMIN AREA PREMIUM THEME ============ */
+  /* ============ ADMIN AREA LIGHT THEME ============ */
   
   .admin-area {
     @apply min-h-screen;
-    background: linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(0, 0%, 5%) 100%);
+    background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(30 15% 95%) 100%);
   }
   
-  /* Premium text classes with proper contrast */
+  /* Premium text classes with proper contrast for light theme */
   .text-premium {
-    color: hsl(30 10% 94%);
+    color: hsl(var(--foreground));
   }
   
   .text-premium-muted {
-    color: hsl(30 10% 75%);
+    color: hsl(var(--muted-foreground));
   }
   
   .text-premium-subtle {
-    color: hsl(30 10% 60%);
+    color: hsl(0 0% 50%);
   }
   
-  /* Premium title with glow effect */
+  /* Premium title with subtle glow effect */
   .title-premium {
-    color: hsl(30 10% 94%);
-    text-shadow: 0 0 30px hsla(38, 30%, 51%, 0.3);
+    color: hsl(var(--foreground));
   }
   
   .title-gold {
-    color: hsl(38 40% 65%);
-    text-shadow: 0 0 20px hsla(38, 30%, 51%, 0.4);
+    color: hsl(38 35% 45%);
   }
   
   .admin-card {
-    @apply bg-zinc-900/90 border border-secondary/20 rounded-xl backdrop-blur-sm;
+    @apply bg-card border border-border/50 rounded-xl shadow-sm;
     transition: all 0.3s ease;
   }
   
   .admin-card:hover {
-    @apply border-secondary/40;
-    box-shadow: 0 0 20px hsla(38, 30%, 51%, 0.1);
+    @apply border-secondary/40 shadow-md;
   }
   
   .admin-stat-card {
-    @apply relative overflow-hidden rounded-xl;
-    background: linear-gradient(145deg, hsl(0 0% 10%), hsl(0 0% 7%));
-    border: 1px solid hsla(38, 30%, 51%, 0.2);
+    @apply relative overflow-hidden rounded-xl bg-card;
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 2px 8px hsla(0, 0%, 0%, 0.05);
     transition: all 0.3s ease;
   }
   
@@ -1086,15 +1083,15 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, transparent, hsl(38 30% 51%), transparent);
+    background: linear-gradient(90deg, transparent, hsl(var(--secondary)), transparent);
     opacity: 0;
     transition: opacity 0.3s ease;
   }
   
   .admin-stat-card:hover {
-    border-color: hsla(38, 30%, 51%, 0.4);
+    border-color: hsl(var(--secondary) / 0.4);
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px hsla(0, 0%, 0%, 0.3), 0 0 20px hsla(38, 30%, 51%, 0.1);
+    box-shadow: 0 8px 25px hsla(0, 0%, 0%, 0.08), 0 0 15px hsla(38, 30%, 51%, 0.08);
   }
   
   .admin-stat-card:hover::before {
@@ -1102,15 +1099,15 @@
   }
   
   .admin-table-container {
-    @apply bg-zinc-900/80 border border-secondary/20 rounded-xl overflow-hidden;
+    @apply bg-card border border-border/50 rounded-xl overflow-hidden shadow-sm;
   }
   
   .admin-table-container thead {
-    background: hsla(38, 30%, 51%, 0.08);
+    background: hsl(var(--muted));
   }
   
   .admin-table-container th {
-    color: hsl(38 40% 65%) !important;
+    color: hsl(var(--foreground)) !important;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.75rem;
@@ -1118,33 +1115,33 @@
   }
   
   .admin-table-container td {
-    color: hsl(30 10% 85%) !important;
-    border-bottom: 1px solid hsla(38, 30%, 51%, 0.08);
+    color: hsl(var(--foreground)) !important;
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
   }
   
   .admin-table-container tr:hover td {
-    background: hsla(38, 30%, 51%, 0.05);
+    background: hsl(var(--muted) / 0.5);
   }
   
   .admin-input {
-    @apply bg-zinc-800/80 border-secondary/30 text-cream placeholder:text-cream/50;
+    @apply bg-card border-border text-foreground placeholder:text-muted-foreground;
   }
   
   .admin-input:focus {
     @apply border-secondary/60 ring-1 ring-secondary/20;
   }
   
-  /* Admin text colors - FIXED CONTRAST */
-  .admin-area .text-foreground,
-  .admin-area h1,
-  .admin-area h2,
-  .admin-area h3,
-  .admin-area h4 {
-    color: hsl(var(--cream));
+  /* Admin text colors - LIGHT THEME */
+  .admin-light-theme .text-foreground,
+  .admin-light-theme h1,
+  .admin-light-theme h2,
+  .admin-light-theme h3,
+  .admin-light-theme h4 {
+    color: hsl(var(--foreground));
   }
   
-  .admin-area .text-muted-foreground {
-    color: hsla(30, 10%, 75%, 1);
+  .admin-light-theme .text-muted-foreground {
+    color: hsl(var(--muted-foreground));
   }
   
   /* Student area text colors - FIXED CONTRAST */
