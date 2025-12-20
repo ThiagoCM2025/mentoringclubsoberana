@@ -251,9 +251,9 @@ const StudentDashboard = () => {
   const firstName = profile.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "Aluna";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       {/* Header - Premium Navbar */}
-      <header className="bg-card/95 backdrop-blur-sm border-b border-border py-3 px-4 sticky top-0 z-50">
+      <header className="bg-black/95 backdrop-blur-sm border-b border-secondary/20 py-3 px-4 sticky top-0 z-50">
         <div className="container-soberana flex items-center justify-between">
           {/* Logo */}
           <SoberanaLogo size="md" />
@@ -264,7 +264,7 @@ const StudentDashboard = () => {
               variant="ghost"
               size="sm"
               onClick={() => navigate("/student")}
-              className="text-foreground hover:text-secondary hover:bg-muted"
+              className="text-cream hover:text-secondary hover:bg-secondary/10"
             >
               Início
             </Button>
@@ -272,7 +272,7 @@ const StudentDashboard = () => {
               variant="ghost"
               size="sm"
               onClick={() => navigate("/student/favorites")}
-              className="text-muted-foreground hover:text-secondary hover:bg-muted"
+              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
             >
               Favoritos
             </Button>
@@ -280,7 +280,7 @@ const StudentDashboard = () => {
               variant="ghost"
               size="sm"
               onClick={() => navigate("/student/community")}
-              className="text-muted-foreground hover:text-secondary hover:bg-muted"
+              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
             >
               Comunidades
             </Button>
@@ -299,7 +299,7 @@ const StudentDashboard = () => {
                     onClick={() => navigate("/student/achievements")}
                   >
                     <Star className="w-3.5 h-3.5 text-secondary" />
-                    <span className="text-xs font-medium text-foreground">{gamificationStats?.xp || 0}</span>
+                    <span className="text-xs font-medium text-cream">{gamificationStats?.xp || 0}</span>
                     {showPulse && (
                       <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
@@ -308,10 +308,10 @@ const StudentDashboard = () => {
                     )}
                   </motion.div>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-card border-border text-foreground">
+                <TooltipContent side="bottom" className="bg-zinc-900 border-secondary/30 text-cream">
                   <div className="text-center space-y-1">
                     <p className="font-medium text-secondary">Nível {level}</p>
-                    <p className="text-xs text-muted-foreground">{xpRemaining} XP para o nível {level + 1}</p>
+                    <p className="text-xs text-cream/70">{xpRemaining} XP para o nível {level + 1}</p>
                     <Progress value={levelProgress} className="h-1.5 w-24 bg-secondary/20" />
                   </div>
                 </TooltipContent>
@@ -330,31 +330,31 @@ const StudentDashboard = () => {
                     onClick={() => navigate("/student/achievements")}
                   >
                     <Flame className="w-3.5 h-3.5 text-orange-500" />
-                    <span className="text-xs font-medium text-foreground">{gamificationStats?.streak_days || 0}</span>
+                    <span className="text-xs font-medium text-cream">{gamificationStats?.streak_days || 0}</span>
                   </motion.div>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-card border-border text-foreground">
+                <TooltipContent side="bottom" className="bg-zinc-900 border-secondary/30 text-cream">
                   <div className="text-center space-y-1">
                     <p className="font-medium text-orange-500">🔥 Sequência de Estudos</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-cream/70">
                       {gamificationStats?.streak_days === 0 
                         ? "Comece a estudar hoje!" 
                         : gamificationStats?.streak_days === 1 
                           ? "1 dia consecutivo" 
                           : `${gamificationStats?.streak_days} dias consecutivos`}
                     </p>
-                    <p className="text-xs text-muted-foreground">Continue estudando para manter!</p>
+                    <p className="text-xs text-cream/50">Continue estudando para manter!</p>
                   </div>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
-            <div className="w-px h-5 bg-border mx-1" />
+            <div className="w-px h-5 bg-secondary/20 mx-1" />
             
             <Button
               variant="ghost"
               size="icon"
-              className="text-muted-foreground hover:text-secondary hover:bg-muted"
+              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
             >
               <Search className="w-5 h-5" />
             </Button>
@@ -363,7 +363,7 @@ const StudentDashboard = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="text-muted-foreground hover:text-secondary hover:bg-muted"
+              className="text-cream/70 hover:text-secondary hover:bg-secondary/10"
               onClick={() => navigate("/student/profile")}
             >
               <User className="w-5 h-5" />
@@ -372,7 +372,7 @@ const StudentDashboard = () => {
               variant="ghost"
               size="icon"
               onClick={handleSignOut}
-              className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
+              className="text-cream/70 hover:text-red-400 hover:bg-red-400/10"
             >
               <LogOut className="w-5 h-5" />
             </Button>
@@ -382,7 +382,7 @@ const StudentDashboard = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden text-foreground"
+            className="md:hidden text-cream"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -394,10 +394,10 @@ const StudentDashboard = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:hidden absolute top-full left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border p-4"
+            className="md:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-sm border-t border-secondary/20 p-4"
           >
             {/* Mini XP/Streak Badges - Mobile */}
-            <div className="flex items-center justify-center gap-3 pb-4 mb-4 border-b border-border">
+            <div className="flex items-center justify-center gap-3 pb-4 mb-4 border-b border-secondary/20">
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -405,7 +405,7 @@ const StudentDashboard = () => {
                 onClick={() => { navigate("/student/achievements"); setMobileMenuOpen(false); }}
               >
                 <Star className="w-4 h-4 text-secondary" />
-                <span className="text-sm font-medium text-foreground">{gamificationStats?.xp || 0} XP</span>
+                <span className="text-sm font-medium text-cream">{gamificationStats?.xp || 0} XP</span>
                 {showPulse && (
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
@@ -422,7 +422,7 @@ const StudentDashboard = () => {
                 onClick={() => { navigate("/student/achievements"); setMobileMenuOpen(false); }}
               >
                 <Flame className="w-4 h-4 text-orange-500" />
-                <span className="text-sm font-medium text-foreground">{gamificationStats?.streak_days || 0} dias</span>
+                <span className="text-sm font-medium text-cream">{gamificationStats?.streak_days || 0} dias</span>
               </motion.div>
             </div>
 
@@ -430,7 +430,7 @@ const StudentDashboard = () => {
               <Button
                 variant="ghost"
                 onClick={() => { navigate("/student/favorites"); setMobileMenuOpen(false); }}
-                className="justify-start text-muted-foreground hover:text-secondary hover:bg-muted"
+                className="justify-start text-cream/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <Heart className="w-4 h-4 mr-2" />
                 Favoritos
@@ -438,7 +438,7 @@ const StudentDashboard = () => {
               <Button
                 variant="ghost"
                 onClick={() => { navigate("/student/community"); setMobileMenuOpen(false); }}
-                className="justify-start text-muted-foreground hover:text-secondary hover:bg-muted"
+                className="justify-start text-cream/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <Users className="w-4 h-4 mr-2" />
                 Comunidade
@@ -446,7 +446,7 @@ const StudentDashboard = () => {
               <Button
                 variant="ghost"
                 onClick={() => { navigate("/student/achievements"); setMobileMenuOpen(false); }}
-                className="justify-start text-muted-foreground hover:text-secondary hover:bg-muted"
+                className="justify-start text-cream/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <Trophy className="w-4 h-4 mr-2" />
                 Conquistas
@@ -454,14 +454,14 @@ const StudentDashboard = () => {
               <Button
                 variant="ghost"
                 onClick={() => { navigate("/student/certificates"); setMobileMenuOpen(false); }}
-                className="justify-start text-muted-foreground hover:text-secondary hover:bg-muted"
+                className="justify-start text-cream/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <Medal className="w-4 h-4 mr-2" />
                 Certificados
               </Button>
               <Button
                 variant="ghost"
-                className="justify-start text-muted-foreground hover:text-secondary hover:bg-muted"
+                className="justify-start text-cream/70 hover:text-secondary hover:bg-secondary/10"
                 onClick={() => { navigate("/student/profile"); setMobileMenuOpen(false); }}
               >
                 <User className="w-4 h-4 mr-2" />
@@ -470,7 +470,7 @@ const StudentDashboard = () => {
               <Button
                 variant="ghost"
                 onClick={handleSignOut}
-                className="justify-start text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
+                className="justify-start text-cream/70 hover:text-red-400 hover:bg-red-400/10"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Sair
@@ -559,7 +559,7 @@ const StudentDashboard = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-2xl font-serif font-bold text-foreground mb-6"
+            className="text-2xl font-serif font-bold text-cream mb-6"
           >
             Bem Vinda, {firstName}!
           </motion.h2>
@@ -591,7 +591,7 @@ const StudentDashboard = () => {
                 }
               }}
               whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.2 } }}
-              className="relative group bg-card rounded-xl border border-border overflow-hidden hover:border-secondary/50 transition-all hover:shadow-lg"
+              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all hover:shadow-lg"
             >
               <div className="aspect-[4/3] relative">
                 <img 
@@ -627,9 +627,9 @@ const StudentDashboard = () => {
               }}
               whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.2 } }}
               onClick={() => navigate("/student/community")}
-              className="relative group bg-card rounded-xl border border-border overflow-hidden hover:border-secondary/50 transition-all cursor-pointer hover:shadow-lg"
+              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all cursor-pointer hover:shadow-lg"
             >
-              <div className="aspect-[4/3] relative bg-gradient-to-br from-muted to-background flex flex-col items-center justify-center">
+              <div className="aspect-[4/3] relative bg-gradient-to-br from-zinc-800 to-black flex flex-col items-center justify-center">
                 <motion.div 
                   className="w-16 h-16 rounded-full bg-secondary/20 border border-secondary/40 flex items-center justify-center mb-4"
                   whileHover={{ scale: 1.1, rotate: 5 }}
@@ -637,8 +637,8 @@ const StudentDashboard = () => {
                 >
                   <MessageCircle className="w-8 h-8 text-secondary" />
                 </motion.div>
-                <h3 className="text-lg font-semibold text-foreground mb-1">Acesse a Comunidade</h3>
-                <p className="text-muted-foreground text-sm">Conecte-se com outras Soberanas</p>
+                <h3 className="text-lg font-semibold text-cream mb-1">Acesse a Comunidade</h3>
+                <p className="text-cream/60 text-sm">Conecte-se com outras Soberanas</p>
                 <div className="absolute top-3 left-3 bg-secondary/20 border border-secondary/40 text-secondary text-xs font-semibold px-3 py-1 rounded">
                   COMUNIDADE
                 </div>
@@ -658,9 +658,9 @@ const StudentDashboard = () => {
               }}
               whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.2 } }}
               onClick={() => navigate("/student/achievements")}
-              className="relative group bg-card rounded-xl border border-border overflow-hidden hover:border-secondary/50 transition-all cursor-pointer hover:shadow-lg"
+              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all cursor-pointer hover:shadow-lg"
             >
-              <div className="aspect-[4/3] relative bg-gradient-to-br from-muted to-background flex flex-col items-center justify-center">
+              <div className="aspect-[4/3] relative bg-gradient-to-br from-zinc-800 to-black flex flex-col items-center justify-center">
                 <motion.div 
                   className="w-16 h-16 rounded-full bg-secondary/20 border border-secondary/40 flex items-center justify-center mb-4"
                   whileHover={{ scale: 1.1, rotate: -5 }}
@@ -668,8 +668,8 @@ const StudentDashboard = () => {
                 >
                   <Trophy className="w-8 h-8 text-secondary" />
                 </motion.div>
-                <h3 className="text-lg font-semibold text-foreground mb-1">Suas Conquistas</h3>
-                <p className="text-muted-foreground text-sm">Veja seu progresso e badges</p>
+                <h3 className="text-lg font-semibold text-cream mb-1">Suas Conquistas</h3>
+                <p className="text-cream/60 text-sm">Veja seu progresso e badges</p>
                 <div className="absolute top-3 left-3 bg-secondary/20 border border-secondary/40 text-secondary text-xs font-semibold px-3 py-1 rounded">
                   GAMIFICAÇÃO
                 </div>
@@ -687,7 +687,7 @@ const StudentDashboard = () => {
             className="flex items-center gap-2 mb-6"
           >
             <Sparkles className="w-5 h-5 text-secondary" />
-            <h2 className="text-xl font-serif font-bold text-foreground">Ações Rápidas</h2>
+            <h2 className="text-xl font-serif font-bold text-cream">Ações Rápidas</h2>
           </motion.div>
 
           <motion.div
@@ -725,7 +725,7 @@ const StudentDashboard = () => {
                 boxShadow: "0 0 30px rgba(37, 211, 102, 0.2)"
               }}
               whileTap={{ scale: 0.98 }}
-              className="group relative p-5 bg-card rounded-xl border border-green-500/20 hover:border-green-500/50 transition-all cursor-pointer overflow-hidden hover:shadow-lg"
+              className="group relative p-5 bg-zinc-900 rounded-xl border border-green-500/20 hover:border-green-500/50 transition-all cursor-pointer overflow-hidden hover:shadow-lg"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative z-10">
@@ -734,9 +734,9 @@ const StudentDashboard = () => {
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                   </svg>
                 </div>
-                <h3 className="font-semibold text-foreground text-sm mb-1">WhatsApp</h3>
-                <p className="text-muted-foreground text-xs">Grupo da Comunidade</p>
-                <ExternalLink className="absolute top-4 right-4 w-4 h-4 text-muted-foreground group-hover:text-green-600 transition-colors" />
+                <h3 className="font-semibold text-cream text-sm mb-1">WhatsApp</h3>
+                <p className="text-cream/60 text-xs">Grupo da Comunidade</p>
+                <ExternalLink className="absolute top-4 right-4 w-4 h-4 text-cream/50 group-hover:text-green-600 transition-colors" />
               </div>
             </motion.a>
 
@@ -760,16 +760,16 @@ const StudentDashboard = () => {
                 boxShadow: "0 0 30px rgba(166, 144, 97, 0.2)"
               }}
               whileTap={{ scale: 0.98 }}
-              className="group relative p-5 bg-card rounded-xl border border-secondary/20 hover:border-secondary/50 transition-all cursor-pointer overflow-hidden hover:shadow-lg"
+              className="group relative p-5 bg-zinc-900 rounded-xl border border-secondary/20 hover:border-secondary/50 transition-all cursor-pointer overflow-hidden hover:shadow-lg"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                   <Calendar className="w-6 h-6 text-secondary" />
                 </div>
-                <h3 className="font-semibold text-foreground text-sm mb-1">Agendar</h3>
-                <p className="text-muted-foreground text-xs">Mentoria Individual</p>
-                <ExternalLink className="absolute top-4 right-4 w-4 h-4 text-muted-foreground group-hover:text-secondary transition-colors" />
+                <h3 className="font-semibold text-cream text-sm mb-1">Agendar</h3>
+                <p className="text-cream/60 text-xs">Mentoria Individual</p>
+                <ExternalLink className="absolute top-4 right-4 w-4 h-4 text-cream/50 group-hover:text-secondary transition-colors" />
               </div>
             </motion.a>
 
@@ -790,15 +790,15 @@ const StudentDashboard = () => {
               }}
               whileTap={{ scale: 0.98 }}
               onClick={() => navigate("/student/favorites")}
-              className="group relative p-5 bg-card rounded-xl border border-secondary/20 hover:border-secondary/50 transition-all cursor-pointer overflow-hidden hover:shadow-lg"
+              className="group relative p-5 bg-zinc-900 rounded-xl border border-secondary/20 hover:border-secondary/50 transition-all cursor-pointer overflow-hidden hover:shadow-lg"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                   <FileText className="w-6 h-6 text-secondary" />
                 </div>
-                <h3 className="font-semibold text-foreground text-sm mb-1">Materiais</h3>
-                <p className="text-muted-foreground text-xs">Aulas Favoritas</p>
+                <h3 className="font-semibold text-cream text-sm mb-1">Materiais</h3>
+                <p className="text-cream/60 text-xs">Aulas Favoritas</p>
               </div>
             </motion.div>
 
@@ -819,15 +819,15 @@ const StudentDashboard = () => {
               }}
               whileTap={{ scale: 0.98 }}
               onClick={() => navigate("/student/certificates")}
-              className="group relative p-5 bg-card rounded-xl border border-secondary/20 hover:border-secondary/50 transition-all cursor-pointer overflow-hidden hover:shadow-lg"
+              className="group relative p-5 bg-zinc-900 rounded-xl border border-secondary/20 hover:border-secondary/50 transition-all cursor-pointer overflow-hidden hover:shadow-lg"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                   <Medal className="w-6 h-6 text-secondary" />
                 </div>
-                <h3 className="font-semibold text-foreground text-sm mb-1">Certificados</h3>
-                <p className="text-muted-foreground text-xs">Seus Diplomas</p>
+                <h3 className="font-semibold text-cream text-sm mb-1">Certificados</h3>
+                <p className="text-cream/60 text-xs">Seus Diplomas</p>
               </div>
             </motion.div>
           </motion.div>
@@ -893,7 +893,7 @@ const StudentDashboard = () => {
         {/* My Courses */}
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-serif font-bold text-foreground">
+            <h2 className="text-2xl font-serif font-bold text-cream">
               Meus Cursos
             </h2>
           </div>
@@ -901,7 +901,7 @@ const StudentDashboard = () => {
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="aspect-[4/3] rounded-xl bg-muted animate-pulse" />
+                <div key={i} className="aspect-[4/3] rounded-xl bg-zinc-900 animate-pulse" />
               ))}
             </div>
           ) : enrollments.length > 0 ? (
@@ -921,12 +921,12 @@ const StudentDashboard = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 bg-muted/50 rounded-2xl border border-border">
+            <div className="text-center py-16 bg-zinc-900/50 rounded-2xl border border-secondary/10">
               <BookOpen className="w-16 h-16 text-secondary/40 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">
+              <h3 className="text-xl font-semibold text-cream mb-2">
                 Nenhum curso ainda
               </h3>
-              <p className="text-muted-foreground max-w-md mx-auto">
+              <p className="text-cream/60 max-w-md mx-auto">
                 Você ainda não está matriculada em nenhum curso. Explore os cursos disponíveis abaixo.
               </p>
             </div>
@@ -942,10 +942,10 @@ const StudentDashboard = () => {
             className="flex items-center justify-between mb-6"
           >
             <div>
-              <h2 className="text-2xl font-serif font-bold text-foreground">
+              <h2 className="text-2xl font-serif font-bold text-cream">
                 A Jornada Soberana
               </h2>
-              <p className="text-muted-foreground text-sm mt-1">
+              <p className="text-cream/50 text-sm mt-1">
                 Conheça nossos programas e evolua sua carreira
               </p>
             </div>
