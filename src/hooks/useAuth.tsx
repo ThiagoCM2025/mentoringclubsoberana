@@ -59,10 +59,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    // Clear state first to prevent any redirects based on stale state
     setUser(null);
     setSession(null);
     setIsAdmin(false);
+    // Then sign out from Supabase
+    await supabase.auth.signOut();
   };
 
   return (

@@ -281,7 +281,7 @@ const StudentDashboard = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/");
+    navigate("/", { replace: true });
   };
 
   const firstName = profile.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "Aluna";
