@@ -99,6 +99,7 @@ const StudentDashboard = () => {
   const [totalCompleted, setTotalCompleted] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [previewCourseId, setPreviewCourseId] = useState<string | null>(null);
+  const [dailyChallengesCount, setDailyChallengesCount] = useState(0);
 
   // Achievement notification - monitors and sends push when close to new badge/level
   useAchievementNotification();
@@ -109,8 +110,19 @@ const StudentDashboard = () => {
   useEffect(() => {
     if (user) {
       fetchData();
+      fetchDailyChallengesCount();
     }
   }, [user]);
+
+  const fetchDailyChallengesCount = async () => {
+    const { count } = await supabase
+      .from("daily_challenges")
+      .select("*", { count: "exact", head: true })
+      .eq("is_active", true)
+      .eq("challenge_type", "daily");
+    
+    setDailyChallengesCount(count || 0);
+  };
 
   const fetchData = async () => {
     if (!user) return;
@@ -783,6 +795,11 @@ const StudentDashboard = () => {
               </div>
               
               <div className="flex items-center gap-2 text-secondary">
+                {dailyChallengesCount > 0 && (
+                  <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    {dailyChallengesCount} desafios
+                  </span>
+                )}
                 <span className="text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                   Acessar
                 </span>
