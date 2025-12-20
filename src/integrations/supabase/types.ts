@@ -638,6 +638,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_free: boolean
           is_published: boolean | null
           is_subscription: boolean | null
           price: number | null
@@ -649,6 +650,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_free?: boolean
           is_published?: boolean | null
           is_subscription?: boolean | null
           price?: number | null
@@ -660,6 +662,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_free?: boolean
           is_published?: boolean | null
           is_subscription?: boolean | null
           price?: number | null
@@ -1576,6 +1579,10 @@ export type Database = {
           p_metadata?: Json
           p_title: string
         }
+        Returns: undefined
+      }
+      enroll_existing_students_in_free_courses: {
+        Args: never
         Returns: undefined
       }
       generate_certificate: {

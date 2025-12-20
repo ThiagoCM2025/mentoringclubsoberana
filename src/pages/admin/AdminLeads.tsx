@@ -269,11 +269,6 @@ const AdminLeads = () => {
           </p>
         </motion.div>
 
-        {/* Metrics and Funnel */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <LeadMetrics leads={leads} />
-          <LeadFunnelChart leads={leads} />
-        </div>
 
         {/* View Mode Toggle */}
         <div className="flex items-center justify-between mb-6">
