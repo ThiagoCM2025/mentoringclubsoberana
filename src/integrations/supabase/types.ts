@@ -621,6 +621,57 @@ export type Database = {
           },
         ]
       }
+      lead_conversions: {
+        Row: {
+          converted_at: string
+          converted_by: string | null
+          course_id: string | null
+          created_at: string
+          id: string
+          lead_id: string
+          notes: string | null
+          product_name: string | null
+          revenue: number | null
+        }
+        Insert: {
+          converted_at?: string
+          converted_by?: string | null
+          course_id?: string | null
+          created_at?: string
+          id?: string
+          lead_id: string
+          notes?: string | null
+          product_name?: string | null
+          revenue?: number | null
+        }
+        Update: {
+          converted_at?: string
+          converted_by?: string | null
+          course_id?: string | null
+          created_at?: string
+          id?: string
+          lead_id?: string
+          notes?: string | null
+          product_name?: string | null
+          revenue?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_conversions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_conversions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_interactions: {
         Row: {
           created_at: string
