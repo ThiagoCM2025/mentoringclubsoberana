@@ -56,9 +56,9 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-background font-admin">
+    <div className="min-h-screen bg-background font-admin admin-light-theme">
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-border p-4 z-50 flex items-center justify-between">
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-b border-secondary/20 shadow-sm p-4 z-50 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img src={isotipoGold} alt="Soberana" className="w-8 h-8 drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
           <div className="flex flex-col leading-tight">
@@ -88,7 +88,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 bg-background z-40 pt-16">
+        <div className="lg:hidden fixed inset-0 bg-card z-40 pt-16">
           <nav className="p-4 space-y-2">
             {menuItems.map((item) => (
               <Link
@@ -120,7 +120,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "hidden lg:flex flex-col fixed left-0 top-0 bottom-0 bg-card border-r border-border transition-all duration-300 z-50 overflow-hidden",
+          "hidden lg:flex flex-col fixed left-0 top-0 bottom-0 bg-gradient-to-b from-card to-[hsl(30,20%,98%)] border-r border-secondary/20 shadow-sm transition-all duration-300 z-50 overflow-hidden",
           isSidebarOpen ? "w-64" : "w-20"
         )}
       >
@@ -135,7 +135,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         />
 
         {/* Logo */}
-        <div className="relative p-4 flex items-center justify-between border-b border-border">
+        <div className="relative p-4 flex items-center justify-between border-b border-secondary/15">
           <div className={cn("flex items-center gap-3", !isSidebarOpen && "justify-center w-full")}>
             <img src={isotipoGold} alt="Soberana" className="w-10 h-10 drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
             {isSidebarOpen && (
@@ -189,7 +189,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         </nav>
 
         {/* Footer */}
-        <div className="relative p-4 border-t border-border">
+        <div className="relative p-4 border-t border-secondary/15">
           <button
             onClick={handleSignOut}
             className={cn(
