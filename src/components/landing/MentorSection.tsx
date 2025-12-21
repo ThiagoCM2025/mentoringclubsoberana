@@ -5,22 +5,19 @@ import mentorSobre from "@/assets/mentor-sobre.jpg";
 import patternCirclesMarsala from "@/assets/brand/pattern-circles-marsala.png";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
 import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
-
 export const MentorSection = () => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  return (
-    <section id="sobre" ref={ref} className="py-20 md:py-32 bg-brand-black relative overflow-hidden">
+  const isInView = useInView(ref, {
+    once: true,
+    margin: "-100px"
+  });
+  return <section id="sobre" ref={ref} className="py-20 md:py-32 bg-brand-black relative overflow-hidden">
       {/* Circle Pattern - Gold on dark background */}
-      <div 
-        className="absolute inset-0 opacity-[0.08]"
-        style={{
-          backgroundImage: `url(${patternCirclesMarsala})`,
-          backgroundRepeat: 'repeat',
-          backgroundSize: '280px',
-        }}
-      />
+      <div className="absolute inset-0 opacity-[0.08]" style={{
+      backgroundImage: `url(${patternCirclesMarsala})`,
+      backgroundRepeat: 'repeat',
+      backgroundSize: '280px'
+    }} />
 
       {/* Isotipo Gold - top right */}
       <div className="absolute top-16 right-12 opacity-[0.15] hidden lg:block animate-float-slow">
@@ -41,12 +38,15 @@ export const MentorSection = () => {
       <div className="container-soberana relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Image with Golden Frame and Signature */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6 }}
-            className="relative order-2 lg:order-1"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          x: -30
+        }} animate={isInView ? {
+          opacity: 1,
+          x: 0
+        } : {}} transition={{
+          duration: 0.6
+        }} className="relative order-2 lg:order-1">
             <div className="relative">
               {/* Golden Frame */}
               <div className="golden-frame transition-all duration-500">
@@ -57,11 +57,7 @@ export const MentorSection = () => {
                 <div className="golden-corner golden-corner-br" />
                 
                 <div className="golden-frame-inner">
-                  <img
-                    src={mentorSobre}
-                    alt="Fabiana Duarte - Mentora para Advogadas"
-                    className="w-full aspect-[3/4] object-cover object-top"
-                  />
+                  <img src={mentorSobre} alt="Fabiana Duarte - Mentora para Advogadas" className="w-full aspect-[3/4] object-cover object-top" />
                   {/* Golden vignette overlay */}
                   <div className="golden-vignette" />
                 </div>
@@ -86,19 +82,27 @@ export const MentorSection = () => {
           </motion.div>
 
           {/* Content */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="order-1 lg:order-2"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          x: 30
+        }} animate={isInView ? {
+          opacity: 1,
+          x: 0
+        } : {}} transition={{
+          duration: 0.6,
+          delay: 0.2
+        }} className="order-1 lg:order-2">
             {/* Isotipo S decoration */}
-            <motion.div 
-              className="flex mb-4"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
+            <motion.div className="flex mb-4" initial={{
+            opacity: 0,
+            scale: 0.8
+          }} animate={isInView ? {
+            opacity: 1,
+            scale: 1
+          } : {}} transition={{
+            duration: 0.5,
+            delay: 0.3
+          }}>
               <img src={isotipoSGold} alt="" className="w-10 h-10 isotipo-glow" />
             </motion.div>
             
@@ -118,17 +122,13 @@ export const MentorSection = () => {
                 autoridade, lucro e liberdade.
               </p>
               
-              <p>
-                Criei a <span className="text-secondary font-medium">Metodologia SOBERANA</span> para 
+              <p>Criei a Metodologia SOBERANA para ajudar advogadas a romperem com o ciclo da informalidade e da sobrecarga, e construírem um negócio jurídico posicionado, estratégico e lucrativo com clareza, visão e direção.<span className="text-secondary font-medium">Metodologia SOBERANA</span> para 
                 ajudar advogadas a romperem com o ciclo da informalidade e da sobrecarga, e 
                 construírem um negócio jurídico posicionado, estratégico e lucrativo — com 
                 clareza, visão e direção.
               </p>
               
-              <p>
-                Conduzo um ecossistema completo que inicia, acelera, escala e sustenta o 
-                crescimento das advogadas por meio de programas, imersões, mentorias e networking.
-              </p>
+              <p>Conduzo um ecossistema que inicia, acelera, escala e sustenta o crescimento das advogadas por meio de programas, imersões, mentorias e networking.</p>
             </div>
 
             {/* Mission */}
@@ -147,6 +147,5 @@ export const MentorSection = () => {
           </motion.div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
