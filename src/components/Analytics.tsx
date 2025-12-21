@@ -2,11 +2,13 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 // =====================================================
-// CONFIGURE SEUS IDS AQUI
+// IDs configurados via variáveis de ambiente
+// Para configurar, adicione no .env:
+// VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+// VITE_FB_PIXEL_ID=123456789012345
 // =====================================================
-const GA_MEASUREMENT_ID = ""; // Ex: "G-XXXXXXXXXX"
-const FB_PIXEL_ID = ""; // Ex: "123456789012345"
-// =====================================================
+const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || "";
+const FB_PIXEL_ID = import.meta.env.VITE_FB_PIXEL_ID || "";
 
 // Google Analytics initialization
 const initGA = () => {
