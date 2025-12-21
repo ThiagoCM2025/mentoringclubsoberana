@@ -464,7 +464,7 @@ const ExperienceStartLanding = () => {
               }} transition={{
                 duration: animationDuration,
                 delay: isMobile ? 0.2 : 0.5
-              }} className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto">Um encontro presencial criado para reorganizar a sua advocacia e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2026.<strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2025.
+              }} className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto">Um encontro presencial criado para reorganizar a sua advocacia e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2026.reorganizar a sua advocacia e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2026.<strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2025.
               </motion.p>
 
               {/* Quote highlight */}
