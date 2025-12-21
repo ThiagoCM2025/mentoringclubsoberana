@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     question: "O que devo levar no dia?",
-    answer: "Recomendamos trazer: notebook ou tablet (opcional, mas útil), bloco de notas, caneta, e muita vontade de transformar sua advocacia! Teremos Wi-Fi disponível."
+    answer: "Recomendamos trazer: notebook ou tablet, bloco de notas, caneta, e muita vontade de transformar sua advocacia! Teremos Wi-Fi disponível."
   },
   {
     question: "Vou receber certificado?",
