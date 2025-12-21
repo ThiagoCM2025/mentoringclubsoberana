@@ -347,7 +347,7 @@ export const JornadaSoberanaSection = () => {
               <span className="hidden sm:block">•</span>
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-secondary flex-shrink-0" />
-                +500 advogadas atendidas
+                Advogadas atendidas
               </span>
             </motion.div>
           </div>
