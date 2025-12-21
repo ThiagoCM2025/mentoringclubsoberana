@@ -827,8 +827,7 @@ const ExperienceStartLanding = () => {
               
               <div className="golden-frame-inner bg-gradient-to-r from-primary to-marsala p-6 sm:p-8 text-center">
                 <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-secondary mx-auto mb-3 sm:mb-4" />
-                <p className="text-primary-foreground text-base sm:text-lg md:text-xl font-medium">
-                  Saia com seu <strong className="text-secondary">Plano de 90 dias</strong> pronto para iniciar 2025 no controle e com clareza total do que fazer.
+                <p className="text-primary-foreground text-base sm:text-lg md:text-xl font-medium">Saia com seu Plano de 90 dias pronto para iniciar 2026 no controle e com clareza total do que fazer.<strong className="text-secondary">Plano de 90 dias</strong> pronto para iniciar 2025 no controle e com clareza total do que fazer.
                 </p>
               </div>
             </div>
