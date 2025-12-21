@@ -28,9 +28,12 @@ interface NurturingSequence {
 
 const replaceVariables = (text: string, lead: Lead): string => {
   return text
+    .replace(/\{\{nome\}\}/g, lead.full_name.split(" ")[0])
+    .replace(/\{\{nome_completo\}\}/g, lead.full_name)
+    .replace(/\{\{email\}\}/g, lead.email)
+    // Keep backwards compatibility with old variables
     .replace(/\{\{name\}\}/g, lead.full_name.split(" ")[0])
-    .replace(/\{\{full_name\}\}/g, lead.full_name)
-    .replace(/\{\{email\}\}/g, lead.email);
+    .replace(/\{\{full_name\}\}/g, lead.full_name);
 };
 
 const generateEmailTemplate = (recipientName: string, subject: string, content: string): string => {
