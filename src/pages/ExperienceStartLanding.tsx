@@ -135,9 +135,9 @@ const ExperienceStartLanding = () => {
     "@context": "https://schema.org",
     "@type": "Event",
     "name": "Soberana Experience Start",
-    "description": "Oficina presencial para advogadas reorganizarem sua advocacia e destravarem o crescimento em 2025.",
-    "startDate": "2025-01-17T09:00:00-03:00",
-    "endDate": "2025-01-17T17:00:00-03:00",
+    "description": "Oficina presencial para advogadas reorganizarem sua advocacia e destravarem o crescimento em 2026.",
+    "startDate": "2026-01-17T09:00:00-03:00",
+    "endDate": "2026-01-17T17:00:00-03:00",
     "eventStatus": "https://schema.org/EventScheduled",
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
     "location": {
@@ -168,7 +168,7 @@ const ExperienceStartLanding = () => {
     }
   };
   return <div className="min-h-screen bg-background landing-page">
-      <SEO title="Soberana Experience Start | Oficina Presencial para Advogadas em SP" description="Reorganize sua advocacia e destrave seu crescimento em 2025. Oficina 100% prática com Fabiana Soberana. 17 de Janeiro em São Paulo." keywords="oficina para advogadas, evento presencial advocacia, mentoria jurídica SP, networking advogadas, Fabiana Soberana, gestão advocacia" url="https://soberana.com.br/experience-start" image="https://soberana.com.br/og-experience-start.jpg" imageWidth={1200} imageHeight={630} twitterCard="summary_large_image" type="website" schema={eventSchema} />
+      <SEO title="Soberana Experience Start | Oficina Presencial para Advogadas em SP" description="Reorganize sua advocacia e destrave seu crescimento em 2026. Oficina 100% prática com Fabiana Soberana. 17 de Janeiro em São Paulo." keywords="oficina para advogadas, evento presencial advocacia, mentoria jurídica SP, networking advogadas, Fabiana Soberana, gestão advocacia" url="https://soberana.com.br/experience-start" image="https://soberana.com.br/og-experience-start.jpg" imageWidth={1200} imageHeight={630} twitterCard="summary_large_image" type="website" schema={eventSchema} />
 
       {/* Header Sticky Premium */}
       <motion.header initial={{
@@ -281,7 +281,7 @@ const ExperienceStartLanding = () => {
             duration: 0.3,
             delay: 0.2
           }} className="text-xs text-cream/90 mb-4 leading-relaxed">
-              Um encontro presencial para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar seu crescimento em 2025.
+              Um encontro presencial para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar seu crescimento em 2026.
             </motion.p>
 
             {/* Countdown Mobile */}
@@ -339,7 +339,7 @@ const ExperienceStartLanding = () => {
           }} className="flex flex-wrap justify-center items-center gap-3 text-cream/70 text-xs">
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-3 h-3 text-secondary" />
-                <span>17 Jan 2025</span>
+                <span>17 Jan 2026</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <MapPin className="w-3 h-3 text-secondary" />
@@ -464,7 +464,8 @@ const ExperienceStartLanding = () => {
               }} transition={{
                 duration: animationDuration,
                 delay: isMobile ? 0.2 : 0.5
-              }} className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto">Um encontro presencial criado para reorganizar a sua advocacia e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2026.reorganizar a sua advocacia e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2026.<strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2025.
+              }} className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto">
+                Um encontro presencial criado para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2026.
               </motion.p>
 
               {/* Quote highlight */}
@@ -624,8 +625,8 @@ const ExperienceStartLanding = () => {
             {[{
             icon: Calendar,
             label: "DATA",
-            value: "17 de Janeiro de 2025",
-            sublabel: "Sexta-feira"
+            value: "17 de Janeiro de 2026",
+            sublabel: "Sábado"
           }, {
             icon: Clock,
             label: "HORÁRIO",
@@ -827,7 +828,8 @@ const ExperienceStartLanding = () => {
               
               <div className="golden-frame-inner bg-gradient-to-r from-primary to-marsala p-6 sm:p-8 text-center">
                 <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-secondary mx-auto mb-3 sm:mb-4" />
-                <p className="text-primary-foreground text-base sm:text-lg md:text-xl font-medium">Saia com seu Plano de 90 dias pronto para iniciar 2026 no controle e com clareza total do que fazer.<strong className="text-secondary">Plano de 90 dias</strong> pronto para iniciar 2025 no controle e com clareza total do que fazer.
+                <p className="text-primary-foreground text-base sm:text-lg md:text-xl font-medium">
+                  Saia com seu <strong className="text-secondary">Plano de 90 dias</strong> pronto para iniciar 2026 no controle e com clareza total do que fazer.
                 </p>
               </div>
             </div>
@@ -889,7 +891,7 @@ const ExperienceStartLanding = () => {
             </h2>
 
             <p className="text-cream/85 text-base sm:text-lg md:text-xl leading-relaxed mb-8 sm:mb-10">
-              Seu 2025 começa de forma estratégica. Para viver tudo isso, você precisa decidir estar no evento.
+              Seu 2026 começa de forma estratégica. Para viver tudo isso, você precisa decidir estar no evento.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8 sm:mb-12">
