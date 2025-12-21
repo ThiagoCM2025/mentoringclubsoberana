@@ -322,7 +322,7 @@ export const programs: Record<string, Program> = {
   },
   "elite": {
     slug: "elite",
-    title: "O próximo nível da liberdade e liderança jurídica",
+    title: "O próximo nível da liderança jurídica",
     titleHighlight: "liderança jurídica",
     image: programElite,
     subtitle: "Soberana Elite Mastermind Anual",
