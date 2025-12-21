@@ -137,12 +137,7 @@ export const MentorSection = () => {
                 Missão de <em className="italic normal-case text-sm text-secondary">Fabiana Duarte</em>
               </span>
               
-              <p className="text-cream font-serif text-lg md:text-xl leading-relaxed italic">
-                "Guiar advogadas a assumirem sua verdadeira identidade como líderes de negócios 
-                jurídicos, rompendo a estagnação e estruturando uma advocacia posicionada, 
-                lucrativa e estratégica, por meio de uma mentoria que une técnica, visão 
-                empresarial e poder de decisão."
-              </p>
+              <p className="text-cream font-serif text-lg md:text-xl leading-relaxed italic">"Ensino advogadas a gerir seu escritório para aumentar o faturamento com posicionamento, vendas e ferramentas de inteligência artificial."</p>
             </div>
           </motion.div>
         </div>
