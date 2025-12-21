@@ -257,7 +257,7 @@ export const programs: Record<string, Program> = {
     image: programMentoria360,
     subtitle: "Mentoria Soberana 360°",
     impactPhrase: "Acompanhamento semestral de elite.",
-    description: "O acompanhamento de elite para quem quer escala. Aqui eu não apenas ensino, eu implemento junto com você.",
+    description: "Na Mentoria Soberana 360°, você não recebe apenas orientação. Você implementa com acompanhamento direto, decisões estratégicas e estrutura para escalar com segurança e lucro.",
     fullDescription: "A Mentoria Soberana 360° é meu programa de acompanhamento semestral para advogadas que querem escalar seu escritório com posicionamento premium, tráfego pago e autoridade digital. O diferencial? Eu não apenas ensino: eu implemento junto com você.",
     targetAudience: [
       "Advogadas que já têm base estruturada",
