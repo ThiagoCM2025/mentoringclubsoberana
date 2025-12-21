@@ -82,11 +82,11 @@ export const HeroSection = () => {
       >
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-secondary flex-shrink-0" />
-          <span className="text-xs sm:text-sm tracking-wide">+500 Advogadas Transformadas</span>
+          <span className="text-xs sm:text-sm tracking-wide">Advogadas Transformadas</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-secondary flex-shrink-0" />
-          <span className="text-xs sm:text-sm tracking-wide">+10 Anos de Experiência</span>
+          <span className="text-xs sm:text-sm tracking-wide">+15 Anos de Experiência</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-secondary flex-shrink-0" />

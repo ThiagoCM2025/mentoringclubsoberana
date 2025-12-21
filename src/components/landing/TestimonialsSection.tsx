@@ -182,7 +182,7 @@ export const TestimonialsSection = () => {
         >
           {[
             { value: "98%", label: "Satisfação" },
-            { value: "+500", label: "Mentoradas" },
+            { value: "—", label: "Mentoradas" },
             { value: "3x", label: "Aumento Médio" },
             { value: "4.9", label: "Avaliação" },
           ].map((stat, index) => (

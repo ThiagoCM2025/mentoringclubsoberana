@@ -1089,7 +1089,7 @@ const ExperienceStartLanding = () => {
               </span>
               <span className="flex items-center gap-2">
                 <Star className="w-4 h-4 text-secondary" />
-                +500 advogadas atendidas
+                Advogadas atendidas
               </span>
             </motion.div>
           </motion.div>
