@@ -170,11 +170,10 @@ export const ExperienceTestimonials = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-3xl mx-auto"
+          className="grid grid-cols-3 gap-4 sm:gap-6 max-w-3xl mx-auto"
         >
           {[
             { value: "98%", label: "Recomendam" },
-            { value: "+200", label: "Participantes" },
             { value: "4.9", label: "Avaliação" },
             { value: "100%", label: "Satisfação" },
           ].map((stat, index) => (
