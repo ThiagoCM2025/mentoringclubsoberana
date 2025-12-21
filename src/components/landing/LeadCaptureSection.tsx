@@ -46,27 +46,37 @@ export const LeadCaptureSection = () => {
     setIsLoading(true);
 
     try {
-      // Insert lead
-      const { data: newLead, error: leadError } = await supabase
+      const emailNormalized = formData.email.trim().toLowerCase();
+      
+      // Insert lead (without .select() to avoid RLS SELECT restriction)
+      const { error: leadError } = await supabase
         .from("leads")
         .insert({
-          full_name: formData.fullName,
-          email: formData.email,
+          full_name: formData.fullName.trim(),
+          email: emailNormalized,
           phone: formData.phone || null,
           source: "landing_page_ebook",
           status: "new",
           temperature: "warm",
           score: 10,
-        })
-        .select("id")
-        .single();
+        });
 
-      if (leadError) throw leadError;
+      if (leadError) {
+        // Check for duplicate email
+        if (leadError.code === "23505") {
+          toast({
+            title: "Email já cadastrado",
+            description: "Este email já está na nossa lista. Verifique sua caixa de entrada.",
+          });
+          setIsSuccess(true);
+          return;
+        }
+        throw leadError;
+      }
 
-      // Register ebook download
+      // Register ebook download (using email instead of lead_id)
       await supabase.from("ebook_downloads").insert({
-        lead_id: newLead.id,
-        email: formData.email,
+        email: emailNormalized,
         ebook_name: "7 Erros que Travam seu Escritório",
       });
 

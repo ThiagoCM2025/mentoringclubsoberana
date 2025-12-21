@@ -74,20 +74,20 @@ export const ExitIntentPopup = () => {
     setIsLoading(true);
 
     try {
-      // Insert lead
-      const { data: leadData, error: leadError } = await supabase
+      const emailNormalized = formData.email.trim().toLowerCase();
+      
+      // Insert lead (without .select() to avoid RLS SELECT restriction)
+      const { error: leadError } = await supabase
         .from("leads")
         .insert({
           full_name: formData.name.trim(),
-          email: formData.email.trim().toLowerCase(),
+          email: emailNormalized,
           source: "exit_intent_popup",
           status: "new",
           temperature: "warm",
           nurturing_active: true,
           nurturing_step: 0,
-        })
-        .select("id")
-        .single();
+        });
 
       if (leadError) {
         // Check if it's a duplicate email
@@ -96,14 +96,13 @@ export const ExitIntentPopup = () => {
         } else {
           throw leadError;
         }
-      } else {
-        // Register ebook download
-        await supabase.from("ebook_downloads").insert({
-          email: formData.email.trim().toLowerCase(),
-          ebook_name: "Checklist 5 Passos para Estruturar seu Escritório",
-          lead_id: leadData?.id,
-        });
       }
+
+      // Register ebook download (using email instead of lead_id)
+      await supabase.from("ebook_downloads").insert({
+        email: emailNormalized,
+        ebook_name: "Checklist 5 Passos para Estruturar seu Escritório",
+      });
 
       localStorage.setItem("leadSubmitted", "true");
       toast.success("Sucesso! Verifique seu email para receber o checklist.");
