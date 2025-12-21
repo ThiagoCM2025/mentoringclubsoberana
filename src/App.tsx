@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AnimatedRoutes } from "@/components/AnimatedRoutes";
 import { Analytics } from "@/components/Analytics";
+import { CookieBanner } from "@/components/CookieBanner";
 import ScrollToTop from "@/components/ScrollToTop";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
             <ScrollToTop />
             <Analytics />
             <AnimatedRoutes />
+            <CookieBanner />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
