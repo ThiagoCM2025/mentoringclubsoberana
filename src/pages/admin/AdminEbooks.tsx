@@ -108,19 +108,26 @@ const AdminEbooks = () => {
       return;
     }
 
-    // Fetch leads data for each download
+    // Fetch leads data for each download - using both lead_id AND email as fallback
     if (ebookData) {
-      const leadIds = ebookData.filter(d => d.lead_id).map(d => d.lead_id);
+      // Get all unique emails from downloads
+      const emails = [...new Set(ebookData.map(d => d.email))];
+      
+      // Fetch all leads that match either by id or email
       const { data: leadsData } = await supabase
         .from("leads")
-        .select("id, full_name, phone, status, temperature, messages_sent, nurturing_step, nurturing_active, last_contact_at")
-        .in("id", leadIds);
+        .select("id, full_name, email, phone, status, temperature, messages_sent, nurturing_step, nurturing_active, last_contact_at")
+        .in("email", emails);
 
-      const leadsMap = new Map(leadsData?.map(l => [l.id, l]) || []);
+      // Create maps for both id and email lookups
+      const leadsByEmail = new Map(leadsData?.map(l => [l.email, l]) || []);
 
       const enrichedDownloads = ebookData.map(d => ({
         ...d,
-        lead: d.lead_id ? leadsMap.get(d.lead_id) : null
+        // Try to find lead by lead_id first, then fallback to email
+        lead: d.lead_id 
+          ? leadsData?.find(l => l.id === d.lead_id) || leadsByEmail.get(d.email) 
+          : leadsByEmail.get(d.email) || null
       }));
 
       setDownloads(enrichedDownloads);
