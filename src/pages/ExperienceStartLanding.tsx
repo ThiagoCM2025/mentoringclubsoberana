@@ -569,7 +569,7 @@ const ExperienceStartLanding = () => {
               }} className="pt-6 border-t border-cream/10 flex flex-col sm:flex-row sm:flex-wrap justify-center items-center gap-3 sm:gap-6 md:gap-10 text-cream/70">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-xs sm:text-sm tracking-wide">17 de Janeiro de 2025</span>
+                  <span className="text-xs sm:text-sm tracking-wide">17 de Janeiro de 2026</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-secondary flex-shrink-0" />
