@@ -24,11 +24,6 @@ const faqs = [
       "Não! A metodologia foi criada pensando em advogadas que são excelentes tecnicamente mas não dominam gestão, marketing e vendas. Você aprenderá do zero, de forma prática e aplicada à advocacia.",
   },
   {
-    question: "Como funciona o Setup de Tráfego Pago na Mentoria 360°?",
-    answer:
-      "Na Mentoria 360° eu não apenas ensino sobre tráfego pago - eu configuro suas campanhas de anúncios junto com você. É um diferencial único onde implementamos juntas a estratégia de captação de clientes.",
-  },
-  {
     question: "Posso participar da Elite sem ter feito a 360°?",
     answer:
       "O Soberana Elite é exclusivo para graduadas da Mentoria 360° ou escritórios já consolidados. Se você tem um escritório estruturado e busca escala, networking e mentoria de alto nível, pode se candidatar diretamente.",
@@ -47,11 +42,6 @@ const faqs = [
     question: "Funciona para qualquer área do Direito?",
     answer:
       "Sim! A metodologia é sobre gestão de negócios jurídicos e não sobre técnica específica. Funciona para advogadas de todas as áreas: imobiliário, trabalhista, cível, tributário, família, previdenciário, etc.",
-  },
-  {
-    question: "Existe garantia de resultados?",
-    answer:
-      "Oferecemos garantia nos programas online. Mas mais importante: nosso ecossistema é desenhado para te acompanhar em cada fase da sua jornada, garantindo suporte contínuo para seus resultados.",
   },
 ];
 
