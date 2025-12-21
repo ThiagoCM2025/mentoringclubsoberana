@@ -325,7 +325,7 @@ export const programs: Record<string, Program> = {
     title: "O próximo nível da liberdade e liderança jurídica",
     titleHighlight: "liberdade e liderança jurídica",
     image: programElite,
-    subtitle: "Soberana Elite — Mastermind Anual",
+    subtitle: "Soberana Elite Mastermind Anual",
     impactPhrase: "Para quem lidera impérios.",
     description: "Para quem já deixou de ser apenas advogada e agora lidera um império. O Mastermind Elite é o ambiente de quem não aceita caminhar sozinha.",
     fullDescription: "O Mastermind Soberana Elite é um acompanhamento exclusivo de 12 meses para advogadas que já estruturaram a base e agora buscam consolidação de marca, gestão de equipe e crescimento a longo prazo. Foco total em escala, liderança de associados, cultura empresarial e networking premium.",
