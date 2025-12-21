@@ -327,7 +327,7 @@ export const programs: Record<string, Program> = {
     image: programElite,
     subtitle: "Soberana Elite Mastermind Anual",
     impactPhrase: "Para quem lidera impérios.",
-    description: "Para quem já deixou de ser apenas advogada e agora lidera um império. O Mastermind Elite é o ambiente de quem não aceita caminhar sozinha.",
+    description: "Este Mastermind é para quem já venceu etapas, mas entende que o próximo nível não se alcança sozinha, nem no improviso. Aqui, decisões são estratégicas, movimentos são conscientes e o crescimento é sustentável.",
     fullDescription: "O Mastermind Soberana Elite é um acompanhamento exclusivo de 12 meses para advogadas que já estruturaram a base e agora buscam consolidação de marca, gestão de equipe e crescimento a longo prazo. Foco total em escala, liderança de associados, cultura empresarial e networking premium.",
     targetAudience: [
       "Graduadas da Mentoria 360° ou equivalente",
