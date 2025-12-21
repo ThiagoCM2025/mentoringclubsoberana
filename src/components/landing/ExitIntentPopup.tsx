@@ -75,12 +75,14 @@ export const ExitIntentPopup = () => {
 
     try {
       const emailNormalized = formData.email.trim().toLowerCase();
+      const nameTrimmed = formData.name.trim();
+      const ebookName = "Checklist 5 Passos para Estruturar seu Escritório";
       
       // Insert lead (without .select() to avoid RLS SELECT restriction)
       const { error: leadError } = await supabase
         .from("leads")
         .insert({
-          full_name: formData.name.trim(),
+          full_name: nameTrimmed,
           email: emailNormalized,
           source: "exit_intent_popup",
           status: "new",
@@ -101,8 +103,26 @@ export const ExitIntentPopup = () => {
       // Register ebook download (using email instead of lead_id)
       await supabase.from("ebook_downloads").insert({
         email: emailNormalized,
-        ebook_name: "Checklist 5 Passos para Estruturar seu Escritório",
+        ebook_name: ebookName,
       });
+
+      // Send ebook email via edge function
+      try {
+        const { error: emailError } = await supabase.functions.invoke("send-ebook-email", {
+          body: {
+            name: nameTrimmed,
+            email: emailNormalized,
+            ebook_name: ebookName,
+          },
+        });
+        
+        if (emailError) {
+          console.error("Error sending ebook email:", emailError);
+        }
+      } catch (emailErr) {
+        console.error("Failed to send ebook email:", emailErr);
+        // Don't fail the whole submission if email fails
+      }
 
       localStorage.setItem("leadSubmitted", "true");
       toast.success("Sucesso! Verifique seu email para receber o checklist.");

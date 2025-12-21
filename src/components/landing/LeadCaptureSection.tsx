@@ -47,12 +47,14 @@ export const LeadCaptureSection = () => {
 
     try {
       const emailNormalized = formData.email.trim().toLowerCase();
+      const nameTrimmed = formData.fullName.trim();
+      const ebookName = "7 Erros que Travam seu Escritório";
       
       // Insert lead (without .select() to avoid RLS SELECT restriction)
       const { error: leadError } = await supabase
         .from("leads")
         .insert({
-          full_name: formData.fullName.trim(),
+          full_name: nameTrimmed,
           email: emailNormalized,
           phone: formData.phone || null,
           source: "landing_page_ebook",
@@ -77,13 +79,31 @@ export const LeadCaptureSection = () => {
       // Register ebook download (using email instead of lead_id)
       await supabase.from("ebook_downloads").insert({
         email: emailNormalized,
-        ebook_name: "7 Erros que Travam seu Escritório",
+        ebook_name: ebookName,
       });
+
+      // Send ebook email via edge function
+      try {
+        const { error: emailError } = await supabase.functions.invoke("send-ebook-email", {
+          body: {
+            name: nameTrimmed,
+            email: emailNormalized,
+            ebook_name: ebookName,
+          },
+        });
+        
+        if (emailError) {
+          console.error("Error sending ebook email:", emailError);
+        }
+      } catch (emailErr) {
+        console.error("Failed to send ebook email:", emailErr);
+        // Don't fail the whole submission if email fails
+      }
 
       setIsSuccess(true);
       toast({
         title: "Sucesso!",
-        description: "Você receberá nosso contato em breve.",
+        description: "Verifique seu email para baixar o material.",
       });
     } catch (error) {
       toast({
