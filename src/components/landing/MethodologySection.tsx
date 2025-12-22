@@ -293,14 +293,37 @@ const MobileCarousel = ({ pillars, isInView }: MobileCarouselProps) => {
                                     stiffness: 120,
                                     damping: 12
                                   }}
-                                  className="flex items-center gap-3 group/check"
+                                  className="flex items-center gap-3 group/check relative"
                                 >
-                                  <motion.span 
-                                    className="text-secondary text-sm flex-shrink-0 w-5 h-5 rounded-full bg-secondary/20 flex items-center justify-center"
-                                    initial={{ scale: 0, rotate: -180 }}
-                                    animate={{ scale: 1, rotate: 0 }}
+                                  {/* Glow effect behind checkbox */}
+                                  <motion.div
+                                    className="absolute -left-1 w-7 h-7 rounded-full bg-secondary/40 blur-md"
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ 
+                                      opacity: [0, 0.8, 0],
+                                      scale: [0.5, 1.5, 1]
+                                    }}
                                     transition={{ 
-                                      duration: 0.4, 
+                                      duration: 0.6, 
+                                      delay: 0.25 + i * 0.12,
+                                      ease: "easeOut"
+                                    }}
+                                  />
+                                  
+                                  <motion.span 
+                                    className="text-secondary text-sm flex-shrink-0 w-5 h-5 rounded-full bg-secondary/20 flex items-center justify-center relative z-10"
+                                    initial={{ scale: 0, rotate: -180 }}
+                                    animate={{ 
+                                      scale: [0, 1.2, 1],
+                                      rotate: [180, 0, 0],
+                                      boxShadow: [
+                                        "0 0 0 rgba(166,144,97,0)",
+                                        "0 0 12px rgba(166,144,97,0.6)",
+                                        "0 0 4px rgba(166,144,97,0.3)"
+                                      ]
+                                    }}
+                                    transition={{ 
+                                      duration: 0.5, 
                                       delay: 0.25 + i * 0.12,
                                       type: "spring",
                                       stiffness: 200
@@ -310,9 +333,9 @@ const MobileCarousel = ({ pillars, isInView }: MobileCarouselProps) => {
                                   </motion.span>
                                   <motion.span 
                                     className="text-sm text-primary-foreground/80"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.3, delay: 0.3 + i * 0.12 }}
+                                    initial={{ opacity: 0, filter: "blur(4px)" }}
+                                    animate={{ opacity: 1, filter: "blur(0px)" }}
+                                    transition={{ duration: 0.4, delay: 0.3 + i * 0.12 }}
                                   >
                                     {checkpoint}
                                   </motion.span>
@@ -601,14 +624,35 @@ export const MethodologySection = () => {
                           type: "spring",
                           stiffness: 100
                         }}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 relative"
                       >
-                        <motion.span 
-                          className="text-secondary text-xs w-4 h-4 rounded-full bg-secondary/15 flex items-center justify-center flex-shrink-0"
-                          initial={{ scale: 0 }}
-                          animate={isInView ? { scale: 1 } : {}}
+                        {/* Glow effect */}
+                        <motion.div
+                          className="absolute -left-0.5 w-5 h-5 rounded-full bg-secondary/30 blur-sm"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={isInView ? { 
+                            opacity: [0, 0.7, 0],
+                            scale: [0.5, 1.3, 1]
+                          } : {}}
                           transition={{ 
-                            duration: 0.3, 
+                            duration: 0.5, 
+                            delay: 0.85 + index * 0.15 + i * 0.1,
+                            ease: "easeOut"
+                          }}
+                        />
+                        <motion.span 
+                          className="text-secondary text-xs w-4 h-4 rounded-full bg-secondary/15 flex items-center justify-center flex-shrink-0 relative z-10"
+                          initial={{ scale: 0 }}
+                          animate={isInView ? { 
+                            scale: [0, 1.15, 1],
+                            boxShadow: [
+                              "0 0 0 rgba(166,144,97,0)",
+                              "0 0 8px rgba(166,144,97,0.5)",
+                              "0 0 2px rgba(166,144,97,0.2)"
+                            ]
+                          } : {}}
+                          transition={{ 
+                            duration: 0.4, 
                             delay: 0.85 + index * 0.15 + i * 0.1,
                             type: "spring",
                             stiffness: 200
@@ -716,14 +760,35 @@ export const MethodologySection = () => {
                           type: "spring",
                           stiffness: 100
                         }}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 relative"
                       >
-                        <motion.span 
-                          className="text-secondary text-xs w-4 h-4 rounded-full bg-secondary/15 flex items-center justify-center flex-shrink-0"
-                          initial={{ scale: 0 }}
-                          animate={isInView ? { scale: 1 } : {}}
+                        {/* Glow effect */}
+                        <motion.div
+                          className="absolute -left-0.5 w-5 h-5 rounded-full bg-secondary/30 blur-sm"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={isInView ? { 
+                            opacity: [0, 0.7, 0],
+                            scale: [0.5, 1.3, 1]
+                          } : {}}
                           transition={{ 
-                            duration: 0.3, 
+                            duration: 0.5, 
+                            delay: 1.15 + index * 0.15 + i * 0.1,
+                            ease: "easeOut"
+                          }}
+                        />
+                        <motion.span 
+                          className="text-secondary text-xs w-4 h-4 rounded-full bg-secondary/15 flex items-center justify-center flex-shrink-0 relative z-10"
+                          initial={{ scale: 0 }}
+                          animate={isInView ? { 
+                            scale: [0, 1.15, 1],
+                            boxShadow: [
+                              "0 0 0 rgba(166,144,97,0)",
+                              "0 0 8px rgba(166,144,97,0.5)",
+                              "0 0 2px rgba(166,144,97,0.2)"
+                            ]
+                          } : {}}
+                          transition={{ 
+                            duration: 0.4, 
                             delay: 1.15 + index * 0.15 + i * 0.1,
                             type: "spring",
                             stiffness: 200
