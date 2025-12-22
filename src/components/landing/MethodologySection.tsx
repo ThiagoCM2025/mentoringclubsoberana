@@ -122,26 +122,34 @@ const MobileCarousel = ({ pillars, isInView }: MobileCarouselProps) => {
     };
   }, [emblaApi, onSelect]);
 
-  // Pause autoplay when card is expanded
+  // Pause autoplay when card is expanded - only if emblaApi is ready
   useEffect(() => {
+    if (!emblaApi) return;
+    
+    const autoplay = emblaApi.plugins()?.autoplay;
+    if (!autoplay) return;
+    
     if (expandedIndex !== null) {
-      autoplayRef.current.stop();
+      autoplay.stop();
     } else {
-      autoplayRef.current.play();
+      autoplay.play();
     }
-  }, [expandedIndex]);
+  }, [expandedIndex, emblaApi]);
 
   const scrollTo = useCallback((index: number) => {
-    if (emblaApi) {
-      autoplayRef.current.stop();
-      emblaApi.scrollTo(index);
-      // Resume after manual navigation
-      setTimeout(() => {
-        if (expandedIndex === null) {
-          autoplayRef.current.play();
-        }
-      }, 2000);
-    }
+    if (!emblaApi) return;
+    
+    const autoplay = emblaApi.plugins()?.autoplay;
+    if (autoplay) autoplay.stop();
+    
+    emblaApi.scrollTo(index);
+    
+    // Resume after manual navigation
+    setTimeout(() => {
+      if (expandedIndex === null && autoplay) {
+        autoplay.play();
+      }
+    }, 2000);
   }, [emblaApi, expandedIndex]);
 
   const toggleExpand = useCallback((index: number) => {
@@ -192,7 +200,10 @@ const MobileCarousel = ({ pillars, isInView }: MobileCarouselProps) => {
                     {/* Card Header - Tappable */}
                     <button
                       onClick={() => toggleExpand(index)}
-                      onTouchStart={() => autoplayRef.current.stop()}
+                      onTouchStart={() => {
+                        const autoplay = emblaApi?.plugins()?.autoplay;
+                        if (autoplay) autoplay.stop();
+                      }}
                       className="w-full p-5 flex items-center gap-4 text-left active:bg-secondary/5 transition-colors"
                     >
                       {/* Letter badge */}
