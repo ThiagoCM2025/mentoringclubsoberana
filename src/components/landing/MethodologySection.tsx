@@ -183,72 +183,164 @@ export const MethodologySection = () => {
         </motion.div>
 
         {/* Pillar Cards - First Row (4 cards) */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {pillars.slice(0, 4).map((pillar, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30, scale: 0.95 }}
-              animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-              className="relative group"
+              initial={{ opacity: 0, y: 50, rotateX: -15 }}
+              animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
+              transition={{ 
+                duration: 0.7, 
+                delay: 0.4 + index * 0.15,
+                type: "spring",
+                stiffness: 100,
+                damping: 15
+              }}
+              whileHover={{ 
+                y: -8, 
+                scale: 1.02,
+                transition: { duration: 0.3 }
+              }}
+              className="relative group perspective-1000"
             >
-              <div className="relative p-6 rounded-xl bg-primary-foreground/5 border border-secondary/20 hover:border-secondary/50 hover:bg-primary-foreground/10 transition-all duration-500 h-full overflow-hidden group-hover:shadow-[0_0_30px_rgba(166,144,97,0.2)]">
-                {/* Card glow effect on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+              <div className="relative p-7 rounded-2xl bg-gradient-to-br from-primary-foreground/10 to-primary-foreground/5 border border-secondary/30 hover:border-secondary/60 transition-all duration-500 h-full overflow-hidden group-hover:shadow-[0_20px_50px_rgba(166,144,97,0.3)]">
+                {/* Animated background shimmer */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-secondary/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
                 
-                {/* Letter badge */}
+                {/* Card glow effect on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-secondary/15 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
+                
+                {/* Letter badge with pulse animation */}
                 <motion.div 
-                  className="absolute -top-3 -left-1 w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center text-secondary-foreground font-serif font-bold text-lg shadow-lg"
-                  whileHover={{ scale: 1.1 }}
+                  className="absolute -top-4 -left-2 w-12 h-12 rounded-full bg-gradient-to-br from-gold-light via-secondary to-secondary/80 flex items-center justify-center text-secondary-foreground font-serif font-bold text-xl shadow-[0_4px_20px_rgba(166,144,97,0.5)]"
+                  whileHover={{ scale: 1.15, rotate: 5 }}
+                  animate={isInView ? {
+                    boxShadow: [
+                      "0 4px 20px rgba(166,144,97,0.5)",
+                      "0 4px 30px rgba(166,144,97,0.8)",
+                      "0 4px 20px rgba(166,144,97,0.5)"
+                    ]
+                  } : {}}
+                  transition={{ 
+                    boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                  }}
                 >
                   {pillar.letter}
                 </motion.div>
                 
-                <div className="pt-5 relative z-10">
-                  <pillar.icon className="w-8 h-8 text-secondary mb-3 group-hover:scale-110 transition-transform duration-300" />
-                  <h3 className="text-lg font-serif font-semibold mb-1 text-primary-foreground">{pillar.title}</h3>
-                  <p className="text-sm text-secondary font-medium mb-2">{pillar.subtitle}</p>
-                  <p className="text-sm text-primary-foreground/70">{pillar.description}</p>
+                <div className="pt-6 relative z-10">
+                  {/* Icon with animated entrance */}
+                  <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={isInView ? { scale: 1, rotate: 0 } : {}}
+                    transition={{ 
+                      duration: 0.5, 
+                      delay: 0.6 + index * 0.15,
+                      type: "spring",
+                      stiffness: 200
+                    }}
+                    className="mb-4"
+                  >
+                    <pillar.icon className="w-10 h-10 text-secondary group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" />
+                  </motion.div>
+                  
+                  <h3 className="text-xl font-serif font-bold mb-1 text-primary-foreground group-hover:text-secondary transition-colors duration-300">{pillar.title}</h3>
+                  <p className="text-sm text-secondary font-semibold mb-3 tracking-wide uppercase">{pillar.subtitle}</p>
+                  <p className="text-sm text-primary-foreground/80 leading-relaxed">{pillar.description}</p>
                 </div>
 
-                {/* Decorative corner */}
-                <div className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-secondary/10 to-transparent rounded-tl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                {/* Decorative corner with animation */}
+                <motion.div 
+                  className="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-tl from-secondary/20 to-transparent rounded-tl-full"
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileHover={{ scale: 1.2, opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                />
+                
+                {/* Bottom accent line */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
             </motion.div>
           ))}
         </div>
 
         {/* Pillar Cards - Second Row (4 cards) */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {pillars.slice(4).map((pillar, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30, scale: 0.95 }}
-              animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
-              className="relative group"
+              initial={{ opacity: 0, y: 50, rotateX: -15 }}
+              animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
+              transition={{ 
+                duration: 0.7, 
+                delay: 0.7 + index * 0.15,
+                type: "spring",
+                stiffness: 100,
+                damping: 15
+              }}
+              whileHover={{ 
+                y: -8, 
+                scale: 1.02,
+                transition: { duration: 0.3 }
+              }}
+              className="relative group perspective-1000"
             >
-              <div className="relative p-6 rounded-xl bg-primary-foreground/5 border border-secondary/20 hover:border-secondary/50 hover:bg-primary-foreground/10 transition-all duration-500 h-full overflow-hidden group-hover:shadow-[0_0_30px_rgba(166,144,97,0.2)]">
-                {/* Card glow effect on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+              <div className="relative p-7 rounded-2xl bg-gradient-to-br from-primary-foreground/10 to-primary-foreground/5 border border-secondary/30 hover:border-secondary/60 transition-all duration-500 h-full overflow-hidden group-hover:shadow-[0_20px_50px_rgba(166,144,97,0.3)]">
+                {/* Animated background shimmer */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-secondary/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
                 
-                {/* Letter badge */}
+                {/* Card glow effect on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-secondary/15 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
+                
+                {/* Letter badge with pulse animation */}
                 <motion.div 
-                  className="absolute -top-3 -left-1 w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center text-secondary-foreground font-serif font-bold text-lg shadow-lg"
-                  whileHover={{ scale: 1.1 }}
+                  className="absolute -top-4 -left-2 w-12 h-12 rounded-full bg-gradient-to-br from-gold-light via-secondary to-secondary/80 flex items-center justify-center text-secondary-foreground font-serif font-bold text-xl shadow-[0_4px_20px_rgba(166,144,97,0.5)]"
+                  whileHover={{ scale: 1.15, rotate: 5 }}
+                  animate={isInView ? {
+                    boxShadow: [
+                      "0 4px 20px rgba(166,144,97,0.5)",
+                      "0 4px 30px rgba(166,144,97,0.8)",
+                      "0 4px 20px rgba(166,144,97,0.5)"
+                    ]
+                  } : {}}
+                  transition={{ 
+                    boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                  }}
                 >
                   {pillar.letter}
                 </motion.div>
                 
-                <div className="pt-5 relative z-10">
-                  <pillar.icon className="w-8 h-8 text-secondary mb-3 group-hover:scale-110 transition-transform duration-300" />
-                  <h3 className="text-lg font-serif font-semibold mb-1 text-primary-foreground">{pillar.title}</h3>
-                  <p className="text-sm text-secondary font-medium mb-2">{pillar.subtitle}</p>
-                  <p className="text-sm text-primary-foreground/70">{pillar.description}</p>
+                <div className="pt-6 relative z-10">
+                  {/* Icon with animated entrance */}
+                  <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={isInView ? { scale: 1, rotate: 0 } : {}}
+                    transition={{ 
+                      duration: 0.5, 
+                      delay: 0.9 + index * 0.15,
+                      type: "spring",
+                      stiffness: 200
+                    }}
+                    className="mb-4"
+                  >
+                    <pillar.icon className="w-10 h-10 text-secondary group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" />
+                  </motion.div>
+                  
+                  <h3 className="text-xl font-serif font-bold mb-1 text-primary-foreground group-hover:text-secondary transition-colors duration-300">{pillar.title}</h3>
+                  <p className="text-sm text-secondary font-semibold mb-3 tracking-wide uppercase">{pillar.subtitle}</p>
+                  <p className="text-sm text-primary-foreground/80 leading-relaxed">{pillar.description}</p>
                 </div>
 
-                {/* Decorative corner */}
-                <div className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-secondary/10 to-transparent rounded-tl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                {/* Decorative corner with animation */}
+                <motion.div 
+                  className="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-tl from-secondary/20 to-transparent rounded-tl-full"
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileHover={{ scale: 1.2, opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                />
+                
+                {/* Bottom accent line */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
             </motion.div>
           ))}
