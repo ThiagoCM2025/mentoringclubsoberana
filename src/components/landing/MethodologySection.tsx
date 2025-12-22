@@ -182,8 +182,45 @@ export const MethodologySection = () => {
           ))}
         </motion.div>
 
-        {/* Pillar Cards - First Row (4 cards) */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        {/* Mobile Compact Cards */}
+        <div className="md:hidden space-y-3">
+          {pillars.map((pillar, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ 
+                duration: 0.5, 
+                delay: 0.3 + index * 0.08,
+                type: "spring",
+                stiffness: 120
+              }}
+              className="relative group"
+            >
+              <div className="relative flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-primary-foreground/10 to-primary-foreground/5 border border-secondary/30 overflow-hidden">
+                {/* Letter badge compact */}
+                <div className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-gold-light via-secondary to-secondary/80 flex items-center justify-center text-secondary-foreground font-serif font-bold text-lg shadow-[0_2px_12px_rgba(166,144,97,0.4)]">
+                  {pillar.letter}
+                </div>
+                
+                {/* Content compact */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <pillar.icon className="w-4 h-4 text-secondary flex-shrink-0" />
+                    <h3 className="text-base font-serif font-bold text-primary-foreground truncate">{pillar.title}</h3>
+                  </div>
+                  <p className="text-xs text-secondary font-semibold uppercase tracking-wide">{pillar.subtitle}</p>
+                </div>
+                
+                {/* Subtle glow on tap */}
+                <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 to-transparent opacity-0 active:opacity-100 transition-opacity duration-200 rounded-xl" />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Desktop Cards - First Row (4 cards) */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {pillars.slice(0, 4).map((pillar, index) => (
             <motion.div
               key={index}
@@ -264,8 +301,8 @@ export const MethodologySection = () => {
           ))}
         </div>
 
-        {/* Pillar Cards - Second Row (4 cards) */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Desktop Cards - Second Row (4 cards) */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {pillars.slice(4).map((pillar, index) => (
             <motion.div
               key={index}
