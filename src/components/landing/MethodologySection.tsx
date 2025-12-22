@@ -1,6 +1,7 @@
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-import { Sparkles, Scale, Palette, Building2, Target, Users, TrendingUp, Zap } from "lucide-react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useState, useCallback, useEffect } from "react";
+import { Sparkles, Scale, Palette, Building2, Target, Users, TrendingUp, Zap, ChevronDown } from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
 import patternCirclesWhite from "@/assets/brand/pattern-circles-white.png";
 import isotipoWhite from "@/assets/brand/isotipo-white.png";
 import isotipoSWhite from "@/assets/brand/isotipo-s-white.png";
@@ -63,6 +64,173 @@ const pillars = [
     icon: Zap,
   },
 ];
+
+// Mobile Carousel Component with Accordion
+interface MobileCarouselProps {
+  pillars: typeof pillars;
+  isInView: boolean;
+}
+
+const MobileCarousel = ({ pillars, isInView }: MobileCarouselProps) => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    loop: true, 
+    align: 'center',
+    containScroll: false,
+  });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.on('select', onSelect);
+    onSelect();
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
+  const scrollTo = useCallback((index: number) => {
+    if (emblaApi) emblaApi.scrollTo(index);
+  }, [emblaApi]);
+
+  const toggleExpand = (index: number) => {
+    setExpandedIndex(expandedIndex === index ? null : index);
+  };
+
+  return (
+    <div className="md:hidden">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="overflow-hidden"
+        ref={emblaRef}
+      >
+        <div className="flex">
+          {pillars.map((pillar, index) => (
+            <div 
+              key={index} 
+              className="flex-[0_0_85%] min-w-0 px-2"
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ 
+                  duration: 0.4, 
+                  delay: 0.4 + index * 0.05,
+                }}
+                className="relative"
+              >
+                <div 
+                  className={`relative rounded-2xl bg-gradient-to-br from-primary-foreground/10 to-primary-foreground/5 border transition-all duration-300 overflow-hidden ${
+                    selectedIndex === index 
+                      ? 'border-secondary/60 shadow-[0_8px_32px_rgba(166,144,97,0.3)]' 
+                      : 'border-secondary/30'
+                  }`}
+                >
+                  {/* Card Header - Tappable */}
+                  <button
+                    onClick={() => toggleExpand(index)}
+                    className="w-full p-5 flex items-center gap-4 text-left"
+                  >
+                    {/* Letter badge */}
+                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-gold-light via-secondary to-secondary/80 flex items-center justify-center text-secondary-foreground font-serif font-bold text-xl shadow-[0_4px_16px_rgba(166,144,97,0.5)]">
+                      {pillar.letter}
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <pillar.icon className="w-5 h-5 text-secondary flex-shrink-0" />
+                        <h3 className="text-lg font-serif font-bold text-primary-foreground">{pillar.title}</h3>
+                      </div>
+                      <p className="text-xs text-secondary font-semibold uppercase tracking-wide">{pillar.subtitle}</p>
+                    </div>
+
+                    {/* Expand indicator */}
+                    <motion.div
+                      animate={{ rotate: expandedIndex === index ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex-shrink-0"
+                    >
+                      <ChevronDown className="w-5 h-5 text-secondary/70" />
+                    </motion.div>
+                  </button>
+
+                  {/* Expandable Description */}
+                  <AnimatePresence>
+                    {expandedIndex === index && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-5 pb-5 pt-0">
+                          <div className="h-px w-full bg-gradient-to-r from-transparent via-secondary/30 to-transparent mb-4" />
+                          <p className="text-sm text-primary-foreground/85 leading-relaxed">
+                            {pillar.description}
+                          </p>
+                          {/* Decorative element */}
+                          <div className="mt-4 flex items-center gap-2">
+                            <div className="h-1 w-8 rounded-full bg-gradient-to-r from-secondary to-secondary/50" />
+                            <span className="text-xs text-secondary/70 uppercase tracking-widest">Pilar {index + 1} de 8</span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Active glow effect */}
+                  {selectedIndex === index && (
+                    <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 via-transparent to-secondary/5 pointer-events-none rounded-2xl" />
+                  )}
+                </div>
+              </motion.div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Pagination Dots */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.4, delay: 0.6 }}
+        className="flex justify-center gap-2 mt-6"
+      >
+        {pillars.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => scrollTo(index)}
+            className={`transition-all duration-300 rounded-full ${
+              selectedIndex === index 
+                ? 'w-8 h-2 bg-secondary' 
+                : 'w-2 h-2 bg-secondary/40 hover:bg-secondary/60'
+            }`}
+            aria-label={`Ir para pilar ${index + 1}`}
+          />
+        ))}
+      </motion.div>
+
+      {/* Swipe hint */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : {}}
+        transition={{ duration: 0.4, delay: 0.8 }}
+        className="text-center text-xs text-primary-foreground/50 mt-3"
+      >
+        Deslize para navegar • Toque para expandir
+      </motion.p>
+    </div>
+  );
+};
 
 export const MethodologySection = () => {
   const ref = useRef(null);
@@ -182,42 +350,8 @@ export const MethodologySection = () => {
           ))}
         </motion.div>
 
-        {/* Mobile Compact Cards */}
-        <div className="md:hidden space-y-3">
-          {pillars.map((pillar, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ 
-                duration: 0.5, 
-                delay: 0.3 + index * 0.08,
-                type: "spring",
-                stiffness: 120
-              }}
-              className="relative group"
-            >
-              <div className="relative flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-primary-foreground/10 to-primary-foreground/5 border border-secondary/30 overflow-hidden">
-                {/* Letter badge compact */}
-                <div className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-gold-light via-secondary to-secondary/80 flex items-center justify-center text-secondary-foreground font-serif font-bold text-lg shadow-[0_2px_12px_rgba(166,144,97,0.4)]">
-                  {pillar.letter}
-                </div>
-                
-                {/* Content compact */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <pillar.icon className="w-4 h-4 text-secondary flex-shrink-0" />
-                    <h3 className="text-base font-serif font-bold text-primary-foreground truncate">{pillar.title}</h3>
-                  </div>
-                  <p className="text-xs text-secondary font-semibold uppercase tracking-wide">{pillar.subtitle}</p>
-                </div>
-                
-                {/* Subtle glow on tap */}
-                <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 to-transparent opacity-0 active:opacity-100 transition-opacity duration-200 rounded-xl" />
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {/* Mobile Carousel with Accordion */}
+        <MobileCarousel pillars={pillars} isInView={isInView} />
 
         {/* Desktop Cards - First Row (4 cards) */}
         <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
