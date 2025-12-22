@@ -11,58 +11,67 @@ const pillars = [
   {
     letter: "S",
     title: "SER",
-    subtitle: "Identidade Autêntica",
-    description: "Descubra e posicione sua essência única como diferencial competitivo no mercado jurídico",
+    subtitle: "Clareza e Decisão",
+    description: "Você sai da confusão interna para clareza, decisão e movimento real.",
+    checkpoints: ["Para de se esconder", "Sabe para quem fala", "Começa a ser vista", "Leads começam a chegar"],
     icon: Sparkles,
   },
   {
     letter: "O",
-    title: "Ordem Interna e Externa",
-    subtitle: "Equilíbrio Integral",
-    description: "Alinhe sua vida pessoal e profissional para uma advocacia sustentável e próspera",
+    title: "ORDEM",
+    subtitle: "Controle do Tempo",
+    description: "Você sai do caos para controle do tempo e da rotina.",
+    checkpoints: ["Para de trabalhar o dia inteiro sem resultado", "Sabe o que fazer toda semana", "Tem espaço mental para crescer"],
     icon: Scale,
   },
   {
     letter: "B",
-    title: "Branding",
-    subtitle: "Marca Pessoal de Autoridade",
-    description: "Construa uma imagem magnética que atrai clientes ideais naturalmente",
+    title: "BRANDING",
+    subtitle: "Referência no Mercado",
+    description: "Você deixa de parecer 'mais uma' e passa a ser reconhecida como referência.",
+    checkpoints: ["Comunicação firme", "Autoridade percebida", "Mercado entende seu valor"],
     icon: Palette,
   },
   {
     letter: "E",
-    title: "Estrutura",
-    subtitle: "Base Sólida",
-    description: "Implemente sistemas e processos que libertam seu tempo para o que realmente importa",
+    title: "ESTRUTURA",
+    subtitle: "Vendas com Clareza",
+    description: "Você para de vender confuso e passa a vender com clareza e segurança.",
+    checkpoints: ["Serviço bem definido", "Preço sustentado", "Menos desgaste em conversas"],
     icon: Building2,
   },
   {
     letter: "R",
-    title: "Resultados",
-    subtitle: "Performance Extraordinária",
-    description: "Transforme esforço em conquistas mensuráveis e faturamento consistente",
+    title: "RESULTADO",
+    subtitle: "Faturamento Previsível",
+    description: "Você sai da conversa solta para faturamento previsível.",
+    checkpoints: ["Atendimento seguro", "Menos objeção", "Mais fechamentos"],
     icon: Target,
   },
   {
     letter: "A",
-    title: "Audiência",
-    subtitle: "Conexão Estratégica",
-    description: "Construa uma comunidade engajada que confia e indica seus serviços",
-    icon: Users,
+    title: "AÇÃO",
+    subtitle: "Execução Consistente",
+    description: "Você para de travar e entra em execução consistente.",
+    checkpoints: ["Constância", "Confiança", "Ritmo de crescimento"],
+    icon: Zap,
   },
   {
     letter: "N",
-    title: "Negócio Escalável",
-    subtitle: "Crescimento Sustentável",
-    description: "Desenvolva um modelo que cresce sem multiplicar suas horas de trabalho",
+    title: "NEGÓCIO ESCALÁVEL",
+    subtitle: "Base Sólida",
+    description: "Você deixa o improviso e passa a ter base para continuar faturando.",
+    checkpoints: ["Organização mínima", "Clareza do que funciona", "Próximos 90 dias planejado"],
     icon: TrendingUp,
   },
   {
     letter: "A",
-    title: "Ação",
-    subtitle: "Execução Implacável",
-    description: "Saia do planejamento para a implementação com disciplina e consistência",
-    icon: Zap,
+    title: "AUDIÊNCIA",
+    subtitle: "Conexão Estratégica",
+    description: "Pare de postar sem retorno para audiência que confia e responde.",
+    checkpoints: ["Conteúdo com intenção", "Tráfego pago estratégico", "Pessoas certas chegando"],
+    impactNote: "Impacto direto no faturamento: Sem audiência, não há escala. Aqui se cria previsibilidade de oportunidades.",
+    icon: Users,
   },
 ];
 
@@ -266,9 +275,38 @@ const MobileCarousel = ({ pillars, isInView }: MobileCarouselProps) => {
                             transition={{ duration: 0.3, delay: 0.1 }}
                           >
                             <div className="h-px w-full bg-gradient-to-r from-transparent via-secondary/40 to-transparent mb-4" />
-                            <p className="text-sm text-primary-foreground/90 leading-relaxed">
+                            <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
                               {pillar.description}
                             </p>
+                            
+                            {/* Checkpoints */}
+                            <div className="space-y-2 mb-4">
+                              {pillar.checkpoints.map((checkpoint, i) => (
+                                <motion.div 
+                                  key={i}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.2, delay: 0.15 + i * 0.05 }}
+                                  className="flex items-center gap-2"
+                                >
+                                  <span className="text-secondary text-sm">✔</span>
+                                  <span className="text-sm text-primary-foreground/80">{checkpoint}</span>
+                                </motion.div>
+                              ))}
+                            </div>
+
+                            {/* Impact Note for AUDIÊNCIA */}
+                            {'impactNote' in pillar && pillar.impactNote && (
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.3, delay: 0.3 }}
+                                className="mt-3 p-3 rounded-lg bg-secondary/10 border border-secondary/20"
+                              >
+                                <p className="text-xs text-secondary leading-relaxed">{pillar.impactNote}</p>
+                              </motion.div>
+                            )}
+                            
                             {/* Decorative element */}
                             <motion.div 
                               className="mt-4 flex items-center gap-2"
@@ -522,8 +560,18 @@ export const MethodologySection = () => {
                   </motion.div>
                   
                   <h3 className="text-xl font-serif font-bold mb-1 text-primary-foreground group-hover:text-secondary transition-colors duration-300">{pillar.title}</h3>
-                  <p className="text-sm text-secondary font-semibold mb-3 tracking-wide uppercase">{pillar.subtitle}</p>
-                  <p className="text-sm text-primary-foreground/80 leading-relaxed">{pillar.description}</p>
+                  <p className="text-xs text-secondary font-semibold mb-2 tracking-wide uppercase">{pillar.subtitle}</p>
+                  <p className="text-sm text-primary-foreground/80 leading-relaxed mb-3">{pillar.description}</p>
+                  
+                  {/* Checkpoints */}
+                  <div className="space-y-1.5">
+                    {pillar.checkpoints.map((checkpoint, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <span className="text-secondary text-xs">✔</span>
+                        <span className="text-xs text-primary-foreground/70">{checkpoint}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Decorative corner with animation */}
@@ -604,8 +652,25 @@ export const MethodologySection = () => {
                   </motion.div>
                   
                   <h3 className="text-xl font-serif font-bold mb-1 text-primary-foreground group-hover:text-secondary transition-colors duration-300">{pillar.title}</h3>
-                  <p className="text-sm text-secondary font-semibold mb-3 tracking-wide uppercase">{pillar.subtitle}</p>
-                  <p className="text-sm text-primary-foreground/80 leading-relaxed">{pillar.description}</p>
+                  <p className="text-xs text-secondary font-semibold mb-2 tracking-wide uppercase">{pillar.subtitle}</p>
+                  <p className="text-sm text-primary-foreground/80 leading-relaxed mb-3">{pillar.description}</p>
+                  
+                  {/* Checkpoints */}
+                  <div className="space-y-1.5">
+                    {pillar.checkpoints.map((checkpoint, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <span className="text-secondary text-xs">✔</span>
+                        <span className="text-xs text-primary-foreground/70">{checkpoint}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Impact Note for AUDIÊNCIA */}
+                  {'impactNote' in pillar && pillar.impactNote && (
+                    <div className="mt-3 p-2 rounded-lg bg-secondary/10 border border-secondary/20">
+                      <p className="text-xs text-secondary leading-relaxed">{pillar.impactNote}</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Decorative corner with animation */}
