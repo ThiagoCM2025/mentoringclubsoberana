@@ -2,6 +2,7 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { Sparkles, Scale, Palette, Building2, Target, Users, TrendingUp, Zap, ChevronDown } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
 import patternCirclesWhite from "@/assets/brand/pattern-circles-white.png";
 import isotipoWhite from "@/assets/brand/isotipo-white.png";
 import isotipoSWhite from "@/assets/brand/isotipo-s-white.png";
@@ -72,35 +73,80 @@ interface MobileCarouselProps {
 }
 
 const MobileCarousel = ({ pillars, isInView }: MobileCarouselProps) => {
+  const autoplayRef = useRef(
+    Autoplay({ delay: 4000, stopOnInteraction: false, stopOnMouseEnter: true })
+  );
+  
   const [emblaRef, emblaApi] = useEmblaCarousel({ 
     loop: true, 
     align: 'center',
     containScroll: false,
-  });
+  }, [autoplayRef.current]);
+  
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     setSelectedIndex(emblaApi.selectedScrollSnap());
   }, [emblaApi]);
 
+  // Calculate relative position for scale/opacity effects
+  const getSlideStyles = useCallback((index: number) => {
+    if (!emblaApi) return { scale: 1, opacity: 1 };
+    
+    const slidesInView = emblaApi.slidesInView();
+    const isActive = selectedIndex === index;
+    const isAdjacent = Math.abs(selectedIndex - index) === 1 || 
+      (selectedIndex === 0 && index === pillars.length - 1) ||
+      (selectedIndex === pillars.length - 1 && index === 0);
+    
+    if (isActive) {
+      return { scale: 1, opacity: 1 };
+    } else if (isAdjacent) {
+      return { scale: 0.9, opacity: 0.6 };
+    }
+    return { scale: 0.85, opacity: 0.4 };
+  }, [emblaApi, selectedIndex, pillars.length]);
+
   useEffect(() => {
     if (!emblaApi) return;
+    
     emblaApi.on('select', onSelect);
+    setScrollSnaps(emblaApi.scrollSnapList());
     onSelect();
+    
     return () => {
       emblaApi.off('select', onSelect);
     };
   }, [emblaApi, onSelect]);
 
-  const scrollTo = useCallback((index: number) => {
-    if (emblaApi) emblaApi.scrollTo(index);
-  }, [emblaApi]);
+  // Pause autoplay when card is expanded
+  useEffect(() => {
+    if (expandedIndex !== null) {
+      autoplayRef.current.stop();
+    } else {
+      autoplayRef.current.play();
+    }
+  }, [expandedIndex]);
 
-  const toggleExpand = (index: number) => {
-    setExpandedIndex(expandedIndex === index ? null : index);
-  };
+  const scrollTo = useCallback((index: number) => {
+    if (emblaApi) {
+      autoplayRef.current.stop();
+      emblaApi.scrollTo(index);
+      // Resume after manual navigation
+      setTimeout(() => {
+        if (expandedIndex === null) {
+          autoplayRef.current.play();
+        }
+      }, 2000);
+    }
+  }, [emblaApi, expandedIndex]);
+
+  const toggleExpand = useCallback((index: number) => {
+    setExpandedIndex(prev => prev === index ? null : index);
+  }, []);
 
   return (
     <div className="md:hidden">
@@ -111,90 +157,139 @@ const MobileCarousel = ({ pillars, isInView }: MobileCarouselProps) => {
         className="overflow-hidden"
         ref={emblaRef}
       >
-        <div className="flex">
-          {pillars.map((pillar, index) => (
-            <div 
-              key={index} 
-              className="flex-[0_0_85%] min-w-0 px-2"
-            >
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ 
-                  duration: 0.4, 
-                  delay: 0.4 + index * 0.05,
+        <div className="flex touch-pan-y">
+          {pillars.map((pillar, index) => {
+            const styles = getSlideStyles(index);
+            return (
+              <motion.div 
+                key={index} 
+                className="flex-[0_0_85%] min-w-0 px-2"
+                animate={{
+                  scale: styles.scale,
+                  opacity: styles.opacity,
                 }}
-                className="relative"
+                transition={{
+                  duration: 0.4,
+                  ease: [0.25, 0.1, 0.25, 1],
+                }}
               >
-                <div 
-                  className={`relative rounded-2xl bg-gradient-to-br from-primary-foreground/10 to-primary-foreground/5 border transition-all duration-300 overflow-hidden ${
-                    selectedIndex === index 
-                      ? 'border-secondary/60 shadow-[0_8px_32px_rgba(166,144,97,0.3)]' 
-                      : 'border-secondary/30'
-                  }`}
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ 
+                    duration: 0.5, 
+                    delay: 0.4 + index * 0.05,
+                  }}
+                  className="relative"
                 >
-                  {/* Card Header - Tappable */}
-                  <button
-                    onClick={() => toggleExpand(index)}
-                    className="w-full p-5 flex items-center gap-4 text-left"
+                  <div 
+                    className={`relative rounded-2xl bg-gradient-to-br from-primary-foreground/10 to-primary-foreground/5 border transition-all duration-500 overflow-hidden ${
+                      selectedIndex === index 
+                        ? 'border-secondary/60 shadow-[0_8px_32px_rgba(166,144,97,0.35)]' 
+                        : 'border-secondary/20'
+                    }`}
                   >
-                    {/* Letter badge */}
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-gold-light via-secondary to-secondary/80 flex items-center justify-center text-secondary-foreground font-serif font-bold text-xl shadow-[0_4px_16px_rgba(166,144,97,0.5)]">
-                      {pillar.letter}
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <pillar.icon className="w-5 h-5 text-secondary flex-shrink-0" />
-                        <h3 className="text-lg font-serif font-bold text-primary-foreground">{pillar.title}</h3>
-                      </div>
-                      <p className="text-xs text-secondary font-semibold uppercase tracking-wide">{pillar.subtitle}</p>
-                    </div>
-
-                    {/* Expand indicator */}
-                    <motion.div
-                      animate={{ rotate: expandedIndex === index ? 180 : 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="flex-shrink-0"
+                    {/* Card Header - Tappable */}
+                    <button
+                      onClick={() => toggleExpand(index)}
+                      onTouchStart={() => autoplayRef.current.stop()}
+                      className="w-full p-5 flex items-center gap-4 text-left active:bg-secondary/5 transition-colors"
                     >
-                      <ChevronDown className="w-5 h-5 text-secondary/70" />
-                    </motion.div>
-                  </button>
-
-                  {/* Expandable Description */}
-                  <AnimatePresence>
-                    {expandedIndex === index && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: 'easeInOut' }}
-                        className="overflow-hidden"
+                      {/* Letter badge */}
+                      <motion.div 
+                        className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-gold-light via-secondary to-secondary/80 flex items-center justify-center text-secondary-foreground font-serif font-bold text-xl shadow-[0_4px_16px_rgba(166,144,97,0.5)]"
+                        animate={selectedIndex === index ? {
+                          boxShadow: [
+                            "0 4px 16px rgba(166,144,97,0.5)",
+                            "0 4px 24px rgba(166,144,97,0.7)",
+                            "0 4px 16px rgba(166,144,97,0.5)"
+                          ]
+                        } : {}}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       >
-                        <div className="px-5 pb-5 pt-0">
-                          <div className="h-px w-full bg-gradient-to-r from-transparent via-secondary/30 to-transparent mb-4" />
-                          <p className="text-sm text-primary-foreground/85 leading-relaxed">
-                            {pillar.description}
-                          </p>
-                          {/* Decorative element */}
-                          <div className="mt-4 flex items-center gap-2">
-                            <div className="h-1 w-8 rounded-full bg-gradient-to-r from-secondary to-secondary/50" />
-                            <span className="text-xs text-secondary/70 uppercase tracking-widest">Pilar {index + 1} de 8</span>
-                          </div>
-                        </div>
+                        {pillar.letter}
                       </motion.div>
-                    )}
-                  </AnimatePresence>
+                      
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <pillar.icon className={`w-5 h-5 flex-shrink-0 transition-colors duration-300 ${
+                            selectedIndex === index ? 'text-secondary' : 'text-secondary/60'
+                          }`} />
+                          <h3 className={`text-lg font-serif font-bold transition-colors duration-300 ${
+                            selectedIndex === index ? 'text-primary-foreground' : 'text-primary-foreground/70'
+                          }`}>{pillar.title}</h3>
+                        </div>
+                        <p className="text-xs text-secondary font-semibold uppercase tracking-wide">{pillar.subtitle}</p>
+                      </div>
 
-                  {/* Active glow effect */}
-                  {selectedIndex === index && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 via-transparent to-secondary/5 pointer-events-none rounded-2xl" />
-                  )}
-                </div>
+                      {/* Expand indicator */}
+                      <motion.div
+                        animate={{ 
+                          rotate: expandedIndex === index ? 180 : 0,
+                          scale: expandedIndex === index ? 1.1 : 1
+                        }}
+                        transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
+                        className="flex-shrink-0"
+                      >
+                        <ChevronDown className={`w-5 h-5 transition-colors duration-300 ${
+                          expandedIndex === index ? 'text-secondary' : 'text-secondary/50'
+                        }`} />
+                      </motion.div>
+                    </button>
+
+                    {/* Expandable Description */}
+                    <AnimatePresence mode="wait">
+                      {expandedIndex === index && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+                          className="overflow-hidden"
+                        >
+                          <motion.div 
+                            className="px-5 pb-5 pt-0"
+                            initial={{ y: -10 }}
+                            animate={{ y: 0 }}
+                            transition={{ duration: 0.3, delay: 0.1 }}
+                          >
+                            <div className="h-px w-full bg-gradient-to-r from-transparent via-secondary/40 to-transparent mb-4" />
+                            <p className="text-sm text-primary-foreground/90 leading-relaxed">
+                              {pillar.description}
+                            </p>
+                            {/* Decorative element */}
+                            <motion.div 
+                              className="mt-4 flex items-center gap-2"
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ duration: 0.3, delay: 0.2 }}
+                            >
+                              <div className="h-1 w-8 rounded-full bg-gradient-to-r from-secondary to-secondary/50" />
+                              <span className="text-xs text-secondary/70 uppercase tracking-widest">Pilar {index + 1} de 8</span>
+                            </motion.div>
+                          </motion.div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Active glow effect */}
+                    <AnimatePresence>
+                      {selectedIndex === index && (
+                        <motion.div 
+                          className="absolute inset-0 bg-gradient-to-br from-secondary/15 via-transparent to-secondary/5 pointer-events-none rounded-2xl"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
               </motion.div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </motion.div>
 
