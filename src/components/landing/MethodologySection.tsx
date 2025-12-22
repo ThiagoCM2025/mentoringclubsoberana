@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Brain, Users, ListChecks, Flame, Rocket, Package, TrendingUp, Cog } from "lucide-react";
+import { Sparkles, Scale, Palette, Building2, Target, Users, TrendingUp, Zap } from "lucide-react";
 import patternCirclesWhite from "@/assets/brand/pattern-circles-white.png";
 import isotipoWhite from "@/assets/brand/isotipo-white.png";
 import isotipoSWhite from "@/assets/brand/isotipo-s-white.png";
@@ -8,59 +8,59 @@ import isotipoSWhite from "@/assets/brand/isotipo-s-white.png";
 const pillars = [
   {
     letter: "S",
-    title: "Soberania Mental",
-    subtitle: "Mindset",
-    description: "Desenvolva a mentalidade de CEO e pare de se sabotar",
-    icon: Brain,
+    title: "SER",
+    subtitle: "Identidade Autêntica",
+    description: "Descubra e posicione sua essência única como diferencial competitivo no mercado jurídico",
+    icon: Sparkles,
   },
   {
     letter: "O",
-    title: "O Público Certo",
-    subtitle: "Audiência",
-    description: "Defina seu cliente ideal e pare de atender qualquer um",
-    icon: Users,
+    title: "Ordem Interna e Externa",
+    subtitle: "Equilíbrio Integral",
+    description: "Alinhe sua vida pessoal e profissional para uma advocacia sustentável e próspera",
+    icon: Scale,
   },
   {
     letter: "B",
-    title: "Base de Contatos",
-    subtitle: "Lista",
-    description: "Construa uma lista qualificada de potenciais clientes",
-    icon: ListChecks,
+    title: "Branding",
+    subtitle: "Marca Pessoal de Autoridade",
+    description: "Construa uma imagem magnética que atrai clientes ideais naturalmente",
+    icon: Palette,
   },
   {
     letter: "E",
-    title: "Engajamento",
-    subtitle: "Aquecimento",
-    description: "Crie relacionamento e confiança antes de vender",
-    icon: Flame,
+    title: "Estrutura",
+    subtitle: "Base Sólida",
+    description: "Implemente sistemas e processos que libertam seu tempo para o que realmente importa",
+    icon: Building2,
   },
   {
     letter: "R",
     title: "Resultados",
-    subtitle: "Lançamento",
-    description: "Execute campanhas que convertem e geram resultados",
-    icon: Rocket,
+    subtitle: "Performance Extraordinária",
+    description: "Transforme esforço em conquistas mensuráveis e faturamento consistente",
+    icon: Target,
   },
   {
     letter: "A",
-    title: "Alta Entrega",
-    subtitle: "Produto",
-    description: "Crie ofertas irresistíveis que resolvem problemas reais",
-    icon: Package,
+    title: "Audiência",
+    subtitle: "Conexão Estratégica",
+    description: "Construa uma comunidade engajada que confia e indica seus serviços",
+    icon: Users,
   },
   {
     letter: "N",
     title: "Negócio Escalável",
-    subtitle: "Escala",
-    description: "Construa sistemas que funcionam sem você",
+    subtitle: "Crescimento Sustentável",
+    description: "Desenvolva um modelo que cresce sem multiplicar suas horas de trabalho",
     icon: TrendingUp,
   },
   {
     letter: "A",
-    title: "Ação e Estrutura",
-    subtitle: "Execução",
-    description: "Implemente processos e rotinas que garantem consistência",
-    icon: Cog,
+    title: "Ação",
+    subtitle: "Execução Implacável",
+    description: "Saia do planejamento para a implementação com disciplina e consistência",
+    icon: Zap,
   },
 ];
 
