@@ -280,17 +280,42 @@ const MobileCarousel = ({ pillars, isInView }: MobileCarouselProps) => {
                             </p>
                             
                             {/* Checkpoints */}
-                            <div className="space-y-2 mb-4">
+                            <div className="space-y-2.5 mb-4">
                               {pillar.checkpoints.map((checkpoint, i) => (
                                 <motion.div 
                                   key={i}
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ duration: 0.2, delay: 0.15 + i * 0.05 }}
-                                  className="flex items-center gap-2"
+                                  initial={{ opacity: 0, x: -20, scale: 0.9 }}
+                                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                                  transition={{ 
+                                    duration: 0.35, 
+                                    delay: 0.2 + i * 0.12,
+                                    type: "spring",
+                                    stiffness: 120,
+                                    damping: 12
+                                  }}
+                                  className="flex items-center gap-3 group/check"
                                 >
-                                  <span className="text-secondary text-sm">✔</span>
-                                  <span className="text-sm text-primary-foreground/80">{checkpoint}</span>
+                                  <motion.span 
+                                    className="text-secondary text-sm flex-shrink-0 w-5 h-5 rounded-full bg-secondary/20 flex items-center justify-center"
+                                    initial={{ scale: 0, rotate: -180 }}
+                                    animate={{ scale: 1, rotate: 0 }}
+                                    transition={{ 
+                                      duration: 0.4, 
+                                      delay: 0.25 + i * 0.12,
+                                      type: "spring",
+                                      stiffness: 200
+                                    }}
+                                  >
+                                    ✔
+                                  </motion.span>
+                                  <motion.span 
+                                    className="text-sm text-primary-foreground/80"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.3, delay: 0.3 + i * 0.12 }}
+                                  >
+                                    {checkpoint}
+                                  </motion.span>
                                 </motion.div>
                               ))}
                             </div>
@@ -566,10 +591,33 @@ export const MethodologySection = () => {
                   {/* Checkpoints */}
                   <div className="space-y-1.5">
                     {pillar.checkpoints.map((checkpoint, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <span className="text-secondary text-xs">✔</span>
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, x: -15 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ 
+                          duration: 0.4, 
+                          delay: 0.8 + index * 0.15 + i * 0.1,
+                          type: "spring",
+                          stiffness: 100
+                        }}
+                        className="flex items-center gap-2"
+                      >
+                        <motion.span 
+                          className="text-secondary text-xs w-4 h-4 rounded-full bg-secondary/15 flex items-center justify-center flex-shrink-0"
+                          initial={{ scale: 0 }}
+                          animate={isInView ? { scale: 1 } : {}}
+                          transition={{ 
+                            duration: 0.3, 
+                            delay: 0.85 + index * 0.15 + i * 0.1,
+                            type: "spring",
+                            stiffness: 200
+                          }}
+                        >
+                          ✔
+                        </motion.span>
                         <span className="text-xs text-primary-foreground/70">{checkpoint}</span>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 </div>
@@ -658,10 +706,33 @@ export const MethodologySection = () => {
                   {/* Checkpoints */}
                   <div className="space-y-1.5">
                     {pillar.checkpoints.map((checkpoint, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <span className="text-secondary text-xs">✔</span>
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, x: -15 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ 
+                          duration: 0.4, 
+                          delay: 1.1 + index * 0.15 + i * 0.1,
+                          type: "spring",
+                          stiffness: 100
+                        }}
+                        className="flex items-center gap-2"
+                      >
+                        <motion.span 
+                          className="text-secondary text-xs w-4 h-4 rounded-full bg-secondary/15 flex items-center justify-center flex-shrink-0"
+                          initial={{ scale: 0 }}
+                          animate={isInView ? { scale: 1 } : {}}
+                          transition={{ 
+                            duration: 0.3, 
+                            delay: 1.15 + index * 0.15 + i * 0.1,
+                            type: "spring",
+                            stiffness: 200
+                          }}
+                        >
+                          ✔
+                        </motion.span>
                         <span className="text-xs text-primary-foreground/70">{checkpoint}</span>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
 
