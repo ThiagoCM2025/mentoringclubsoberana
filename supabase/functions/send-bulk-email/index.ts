@@ -47,7 +47,6 @@ function replaceVariables(text: string, recipient: Recipient): string {
 }
 
 function generateEmailTemplate(
-  recipientName: string,
   subject: string,
   content: string,
   recipientType: "student" | "lead"
@@ -196,7 +195,6 @@ const handler = async (req: Request): Promise<Response> => {
         if (channel === "email") {
           // Generate elegant HTML template
           const htmlContent = generateEmailTemplate(
-            recipient.name || "Querida",
             personalizedSubject,
             personalizedMessage,
             recipient.type
