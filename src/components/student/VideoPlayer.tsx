@@ -303,9 +303,22 @@ const VideoPlayer = ({ url, onTimeUpdate, onEnded, initialTime = 0 }: VideoPlaye
 
   if (videoType === "none" || !url) {
     return (
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground bg-muted">
-        <PlayCircle className="w-20 h-20 mb-4" />
-        <p>Vídeo em breve</p>
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
+        <div className="text-center p-8">
+          <div className="w-24 h-24 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-6 border-2 border-secondary/30">
+            <PlayCircle className="w-12 h-12 text-secondary" />
+          </div>
+          <h3 className="text-xl font-serif font-semibold text-cream mb-2">
+            Conteúdo em Preparação
+          </h3>
+          <p className="text-cream/60 max-w-md mx-auto mb-4">
+            O vídeo desta aula será disponibilizado em breve. Enquanto isso, explore os materiais complementares abaixo.
+          </p>
+          <div className="flex items-center justify-center gap-2 text-sm text-secondary">
+            <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+            <span>Em breve disponível</span>
+          </div>
+        </div>
       </div>
     );
   }
