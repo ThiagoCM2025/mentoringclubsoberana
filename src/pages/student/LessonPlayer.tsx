@@ -10,6 +10,7 @@ import LessonSidebar from "@/components/student/LessonSidebar";
 import FavoriteButton from "@/components/student/FavoriteButton";
 import VideoPlayer from "@/components/student/VideoPlayer";
 import { useConfetti } from "@/hooks/useConfetti";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   ArrowLeft,
   CheckCircle,
@@ -18,7 +19,9 @@ import {
   Download,
   FileText,
   Clock,
-  List
+  List,
+  SkipBack,
+  SkipForward
 } from "lucide-react";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
 import { AIAssistant } from "@/components/student/AIAssistant";
@@ -423,6 +426,57 @@ const LessonPlayer = () => {
             />
           </div>
 
+          {/* Navigation Controls & Completion Checkbox */}
+          <div className="bg-zinc-900 border-b border-secondary/20">
+            <div className="max-w-4xl mx-auto px-6 py-4">
+              <div className="flex items-center justify-between gap-4">
+                {/* Previous Lesson */}
+                <Button
+                  variant="ghost"
+                  onClick={() => prevLesson && navigate(`/student/lesson/${prevLesson.id}`)}
+                  disabled={!prevLesson}
+                  className="text-cream/70 hover:text-cream hover:bg-secondary/10 disabled:opacity-30"
+                >
+                  <SkipBack className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">Anterior</span>
+                </Button>
+
+                {/* Completion Checkbox - Central and Prominent */}
+                <div 
+                  className={`flex items-center gap-3 px-4 py-2 rounded-xl cursor-pointer transition-all ${
+                    isCompleted 
+                      ? "bg-green-500/10 border border-green-500/30" 
+                      : "bg-secondary/10 border border-secondary/30 hover:bg-secondary/20"
+                  }`}
+                  onClick={() => !isCompleted && markAsComplete()}
+                >
+                  <Checkbox
+                    checked={isCompleted}
+                    onCheckedChange={() => !isCompleted && markAsComplete()}
+                    className={`h-6 w-6 rounded-md border-2 ${
+                      isCompleted 
+                        ? "bg-green-500 border-green-500 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500" 
+                        : "border-secondary/50 data-[state=checked]:bg-secondary data-[state=checked]:border-secondary"
+                    }`}
+                  />
+                  <span className={`font-medium ${isCompleted ? "text-green-500" : "text-cream"}`}>
+                    {isCompleted ? "Aula concluída!" : "Marcar como concluída"}
+                  </span>
+                </div>
+
+                {/* Next Lesson */}
+                <Button
+                  onClick={() => nextLesson && navigate(`/student/lesson/${nextLesson.id}`)}
+                  disabled={!nextLesson}
+                  className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold disabled:opacity-30"
+                >
+                  <span className="hidden sm:inline">Próxima</span>
+                  <SkipForward className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
           {/* Lesson Content - Dark Theme */}
           <div className="bg-zinc-950">
             <div className="max-w-4xl mx-auto p-6">
@@ -522,36 +576,16 @@ const LessonPlayer = () => {
                 </TabsContent>
               </Tabs>
 
-              {/* Navigation - Dark Buttons */}
-              <div className="flex items-center justify-between mt-8 pt-6 border-t border-secondary/20">
-                {prevLesson ? (
-                  <Button
-                    variant="outline"
-                    onClick={() => navigate(`/student/lesson/${prevLesson.id}`)}
-                    className="group border-secondary/30 text-cream hover:bg-secondary/10"
-                  >
-                    <ChevronLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                    <span className="hidden sm:inline">Anterior</span>
-                  </Button>
-                ) : (
-                  <div />
-                )}
-                {nextLesson ? (
-                  <Button
-                    onClick={() => navigate(`/student/lesson/${nextLesson.id}`)}
-                    className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold group"
-                  >
-                    <span className="hidden sm:inline">Próxima</span>
-                    <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                ) : (
-                  <Button 
-                    onClick={goBack} 
-                    className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold"
-                  >
-                    Voltar ao curso
-                  </Button>
-                )}
+              {/* Back to Course Button */}
+              <div className="flex justify-center mt-8 pt-6 border-t border-secondary/20">
+                <Button 
+                  variant="outline"
+                  onClick={goBack} 
+                  className="border-secondary/30 text-cream hover:bg-secondary/10"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Voltar ao curso
+                </Button>
               </div>
             </div>
           </div>
