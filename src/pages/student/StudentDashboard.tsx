@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useGamification } from "@/hooks/useGamification";
+import { useProgramProgress } from "@/hooks/useProgramProgress";
 import { motion } from "framer-motion";
 import { 
   BookOpen, 
@@ -40,6 +41,7 @@ import { NotificationBell } from "@/components/student/NotificationBell";
 import StudyReminderButton from "@/components/student/StudyReminderButton";
 import { SoberanaLogo } from "@/components/brand/SoberanaLogo";
 import ProgramCard from "@/components/student/ProgramCard";
+import { ProgramProgressCard } from "@/components/student/ProgramProgressCard";
 import { programsList } from "@/data/programs";
 import { programToCourseId } from "@/lib/programCourseMapping";
 import { 
@@ -89,6 +91,7 @@ const StudentDashboard = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { stats: gamificationStats, calculateLevel, getCurrentLevelProgress, getXpForNextLevel, hasNearbyAchievement, leaderboard, loading: gamificationLoading } = useGamification();
+  const { programs: programProgress, loading: programsLoading } = useProgramProgress();
   const showPulse = hasNearbyAchievement();
   const xpForNextLevel = gamificationStats ? getXpForNextLevel(calculateLevel(gamificationStats.xp)) : 500;
   const xpRemaining = gamificationStats ? xpForNextLevel - gamificationStats.xp : 500;
@@ -723,6 +726,36 @@ const StudentDashboard = () => {
 
         {/* Continue Watching */}
         <ContinueWatching items={continueWatching} />
+
+        {/* Meu Progresso nos Programas - Timeline Visual */}
+        {programProgress.length > 0 && (
+          <section className="mb-12">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-2 mb-6"
+            >
+              <Calendar className="w-5 h-5 text-secondary" />
+              <h2 className="text-2xl font-serif font-bold text-cream">
+                Seu Progresso Semanal
+              </h2>
+            </motion.div>
+            <div className="grid md:grid-cols-2 gap-6">
+              {programProgress.map((prog) => (
+                <ProgramProgressCard
+                  key={prog.courseId}
+                  courseId={prog.courseId}
+                  courseTitle={prog.courseTitle}
+                  currentWeek={prog.currentWeek}
+                  totalWeeks={prog.totalWeeks}
+                  completedWeeks={prog.completedWeeks}
+                  currentMission={prog.currentMission}
+                  xpEarned={prog.xpEarned}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* My Courses */}
         <section className="mb-12">
