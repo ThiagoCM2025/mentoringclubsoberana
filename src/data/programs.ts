@@ -55,13 +55,13 @@ export interface Program {
 export const programs: Record<string, Program> = {
   "workshop-ia": {
     slug: "workshop-ia",
-    title: "Ganhe tempo e autoridade com tecnologia",
+    title: "O acelerador tecnológico para o seu faturamento de +50k/mês",
     image: programWorkshopIA,
-    titleHighlight: "com tecnologia",
+    titleHighlight: "+50k/mês",
     subtitle: "Workshop Soberana IA",
     impactPhrase: "O seu primeiro passo.",
-    description: "Domine as Inteligências Artificiais treinadas para advocacia. Recupere horas da sua semana com ajuda da IA no que é repetitivo e na criação de estratégias de negócios, produção de conteúdo e vendas.",
-    fullDescription: "O Workshop Soberana IA foi desenvolvido para advogadas que querem usar a tecnologia a seu favor. Você vai aprender a usar IAs treinadas especificamente para a advocacia, automatizando tarefas repetitivas e ganhando tempo para focar no que realmente importa: seus clientes e seu crescimento.",
+    description: "Não se trata apenas de tecnologia, trata-se de liberdade e escala. Domine as Inteligências Artificiais treinadas especificamente para a advocacia imobiliária.",
+    fullDescription: "Não se trata apenas de tecnologia, trata-se de liberdade e escala. Domine as Inteligências Artificiais treinadas especificamente para a advocacia imobiliária e:\n\nRecupere +10 horas da sua semana: Delegue o trabalho repetitivo e burocrático para a IA e foque no que realmente traz dinheiro: o fechamento de contratos.\n\nEstratégias de Elite: Use a IA para desenhar teses imobiliárias complexas, planos de negócios e estratégias de vendas em minutos.",
     targetAudience: [
       "Advogadas que querem ganhar tempo com automação",
       "Profissionais que buscam se diferenciar com tecnologia",
@@ -71,10 +71,10 @@ export const programs: Record<string, Program> = {
     format: "Workshop online com IAs exclusivas",
     duration: "Acesso imediato",
     deliverables: [
-      "Acesso às minhas IAs treinadas para advocacia",
-      "Prompts exclusivos para produtividade jurídica",
-      "Automações para rotinas repetitivas",
-      "Estratégias de conteúdo e vendas com IA"
+      "Recupere +10 horas da sua semana delegando trabalho repetitivo",
+      "Estratégias de Elite: teses imobiliárias, planos de negócios e vendas",
+      "IAs treinadas especificamente para advocacia imobiliária",
+      "Foco no fechamento de contratos"
     ],
     ctaLink: "https://soberanamentoria.curseduca.pro/c/ia-para-advogadas-1754318820421",
     ctaText: "Saiba Mais Sobre o Workshop",
