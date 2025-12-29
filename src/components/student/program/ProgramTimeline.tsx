@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, Lock, Target, Sparkles } from "lucide-react";
+import { Check, Target, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -29,10 +29,10 @@ export const ProgramTimeline = ({
 }: ProgramTimelineProps) => {
   const weeks = Array.from({ length: totalWeeks }, (_, i) => i + 1);
 
-  const getWeekStatus = (week: number): 'completed' | 'current' | 'locked' => {
+  const getWeekStatus = (week: number): 'completed' | 'current' | 'upcoming' => {
     if (completedWeeks.includes(week)) return 'completed';
-    if (week <= currentWeek) return 'current';
-    return 'locked';
+    if (week === currentWeek) return 'current';
+    return 'upcoming';
   };
 
   const getWeekInfo = (week: number): WeekInfo | undefined => {
@@ -57,13 +57,13 @@ export const ProgramTimeline = ({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: week * 0.02 }}
-              onClick={() => status !== 'locked' && onWeekClick?.(week)}
+              onClick={() => onWeekClick?.(week)}
               className={cn(
                 "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-all cursor-pointer",
                 status === 'completed' && "bg-green-500/20 text-green-400 border border-green-500/50",
                 isActive && "bg-secondary text-black border-2 border-secondary shadow-[0_0_10px_rgba(166,144,97,0.4)]",
                 status === 'current' && !isActive && "bg-secondary/20 text-secondary border border-secondary/50",
-                status === 'locked' && "bg-zinc-800 text-zinc-600 border border-zinc-700 cursor-not-allowed"
+                status === 'upcoming' && "bg-zinc-800/50 text-zinc-500 border border-zinc-700/50"
               )}
             >
               {status === 'completed' ? <Check className="w-3 h-3" /> : week}
@@ -88,16 +88,15 @@ export const ProgramTimeline = ({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <motion.button
-                      onClick={() => status !== 'locked' && onWeekClick?.(week)}
-                      disabled={status === 'locked'}
-                      whileHover={status !== 'locked' ? { scale: 1.1 } : undefined}
-                      whileTap={status !== 'locked' ? { scale: 0.95 } : undefined}
+                      onClick={() => onWeekClick?.(week)}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
                       className={cn(
                         "relative w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all",
                         status === 'completed' && "bg-green-500/20 text-green-400 border-2 border-green-500/50",
                         status === 'current' && !isActive && "bg-secondary/20 text-secondary border-2 border-secondary/50",
                         isActive && "bg-secondary text-black border-2 border-secondary",
-                        status === 'locked' && "bg-zinc-800 text-zinc-600 border-2 border-zinc-700 cursor-not-allowed"
+                        status === 'upcoming' && "bg-zinc-800/50 text-zinc-500 border-2 border-zinc-700/50"
                       )}
                     >
                       {/* Pulse animation for current week */}
@@ -111,8 +110,6 @@ export const ProgramTimeline = ({
 
                       {status === 'completed' ? (
                         <Check className="w-4 h-4" />
-                      ) : status === 'locked' ? (
-                        <Lock className="w-3.5 h-3.5" />
                       ) : (
                         week
                       )}
@@ -147,8 +144,8 @@ export const ProgramTimeline = ({
                       {status === 'completed' && (
                         <p className="text-xs text-green-400">✓ Concluída</p>
                       )}
-                      {status === 'locked' && (
-                        <p className="text-xs text-zinc-500">🔒 Bloqueada</p>
+                      {status === 'upcoming' && (
+                        <p className="text-xs text-zinc-500">📅 Em breve</p>
                       )}
                     </div>
                   </TooltipContent>
