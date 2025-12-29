@@ -65,6 +65,7 @@ interface Lesson {
   order_index: number;
   is_free: boolean;
   lesson_type: string;
+  lesson_label: string | null;
 }
 
 interface MissionCompletion {
@@ -151,7 +152,7 @@ const ProgramCourseDetail = () => {
         .from("modules")
         .select(`
           id, title, description, order_index, module_type, unlock_week, is_dynamic,
-          lessons (id, title, description, duration_minutes, order_index, is_free, lesson_type)
+          lessons (id, title, description, duration_minutes, order_index, is_free, lesson_type, lesson_label)
         `)
         .eq("course_id", courseId)
         .order("order_index");
@@ -418,31 +419,11 @@ const ProgramCourseDetail = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left: Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Current Week Mission - Highlighted */}
-            {currentMission && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <h2 className="text-xl font-serif font-bold text-cream mb-4 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-secondary" />
-                  Sua Missão Esta Semana
-                </h2>
-                <WeeklyMissionCard
-                  mission={currentMission}
-                  userCompletion={missionCompletions[currentMission.id]}
-                  onSubmit={() => handleMissionSubmit(currentMission)}
-                  isCurrentWeek={true}
-                />
-              </motion.div>
-            )}
-
-            {/* Ponto de Partida - Onboarding Section */}
+            {/* Ponto de Partida - Onboarding Section (FIRST!) */}
             {onboardingModule && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
                 className="relative"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 via-secondary/5 to-transparent rounded-2xl blur-xl" />
@@ -513,6 +494,26 @@ const ProgramCourseDetail = () => {
               </motion.div>
             )}
 
+            {/* Current Week Mission - AFTER Onboarding */}
+            {currentMission && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <h2 className="text-xl font-serif font-bold text-cream mb-4 flex items-center gap-2">
+                  <Target className="w-5 h-5 text-secondary" />
+                  Sua Missão Esta Semana
+                </h2>
+                <WeeklyMissionCard
+                  mission={currentMission}
+                  userCompletion={missionCompletions[currentMission.id]}
+                  onSubmit={() => handleMissionSubmit(currentMission)}
+                  isCurrentWeek={true}
+                />
+              </motion.div>
+            )}
+
             {/* Modules */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -529,9 +530,23 @@ const ProgramCourseDetail = () => {
                   const moduleCompleted = module.lessons.every(l => lessonProgress[l.id]);
                   const moduleLessonsCompleted = module.lessons.filter(l => lessonProgress[l.id]).length;
 
-                  // Get lesson type badge
-                  const getLessonBadge = (lessonType: string) => {
-                    switch (lessonType) {
+                  // Get lesson badge based on lesson_label (specific) or lesson_type (fallback)
+                  const getLessonBadge = (lesson: Lesson) => {
+                    // Priority: lesson_label (specific labels like estrategico, tecnico)
+                    if (lesson.lesson_label === 'estrategico') {
+                      return <Badge className="bg-secondary/20 text-secondary text-[10px] border-0">VÍDEO ESTRATÉGICO</Badge>;
+                    }
+                    if (lesson.lesson_label === 'tecnico') {
+                      return <Badge className="bg-blue-500/20 text-blue-400 text-[10px] border-0">VÍDEO TÉCNICO</Badge>;
+                    }
+                    if (lesson.lesson_label === 'material') {
+                      return <Badge className="bg-green-500/20 text-green-400 text-[10px] border-0">MATERIAL</Badge>;
+                    }
+                    if (lesson.lesson_label === 'acao') {
+                      return <Badge className="bg-orange-500/20 text-orange-400 text-[10px] border-0">AÇÃO</Badge>;
+                    }
+                    // Fallback to lesson_type
+                    switch (lesson.lesson_type) {
                       case 'video':
                         return <Badge variant="outline" className="border-secondary/30 text-secondary text-[10px]">VÍDEO</Badge>;
                       case 'text':
@@ -615,7 +630,7 @@ const ProgramCourseDetail = () => {
                                   </p>
                                 </div>
                                 <div className="flex items-center gap-2 shrink-0">
-                                  {getLessonBadge(lesson.lesson_type)}
+                                  {getLessonBadge(lesson)}
                                   {lesson.duration_minutes && (
                                     <span className="text-xs text-cream/40 flex items-center gap-1">
                                       <Clock className="w-3 h-3" />
