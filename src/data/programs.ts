@@ -63,28 +63,27 @@ export const programs: Record<string, Program> = {
     description: "Não se trata apenas de tecnologia, trata-se de liberdade e escala. Domine as Inteligências Artificiais treinadas especificamente para a advocacia imobiliária.",
     fullDescription: "Não se trata apenas de tecnologia, trata-se de liberdade e escala. Domine as Inteligências Artificiais treinadas especificamente para a advocacia imobiliária e:\n\nRecupere +10 horas da sua semana: Delegue o trabalho repetitivo e burocrático para a IA e foque no que realmente traz dinheiro: o fechamento de contratos.\n\nEstratégias de Elite: Use a IA para desenhar teses imobiliárias complexas, planos de negócios e estratégias de vendas em minutos.",
     targetAudience: [
-      "Advogadas que querem ganhar tempo com automação",
-      "Profissionais que buscam se diferenciar com tecnologia",
-      "Quem quer produzir conteúdo de qualidade rapidamente",
-      "Advogadas que querem modernizar seu escritório"
+      "Advogadas que buscam o faturamento de +50k/mês: E entenderam que o segredo não é trabalhar mais, mas trabalhar de forma inteligente",
+      "Especialistas (ou futuras especialistas) em Direito Imobiliário: Que precisam de agilidade para analisar contratos e due diligence sem perder a qualidade técnica",
+      "Profissionais sobrecarregadas: Que hoje não conseguem prospectar clientes de alto ticket porque estão presas na 'cozinha' do operacional",
+      "Quem quer se diferenciar no mercado: Usando a IA como um diferencial competitivo para entregar resultados mais rápidos que a concorrência"
     ],
     format: "Workshop online com IAs exclusivas",
     duration: "Acesso imediato",
     deliverables: [
-      "Recupere +10 horas da sua semana delegando trabalho repetitivo",
-      "Estratégias de Elite: teses imobiliárias, planos de negócios e vendas",
-      "IAs treinadas especificamente para advocacia imobiliária",
-      "Foco no fechamento de contratos"
+      "Acesso às minhas IAs Soberanas: Robôs treinados com minha experiência de 15 anos para pensar como uma advogada imobiliarista de elite",
+      "Biblioteca de Prompts de Ouro: Comandos prontos para análise de riscos, elaboração de pareceres e petições imobiliárias em segundos",
+      "Máquina de Conteúdo Imobiliário: Estratégias para usar a IA para atrair investidores e clientes que pagam bem, sem precisar ser escrava do Instagram"
     ],
     ctaLink: "https://soberanamentoria.curseduca.pro/c/ia-para-advogadas-1754318820421",
     ctaText: "Saiba Mais Sobre o Workshop",
     icon: Bot,
     tier: "entry",
     modules: [
-      { title: "Introdução às IAs para Advocacia", description: "Entenda como a IA pode revolucionar sua rotina jurídica" },
-      { title: "Prompts Exclusivos", description: "Domine os prompts para produtividade jurídica" },
-      { title: "Automações para Rotina", description: "Configure automações para tarefas repetitivas" },
-      { title: "Estratégias de Conteúdo", description: "Use IA para produzir conteúdo de qualidade" }
+      { title: "Módulo 1: Mentalidade Soberana e IA", description: "Como a tecnologia é a base para o seu novo faturamento" },
+      { title: "Módulo 2: O Cérebro Digital", description: "Domine os prompts que executam o trabalho de um estagiário sênior em segundos" },
+      { title: "Módulo 3: Operação Escalável", description: "Automatize o Direito Imobiliário (Contratos e Due Diligence) e libere sua agenda para vender" },
+      { title: "Módulo 4: Ímã de Clientes", description: "Use a IA para criar funis de vendas e conteúdos que posicionam você como a autoridade número 1" }
     ],
     testimonials: [
       {
@@ -95,9 +94,9 @@ export const programs: Record<string, Program> = {
       },
       {
         name: "Dra. Patrícia Lima",
-        area: "Direito Empresarial",
-        content: "Os prompts são incríveis! Consigo produzir conteúdo para o Instagram em minutos.",
-        result: "3x mais conteúdo produzido"
+        area: "Direito Imobiliário",
+        content: "Com as IAs da Fabiana, parei de redigir contratos do zero. Esse tempo que sobrou eu usei para fazer reuniões de prospecção e fechei meu primeiro contrato de R$ 15k no mês.",
+        result: "R$ 15k em novos contratos"
       }
     ],
     faq: [
@@ -107,7 +106,11 @@ export const programs: Record<string, Program> = {
       },
       {
         question: "As IAs funcionam para qualquer área do Direito?",
-        answer: "Sim! Temos IAs treinadas para diversas áreas: cível, trabalhista, família, imobiliário, etc."
+        answer: "As IAs foram treinadas especificamente para a advocacia imobiliária, com foco em contratos, due diligence e teses complexas."
+      },
+      {
+        question: "Estou começando do zero no Imobiliário, a IA serve para mim?",
+        answer: "Com certeza. A IA encurta sua curva de aprendizado e execução. Ela te dá a segurança técnica que você precisaria de anos para adquirir, permitindo que você já comece cobrando honorários de especialista."
       },
       {
         question: "Por quanto tempo tenho acesso?",
