@@ -743,39 +743,101 @@ export type Database = {
           },
         ]
       }
+      course_gamification: {
+        Row: {
+          badges_earned: string[] | null
+          course_id: string
+          created_at: string | null
+          current_title: string | null
+          id: string
+          level: number | null
+          missions_completed: number | null
+          updated_at: string | null
+          user_id: string
+          week_progress: number | null
+          xp: number | null
+        }
+        Insert: {
+          badges_earned?: string[] | null
+          course_id: string
+          created_at?: string | null
+          current_title?: string | null
+          id?: string
+          level?: number | null
+          missions_completed?: number | null
+          updated_at?: string | null
+          user_id: string
+          week_progress?: number | null
+          xp?: number | null
+        }
+        Update: {
+          badges_earned?: string[] | null
+          course_id?: string
+          created_at?: string | null
+          current_title?: string | null
+          id?: string
+          level?: number | null
+          missions_completed?: number | null
+          updated_at?: string | null
+          user_id?: string
+          week_progress?: number | null
+          xp?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_gamification_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
+          calendar_link: string | null
           created_at: string
           description: string | null
+          duration_weeks: number | null
           id: string
           is_free: boolean
           is_published: boolean | null
           is_subscription: boolean | null
           price: number | null
+          program_type: Database["public"]["Enums"]["program_type"] | null
+          requires_diagnostic: boolean | null
           thumbnail_url: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          calendar_link?: string | null
           created_at?: string
           description?: string | null
+          duration_weeks?: number | null
           id?: string
           is_free?: boolean
           is_published?: boolean | null
           is_subscription?: boolean | null
           price?: number | null
+          program_type?: Database["public"]["Enums"]["program_type"] | null
+          requires_diagnostic?: boolean | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          calendar_link?: string | null
           created_at?: string
           description?: string | null
+          duration_weeks?: number | null
           id?: string
           is_free?: boolean
           is_published?: boolean | null
           is_subscription?: boolean | null
           price?: number | null
+          program_type?: Database["public"]["Enums"]["program_type"] | null
+          requires_diagnostic?: boolean | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
@@ -1330,33 +1392,45 @@ export type Database = {
       }
       lessons: {
         Row: {
+          action_button_text: string | null
+          action_type: Database["public"]["Enums"]["action_type"] | null
+          action_url: string | null
           created_at: string
           description: string | null
           duration_minutes: number | null
           id: string
           is_free: boolean | null
+          lesson_type: Database["public"]["Enums"]["lesson_type"] | null
           module_id: string
           order_index: number | null
           title: string
           video_url: string | null
         }
         Insert: {
+          action_button_text?: string | null
+          action_type?: Database["public"]["Enums"]["action_type"] | null
+          action_url?: string | null
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
           id?: string
           is_free?: boolean | null
+          lesson_type?: Database["public"]["Enums"]["lesson_type"] | null
           module_id: string
           order_index?: number | null
           title: string
           video_url?: string | null
         }
         Update: {
+          action_button_text?: string | null
+          action_type?: Database["public"]["Enums"]["action_type"] | null
+          action_url?: string | null
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
           id?: string
           is_free?: boolean | null
+          lesson_type?: Database["public"]["Enums"]["lesson_type"] | null
           module_id?: string
           order_index?: number | null
           title?: string
@@ -1507,24 +1581,36 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_dynamic: boolean | null
+          module_type: Database["public"]["Enums"]["module_type"] | null
           order_index: number | null
           title: string
+          unlock_date: string | null
+          unlock_week: number | null
         }
         Insert: {
           course_id: string
           created_at?: string
           description?: string | null
           id?: string
+          is_dynamic?: boolean | null
+          module_type?: Database["public"]["Enums"]["module_type"] | null
           order_index?: number | null
           title: string
+          unlock_date?: string | null
+          unlock_week?: number | null
         }
         Update: {
           course_id?: string
           created_at?: string
           description?: string | null
           id?: string
+          is_dynamic?: boolean | null
+          module_type?: Database["public"]["Enums"]["module_type"] | null
           order_index?: number | null
           title?: string
+          unlock_date?: string | null
+          unlock_week?: number | null
         }
         Relationships: [
           {
@@ -1679,6 +1765,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      program_titles: {
+        Row: {
+          course_id: string
+          created_at: string | null
+          emoji: string | null
+          id: string
+          requirement_description: string | null
+          title: string
+          week_number: number
+        }
+        Insert: {
+          course_id: string
+          created_at?: string | null
+          emoji?: string | null
+          id?: string
+          requirement_description?: string | null
+          title: string
+          week_number: number
+        }
+        Update: {
+          course_id?: string
+          created_at?: string | null
+          emoji?: string | null
+          id?: string
+          requirement_description?: string | null
+          title?: string
+          week_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_titles_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       progress: {
         Row: {
@@ -2111,6 +2235,62 @@ export type Database = {
           },
         ]
       }
+      user_mission_completions: {
+        Row: {
+          admin_feedback: string | null
+          created_at: string | null
+          id: string
+          mission_id: string
+          proof_content: string | null
+          proof_file_url: string | null
+          proof_links: string[] | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["mission_status"] | null
+          submitted_at: string | null
+          user_id: string
+          xp_earned: number | null
+        }
+        Insert: {
+          admin_feedback?: string | null
+          created_at?: string | null
+          id?: string
+          mission_id: string
+          proof_content?: string | null
+          proof_file_url?: string | null
+          proof_links?: string[] | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["mission_status"] | null
+          submitted_at?: string | null
+          user_id: string
+          xp_earned?: number | null
+        }
+        Update: {
+          admin_feedback?: string | null
+          created_at?: string | null
+          id?: string
+          mission_id?: string
+          proof_content?: string | null
+          proof_file_url?: string | null
+          proof_links?: string[] | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["mission_status"] | null
+          submitted_at?: string | null
+          user_id?: string
+          xp_earned?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_mission_completions_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_rewards: {
         Row: {
           claimed_at: string
@@ -2164,6 +2344,94 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_missions: {
+        Row: {
+          badge_unlock_id: string | null
+          challenge_description: string
+          course_id: string
+          created_at: string | null
+          gamification_emoji: string | null
+          gamification_reward: string | null
+          gamification_title: string | null
+          id: string
+          is_active: boolean | null
+          month_number: number | null
+          month_title: string | null
+          proof_type: string | null
+          related_lesson_id: string | null
+          requires_proof: boolean | null
+          title: string
+          updated_at: string | null
+          week_number: number
+          why_do: string | null
+          xp_reward: number | null
+        }
+        Insert: {
+          badge_unlock_id?: string | null
+          challenge_description: string
+          course_id: string
+          created_at?: string | null
+          gamification_emoji?: string | null
+          gamification_reward?: string | null
+          gamification_title?: string | null
+          id?: string
+          is_active?: boolean | null
+          month_number?: number | null
+          month_title?: string | null
+          proof_type?: string | null
+          related_lesson_id?: string | null
+          requires_proof?: boolean | null
+          title: string
+          updated_at?: string | null
+          week_number: number
+          why_do?: string | null
+          xp_reward?: number | null
+        }
+        Update: {
+          badge_unlock_id?: string | null
+          challenge_description?: string
+          course_id?: string
+          created_at?: string | null
+          gamification_emoji?: string | null
+          gamification_reward?: string | null
+          gamification_title?: string | null
+          id?: string
+          is_active?: boolean | null
+          month_number?: number | null
+          month_title?: string | null
+          proof_type?: string | null
+          related_lesson_id?: string | null
+          requires_proof?: boolean | null
+          title?: string
+          updated_at?: string | null
+          week_number?: number
+          why_do?: string | null
+          xp_reward?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_missions_badge_unlock_id_fkey"
+            columns: ["badge_unlock_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weekly_missions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weekly_missions_related_lesson_id_fkey"
+            columns: ["related_lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -2192,6 +2460,10 @@ export type Database = {
         }
         Returns: string
       }
+      get_current_program_week: {
+        Args: { p_enrollment_date: string }
+        Returns: number
+      }
       get_leaderboard: {
         Args: { limit_count?: number }
         Returns: {
@@ -2210,12 +2482,37 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_module_unlocked: {
+        Args: { p_module_id: string; p_user_id: string }
+        Returns: boolean
+      }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
+      action_type: "calendar" | "whatsapp" | "form" | "external" | "diagnostic"
       app_role: "admin" | "student"
       lead_status: "new" | "contacted" | "negotiating" | "converted" | "lost"
       lead_temperature: "cold" | "warm" | "hot"
+      lesson_type:
+        | "video"
+        | "action"
+        | "scheduling"
+        | "upload"
+        | "text"
+        | "diagnostic"
+      mission_status: "pending" | "submitted" | "approved" | "rejected"
+      module_type:
+        | "onboarding"
+        | "dynamic"
+        | "pillar"
+        | "recordings"
+        | "individual"
+      program_type:
+        | "workshop-ia"
+        | "experience-start"
+        | "aceleracao"
+        | "mentoria-360"
+        | "elite"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2343,9 +2640,33 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      action_type: ["calendar", "whatsapp", "form", "external", "diagnostic"],
       app_role: ["admin", "student"],
       lead_status: ["new", "contacted", "negotiating", "converted", "lost"],
       lead_temperature: ["cold", "warm", "hot"],
+      lesson_type: [
+        "video",
+        "action",
+        "scheduling",
+        "upload",
+        "text",
+        "diagnostic",
+      ],
+      mission_status: ["pending", "submitted", "approved", "rejected"],
+      module_type: [
+        "onboarding",
+        "dynamic",
+        "pillar",
+        "recordings",
+        "individual",
+      ],
+      program_type: [
+        "workshop-ia",
+        "experience-start",
+        "aceleracao",
+        "mentoria-360",
+        "elite",
+      ],
     },
   },
 } as const
