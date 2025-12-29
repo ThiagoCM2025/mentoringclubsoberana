@@ -9,19 +9,23 @@ import isotipoSMarsala from "@/assets/brand/isotipo-s-marsala.png";
 const problems = [
   {
     icon: Target,
-    text: "Dificuldade em atrair clientes de forma consistente",
+    title: 'A "Montanha-Russa" de Clientes',
+    text: "Dificuldade em atrair contratos de alto ticket de forma previsível.",
   },
   {
     icon: Clock,
-    text: "Sobrecarga operacional que impede a visão estratégica",
+    title: "Escrava do Operacional",
+    text: "Você gasta horas em peças e burocracias, sem tempo para ser a CEO que fecha grandes negócios.",
   },
   {
     icon: DollarSign,
-    text: "Insegurança na hora de cobrar e precificar o seu valor",
+    title: "Medo da Precificação",
+    text: 'Insegurança na hora de cobrar honorários condizentes com o mercado, acabando por "pagar para trabalhar".',
   },
   {
     icon: Flame,
-    text: 'Sensação de estar "apagando incêndios" em vez de liderar um escritório',
+    title: "O Caos do Dia a Dia",
+    text: "A sensação de estar sempre apagando incêndios, sem um método claro para escalar.",
   },
 ];
 
@@ -74,7 +78,7 @@ export const ProblemSection = () => {
             <span className="badge-gold mb-4">A Realidade</span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-6">
               Você é uma excelente advogada, mas o seu{" "}
-              <span className="text-primary">faturamento ainda não reflete isso?</span>
+              <span className="text-primary">faturamento ainda não reflete a sua dedicação?</span>
             </h2>
           </motion.div>
 
@@ -85,7 +89,7 @@ export const ProblemSection = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-lg text-muted-foreground text-center mb-10"
           >
-            Muitas advogadas talentosas enfrentam os mesmos desafios:
+            Muitas advogadas talentosas no Direito enfrentam o mesmo "teto de vidro" que as impede de crescer:
           </motion.p>
 
           {/* Pain Points List */}
@@ -101,7 +105,10 @@ export const ProblemSection = () => {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <problem.icon className="w-6 h-6 text-primary" />
                 </div>
-                <p className="text-lg text-foreground font-medium">{problem.text}</p>
+                <p className="text-lg text-foreground">
+                  <strong className="text-primary">{problem.title}:</strong>{" "}
+                  <span className="font-medium">{problem.text}</span>
+                </p>
               </motion.div>
             ))}
           </div>
