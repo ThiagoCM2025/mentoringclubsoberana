@@ -5,7 +5,7 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { ProblemSection } from "@/components/landing/ProblemSection";
 import { BeforeAfterSection } from "@/components/landing/BeforeAfterSection";
 import { MentorSection } from "@/components/landing/MentorSection";
-import { MethodologySection } from "@/components/landing/MethodologySection";
+import MethodologySection from "@/components/landing/MethodologySection";
 import { JornadaSoberanaSection } from "@/components/landing/JornadaSoberanaSection";
 import { TrajetoriaSection } from "@/components/landing/TrajetoriaSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
