@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, Users, Target, UserCheck, MessageSquare, Check, CheckCheck } from "lucide-react";
+import { Bell, Users, Target, UserCheck, MessageSquare, Check, CheckCheck, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -27,14 +27,16 @@ const EVENT_ICONS: Record<string, any> = {
   new_student: Users,
   new_lead: Target,
   new_enrollment: UserCheck,
-  community_post: MessageSquare
+  community_post: MessageSquare,
+  new_admin: ShieldCheck
 };
 
 const EVENT_COLORS: Record<string, string> = {
   new_student: "bg-emerald-100 text-emerald-600",
   new_lead: "bg-pink-100 text-pink-600",
   new_enrollment: "bg-violet-100 text-violet-600",
-  community_post: "bg-blue-100 text-blue-600"
+  community_post: "bg-blue-100 text-blue-600",
+  new_admin: "bg-red-100 text-red-600"
 };
 
 export function AdminNotificationBell() {
