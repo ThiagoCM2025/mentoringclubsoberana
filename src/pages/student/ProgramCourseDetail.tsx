@@ -275,11 +275,9 @@ const ProgramCourseDetail = () => {
     }
   };
 
-  const isModuleUnlocked = (module: Module): boolean => {
-    if (module.is_dynamic) return true;
-    if (module.module_type === 'onboarding') return true;
-    if (!module.unlock_week) return true;
-    return currentWeek >= module.unlock_week;
+  // All modules are unlocked once enrolled - no weekly restrictions
+  const isModuleUnlocked = (_module: Module): boolean => {
+    return true;
   };
 
   const currentMission = missions.find(m => m.week_number === currentWeek);
@@ -312,14 +310,19 @@ const ProgramCourseDetail = () => {
     );
   }
 
-  // Sort modules: dynamic first, then onboarding, then by order
+  // Sort modules: dynamic first, then by order (onboarding will be separate section)
   const sortedModules = [...modules].sort((a, b) => {
     if (a.is_dynamic && !b.is_dynamic) return -1;
     if (!a.is_dynamic && b.is_dynamic) return 1;
-    if (a.module_type === 'onboarding' && b.module_type !== 'onboarding') return -1;
-    if (a.module_type !== 'onboarding' && b.module_type === 'onboarding') return 1;
     return a.order_index - b.order_index;
   });
+
+  // Separate onboarding module for highlighted section
+  const onboardingModule = sortedModules.find(m => m.module_type === 'onboarding');
+  const onboardingWelcomeLesson = onboardingModule?.lessons[0];
+  
+  // Filter out onboarding from accordion (it's shown separately)
+  const accordionModules = sortedModules.filter(m => m.module_type !== 'onboarding');
 
   return (
     <div className="min-h-screen bg-black">
@@ -434,21 +437,79 @@ const ProgramCourseDetail = () => {
               </motion.div>
             )}
 
-            {/* Onboarding Module */}
-            {course?.requires_diagnostic && !diagnosticCompleted && (
+            {/* Ponto de Partida - Onboarding Section */}
+            {onboardingModule && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
+                className="relative"
               >
-                <OnboardingModule
-                  courseId={courseId!}
-                  calendarLink={course.calendar_link || undefined}
-                  onDiagnosticComplete={() => {
-                    setDiagnosticCompleted(true);
-                    fetchAllData();
-                  }}
-                />
+                <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 via-secondary/5 to-transparent rounded-2xl blur-xl" />
+                <div className="relative bg-zinc-900/80 rounded-2xl border-2 border-secondary/40 p-6 space-y-5">
+                  {/* Header */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-secondary" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif font-bold text-cream text-lg">
+                        Ponto de Partida
+                      </h3>
+                      <p className="text-sm text-cream/50">Complete antes de começar sua jornada</p>
+                    </div>
+                  </div>
+
+                  {/* Welcome Video */}
+                  {onboardingWelcomeLesson && (
+                    <motion.button
+                      onClick={() => handleLessonClick(onboardingWelcomeLesson.id)}
+                      whileHover={{ scale: 1.01 }}
+                      className="w-full flex items-center gap-4 p-4 rounded-xl bg-zinc-800/50 hover:bg-secondary/10 border border-secondary/20 transition-all text-left group"
+                    >
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+                        lessonProgress[onboardingWelcomeLesson.id] 
+                          ? "bg-green-500/20 text-green-400" 
+                          : "bg-secondary/20 text-secondary"
+                      }`}>
+                        {lessonProgress[onboardingWelcomeLesson.id] ? (
+                          <CheckCircle className="w-6 h-6" />
+                        ) : (
+                          <Play className="w-6 h-6" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-cream group-hover:text-secondary transition-colors">
+                          {onboardingWelcomeLesson.title}
+                        </p>
+                        {onboardingWelcomeLesson.duration_minutes && (
+                          <p className="text-xs text-cream/40 flex items-center gap-1 mt-1">
+                            <Clock className="w-3 h-3" />
+                            {onboardingWelcomeLesson.duration_minutes} min
+                          </p>
+                        )}
+                      </div>
+                      <Badge variant="outline" className="border-secondary/30 text-secondary text-xs">
+                        Vídeo
+                      </Badge>
+                    </motion.button>
+                  )}
+
+                  {/* Diagnostic CTA */}
+                  <DiagnosticCTA 
+                    courseId={courseId!}
+                    onComplete={() => {
+                      setDiagnosticCompleted(true);
+                      fetchAllData();
+                    }}
+                  />
+
+                  {/* Scheduling CTA */}
+                  <SchedulingCTA 
+                    calendarLink={course?.calendar_link || "https://calendar.app.google/4SsS6E6crkZ2wQDAA"}
+                    isEnabled={diagnosticCompleted}
+                  />
+                </div>
               </motion.div>
             )}
 
@@ -463,124 +524,110 @@ const ProgramCourseDetail = () => {
                 Conteúdo do Programa
               </h2>
 
-              <Accordion type="multiple" className="space-y-4">
-                {sortedModules.map((module, moduleIndex) => {
-                  const isUnlocked = isModuleUnlocked(module);
+              <Accordion type="multiple" className="space-y-3">
+                {accordionModules.map((module, moduleIndex) => {
                   const moduleCompleted = module.lessons.every(l => lessonProgress[l.id]);
                   const moduleLessonsCompleted = module.lessons.filter(l => lessonProgress[l.id]).length;
+
+                  // Get lesson type badge
+                  const getLessonBadge = (lessonType: string) => {
+                    switch (lessonType) {
+                      case 'video':
+                        return <Badge variant="outline" className="border-secondary/30 text-secondary text-[10px]">VÍDEO</Badge>;
+                      case 'text':
+                        return <Badge variant="outline" className="border-blue-400/30 text-blue-400 text-[10px]">MATERIAL</Badge>;
+                      case 'action':
+                        return <Badge variant="outline" className="border-green-400/30 text-green-400 text-[10px]">AÇÃO</Badge>;
+                      default:
+                        return null;
+                    }
+                  };
 
                   return (
                     <AccordionItem
                       key={module.id}
                       value={module.id}
-                      disabled={!isUnlocked}
-                      className={`bg-zinc-900 rounded-xl border overflow-hidden ${
-                        isUnlocked ? 'border-secondary/20' : 'border-zinc-800 opacity-60'
-                      }`}
+                      className="bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden"
                     >
-                      <AccordionTrigger className="px-6 py-5 hover:no-underline hover:bg-secondary/5 transition-colors">
+                      <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-secondary/5 transition-colors">
                         <div className="flex items-center gap-4 text-left w-full">
-                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg ${
-                            !isUnlocked
-                              ? "bg-zinc-800 text-zinc-600"
-                              : moduleCompleted
-                                ? "bg-green-500/20 text-green-400"
-                                : module.is_dynamic
-                                  ? "bg-secondary text-black"
-                                  : "bg-secondary/20 text-secondary"
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold ${
+                            moduleCompleted
+                              ? "bg-green-500/20 text-green-400"
+                              : module.is_dynamic
+                                ? "bg-secondary text-black"
+                                : "bg-secondary/20 text-secondary"
                           }`}>
-                            {!isUnlocked ? (
-                              <Lock className="w-5 h-5" />
-                            ) : moduleCompleted ? (
-                              <CheckCircle className="w-6 h-6" />
+                            {moduleCompleted ? (
+                              <CheckCircle className="w-5 h-5" />
                             ) : module.is_dynamic ? (
-                              <Target className="w-6 h-6" />
+                              <Target className="w-5 h-5" />
                             ) : (
-                              moduleIndex
+                              moduleIndex + 1
                             )}
                           </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-serif font-semibold text-cream text-lg">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-serif font-semibold text-cream">
                                 {module.title}
                               </h3>
                               {module.is_dynamic && (
-                                <Badge className="bg-secondary/20 text-secondary text-xs">
+                                <Badge className="bg-secondary/20 text-secondary text-[10px]">
                                   Atualizado
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-sm text-cream/50">
-                              {isUnlocked 
-                                ? `${moduleLessonsCompleted}/${module.lessons.length} aulas concluídas`
-                                : `Libera na semana ${module.unlock_week}`
-                              }
+                            <p className="text-xs text-cream/50 mt-0.5">
+                              {moduleLessonsCompleted}/{module.lessons.length} aulas concluídas
                             </p>
                           </div>
                         </div>
                       </AccordionTrigger>
                       
-                      {isUnlocked && (
-                        <AccordionContent className="px-6 pb-4">
-                          <div className="space-y-1 pt-2">
-                            {module.lessons.map((lesson, lessonIndex) => {
-                              const isCompleted = lessonProgress[lesson.id];
-                              
-                              return (
-                                <div key={lesson.id}>
-                                  <motion.button
-                                    onClick={() => handleLessonClick(lesson.id)}
-                                    whileHover={{ x: 4 }}
-                                    className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-secondary/10 transition-all text-left group"
-                                  >
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                                      isCompleted 
-                                        ? "bg-green-500/20 text-green-400" 
-                                        : "bg-zinc-800 text-cream/50 group-hover:bg-secondary/20 group-hover:text-secondary"
-                                    }`}>
-                                      {isCompleted ? (
-                                        <CheckCircle className="w-5 h-5" />
-                                      ) : (
-                                        <PlayCircle className="w-5 h-5" />
-                                      )}
-                                    </div>
-                                    <div className="flex-1">
-                                      <p className={`font-medium transition-colors ${
-                                        isCompleted ? "text-cream/50" : "text-cream group-hover:text-secondary"
-                                      }`}>
-                                        {lesson.title}
-                                      </p>
-                                      {lesson.duration_minutes && (
-                                        <p className="text-xs text-cream/40 flex items-center gap-1 mt-1">
-                                          <Clock className="w-3 h-3" />
-                                          {lesson.duration_minutes} min
-                                        </p>
-                                      )}
-                                    </div>
-                                  </motion.button>
-                                  
-                                  {/* Insert DiagnosticCTA + SchedulingCTA after first lesson in onboarding module */}
-                                  {module.module_type === 'onboarding' && lessonIndex === 0 && course?.requires_diagnostic && (
-                                    <div className="py-3 px-2 space-y-4">
-                                      <DiagnosticCTA 
-                                        courseId={courseId!}
-                                        onComplete={() => {
-                                          setDiagnosticCompleted(true);
-                                          fetchAllData();
-                                        }}
-                                      />
-                                      <SchedulingCTA 
-                                        calendarLink="https://calendar.app.google/4SsS6E6crkZ2wQDAA"
-                                        isEnabled={diagnosticCompleted}
-                                      />
-                                    </div>
+                      <AccordionContent className="px-5 pb-4">
+                        <div className="space-y-1 pt-2">
+                          {module.lessons.map((lesson) => {
+                            const isCompleted = lessonProgress[lesson.id];
+                            
+                            return (
+                              <motion.button
+                                key={lesson.id}
+                                onClick={() => handleLessonClick(lesson.id)}
+                                whileHover={{ x: 4 }}
+                                className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/10 transition-all text-left group"
+                              >
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                                  isCompleted 
+                                    ? "bg-green-500/20 text-green-400" 
+                                    : "bg-zinc-800 text-cream/50 group-hover:bg-secondary/20 group-hover:text-secondary"
+                                }`}>
+                                  {isCompleted ? (
+                                    <CheckCircle className="w-4 h-4" />
+                                  ) : (
+                                    <PlayCircle className="w-4 h-4" />
                                   )}
                                 </div>
-                              );
-                            })}
-                          </div>
-                        </AccordionContent>
-                      )}
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-sm font-medium transition-colors truncate ${
+                                    isCompleted ? "text-cream/50" : "text-cream group-hover:text-secondary"
+                                  }`}>
+                                    {lesson.title}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                  {getLessonBadge(lesson.lesson_type)}
+                                  {lesson.duration_minutes && (
+                                    <span className="text-xs text-cream/40 flex items-center gap-1">
+                                      <Clock className="w-3 h-3" />
+                                      {lesson.duration_minutes}m
+                                    </span>
+                                  )}
+                                </div>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      </AccordionContent>
                     </AccordionItem>
                   );
                 })}
