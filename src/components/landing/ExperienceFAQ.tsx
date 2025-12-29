@@ -14,36 +14,44 @@ import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 
 const faqs = [
   {
-    question: "Onde fica o local do evento?",
-    answer: "O evento será realizado no Espaço Mind — R. Abílio Soares, 607 - Paraíso, São Paulo/SP. Localização privilegiada, de fácil acesso por metrô (Estação Paraíso) e diversas linhas de ônibus."
+    question: "Preciso atuar exclusivamente com Direito Imobiliário?",
+    answer: "Não. O Experience Start é ideal para advogadas que querem migrar para o Direito Imobiliário ou que já atuam na área e desejam escalar seus resultados. Você aprenderá técnicas aplicáveis desde a transição até o domínio completo do nicho."
   },
   {
-    question: "Tem estacionamento no local?",
-    answer: "Sim! Há estacionamentos conveniados próximos ao local com valores especiais para participantes do evento. Enviaremos a lista completa por e-mail após a confirmação da sua inscrição."
+    question: "O que são os 5 Pilares do Método Soberana?",
+    answer: "Os 5 pilares são: Mentalidade (de operacional a CEO), Vendas e Lucratividade (prospecção, precificação e conversão), Audiência (posicionamento de autoridade), Técnica Imobiliária (domínio do mercado) e Gestão e IA (automação e escala). Juntos, formam o caminho para faturar +R$ 50k/mês."
   },
   {
-    question: "O almoço está incluso?",
-    answer: "O almoço não está incluso, mas teremos uma pausa de 1h30 para você aproveitar os diversos restaurantes na região. Coffee break premium está incluso durante toda a imersão!"
+    question: "Como a Inteligência Artificial será abordada no evento?",
+    answer: "Você aprenderá a usar IA como ferramenta estratégica para automatizar tarefas, criar conteúdo, otimizar processos e liberar +10 horas semanais do seu tempo. Apresentaremos as 'IAs Soberanas' — ferramentas personalizadas para advogadas imobiliárias."
   },
   {
-    question: "Posso cancelar minha inscrição?",
-    answer: "Sim! Você pode cancelar até 7 dias antes do evento e receber reembolso integral. Após esse prazo, você pode transferir sua vaga para outra pessoa sem custo adicional."
+    question: "O evento é para iniciantes ou advogadas experientes?",
+    answer: "Para ambas! Se você está começando, terá o mapa completo para construir uma advocacia lucrativa do zero. Se já tem experiência, aprenderá estratégias avançadas de escala, precificação premium e automação que aceleram seus resultados."
   },
   {
-    question: "O que devo levar no dia?",
-    answer: "Recomendamos trazer: notebook ou tablet, bloco de notas, caneta, e muita vontade de transformar sua advocacia! Teremos Wi-Fi disponível."
+    question: "Vou aprender sobre captação de clientes no Direito Imobiliário?",
+    answer: "Sim! O pilar 'Vendas e Lucratividade' aborda prospecção ativa, posicionamento para atração de clientes qualificados, técnicas de conversão e precificação estratégica para maximizar seus honorários."
+  },
+  {
+    question: "Como o evento me ajuda a faturar +R$ 50k/mês?",
+    answer: "Você receberá um plano de ação completo baseado nos 5 pilares, com estratégias testadas por advogadas que já alcançaram essa meta. Inclui posicionamento, captação, precificação e uso de IA para escalar sem aumentar carga de trabalho."
+  },
+  {
+    question: "Onde fica o local e como chegar?",
+    answer: "O evento será no Espaço Mind — R. Abílio Soares, 607 - Paraíso, São Paulo/SP. Fácil acesso por metrô (Estação Paraíso) e diversas linhas de ônibus. Há estacionamentos conveniados próximos com valores especiais para participantes."
+  },
+  {
+    question: "O que está incluso na inscrição?",
+    answer: "Coffee break premium durante toda a imersão, materiais exclusivos, acesso ao grupo VIP de networking, certificado digital de participação e bônus especiais revelados no dia do evento. Almoço não incluso (pausa de 1h30 para aproveitar os restaurantes da região)."
+  },
+  {
+    question: "Posso cancelar ou transferir minha inscrição?",
+    answer: "Sim! Cancelamento com reembolso integral até 7 dias antes do evento. Após esse prazo, você pode transferir sua vaga para outra advogada sem custo adicional."
   },
   {
     question: "Vou receber certificado?",
-    answer: "Sim! Você receberá um certificado digital de participação ao final do evento, que pode ser usado para comprovar horas de capacitação profissional."
-  },
-  {
-    question: "Posso indicar uma amiga advogada?",
-    answer: "Claro! Temos um programa de indicação especial. Indique amigas advogadas e ganhe brindes exclusivos. Entre em contato conosco para saber mais sobre os benefícios."
-  },
-  {
-    question: "Qual o dresscode do evento?",
-    answer: "Smart casual. Vista-se de forma confortável para um dia inteiro de imersão. Nada muito formal, mas elegante. Você estará entre colegas em um ambiente profissional e acolhedor."
+    answer: "Sim! Você receberá um certificado digital de participação ao final do evento, válido para comprovação de horas de capacitação profissional continuada."
   }
 ];
 
