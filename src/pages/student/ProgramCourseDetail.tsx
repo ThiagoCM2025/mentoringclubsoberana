@@ -31,6 +31,8 @@ import { WeeklyMissionCard, WeeklyMission } from "@/components/student/program/W
 import { MissionDeliveryModal } from "@/components/student/program/MissionDeliveryModal";
 import { CourseGamificationSidebar } from "@/components/student/program/CourseGamificationSidebar";
 import { OnboardingModule } from "@/components/student/program/OnboardingModule";
+import { DiagnosticCTA } from "@/components/student/program/DiagnosticCTA";
+import { CertificateGenerator } from "@/components/student/CertificateGenerator";
 
 interface Course {
   id: string;
@@ -103,6 +105,8 @@ const ProgramCourseDetail = () => {
   const [selectedMission, setSelectedMission] = useState<WeeklyMission | null>(null);
   const [deliveryModalOpen, setDeliveryModalOpen] = useState(false);
   const [diagnosticCompleted, setDiagnosticCompleted] = useState(false);
+  const [certificate, setCertificate] = useState<any>(null);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
 
   useEffect(() => {
     if (courseId && user) {
@@ -250,6 +254,18 @@ const ProgramCourseDetail = () => {
         .maybeSingle();
 
       setDiagnosticCompleted(diagnosticData?.completed || false);
+
+      // Fetch certificate if program is 100% complete
+      const { data: certData } = await supabase
+        .from("certificates")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("course_id", courseId)
+        .maybeSingle();
+      
+      if (certData) {
+        setCertificate(certData);
+      }
 
     } catch (error) {
       console.error("Error fetching program data:", error);
@@ -510,37 +526,51 @@ const ProgramCourseDetail = () => {
                               const isCompleted = lessonProgress[lesson.id];
                               
                               return (
-                                <motion.button
-                                  key={lesson.id}
-                                  onClick={() => handleLessonClick(lesson.id)}
-                                  whileHover={{ x: 4 }}
-                                  className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-secondary/10 transition-all text-left group"
-                                >
-                                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                                    isCompleted 
-                                      ? "bg-green-500/20 text-green-400" 
-                                      : "bg-zinc-800 text-cream/50 group-hover:bg-secondary/20 group-hover:text-secondary"
-                                  }`}>
-                                    {isCompleted ? (
-                                      <CheckCircle className="w-5 h-5" />
-                                    ) : (
-                                      <PlayCircle className="w-5 h-5" />
-                                    )}
-                                  </div>
-                                  <div className="flex-1">
-                                    <p className={`font-medium transition-colors ${
-                                      isCompleted ? "text-cream/50" : "text-cream group-hover:text-secondary"
+                                <div key={lesson.id}>
+                                  <motion.button
+                                    onClick={() => handleLessonClick(lesson.id)}
+                                    whileHover={{ x: 4 }}
+                                    className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-secondary/10 transition-all text-left group"
+                                  >
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                                      isCompleted 
+                                        ? "bg-green-500/20 text-green-400" 
+                                        : "bg-zinc-800 text-cream/50 group-hover:bg-secondary/20 group-hover:text-secondary"
                                     }`}>
-                                      {lesson.title}
-                                    </p>
-                                    {lesson.duration_minutes && (
-                                      <p className="text-xs text-cream/40 flex items-center gap-1 mt-1">
-                                        <Clock className="w-3 h-3" />
-                                        {lesson.duration_minutes} min
+                                      {isCompleted ? (
+                                        <CheckCircle className="w-5 h-5" />
+                                      ) : (
+                                        <PlayCircle className="w-5 h-5" />
+                                      )}
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className={`font-medium transition-colors ${
+                                        isCompleted ? "text-cream/50" : "text-cream group-hover:text-secondary"
+                                      }`}>
+                                        {lesson.title}
                                       </p>
-                                    )}
-                                  </div>
-                                </motion.button>
+                                      {lesson.duration_minutes && (
+                                        <p className="text-xs text-cream/40 flex items-center gap-1 mt-1">
+                                          <Clock className="w-3 h-3" />
+                                          {lesson.duration_minutes} min
+                                        </p>
+                                      )}
+                                    </div>
+                                  </motion.button>
+                                  
+                                  {/* Insert DiagnosticCTA after first lesson in onboarding module */}
+                                  {module.module_type === 'onboarding' && lessonIndex === 0 && course?.requires_diagnostic && (
+                                    <div className="py-3 px-2">
+                                      <DiagnosticCTA 
+                                        courseId={courseId!}
+                                        onComplete={() => {
+                                          setDiagnosticCompleted(true);
+                                          fetchAllData();
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
                               );
                             })}
                           </div>
@@ -561,6 +591,7 @@ const ProgramCourseDetail = () => {
                   gamification={courseGamification}
                   totalMissions={missions.length}
                   allTitles={programTitles}
+                  courseId={courseId}
                 />
               )}
             </div>
@@ -575,6 +606,15 @@ const ProgramCourseDetail = () => {
         mission={selectedMission}
         onSuccess={handleDeliverySuccess}
       />
+
+      {/* Certificate Modal */}
+      {certificate && (
+        <CertificateGenerator
+          certificate={certificate}
+          isOpen={showCertificateModal}
+          onClose={() => setShowCertificateModal(false)}
+        />
+      )}
     </div>
   );
 };

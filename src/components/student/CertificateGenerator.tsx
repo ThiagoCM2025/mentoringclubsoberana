@@ -8,7 +8,10 @@ import {
   Award,
   Calendar,
   CheckCircle2,
-  Loader2
+  Loader2,
+  Twitter,
+  MessageCircle,
+  FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -81,6 +84,18 @@ export function CertificateGenerator({ certificate, isOpen, onClose }: Certifica
   const shareOnLinkedIn = () => {
     const text = `Acabei de concluir o curso "${certificate.course_title}" na Soberana Mentoring Club! 🎉\n\nCertificado: ${certificate.certificate_number}`;
     const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin)}&title=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+  };
+
+  const shareOnTwitter = () => {
+    const text = `🎉 Acabei de concluir o curso "${certificate.course_title}" na @SoberanaMentoring! Certificado: ${certificate.certificate_number}`;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(verificationUrl)}`;
+    window.open(url, '_blank');
+  };
+
+  const shareOnWhatsApp = () => {
+    const text = `🎉 Acabei de concluir o curso "${certificate.course_title}" na Soberana Mentoring Club!\n\nCertificado: ${certificate.certificate_number}\nVerificar: ${verificationUrl}`;
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
   };
 
@@ -175,7 +190,7 @@ export function CertificateGenerator({ certificate, isOpen, onClose }: Certifica
         </div>
 
         {/* Actions */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
           <Button
             onClick={downloadAsPNG}
             disabled={isGenerating}
@@ -192,10 +207,28 @@ export function CertificateGenerator({ certificate, isOpen, onClose }: Certifica
           <Button
             onClick={shareOnLinkedIn}
             variant="outline"
-            className="border-secondary/30 text-cream hover:bg-secondary/10"
+            className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
           >
             <Linkedin className="w-4 h-4 mr-2" />
-            Compartilhar no LinkedIn
+            LinkedIn
+          </Button>
+
+          <Button
+            onClick={shareOnTwitter}
+            variant="outline"
+            className="border-sky-500/30 text-sky-400 hover:bg-sky-500/10"
+          >
+            <Twitter className="w-4 h-4 mr-2" />
+            X / Twitter
+          </Button>
+
+          <Button
+            onClick={shareOnWhatsApp}
+            variant="outline"
+            className="border-green-500/30 text-green-400 hover:bg-green-500/10"
+          >
+            <MessageCircle className="w-4 h-4 mr-2" />
+            WhatsApp
           </Button>
 
           <Button

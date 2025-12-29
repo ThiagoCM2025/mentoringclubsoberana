@@ -1,15 +1,19 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Trophy, 
   Target, 
   Flame, 
   Award,
   Crown,
-  ChevronRight
+  ChevronRight,
+  Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ProgramLeaderboard } from "./ProgramLeaderboard";
 
 interface CourseGamificationData {
   xp: number;
@@ -30,6 +34,7 @@ interface CourseGamificationSidebarProps {
   gamification: CourseGamificationData;
   totalMissions: number;
   allTitles: ProgramTitle[];
+  courseId?: string;
   className?: string;
 }
 
@@ -37,8 +42,10 @@ export const CourseGamificationSidebar = ({
   gamification,
   totalMissions,
   allTitles,
+  courseId,
   className
 }: CourseGamificationSidebarProps) => {
+  const [activeTab, setActiveTab] = useState("progress");
   const progressPercent = (gamification.missions_completed / totalMissions) * 100;
   
   // Find next title
@@ -50,7 +57,21 @@ export const CourseGamificationSidebar = ({
   const xpProgress = (gamification.xp % xpForNextLevel) / xpForNextLevel * 100;
 
   return (
-    <div className={cn("space-y-6", className)}>
+    <div className={cn("space-y-4", className)}>
+      {/* Tabs for Progress vs Ranking */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 bg-zinc-800/50 border border-secondary/20">
+          <TabsTrigger value="progress" className="data-[state=active]:bg-secondary/20 data-[state=active]:text-secondary">
+            <Trophy className="w-4 h-4 mr-2" />
+            Progresso
+          </TabsTrigger>
+          <TabsTrigger value="ranking" className="data-[state=active]:bg-secondary/20 data-[state=active]:text-secondary">
+            <Users className="w-4 h-4 mr-2" />
+            Ranking
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="progress" className="mt-4 space-y-6">
       {/* Current Title */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -185,6 +206,29 @@ export const CourseGamificationSidebar = ({
           </div>
         </motion.div>
       )}
+        </TabsContent>
+
+        <TabsContent value="ranking" className="mt-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-zinc-900/80 rounded-2xl p-5 border border-secondary/20"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <Users className="w-5 h-5 text-secondary" />
+              <span className="font-medium text-cream">Ranking do Programa</span>
+            </div>
+            
+            {courseId ? (
+              <ProgramLeaderboard courseId={courseId} />
+            ) : (
+              <p className="text-sm text-cream/50 text-center py-4">
+                Ranking não disponível
+              </p>
+            )}
+          </motion.div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
