@@ -41,6 +41,7 @@ import StudyReminderButton from "@/components/student/StudyReminderButton";
 import { SoberanaLogo } from "@/components/brand/SoberanaLogo";
 import ProgramCard from "@/components/student/ProgramCard";
 import { programsList } from "@/data/programs";
+import { programToCourseId } from "@/lib/programCourseMapping";
 import { 
   SkeletonCourseGrid, 
   SkeletonHero, 
@@ -861,13 +862,19 @@ const StudentDashboard = () => {
               }
             }}
           >
-            {programsList.map((program, index) => (
-              <ProgramCard 
-                key={program.slug} 
-                program={program} 
-                index={index} 
-              />
-            ))}
+            {programsList.map((program, index) => {
+              const courseId = programToCourseId[program.slug];
+              const isEnrolled = enrollments.some(e => e.course_id === courseId);
+              return (
+                <ProgramCard 
+                  key={program.slug} 
+                  program={program} 
+                  index={index}
+                  isEnrolled={isEnrolled}
+                  courseId={courseId}
+                />
+              );
+            })}
           </motion.div>
         </section>
 
