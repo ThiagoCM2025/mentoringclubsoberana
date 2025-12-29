@@ -27,13 +27,24 @@ interface NurturingSequence {
 }
 
 const replaceVariables = (text: string, lead: Lead): string => {
+  const firstName = lead.full_name.split(" ")[0] || "Querida";
+  const fullName = lead.full_name || "Querida";
+  
   return text
-    .replace(/\{\{nome\}\}/g, lead.full_name.split(" ")[0])
-    .replace(/\{\{nome_completo\}\}/g, lead.full_name)
+    // Padrão com três chaves (corrigir legado)
+    .replace(/\{\{\{nome\}\}\}/g, firstName)
+    .replace(/\{\{\{nome_completo\}\}\}/g, fullName)
+    // Padrão com duas chaves (preferido)
+    .replace(/\{\{nome\}\}/g, firstName)
+    .replace(/\{\{nome_completo\}\}/g, fullName)
     .replace(/\{\{email\}\}/g, lead.email)
-    // Keep backwards compatibility with old variables
-    .replace(/\{\{name\}\}/g, lead.full_name.split(" ")[0])
-    .replace(/\{\{full_name\}\}/g, lead.full_name);
+    // Variação com uma chave (legado)
+    .replace(/\{nome\}/g, firstName)
+    .replace(/\{nome_completo\}/g, fullName)
+    .replace(/\{email\}/g, lead.email)
+    // Compatibilidade com variáveis antigas em inglês
+    .replace(/\{\{name\}\}/g, firstName)
+    .replace(/\{\{full_name\}\}/g, fullName);
 };
 
 const generateEmailTemplate = (recipientName: string, subject: string, content: string): string => {

@@ -27,10 +27,23 @@ interface BulkEmailRequest {
 }
 
 function replaceVariables(text: string, recipient: Recipient): string {
+  const firstName = (recipient.name || "").split(" ")[0] || "Querida";
+  const fullName = recipient.name || "Querida";
+  
   return text
-    .replace(/{nome}/g, recipient.name || "")
-    .replace(/{email}/g, recipient.email || "")
-    .replace(/{telefone}/g, recipient.phone || "");
+    // Padrão com três chaves (corrigir legado)
+    .replace(/\{\{\{nome\}\}\}/g, firstName)
+    .replace(/\{\{\{nome_completo\}\}\}/g, fullName)
+    // Padrão com duas chaves (preferido)
+    .replace(/\{\{nome\}\}/g, firstName)
+    .replace(/\{\{nome_completo\}\}/g, fullName)
+    .replace(/\{\{email\}\}/g, recipient.email || "")
+    .replace(/\{\{telefone\}\}/g, recipient.phone || "")
+    // Variação com uma chave (legado)
+    .replace(/\{nome\}/g, firstName)
+    .replace(/\{nome_completo\}/g, fullName)
+    .replace(/\{email\}/g, recipient.email || "")
+    .replace(/\{telefone\}/g, recipient.phone || "");
 }
 
 function generateEmailTemplate(
@@ -84,9 +97,6 @@ function generateEmailTemplate(
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                 <tr>
                   <td>
-                    <p style="margin: 0 0 20px 0; font-size: 20px; color: #64001C; font-family: Georgia, 'Times New Roman', serif;">
-                      Olá, <strong>${recipientName}</strong>!
-                    </p>
                     <div style="margin: 0 0 30px 0; font-size: 16px; line-height: 1.7; color: #333333;">
                       ${formattedContent}
                     </div>
