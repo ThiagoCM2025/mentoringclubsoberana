@@ -2528,6 +2528,19 @@ export type Database = {
           xp: number
         }[]
       }
+      get_program_leaderboard: {
+        Args: { limit_count?: number; p_course_id: string }
+        Returns: {
+          avatar_url: string
+          current_title: string
+          full_name: string
+          level: number
+          missions_completed: number
+          rank: number
+          user_id: string
+          xp: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
