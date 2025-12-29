@@ -31,6 +31,7 @@ export const OnboardingModule = ({
   const { user } = useAuth();
   const [diagnosticCompleted, setDiagnosticCompleted] = useState(false);
   const [diagnosticProgress, setDiagnosticProgress] = useState(0);
+  const [filledFromCourse, setFilledFromCourse] = useState<string | null>(null);
   const [showDiagnosticForm, setShowDiagnosticForm] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -46,12 +47,18 @@ export const OnboardingModule = ({
     try {
       const { data, error } = await supabase
         .from("student_diagnostics")
-        .select("*")
+        .select("*, filled_from_course:filled_from_course_id(title)")
         .eq("user_id", user.id)
         .maybeSingle();
 
       if (data) {
         setDiagnosticCompleted(data.completed || false);
+        
+        // Get origin course name if filled from another course
+        if (data.filled_from_course && typeof data.filled_from_course === 'object' && 'title' in data.filled_from_course) {
+          setFilledFromCourse(data.filled_from_course.title as string);
+        }
+        
         // Calculate progress based on filled fields
         const fields = [
           data.practice_area,
@@ -201,10 +208,17 @@ export const OnboardingModule = ({
                     )}
 
                     {diagnosticCompleted && (
-                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Diagnóstico Completo
-                      </Badge>
+                      <div className="space-y-2">
+                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Diagnóstico Completo
+                        </Badge>
+                        {filledFromCourse && (
+                          <p className="text-xs text-cream/50 italic">
+                            Preenchido via {filledFromCourse}
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -265,6 +279,7 @@ export const OnboardingModule = ({
           onComplete={handleDiagnosticComplete}
           onClose={() => setShowDiagnosticForm(false)}
           initialStep={1}
+          courseId={courseId}
         />
       )}
     </>
