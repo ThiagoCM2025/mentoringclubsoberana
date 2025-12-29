@@ -7,10 +7,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import patternCirclesBlack from "@/assets/brand/pattern-circles-black.png";
-import isotipoGold from "@/assets/brand/isotipo-gold.png";
-import isotipoBlack from "@/assets/brand/isotipo-black.png";
-import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
+import { PremiumBackground, isotipoSGold } from "@/components/ui/premium-background";
+import { staggerContainer, staggerItem } from "@/lib/animations";
 
 const faqs = [
   {
@@ -55,76 +53,66 @@ export const FAQSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-14 md:py-20 lg:py-24 xl:py-32 px-4 md:px-8 bg-cream relative overflow-hidden">
-      {/* Circle Pattern Background - Black (subtle) */}
-      <div 
-        className="absolute inset-0 opacity-[0.06]"
-        style={{
-          backgroundImage: `url(${patternCirclesBlack})`,
-          backgroundRepeat: 'repeat',
-          backgroundSize: '280px',
-        }}
-      />
-
-      {/* Isotipo Gold - top left */}
-      <div className="absolute top-20 left-12 opacity-[0.14] hidden lg:block animate-float-slow">
-        <img src={isotipoGold} alt="" className="w-32 h-32" />
-      </div>
-      
-      {/* Isotipo Black - bottom right */}
-      <div className="absolute bottom-20 right-12 opacity-[0.10] hidden lg:block animate-float-slow animation-delay-1000">
-        <img src={isotipoBlack} alt="" className="w-28 h-28" />
-      </div>
-
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-cream via-transparent to-white/60" />
-
-      <div className="container-soberana relative z-10">
+    <PremiumBackground
+      variant="light"
+      pattern="circles-black"
+      patternOpacity={0.06}
+      showIsotipos
+      isotipoVariant="gold"
+      showTopBorder
+      isInView={isInView}
+      sectionClassName="py-14 md:py-20 lg:py-24 xl:py-32 px-4 md:px-8"
+    >
+      <div ref={ref} className="container-soberana">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          variants={staggerContainer}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
           className="text-center mb-10 lg:mb-14 xl:mb-16"
         >
           {/* Isotipo S decoration */}
-          <motion.div 
-            className="flex justify-center mb-4"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.5 }}
-          >
+          <motion.div variants={staggerItem} className="flex justify-center mb-4">
             <img src={isotipoSGold} alt="" className="w-10 h-10 isotipo-glow" />
           </motion.div>
-          
-          <span className="badge-gold mb-4">FAQ</span>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-bold text-foreground mb-5 lg:mb-6">
+
+          <motion.span variants={staggerItem} className="badge-gold mb-4">
+            FAQ
+          </motion.span>
+          <motion.h2
+            variants={staggerItem}
+            className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-bold text-foreground mb-5 lg:mb-6"
+          >
             Perguntas <span className="text-primary">Frequentes</span>
-          </h2>
-          <p className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto">
+          </motion.h2>
+          <motion.p
+            variants={staggerItem}
+            className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto"
+          >
             Tire suas dúvidas sobre o Método Soberana e o Direito Imobiliário.
-          </p>
+          </motion.p>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          variants={staggerContainer}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
           className="max-w-3xl mx-auto"
         >
           <Accordion type="single" collapsible className="space-y-4">
             {faqs.map((faq, index) => (
-              <AccordionItem
-                key={index}
-                value={`item-${index}`}
-                className="bg-background border border-secondary/20 rounded-lg px-6 data-[state=open]:border-secondary/50 data-[state=open]:shadow-md transition-all duration-300"
-              >
-                <AccordionTrigger className="text-left font-serif text-lg hover:text-primary hover:no-underline py-5">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pb-5">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
+              <motion.div key={index} variants={staggerItem}>
+                <AccordionItem
+                  value={`item-${index}`}
+                  className="bg-background border border-secondary/20 rounded-lg px-6 data-[state=open]:border-secondary/50 data-[state=open]:shadow-md transition-all duration-300"
+                >
+                  <AccordionTrigger className="text-left font-serif text-lg hover:text-primary hover:no-underline py-5">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              </motion.div>
             ))}
           </Accordion>
         </motion.div>
@@ -132,7 +120,7 @@ export const FAQSection = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
           className="mt-12 text-center"
         >
           <p className="text-muted-foreground">
@@ -148,6 +136,6 @@ export const FAQSection = () => {
           </p>
         </motion.div>
       </div>
-    </section>
+    </PremiumBackground>
   );
 };

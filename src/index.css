@@ -390,6 +390,90 @@
     background-image: url('/src/assets/brand/pattern-circles-black.png');
     background-repeat: repeat;
   }
+
+  /* ============ CTA BUTTON PREMIUM MICRO-INTERACTIONS ============ */
+  
+  .btn-cta-premium {
+    position: relative;
+    overflow: hidden;
+    /* Pulse sutil em repouso */
+    animation: cta-pulse-rest 3s ease-in-out infinite;
+    box-shadow: 0 0 25px hsla(38, 30%, 51%, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Shimmer effect element */
+  .btn-cta-premium::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 20%,
+      hsla(43, 100%, 90%, 0.35) 50%,
+      transparent 80%
+    );
+    background-size: 200% 100%;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  /* Shimmer on hover */
+  .btn-cta-premium:hover::before {
+    opacity: 1;
+    animation: cta-shimmer-hover 1.5s ease-in-out infinite;
+  }
+
+  /* Enhanced glow on hover */
+  .btn-cta-premium:hover {
+    box-shadow: 0 0 40px hsla(38, 30%, 51%, 0.4), 0 0 80px hsla(38, 30%, 51%, 0.2);
+    transform: translateY(-2px);
+  }
+
+  /* Scale + Glow on click */
+  .btn-cta-premium:active {
+    transform: scale(0.97) translateY(0);
+    box-shadow: 0 0 60px hsla(38, 30%, 51%, 0.6), 0 0 100px hsla(38, 30%, 51%, 0.3);
+    animation: none;
+  }
+
+  /* Focus state */
+  .btn-cta-premium:focus-visible {
+    box-shadow: 0 0 0 3px hsla(38, 30%, 51%, 0.5), 0 0 40px hsla(38, 30%, 51%, 0.3);
+  }
+
+  @keyframes cta-pulse-rest {
+    0%, 100% { box-shadow: 0 0 25px hsla(38, 30%, 51%, 0.25); }
+    50% { box-shadow: 0 0 35px hsla(38, 30%, 51%, 0.35); }
+  }
+
+  @keyframes cta-shimmer-hover {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Disable animations on mobile for performance */
+  @media (max-width: 768px) {
+    .btn-cta-premium {
+      animation: none;
+    }
+    .btn-cta-premium::before {
+      display: none;
+    }
+  }
+
+  /* Respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .btn-cta-premium {
+      animation: none;
+    }
+    .btn-cta-premium::before {
+      display: none;
+    }
+    .btn-cta-premium:hover {
+      transform: none;
+    }
+  }
 }
 
 @layer utilities {

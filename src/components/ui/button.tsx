@@ -19,6 +19,8 @@ const buttonVariants = cva(
         premium: "bg-zinc-800 border border-secondary/40 text-cream hover:bg-secondary/20 hover:border-secondary transition-all",
         // Gold variant - prominent CTA buttons
         gold: "bg-secondary hover:bg-secondary/90 text-black font-semibold shadow-lg hover:shadow-secondary/25",
+        // CTA Premium - with shimmer, pulse, and scale effects
+        cta: "bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold shadow-lg btn-cta-premium",
       },
       size: {
         default: "h-10 px-4 py-2",
