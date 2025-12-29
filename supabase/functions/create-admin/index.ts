@@ -68,11 +68,12 @@ Deno.serve(async (req) => {
     }
 
     // Create user with admin service role
+    // is_admin flag prevents handle_new_user trigger from adding 'student' role
     const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { full_name: fullName },
+      user_metadata: { full_name: fullName, is_admin: 'true' },
     });
 
     if (createError) {
