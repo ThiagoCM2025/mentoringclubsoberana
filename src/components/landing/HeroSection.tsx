@@ -31,9 +31,9 @@ export const HeroSection = () => {
           isMobile ? 'text-xl' : 'text-xl sm:text-2xl md:text-4xl lg:text-5xl'
         }`}
       >
-        Saia da Advocacia Técnica e fature{" "}
+        Transforme sua Advocacia Técnica em um Negócio Lucrativo e estruturado que{" "}
         <span className="text-shimmer-gold">
-          +R$ 50k/mês como Especialista em Direito Imobiliário.
+          fature +50k mensais
         </span>
       </motion.h1>
 
