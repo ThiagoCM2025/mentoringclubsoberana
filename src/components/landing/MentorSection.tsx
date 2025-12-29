@@ -11,7 +11,7 @@ export const MentorSection = () => {
     once: true,
     margin: "-100px"
   });
-  return <section id="sobre" ref={ref} className="py-20 md:py-32 bg-brand-black relative overflow-hidden">
+  return <section id="sobre" ref={ref} className="py-16 md:py-20 lg:py-24 xl:py-32 bg-brand-black relative overflow-hidden">
       {/* Circle Pattern - Gold on dark background */}
       <div className="absolute inset-0 opacity-[0.08]" style={{
       backgroundImage: `url(${patternCirclesMarsala})`,
@@ -110,7 +110,7 @@ export const MentorSection = () => {
               Sobre
             </span>
             
-            <h2 className="text-4xl md:text-5xl font-serif font-medium text-cream mb-8">
+            <h2 className="text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-serif font-medium text-cream mb-6 lg:mb-8">
               Quem <em className="italic text-secondary">Sou</em>
             </h2>
             

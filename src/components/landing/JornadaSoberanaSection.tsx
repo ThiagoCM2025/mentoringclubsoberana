@@ -86,7 +86,7 @@ const ProgramCard = ({
           {program.subtitle}
         </span>
         
-        <h3 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif font-medium text-foreground mb-3 sm:mb-4 leading-tight group-hover:scale-[1.01] transition-transform duration-300">
+        <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-medium text-foreground mb-3 sm:mb-4 leading-tight group-hover:scale-[1.01] transition-transform duration-300">
           {program.titleHighlight ? <>
               {program.title.split(program.titleHighlight)[0]}
               <em className="italic text-shimmer-gold not-italic">{program.titleHighlight}</em>
@@ -130,7 +130,7 @@ export const JornadaSoberanaSection = () => {
 
   // Order programs for display: entry first, then mid, then elite
   const orderedPrograms = [...programsList.filter(p => p.tier === "entry"), ...programsList.filter(p => p.tier === "mid"), ...programsList.filter(p => p.tier === "elite")];
-  return <section className="py-16 sm:py-24 md:py-40 bg-background relative overflow-hidden">
+  return <section className="py-14 sm:py-20 md:py-28 lg:py-32 xl:py-40 bg-background relative overflow-hidden">
       {/* Enhanced Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-cream via-background to-cream/50" />
       
@@ -176,7 +176,7 @@ export const JornadaSoberanaSection = () => {
         y: 0
       } : {}} transition={{
         duration: 0.7
-      }} className="text-center mb-12 sm:mb-16 md:mb-24 px-2">
+      }} className="text-center mb-10 sm:mb-12 md:mb-16 lg:mb-20 xl:mb-24 px-2">
           {/* Isotipo S decoration */}
           <motion.div className="flex justify-center mb-4 sm:mb-6" initial={{
           opacity: 0,
@@ -213,7 +213,7 @@ export const JornadaSoberanaSection = () => {
             <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
           </motion.div>
 
-          <motion.h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-serif font-medium text-foreground mb-4 sm:mb-6" initial={{
+          <motion.h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-medium text-foreground mb-4 sm:mb-6" initial={{
           opacity: 0,
           y: 20
         }} animate={isInView ? {
@@ -251,7 +251,7 @@ export const JornadaSoberanaSection = () => {
         </motion.div>
 
         {/* Programs List */}
-        <div className="space-y-16 sm:space-y-24 md:space-y-40">
+        <div className="space-y-14 sm:space-y-20 md:space-y-28 lg:space-y-32 xl:space-y-40">
           {orderedPrograms.map((program, index) => <ProgramCard key={program.slug} program={program} index={index} isReversed={index % 2 === 1} isInView={isInView} />)}
         </div>
 
@@ -285,7 +285,7 @@ export const JornadaSoberanaSection = () => {
               <Crown className="w-5 h-5 text-secondary" />
             </motion.div>
             
-            <p className="text-lg sm:text-xl md:text-2xl text-foreground font-serif mb-6 sm:mb-8 max-w-xl mx-auto px-2">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-foreground font-serif mb-5 sm:mb-6 lg:mb-8 max-w-xl mx-auto px-2">
               Não sabe qual programa escolher?
               <br />
               <span className="text-muted-foreground text-sm sm:text-base font-sans">Receba uma orientação personalizada</span>
