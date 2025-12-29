@@ -1400,6 +1400,7 @@ export type Database = {
           duration_minutes: number | null
           id: string
           is_free: boolean | null
+          lesson_label: string | null
           lesson_type: Database["public"]["Enums"]["lesson_type"] | null
           module_id: string
           order_index: number | null
@@ -1415,6 +1416,7 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           is_free?: boolean | null
+          lesson_label?: string | null
           lesson_type?: Database["public"]["Enums"]["lesson_type"] | null
           module_id: string
           order_index?: number | null
@@ -1430,6 +1432,7 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           is_free?: boolean | null
+          lesson_label?: string | null
           lesson_type?: Database["public"]["Enums"]["lesson_type"] | null
           module_id?: string
           order_index?: number | null
