@@ -65,7 +65,7 @@ export const HeroSection = () => {
           }`}
         >
           <span className="flex items-center justify-center gap-2 sm:gap-3">
-            Quero Transformar Meu Negócio
+            Quero Faturar +50k no Imobiliário
             <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
           </span>
         </Button>
