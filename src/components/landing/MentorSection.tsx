@@ -21,7 +21,7 @@ export const MentorSection = () => {
       isInView={isInView}
       sectionClassName="py-16 md:py-20 lg:py-24 xl:py-32"
     >
-      <section id="sobre" ref={ref} className="container-soberana">
+      <section id="sobre" ref={ref} className="container-soberana scroll-mt-24">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Image with Golden Frame and Signature */}
           <motion.div

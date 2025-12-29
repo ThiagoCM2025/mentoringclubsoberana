@@ -271,23 +271,24 @@ const DesktopPillarCard = ({ pillar }: { pillar: typeof pillars[0] }) => {
   return (
     <motion.div
       variants={staggerItemScale}
-      className="group relative overflow-hidden rounded-2xl border border-gold/20 bg-gradient-to-br from-black via-black/95 to-marsala-dark/10 hover:border-gold/40 transition-all duration-500 hover:shadow-[0_0_40px_rgba(166,144,97,0.15)]"
+      className="group relative overflow-hidden rounded-2xl border border-gold/20 bg-gradient-to-br from-black via-black/95 to-marsala-dark/10 hover:border-gold/50 transition-all duration-500 hover:shadow-[0_0_50px_rgba(166,144,97,0.25),0_0_20px_rgba(166,144,97,0.15)]"
     >
       {/* Glow Effect */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <div className="absolute inset-0 bg-gradient-to-br from-gold/5 via-transparent to-marsala/5" />
+        <div className="absolute inset-0 bg-gradient-to-br from-gold/10 via-gold/5 to-marsala/10" />
+        <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gold/30" />
       </div>
 
       <div className="relative p-5 lg:p-6 xl:p-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-5">
           {/* Number */}
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center text-black font-bold text-xl shadow-lg shadow-gold/20">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center text-black font-bold text-xl shadow-lg shadow-gold/20 group-hover:shadow-gold/40 group-hover:shadow-xl transition-shadow duration-500">
             {pillar.number}
           </div>
           
           {/* Icon */}
-          <div className="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center group-hover:bg-gold/20 transition-colors">
+          <div className="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center group-hover:bg-gold/20 group-hover:border-gold/40 group-hover:shadow-[0_0_15px_rgba(166,144,97,0.3)] transition-all duration-500">
             <Icon className="w-6 h-6 text-gold" />
           </div>
         </div>

@@ -71,16 +71,16 @@ const Index = () => {
       <BeforeAfterSection />
       <MentorSection />
       <MethodologySection />
-      <section id="jornada">
+      <section id="jornada" className="scroll-mt-24">
         <JornadaSoberanaSection />
       </section>
-      <section id="trajetoria">
+      <section id="trajetoria" className="scroll-mt-24">
         <TrajetoriaSection />
       </section>
-      <section id="depoimentos">
+      <section id="depoimentos" className="scroll-mt-24">
         <TestimonialsSection />
       </section>
-      <section id="faq">
+      <section id="faq" className="scroll-mt-24">
         <FAQSection />
       </section>
       <DuvidaCTASection />
