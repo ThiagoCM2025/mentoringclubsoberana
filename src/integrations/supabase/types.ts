@@ -1575,6 +1575,48 @@ export type Database = {
         }
         Relationships: []
       }
+      module_completions: {
+        Row: {
+          completed_at: string
+          course_id: string
+          id: string
+          module_id: string
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          completed_at?: string
+          course_id: string
+          id?: string
+          module_id: string
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          completed_at?: string
+          course_id?: string
+          id?: string
+          module_id?: string
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "module_completions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "module_completions_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       modules: {
         Row: {
           course_id: string
@@ -2487,6 +2529,8 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      notify_weekly_content: { Args: never; Returns: undefined }
+      notify_weekly_missions: { Args: never; Returns: undefined }
     }
     Enums: {
       action_type: "calendar" | "whatsapp" | "form" | "external" | "diagnostic"
