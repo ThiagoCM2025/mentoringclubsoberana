@@ -14,34 +14,39 @@ import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 
 const faqs = [
   {
+    question: "Preciso ter experiência em Direito Imobiliário para começar?",
+    answer:
+      "Não! A metodologia foi criada justamente para advogadas que desejam entrar ou se especializar no Direito Imobiliário. Você aprenderá do zero: desde a técnica consultiva e extrajudicial até a estruturação do negócio para faturar +50k/mês.",
+  },
+  {
+    question: "Como funciona a metodologia dos 5 Pilares?",
+    answer:
+      "Os 5 Pilares — Mentalidade, Vendas e Lucratividade, Audiência, Técnica Imobiliária e Gestão com IA — formam um sistema integrado. Cada pilar trabalha uma área essencial para você sair da operação, estruturar um negócio lucrativo e se posicionar como referência no mercado imobiliário.",
+  },
+  {
+    question: "Em quanto tempo posso alcançar os +50k/mês?",
+    answer:
+      "O tempo varia conforme sua dedicação e ponto de partida. Advogadas que aplicam a metodologia de forma consistente alcançam resultados expressivos em 6 a 12 meses. A chave está na implementação dos 5 pilares de forma estratégica.",
+  },
+  {
+    question: "Vocês ensinam técnica de Direito Imobiliário ou gestão de negócio?",
+    answer:
+      "Os dois! O diferencial do Método Soberana é unir domínio técnico (regularização, contratos, due diligence) com visão de negócio. Você aprende a prática consultiva e extrajudicial onde está o 'dinheiro grande', além de vendas, posicionamento e gestão com IA.",
+  },
+  {
+    question: "A metodologia funciona para quem já atua no Imobiliário?",
+    answer:
+      "Sim! Se você já atua mas não consegue escalar ou cobrar honorários de alto ticket, os pilares de Mentalidade, Vendas e Audiência vão destravar seu crescimento. Muitas alunas já experientes dobraram ou triplicaram o faturamento.",
+  },
+  {
+    question: "Como funciona o pilar de IA e Gestão?",
+    answer:
+      "No pilar de Gestão e IA você aprende a implementar inteligência artificial para automação de peças, análises e atendimento. Isso permite faturar mais trabalhando menos horas, além de organizar fluxos e processos para quando chegar a hora de montar equipe.",
+  },
+  {
     question: "Qual programa é ideal para quem está começando?",
     answer:
-      "Se você está começando, recomendo o Workshop Soberana IA para ganhar produtividade com tecnologia, ou o Soberana Experience Start para uma imersão presencial em São Paulo. Ambos são ótimas portas de entrada para o ecossistema.",
-  },
-  {
-    question: "Preciso ter experiência em marketing digital?",
-    answer:
-      "Não! A metodologia foi criada pensando em advogadas que são excelentes tecnicamente mas não dominam gestão, marketing e vendas. Você aprenderá do zero, de forma prática e aplicada à advocacia.",
-  },
-  {
-    question: "Posso participar da Elite sem ter feito a 360°?",
-    answer:
-      "O Soberana Elite é exclusivo para graduadas da Mentoria 360° ou escritórios já consolidados. Se você tem um escritório estruturado e busca escala, networking e mentoria de alto nível, pode se candidatar diretamente.",
-  },
-  {
-    question: "As oficinas presenciais são apenas em São Paulo?",
-    answer:
-      "Atualmente o Soberana Experience Start acontece em São Paulo, mas planejamos expandir para outras capitais. Fique atenta às novidades nas nossas redes sociais!",
-  },
-  {
-    question: "Qual o investimento dos programas?",
-    answer:
-      "O investimento varia de acordo com o programa. O Experience Start é R$ 299. Para os demais programas (Aceleração, 360° e Elite), entre em contato com nosso suporte para conhecer as condições.",
-  },
-  {
-    question: "Funciona para qualquer área do Direito?",
-    answer:
-      "Sim! A metodologia é sobre gestão de negócios jurídicos e não sobre técnica específica. Funciona para advogadas de todas as áreas: imobiliário, trabalhista, cível, tributário, família, previdenciário, etc.",
+      "Se está começando do zero no Imobiliário, recomendo o Soberana Experience Start para uma imersão prática, ou a Mentoria 360° para acompanhamento completo. Ambos te dão a base técnica e estratégica para estruturar seu negócio desde o início.",
   },
 ];
 
@@ -50,7 +55,7 @@ export const FAQSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="section-padding bg-cream relative overflow-hidden">
+    <section ref={ref} className="py-14 md:py-20 lg:py-24 xl:py-32 px-4 md:px-8 bg-cream relative overflow-hidden">
       {/* Circle Pattern Background - Black (subtle) */}
       <div 
         className="absolute inset-0 opacity-[0.06]"
@@ -79,7 +84,7 @@ export const FAQSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 lg:mb-14 xl:mb-16"
         >
           {/* Isotipo S decoration */}
           <motion.div 
@@ -92,11 +97,11 @@ export const FAQSection = () => {
           </motion.div>
           
           <span className="badge-gold mb-4">FAQ</span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-6">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-bold text-foreground mb-5 lg:mb-6">
             Perguntas <span className="text-primary">Frequentes</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Tire suas dúvidas sobre os programas do Ecossistema Soberana.
+          <p className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto">
+            Tire suas dúvidas sobre o Método Soberana e o Direito Imobiliário.
           </p>
         </motion.div>
 

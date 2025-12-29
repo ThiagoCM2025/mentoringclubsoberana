@@ -98,7 +98,7 @@ export const TestimonialsSection = () => {
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-secondary/20 text-secondary border border-secondary/30 mb-4">
             Depoimentos
           </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-primary-foreground mb-6">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-bold text-primary-foreground mb-6">
             Histórias de{" "}
             <span className="text-secondary">Transformação</span>
           </h2>
@@ -114,7 +114,7 @@ export const TestimonialsSection = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="max-w-4xl mx-auto mb-12"
         >
-          <div className="relative bg-cream rounded-2xl p-8 md:p-12 shadow-2xl">
+          <div className="relative bg-cream rounded-2xl p-6 md:p-8 lg:p-10 xl:p-12 shadow-2xl">
             <Quote className="absolute top-6 left-6 w-12 h-12 text-secondary/30" />
             
             <div className="relative">
@@ -124,7 +124,7 @@ export const TestimonialsSection = () => {
                 ))}
               </div>
 
-              <p className="text-xl md:text-2xl font-serif text-foreground mb-8 leading-relaxed">
+              <p className="text-lg md:text-xl lg:text-2xl font-serif text-foreground mb-6 lg:mb-8 leading-relaxed">
                 "{testimonials[activeIndex].content}"
               </p>
 
@@ -187,7 +187,7 @@ export const TestimonialsSection = () => {
             { value: "4.9", label: "Avaliação" },
           ].map((stat, index) => (
             <div key={index} className="text-center">
-              <p className="text-3xl md:text-4xl font-serif font-bold text-secondary">{stat.value}</p>
+              <p className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold text-secondary">{stat.value}</p>
               <p className="text-sm text-primary-foreground/70">{stat.label}</p>
             </div>
           ))}

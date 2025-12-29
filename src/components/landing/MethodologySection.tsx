@@ -275,7 +275,7 @@ const DesktopPillarCard = ({ pillar, index }: { pillar: typeof pillars[0]; index
         <div className="absolute inset-0 bg-gradient-to-br from-gold/5 via-transparent to-marsala/5" />
       </div>
 
-      <div className="relative p-6 lg:p-8">
+      <div className="relative p-5 lg:p-6 xl:p-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-5">
           {/* Number */}
@@ -290,15 +290,15 @@ const DesktopPillarCard = ({ pillar, index }: { pillar: typeof pillars[0]; index
         </div>
 
         {/* Title & Subtitle */}
-        <h3 className="font-playfair text-xl lg:text-2xl font-bold text-cream mb-2 group-hover:text-gold-light transition-colors">
+        <h3 className="font-playfair text-lg lg:text-xl xl:text-2xl font-bold text-cream mb-2 group-hover:text-gold-light transition-colors">
           {pillar.title}
         </h3>
-        <p className="text-gold font-medium text-sm lg:text-base mb-4">
+        <p className="text-gold font-medium text-sm mb-4">
           {pillar.subtitle}
         </p>
 
         {/* Description */}
-        <p className="text-cream/70 text-sm lg:text-base leading-relaxed mb-5">
+        <p className="text-cream/70 text-sm leading-relaxed mb-5">
           {pillar.description}
         </p>
 
@@ -334,7 +334,7 @@ const MethodologySection = () => {
     <section
       id="metodologia"
       ref={sectionRef}
-      className="relative py-16 md:py-24 lg:py-32 bg-black overflow-hidden"
+      className="relative py-14 md:py-20 lg:py-24 xl:py-32 bg-black overflow-hidden"
     >
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
@@ -371,18 +371,18 @@ const MethodologySection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12 md:mb-16 lg:mb-20"
+          className="text-center mb-10 md:mb-12 lg:mb-16 xl:mb-20"
         >
           <span className="inline-block text-gold text-sm font-medium tracking-wider uppercase mb-4">
             O Método Comprovado
           </span>
           
-          <h2 className="font-playfair text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-cream mb-4 max-w-4xl mx-auto leading-tight">
+          <h2 className="font-playfair text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-cream mb-4 max-w-4xl mx-auto leading-tight">
             Os 5 Pilares do Método Soberana:{" "}
             <span className="text-shimmer-gold">O Caminho para os +50k/mês</span>
           </h2>
           
-          <p className="text-cream/60 text-base md:text-lg max-w-2xl mx-auto">
+          <p className="text-cream/60 text-sm md:text-base lg:text-lg max-w-2xl mx-auto">
             Um sistema completo para transformar sua advocacia técnica em um negócio lucrativo e escalável.
           </p>
         </motion.div>
@@ -395,14 +395,14 @@ const MethodologySection = () => {
         {/* Desktop View - Grid */}
         <div className="hidden lg:block">
           {/* First Row - 3 Cards */}
-          <div className="grid grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-3 gap-4 lg:gap-5 xl:gap-6 mb-4 lg:mb-5 xl:mb-6">
             {pillars.slice(0, 3).map((pillar, index) => (
               <DesktopPillarCard key={pillar.number} pillar={pillar} index={index} />
             ))}
           </div>
           
           {/* Second Row - 2 Cards Centered */}
-          <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 gap-4 lg:gap-5 xl:gap-6 max-w-4xl mx-auto">
             {pillars.slice(3, 5).map((pillar, index) => (
               <DesktopPillarCard key={pillar.number} pillar={pillar} index={index + 3} />
             ))}
@@ -414,7 +414,7 @@ const MethodologySection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className="text-center mt-12 md:mt-16"
+          className="text-center mt-10 md:mt-12 lg:mt-14 xl:mt-16"
         >
           <p className="text-cream/60 text-sm md:text-base mb-6">
             Pronta para implementar esses pilares na sua advocacia?

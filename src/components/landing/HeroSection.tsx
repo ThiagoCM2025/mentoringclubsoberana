@@ -28,7 +28,7 @@ export const HeroSection = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: isMobile ? 0.15 : 0.4 }}
         className={`font-serif font-medium text-cream leading-tight mb-3 sm:mb-4 ${
-          isMobile ? 'text-xl' : 'text-xl sm:text-2xl md:text-4xl lg:text-5xl'
+          isMobile ? 'text-xl' : 'text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl'
         }`}
       >
         Transforme sua Advocacia Técnica em um Negócio Lucrativo e estruturado que{" "}
@@ -43,7 +43,7 @@ export const HeroSection = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: isMobile ? 0.2 : 0.5 }}
         className={`text-cream/90 mb-6 sm:mb-8 leading-relaxed ${
-          isMobile ? 'text-sm' : 'text-sm sm:text-base md:text-lg'
+          isMobile ? 'text-sm' : 'text-sm sm:text-base md:text-base lg:text-lg'
         }`}
       >
         O método para advogadas estruturarem um negócio imobiliário lucrativo e assumirem o papel de{" "}
@@ -61,7 +61,7 @@ export const HeroSection = () => {
           onClick={scrollToJornada}
           size="lg"
           className={`cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold uppercase tracking-wider group whitespace-normal text-center leading-tight ${
-            isMobile ? 'px-5 py-5 text-sm' : 'px-5 sm:px-8 md:px-12 py-5 sm:py-6 md:py-7 text-sm sm:text-base md:text-lg'
+            isMobile ? 'px-5 py-5 text-sm' : 'px-5 sm:px-6 md:px-8 lg:px-10 py-4 sm:py-5 md:py-5 lg:py-6 text-sm sm:text-sm md:text-base lg:text-base'
           }`}
         >
           <span className="flex items-center justify-center gap-2 sm:gap-3">
