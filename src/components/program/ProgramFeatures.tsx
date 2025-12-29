@@ -3,10 +3,8 @@ import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { Check, Users, Target, Sparkles } from "lucide-react";
 import { Program } from "@/data/programs";
-
-// Premium visual assets
-import patternCirclesMarsala from "@/assets/brand/pattern-circles-marsala.png";
-import isotipoGold from "@/assets/brand/isotipo-s-gold.png";
+import { PremiumBackground } from "@/components/ui/premium-background";
+import { staggerContainer, staggerItem, staggerItemScale } from "@/lib/animations";
 
 interface ProgramFeaturesProps {
   program: Program;
@@ -18,7 +16,7 @@ const parseItemWithTitle = (item: string) => {
   if (colonIndex > 0 && colonIndex < 60) {
     return {
       title: item.substring(0, colonIndex).trim(),
-      description: item.substring(colonIndex + 1).trim()
+      description: item.substring(colonIndex + 1).trim(),
     };
   }
   return { title: null, description: item };
@@ -29,53 +27,27 @@ export const ProgramFeatures = ({ program }: ProgramFeaturesProps) => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="section-padding bg-muted/30 relative overflow-hidden">
-      {/* Golden top border gradient */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/40 to-transparent" />
-      
-      {/* Premium pattern overlay */}
-      <div 
-        className="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style={{
-          backgroundImage: `url(${patternCirclesMarsala})`,
-          backgroundSize: '350px 350px',
-          backgroundRepeat: 'repeat'
-        }}
-      />
-
-      {/* Floating Isotipos */}
-      <motion.img 
-        src={isotipoGold}
-        alt=""
-        className="absolute top-16 right-12 w-14 md:w-20 h-auto opacity-[0.10] animate-float-slow pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={isInView ? { opacity: 0.10 } : {}}
-        transition={{ duration: 1 }}
-      />
-      <motion.img 
-        src={isotipoGold}
-        alt=""
-        className="absolute bottom-20 left-8 w-12 md:w-16 h-auto opacity-[0.08] animate-float-slow pointer-events-none"
-        style={{ animationDelay: '1.5s' }}
-        initial={{ opacity: 0 }}
-        animate={isInView ? { opacity: 0.08 } : {}}
-        transition={{ duration: 1, delay: 0.3 }}
-      />
-
-      {/* Decorative gradient blurs */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-secondary/8 to-transparent rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-primary/8 to-transparent rounded-full blur-3xl" />
-      
-      <div className="container-soberana relative z-10">
+    <PremiumBackground
+      variant="light"
+      pattern="circles-marsala"
+      patternOpacity={0.04}
+      showIsotipos
+      isotipoVariant="gold"
+      showTopBorder
+      showBottomBorder
+      isInView={isInView}
+      sectionClassName="section-padding"
+    >
+      <div ref={ref} className="container-soberana">
         <div className="grid lg:grid-cols-2 gap-16">
           {/* Para Quem É */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6 }}
+            variants={staggerContainer}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
             className="space-y-6"
           >
-            <div className="flex items-center gap-3 mb-8">
+            <motion.div variants={staggerItem} className="flex items-center gap-3 mb-8">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20">
                 <Users className="w-6 h-6 text-primary-foreground" />
               </div>
@@ -83,19 +55,19 @@ export const ProgramFeatures = ({ program }: ProgramFeaturesProps) => {
                 <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
                   Para Quem É
                 </h2>
-                <p className="text-sm text-muted-foreground">Este programa foi criado especialmente para:</p>
+                <p className="text-sm text-muted-foreground">
+                  Este programa foi criado especialmente para:
+                </p>
               </div>
-            </div>
-            
+            </motion.div>
+
             <div className="space-y-4">
               {program.targetAudience.map((item, index) => {
                 const { title, description } = parseItemWithTitle(item);
                 return (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.4, delay: 0.1 * index }}
+                    variants={staggerItem}
                     className="group flex items-start gap-4 p-4 rounded-xl bg-card/50 border border-border/50 hover:border-secondary/40 hover:bg-card hover:shadow-lg hover:shadow-secondary/5 transition-all duration-300"
                   >
                     <div className="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-secondary/30 transition-colors">
@@ -104,8 +76,12 @@ export const ProgramFeatures = ({ program }: ProgramFeaturesProps) => {
                     <div className="flex-1">
                       {title ? (
                         <>
-                          <span className="font-semibold text-foreground block mb-1">{title}</span>
-                          <span className="text-muted-foreground text-sm leading-relaxed">{description}</span>
+                          <span className="font-semibold text-foreground block mb-1">
+                            {title}
+                          </span>
+                          <span className="text-muted-foreground text-sm leading-relaxed">
+                            {description}
+                          </span>
                         </>
                       ) : (
                         <span className="text-foreground">{description}</span>
@@ -119,12 +95,12 @@ export const ProgramFeatures = ({ program }: ProgramFeaturesProps) => {
 
           {/* O Que Você Recebe */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            variants={staggerContainer}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
             className="space-y-6"
           >
-            <div className="flex items-center gap-3 mb-8">
+            <motion.div variants={staggerItem} className="flex items-center gap-3 mb-8">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center shadow-lg shadow-secondary/20">
                 <Target className="w-6 h-6 text-secondary-foreground" />
               </div>
@@ -132,19 +108,19 @@ export const ProgramFeatures = ({ program }: ProgramFeaturesProps) => {
                 <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
                   O Que Você Recebe
                 </h2>
-                <p className="text-sm text-muted-foreground">Ao participar deste programa, você terá acesso a:</p>
+                <p className="text-sm text-muted-foreground">
+                  Ao participar deste programa, você terá acesso a:
+                </p>
               </div>
-            </div>
-            
+            </motion.div>
+
             <div className="space-y-4">
               {program.deliverables.map((item, index) => {
                 const { title, description } = parseItemWithTitle(item);
                 return (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.4, delay: 0.1 * index }}
+                    variants={staggerItem}
                     className="group flex items-start gap-4 p-4 rounded-xl bg-card/50 border border-border/50 hover:border-primary/40 hover:bg-card hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
                   >
                     <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary/30 transition-colors">
@@ -153,8 +129,12 @@ export const ProgramFeatures = ({ program }: ProgramFeaturesProps) => {
                     <div className="flex-1">
                       {title ? (
                         <>
-                          <span className="font-semibold text-foreground block mb-1">{title}</span>
-                          <span className="text-muted-foreground text-sm leading-relaxed">{description}</span>
+                          <span className="font-semibold text-foreground block mb-1">
+                            {title}
+                          </span>
+                          <span className="text-muted-foreground text-sm leading-relaxed">
+                            {description}
+                          </span>
                         </>
                       ) : (
                         <span className="text-foreground">{description}</span>
@@ -170,12 +150,12 @@ export const ProgramFeatures = ({ program }: ProgramFeaturesProps) => {
         {/* Modules Section (Metodologia) */}
         {program.modules && program.modules.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            variants={staggerContainer}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
             className="mt-24"
           >
-            <div className="text-center mb-12">
+            <motion.div variants={staggerItem} className="text-center mb-12">
               <span className="inline-block px-4 py-1.5 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4 border border-secondary/20">
                 Metodologia
               </span>
@@ -185,27 +165,29 @@ export const ProgramFeatures = ({ program }: ProgramFeaturesProps) => {
               <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
                 Uma jornada estruturada para você alcançar seus objetivos
               </p>
-            </div>
-            
+            </motion.div>
+
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {program.modules.map((module, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.4, delay: 0.5 + 0.1 * index }}
+                  variants={staggerItemScale}
                   className="group relative bg-card rounded-2xl p-6 border border-border hover:border-secondary/50 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/10"
                 >
                   {/* Step number badge */}
                   <div className="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-sm shadow-lg group-hover:scale-110 transition-transform">
                     {index + 1}
                   </div>
-                  
+
                   <div className="pt-4">
-                    <h3 className="font-semibold text-foreground mb-2 leading-tight">{module.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{module.description}</p>
+                    <h3 className="font-semibold text-foreground mb-2 leading-tight">
+                      {module.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {module.description}
+                    </p>
                   </div>
-                  
+
                   {/* Connector line (except last) */}
                   {index < program.modules!.length - 1 && (
                     <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-0.5 bg-gradient-to-r from-secondary/50 to-transparent" />
@@ -216,9 +198,6 @@ export const ProgramFeatures = ({ program }: ProgramFeaturesProps) => {
           </motion.div>
         )}
       </div>
-
-      {/* Golden bottom border gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent" />
-    </section>
+    </PremiumBackground>
   );
 };
