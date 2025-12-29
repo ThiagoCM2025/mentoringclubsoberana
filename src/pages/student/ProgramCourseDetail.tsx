@@ -32,6 +32,7 @@ import { MissionDeliveryModal } from "@/components/student/program/MissionDelive
 import { CourseGamificationSidebar } from "@/components/student/program/CourseGamificationSidebar";
 import { OnboardingModule } from "@/components/student/program/OnboardingModule";
 import { DiagnosticCTA } from "@/components/student/program/DiagnosticCTA";
+import { SchedulingCTA } from "@/components/student/program/SchedulingCTA";
 import { CertificateGenerator } from "@/components/student/CertificateGenerator";
 
 interface Course {
@@ -558,15 +559,19 @@ const ProgramCourseDetail = () => {
                                     </div>
                                   </motion.button>
                                   
-                                  {/* Insert DiagnosticCTA after first lesson in onboarding module */}
+                                  {/* Insert DiagnosticCTA + SchedulingCTA after first lesson in onboarding module */}
                                   {module.module_type === 'onboarding' && lessonIndex === 0 && course?.requires_diagnostic && (
-                                    <div className="py-3 px-2">
+                                    <div className="py-3 px-2 space-y-4">
                                       <DiagnosticCTA 
                                         courseId={courseId!}
                                         onComplete={() => {
                                           setDiagnosticCompleted(true);
                                           fetchAllData();
                                         }}
+                                      />
+                                      <SchedulingCTA 
+                                        calendarLink="https://calendar.app.google/4SsS6E6crkZ2wQDAA"
+                                        isEnabled={diagnosticCompleted}
                                       />
                                     </div>
                                   )}
