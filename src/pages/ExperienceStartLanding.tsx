@@ -27,6 +27,7 @@ const isotipoGold = "/assets/brand/isotipo-gold.png";
 const isotipoSGold = "/assets/brand/isotipo-s-gold.png";
 const patternGold = "/assets/brand/pattern-gold.png";
 const patternCirclesGold = "/assets/brand/pattern-circles-gold.png";
+import patternGeometricGold from "@/assets/brand/pattern-geometric-gold.png";
 
 // Countdown Hook
 const useCountdown = (targetDate: Date) => {
@@ -90,8 +91,8 @@ const ExperienceStartLanding = () => {
   const animationDuration = shouldAnimate ? 0.6 : 0.3;
   const animationY = shouldAnimate ? 20 : 0;
 
-  // Countdown para 17 de Janeiro de 2026 às 09:00 (horário de São Paulo)
-  const eventDate = new Date('2026-01-17T09:00:00-03:00');
+  // Countdown para 21 de Fevereiro de 2026 às 09:00 (horário de São Paulo)
+  const eventDate = new Date('2026-02-21T09:00:00-03:00');
   const timeLeft = useCountdown(eventDate);
 
   // UTM Tracking
@@ -136,8 +137,8 @@ const ExperienceStartLanding = () => {
     "@type": "Event",
     "name": "Soberana Experience Start",
     "description": "Oficina presencial para advogadas reorganizarem sua advocacia e destravarem o crescimento em 2026.",
-    "startDate": "2026-01-17T09:00:00-03:00",
-    "endDate": "2026-01-17T17:00:00-03:00",
+              "startDate": "2026-02-21T09:00:00-03:00",
+              "endDate": "2026-02-21T17:00:00-03:00",
     "eventStatus": "https://schema.org/EventScheduled",
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
     "location": {
@@ -168,7 +169,7 @@ const ExperienceStartLanding = () => {
     }
   };
   return <div className="min-h-screen bg-background landing-page">
-      <SEO title="Soberana Experience Start | Oficina Presencial para Advogadas em SP" description="Reorganize sua advocacia e destrave seu crescimento em 2026. Oficina 100% prática com Fabiana Soberana. 17 de Janeiro em São Paulo." keywords="oficina para advogadas, evento presencial advocacia, mentoria jurídica SP, networking advogadas, Fabiana Soberana, gestão advocacia" url="https://soberana.com.br/experience-start" image="https://soberana.com.br/og-experience-start.jpg" imageWidth={1200} imageHeight={630} twitterCard="summary_large_image" type="website" schema={eventSchema} />
+      <SEO title="Soberana Experience Start | Oficina Presencial para Advogadas em SP" description="Reorganize sua advocacia e destrave seu crescimento em 2026. Oficina 100% prática com Fabiana Soberana. 21 de Fevereiro em São Paulo." keywords="oficina para advogadas, evento presencial advocacia, mentoria jurídica SP, networking advogadas, Fabiana Soberana, gestão advocacia" url="https://soberana.com.br/experience-start" image="https://soberana.com.br/og-experience-start.jpg" imageWidth={1200} imageHeight={630} twitterCard="summary_large_image" type="website" schema={eventSchema} />
 
       {/* Header Sticky Premium */}
       <motion.header initial={{
@@ -339,7 +340,7 @@ const ExperienceStartLanding = () => {
           }} className="flex flex-wrap justify-center items-center gap-3 text-cream/70 text-xs">
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-3 h-3 text-secondary" />
-                <span>17 Jan 2026</span>
+                <span>21 Fev 2026</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <MapPin className="w-3 h-3 text-secondary" />
@@ -570,7 +571,7 @@ const ExperienceStartLanding = () => {
               }} className="pt-6 border-t border-cream/10 flex flex-col sm:flex-row sm:flex-wrap justify-center items-center gap-3 sm:gap-6 md:gap-10 text-cream/70">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-secondary flex-shrink-0" />
-                  <span className="text-xs sm:text-sm tracking-wide">17 de Janeiro de 2026</span>
+                  <span className="text-xs sm:text-sm tracking-wide">21 de Fevereiro de 2026</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-secondary flex-shrink-0" />
@@ -611,21 +612,38 @@ const ExperienceStartLanding = () => {
 
       {/* SEÇÃO LOGÍSTICA - Premium Cards */}
       <section className="py-12 sm:py-16 md:py-20 bg-background relative overflow-hidden">
-        {/* Pattern only on desktop for performance */}
-        {!isMobile && <div className="absolute inset-0 opacity-5 hidden md:block" style={{
-        backgroundImage: `url(${patternCirclesGold})`,
-        backgroundSize: '150px'
+        {/* Premium geometric pattern - desktop only */}
+        {!isMobile && <div className="absolute inset-0 opacity-[0.04] hidden md:block" style={{
+        backgroundImage: `url(${patternGeometricGold})`,
+        backgroundSize: '280px',
+        backgroundPosition: 'center'
       }} />}
         
+        {/* Corner accent patterns */}
+        {!isMobile && <>
+          <div className="absolute top-0 right-0 w-64 h-64 opacity-[0.06] hidden lg:block" style={{
+            backgroundImage: `url(${patternGeometricGold})`,
+            backgroundSize: '200px',
+            backgroundPosition: 'top right',
+            maskImage: 'radial-gradient(ellipse at top right, black 30%, transparent 70%)'
+          }} />
+          <div className="absolute bottom-0 left-0 w-64 h-64 opacity-[0.06] hidden lg:block" style={{
+            backgroundImage: `url(${patternGeometricGold})`,
+            backgroundSize: '200px',
+            backgroundPosition: 'bottom left',
+            maskImage: 'radial-gradient(ellipse at bottom left, black 30%, transparent 70%)'
+          }} />
+        </>}
+        
         {/* Decorative isotipo - desktop only, lazy loaded */}
-        {!isMobile && <img src={isotipoGold} alt="" loading="lazy" className="absolute right-4 top-8 w-24 opacity-5 animate-float-slow hidden sm:block" />}
+        {!isMobile && <img src={isotipoGold} alt="" loading="lazy" className="absolute right-4 top-8 w-24 opacity-[0.08] animate-float-slow hidden sm:block" />}
         
         <div className="container-soberana relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
-            {[{
+          {[{
             icon: Calendar,
             label: "DATA",
-            value: "17 de Janeiro de 2026",
+            value: "21 de Fevereiro de 2026",
             sublabel: "Sábado"
           }, {
             icon: Clock,
@@ -844,14 +862,20 @@ const ExperienceStartLanding = () => {
 
       {/* SEÇÃO CONVITE ESPECIAL - Premium Dark with Golden Glow */}
       <section ref={inviteRef} className="py-14 sm:py-20 md:py-28 bg-brand-black relative overflow-hidden">
-        {/* Pattern - desktop only */}
-        {!isMobile && <div className="absolute inset-0 opacity-[0.08] hidden md:block" style={{
+        {/* Premium geometric pattern overlay */}
+        {!isMobile && <div className="absolute inset-0 opacity-[0.06] hidden md:block" style={{
+        backgroundImage: `url(${patternGeometricGold})`,
+        backgroundSize: '250px'
+      }} />}
+        
+        {/* Secondary pattern layer for depth */}
+        {!isMobile && <div className="absolute inset-0 opacity-[0.04] hidden md:block" style={{
         backgroundImage: `url(${patternGold})`,
         backgroundSize: '150px'
       }} />}
         
-        {/* Golden glow effect - simpler on mobile */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-96 h-64 sm:h-96 bg-secondary/10 rounded-full blur-3xl" />
+        {/* Golden glow effect - enhanced */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-96 h-64 sm:h-96 bg-secondary/15 rounded-full blur-3xl" />
         
         {/* Decorative isotipos - desktop only */}
         {shouldAnimate && <>
@@ -936,11 +960,15 @@ const ExperienceStartLanding = () => {
 
       {/* SEÇÃO INVESTIMENTO (Oferta) - Premium Card */}
       <section ref={pricingRef} className="py-14 sm:py-20 md:py-28 bg-background relative overflow-hidden">
-        {/* Pattern - desktop only */}
-        {!isMobile && <div className="absolute inset-0 opacity-5 hidden md:block" style={{
-        backgroundImage: `url(${patternCirclesGold})`,
-        backgroundSize: '150px'
+        {/* Premium geometric pattern - desktop only */}
+        {!isMobile && <div className="absolute inset-0 opacity-[0.04] hidden md:block" style={{
+        backgroundImage: `url(${patternGeometricGold})`,
+        backgroundSize: '300px',
+        backgroundPosition: 'center'
       }} />}
+        
+        {/* Subtle radial glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl hidden md:block" />
         
         <div className="container-soberana relative z-10">
           <motion.div initial={{
