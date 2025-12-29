@@ -107,7 +107,7 @@ export const DiagnosticCTA = ({ courseId, onComplete, className }: DiagnosticCTA
             : 'linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--accent)/0.8), hsl(var(--secondary)))'
         }}
       >
-        <div className="relative bg-zinc-900/95 backdrop-blur-sm rounded-lg p-5">
+        <div className="relative bg-zinc-900 rounded-lg p-5">
           {/* Background shimmer effect for incomplete */}
           {!diagnosticCompleted && (
             <motion.div
