@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useCallback, useEffect } from "react";
-import { Brain, TrendingUp, Users, Building2, Zap, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Brain, TrendingUp, Users, Building2, Zap, Target, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -14,54 +14,49 @@ const pillars = [
   {
     number: 1,
     title: "MENTALIDADE",
-    subtitle: "De Advogada Operacional a CEO",
-    description: "O primeiro passo para faturar como uma empresa é parar de pensar como funcionária do seu próprio escritório. Vamos desbloquear a mentalidade de escala e a postura de liderança necessária para cobrar honorários de alto ticket com segurança.",
+    subtitle: "De Advogada a CEO",
+    description: "O primeiro passo para o faturamento de elite é a mudança de postura. Você deixará de ser a 'tarefeira' do seu escritório para assumir o comando estratégico. Vamos desbloquear a mentalidade de escala e a segurança necessária para gerir um negócio que fatura como empresa e cobra honorários de alto padrão.",
     highlights: [],
     icon: Brain,
   },
   {
     number: 2,
-    title: "VENDAS E LUCRATIVIDADE",
-    subtitle: "A Máquina de Fechamento",
-    description: "Direito não é só petição, é negócio.",
-    highlights: [
-      "Funil de Prospecção: Como atrair o cliente certo para o Imobiliário.",
-      "Precificação Estratégica: Pare de cobrar por \"tabela\" e aprenda a precificar pelo valor gerado.",
-      "Scripts de Conversão: O que falar para quebrar objeções e converter consultas em contratos assinados."
-    ],
-    icon: TrendingUp,
-  },
-  {
-    number: 3,
-    title: "AUDIÊNCIA",
-    subtitle: "Posicionamento de Autoridade",
-    description: "Chega de ser a \"advogada técnica\" que ninguém entende.",
-    highlights: [
-      "Quebra do Perfil Técnico: Transforme seu Instagram em um ímã de clientes, falando a língua de quem busca o imobiliário.",
-      "Produção de Conteúdo Estratégico: Como usar sua autoridade para educar o mercado e ser desejada antes mesmo da primeira reunião."
-    ],
+    title: "POSICIONAMENTO",
+    subtitle: "Conteúdo Magnético",
+    description: "Saia da vala comum da 'advogada técnica apenas'. Você vai aprender a traduzir sua competência em conteúdos que conectam e geram autoridade imediata. O objetivo é construir uma audiência qualificada que entenda o seu valor e deseje a sua solução antes mesmo da primeira reunião.",
+    highlights: [],
     icon: Users,
   },
   {
+    number: 3,
+    title: "ATRAÇÃO",
+    subtitle: "Tráfego Pago Estratégico",
+    description: "Pare de depender apenas de indicações ou da sorte. Introduziremos você ao mundo dos anúncios estratégicos para colocar o seu escritório no radar de quem busca soluções imobiliárias. Criaremos um fluxo constante e previsível de novas oportunidades chegando no seu WhatsApp.",
+    highlights: [],
+    icon: Target,
+  },
+  {
     number: 4,
-    title: "TÉCNICA IMOBILIÁRIA",
-    subtitle: "O Domínio do Mercado de Elite",
-    description: "A base sólida para você nunca ter medo de nenhum caso.",
-    highlights: [
-      "Prática Consultiva e Extrajudicial: Onde o dinheiro \"grande\" está (Regularização, Contratos e Due Diligence).",
-      "Direito Imobiliário na Veia: O conhecimento técnico necessário para você ser a especialista que resolve o que os outros não conseguem."
-    ],
-    icon: Building2,
+    title: "VENDAS",
+    subtitle: "Engenharia de Precificação",
+    description: "Dominar o processo comercial é o que garante o lucro. Você terá acesso aos meus scripts de fechamento e à minha Planilha de Precificação Lucrativa. Vou te ensinar a cobrar pelo valor gerado, garantindo margens reais e segurança para atingir a meta de +R$ 50k/mês.",
+    highlights: [],
+    icon: TrendingUp,
   },
   {
     number: 5,
-    title: "GESTÃO E IA",
-    subtitle: "Acelerando a Entrega",
-    description: "O segredo para faturar mais trabalhando menos horas.",
-    highlights: [
-      "IA Jurídica: Implementação de inteligência artificial para automação de peças e análises.",
-      "Sistemas e Liderança: Como organizar seus fluxos e, quando chegar a hora, gerir uma equipe que sustenta o seu crescimento."
-    ],
+    title: "INTELIGÊNCIA ESTRATÉGICA",
+    subtitle: "No Imobiliário",
+    description: "Você já tem a técnica, eu te dou a estratégia de mercado. Vamos focar em como selecionar e estruturar as demandas mais rentáveis do imobiliário. O foco aqui é inteligência de negócio: como trabalhar nos casos certos para maximizar seu ganho por hora.",
+    highlights: [],
+    icon: Building2,
+  },
+  {
+    number: 6,
+    title: "GESTÃO, IA E PERFORMANCE",
+    subtitle: "O Cérebro Digital",
+    description: "Instale o 'cérebro digital' no seu negócio. Usaremos sistemas (Auralex) e fluxos inteligentes para que o operacional rode com precisão cirúrgica. Ao otimizar processos repetitivos com inteligência, você recupera tempo para focar no que realmente importa: o crescimento e a sua liberdade.",
+    highlights: [],
     icon: Zap,
   },
 ];
@@ -341,7 +336,7 @@ const MethodologySection = () => {
     <section
       id="metodologia"
       ref={sectionRef}
-      className="relative py-14 md:py-20 lg:py-24 xl:py-32 bg-black overflow-hidden"
+      className="relative py-14 md:py-20 lg:py-24 xl:py-32 bg-black overflow-hidden scroll-mt-24"
     >
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
@@ -419,36 +414,36 @@ const MethodologySection = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header with Staggered Entry */}
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          className="text-center mb-10 md:mb-12 lg:mb-16 xl:mb-20"
-        >
+        {/* Section Header - Always Visible */}
+        <div className="text-center mb-10 md:mb-12 lg:mb-16 xl:mb-20 relative z-20">
           <motion.span 
-            variants={staggerItemScale}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
             className="inline-block text-gold text-sm font-medium tracking-wider uppercase mb-4"
           >
             O Método Comprovado
           </motion.span>
           
           <motion.h2 
-            variants={staggerItemScale}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             className="font-playfair text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-cream mb-4 max-w-4xl mx-auto leading-tight"
           >
-            Os 5 Pilares do Método Soberana:{" "}
+            Os 6 Pilares do Método Soberana:{" "}
             <span className="text-shimmer-gold">O Caminho para os +50k/mês</span>
           </motion.h2>
           
           <motion.p 
-            variants={staggerItemScale}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="text-cream/60 text-sm md:text-base lg:text-lg max-w-2xl mx-auto"
           >
             Um sistema completo para transformar sua advocacia técnica em um negócio lucrativo e escalável.
           </motion.p>
-        </motion.div>
+        </div>
 
         {/* Mobile View - Carousel */}
         <div className="lg:hidden">
@@ -470,15 +465,15 @@ const MethodologySection = () => {
             ))}
           </motion.div>
           
-          {/* Second Row - 2 Cards Centered */}
+          {/* Second Row - 3 Cards */}
           <motion.div 
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            className="grid grid-cols-2 gap-4 lg:gap-5 xl:gap-6 max-w-4xl mx-auto"
+            className="grid grid-cols-3 gap-4 lg:gap-5 xl:gap-6"
           >
-            {pillars.slice(3, 5).map((pillar) => (
+            {pillars.slice(3, 6).map((pillar) => (
               <DesktopPillarCard key={pillar.number} pillar={pillar} />
             ))}
           </motion.div>
