@@ -45,6 +45,12 @@ export const SchedulingCTA = ({ calendarLink, isEnabled, className }: Scheduling
 
         {/* Content */}
         <div className="flex-1">
+          <p className={cn(
+            "text-xs mb-1",
+            isEnabled ? "text-cream/50" : "text-zinc-600"
+          )}>
+            Passo 2
+          </p>
           <div className="flex items-center gap-2 mb-1">
             <h3 className={cn(
               "font-serif font-semibold text-lg",
@@ -61,7 +67,7 @@ export const SchedulingCTA = ({ calendarLink, isEnabled, className }: Scheduling
             isEnabled ? "text-cream/70" : "text-zinc-600"
           )}>
             {isEnabled 
-              ? "Já preencheste o diagnóstico? Clica aqui para agendar o teu Encontro Individual de Onboarding."
+              ? "Clique aqui para agendar seu Encontro Individual de Onboarding."
               : "Complete o diagnóstico acima para liberar o agendamento"
             }
           </p>

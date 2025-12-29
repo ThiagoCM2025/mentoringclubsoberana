@@ -134,92 +134,88 @@ export const DiagnosticCTA = ({ courseId, onComplete, className }: DiagnosticCTA
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className={cn(
-          "relative overflow-hidden rounded-xl p-1",
-          !diagnosticCompleted && "animate-pulse-slow",
+          "relative overflow-hidden rounded-xl border-2 p-5",
+          diagnosticCompleted 
+            ? "bg-zinc-900 border-green-500/30" 
+            : "bg-zinc-900 border-secondary/40",
           className
         )}
-        style={{
-          background: diagnosticCompleted 
-            ? 'linear-gradient(135deg, hsl(var(--secondary)/0.3), hsl(var(--secondary)/0.1))'
-            : 'linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--accent)/0.8), hsl(var(--secondary)))'
-        }}
       >
-        <div className="relative bg-zinc-900 rounded-lg p-5">
-          {/* Background shimmer effect for incomplete */}
-          {!diagnosticCompleted && (
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-secondary/10 to-transparent"
-              animate={{ x: ['-100%', '100%'] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            />
-          )}
+        {/* Background shimmer effect for incomplete */}
+        {!diagnosticCompleted && (
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-secondary/10 to-transparent"
+            animate={{ x: ['-100%', '100%'] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          />
+        )}
 
-          <div className="relative flex items-center gap-4">
-            <div className={cn(
-              "w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0",
-              diagnosticCompleted 
-                ? "bg-green-500/20" 
-                : "bg-gradient-to-br from-secondary/30 to-accent/20"
-            )}>
-              {diagnosticCompleted ? (
-                <CheckCircle2 className="w-7 h-7 text-green-400" />
-              ) : (
-                <ClipboardCheck className="w-7 h-7 text-secondary" />
-              )}
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                {!diagnosticCompleted && (
-                  <Sparkles className="w-4 h-4 text-secondary animate-pulse" />
-                )}
-                <h4 className={cn(
-                  "font-serif font-bold text-lg",
-                  diagnosticCompleted ? "text-cream/70" : "text-cream"
-                )}>
-                  {diagnosticCompleted 
-                    ? "Diagnóstico Soberano Completo" 
-                    : "Preencha seu Diagnóstico Soberano"
-                  }
-                </h4>
-              </div>
-              
-              <p className="text-sm text-cream/60 mb-2">
-                {diagnosticCompleted 
-                  ? filledFromCourse 
-                    ? `Preenchido via ${filledFromCourse}`
-                    : "Seu plano personalizado foi criado"
-                  : diagnosticProgress > 0
-                    ? `Continue de onde parou - ${diagnosticProgress}% concluído`
-                    : "Seu plano de transformação começa aqui"
-                }
-              </p>
-
-              {!diagnosticCompleted && diagnosticProgress > 0 && (
-                <div className="w-full bg-zinc-800 rounded-full h-1.5 mb-3">
-                  <div 
-                    className="bg-secondary h-full rounded-full transition-all"
-                    style={{ width: `${diagnosticProgress}%` }}
-                  />
-                </div>
-              )}
-            </div>
-
+        <div className="relative flex items-center gap-4">
+          <div className={cn(
+            "w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0",
+            diagnosticCompleted 
+              ? "bg-green-500/20" 
+              : "bg-gradient-to-br from-secondary/30 to-accent/20"
+          )}>
             {diagnosticCompleted ? (
-              <Badge className="bg-green-500/20 text-green-400 border-green-500/30 flex-shrink-0">
-                <CheckCircle2 className="w-3 h-3 mr-1" />
-                Completo
-              </Badge>
+              <CheckCircle2 className="w-7 h-7 text-green-400" />
             ) : (
-              <Button
-                onClick={() => setShowForm(true)}
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground flex-shrink-0 group"
-              >
-                {diagnosticProgress > 0 ? "Continuar" : "Preencher"}
-                <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              <ClipboardCheck className="w-7 h-7 text-secondary" />
             )}
           </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              {!diagnosticCompleted && (
+                <Sparkles className="w-4 h-4 text-secondary animate-pulse" />
+              )}
+              <p className="text-xs text-cream/50">Passo 1</p>
+            </div>
+            <h4 className={cn(
+              "font-serif font-bold text-lg",
+              diagnosticCompleted ? "text-cream/70" : "text-cream"
+            )}>
+              {diagnosticCompleted 
+                ? "Diagnóstico Soberano Completo" 
+                : "Preencha seu Diagnóstico Soberano"
+              }
+            </h4>
+            
+            <p className="text-sm text-cream/60 mt-1">
+              {diagnosticCompleted 
+                ? filledFromCourse 
+                  ? `Preenchido via ${filledFromCourse}`
+                  : "Seu plano personalizado foi criado"
+                : diagnosticProgress > 0
+                  ? `Continue de onde parou - ${diagnosticProgress}% concluído`
+                  : "Seu plano de transformação começa aqui"
+              }
+            </p>
+
+            {!diagnosticCompleted && diagnosticProgress > 0 && (
+              <div className="w-full bg-zinc-800 rounded-full h-1.5 mt-3">
+                <div 
+                  className="bg-secondary h-full rounded-full transition-all"
+                  style={{ width: `${diagnosticProgress}%` }}
+                />
+              </div>
+            )}
+          </div>
+
+          {diagnosticCompleted ? (
+            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 flex-shrink-0">
+              <CheckCircle2 className="w-3 h-3 mr-1" />
+              Completo
+            </Badge>
+          ) : (
+            <Button
+              onClick={() => setShowForm(true)}
+              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground flex-shrink-0 group"
+            >
+              {diagnosticProgress > 0 ? "Continuar" : "Preencher"}
+              <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          )}
         </div>
       </motion.div>
 
