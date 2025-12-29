@@ -456,8 +456,7 @@ const MethodologySection = () => {
           <motion.div 
             variants={staggerContainer}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
+            animate={isInView ? "visible" : "hidden"}
             className="grid grid-cols-3 gap-4 lg:gap-5 xl:gap-6 mb-4 lg:mb-5 xl:mb-6"
           >
             {pillars.slice(0, 3).map((pillar) => (
@@ -469,8 +468,8 @@ const MethodologySection = () => {
           <motion.div 
             variants={staggerContainer}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
+            animate={isInView ? "visible" : "hidden"}
+            transition={{ delayChildren: 0.3 }}
             className="grid grid-cols-3 gap-4 lg:gap-5 xl:gap-6"
           >
             {pillars.slice(3, 6).map((pillar) => (
