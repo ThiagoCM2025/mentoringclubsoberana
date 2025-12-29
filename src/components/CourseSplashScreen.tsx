@@ -111,7 +111,8 @@ export const CourseSplashScreen = ({
                 transition={{
                   duration: 1.5,
                   repeat: Infinity,
-                  ease: "easeInOut"
+                  ease: "easeInOut",
+                  type: "tween"
                 }}
                 className="absolute inset-0 -m-6 rounded-full border border-secondary/40"
               />
@@ -215,7 +216,7 @@ export const CourseSplashScreen = ({
                   animate={progress > (i + 1) * 30 ? {
                     scale: [1, 1.3, 1],
                   } : {}}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.3, type: "tween" }}
                 />
               ))}
             </motion.div>

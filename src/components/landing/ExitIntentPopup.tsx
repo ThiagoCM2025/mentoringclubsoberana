@@ -233,7 +233,7 @@ export const ExitIntentPopup = () => {
                             scale: [1, 1.2, 1],
                             opacity: [0.7, 1, 0.7]
                           }}
-                          transition={{ duration: 2, repeat: Infinity }}
+                          transition={{ duration: 2, repeat: Infinity, type: "tween" }}
                         >
                           <Sparkles className="w-4 h-4 text-secondary" />
                         </motion.div>

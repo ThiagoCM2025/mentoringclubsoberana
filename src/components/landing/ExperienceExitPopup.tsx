@@ -98,7 +98,7 @@ export const ExperienceExitPopup = () => {
                 alt=""
                 className="absolute -top-4 -left-4 w-16 h-16 opacity-20"
                 animate={{ rotate: [0, 10, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
+                transition={{ duration: 4, repeat: Infinity, type: "tween" }}
               />
 
               {/* Gift icon */}
