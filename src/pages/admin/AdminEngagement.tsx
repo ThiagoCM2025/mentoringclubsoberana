@@ -220,6 +220,14 @@ export default function AdminEngagement() {
   };
 
   const fetchStudents = async () => {
+    // Primeiro buscar IDs de administradores para excluí-los
+    const { data: adminRoles } = await supabase
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "admin");
+
+    const adminIds = new Set(adminRoles?.map(r => r.user_id) || []);
+
     const { data: gamification } = await supabase
       .from("user_gamification")
       .select("user_id, xp, level, streak_days, total_lessons_completed, total_study_minutes, last_activity_date")
@@ -227,7 +235,10 @@ export default function AdminEngagement() {
       .limit(50);
 
     if (gamification && gamification.length > 0) {
-      const userIds = gamification.map(g => g.user_id);
+      // Filtrar para excluir administradores
+      const filteredGamification = gamification.filter(g => !adminIds.has(g.user_id));
+      
+      const userIds = filteredGamification.map(g => g.user_id);
       const { data: profiles } = await supabase
         .from("profiles")
         .select("user_id, full_name")
@@ -235,7 +246,7 @@ export default function AdminEngagement() {
 
       const nameMap = new Map(profiles?.map(p => [p.user_id, p.full_name]) || []);
 
-      const studentData: StudentEngagement[] = gamification.map(g => ({
+      const studentData: StudentEngagement[] = filteredGamification.map(g => ({
         user_id: g.user_id,
         full_name: nameMap.get(g.user_id) || 'Aluno',
         xp: g.xp,
@@ -247,6 +258,8 @@ export default function AdminEngagement() {
       }));
 
       setStudents(studentData);
+    } else {
+      setStudents([]);
     }
   };
 
