@@ -137,7 +137,7 @@ export const programs: Record<string, Program> = {
     format: "Oficina Presencial - 1 dia",
     duration: "1 dia intensivo",
     location: "São Paulo, SP",
-    price: "R$ 299",
+    price: "",
     deliverables: [
       "1 dia de imersão presencial em São Paulo",
       "Oficinas práticas e mão na massa",
