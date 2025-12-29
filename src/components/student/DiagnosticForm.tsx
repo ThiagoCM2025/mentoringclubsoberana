@@ -15,6 +15,7 @@ interface DiagnosticFormProps {
   onComplete: () => void;
   onClose: () => void;
   initialStep?: number;
+  courseId?: string;
 }
 
 interface DiagnosticData {
@@ -35,7 +36,7 @@ interface DiagnosticData {
 
 const TOTAL_STEPS = 5;
 
-export function DiagnosticForm({ onComplete, onClose, initialStep = 1 }: DiagnosticFormProps) {
+export function DiagnosticForm({ onComplete, onClose, initialStep = 1, courseId }: DiagnosticFormProps) {
   const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(initialStep);
   const [saving, setSaving] = useState(false);
@@ -98,12 +99,13 @@ export function DiagnosticForm({ onComplete, onClose, initialStep = 1 }: Diagnos
         user_id: user.id,
         ...data,
         current_step: currentStep,
-        completed
+        completed,
+        ...(completed && courseId ? { filled_from_course_id: courseId } : {})
       };
 
       const { error } = await supabase
         .from("student_diagnostics")
-        .upsert(payload, { onConflict: "user_id" });
+        .upsert(payload as never, { onConflict: "user_id" });
 
       if (error) throw error;
     } catch (error) {

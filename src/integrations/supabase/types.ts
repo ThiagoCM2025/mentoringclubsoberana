@@ -2014,6 +2014,7 @@ export type Database = {
           created_at: string | null
           current_step: number | null
           digital_presence: string | null
+          filled_from_course_id: string | null
           has_office: boolean | null
           id: string
           main_challenges: string[] | null
@@ -2035,6 +2036,7 @@ export type Database = {
           created_at?: string | null
           current_step?: number | null
           digital_presence?: string | null
+          filled_from_course_id?: string | null
           has_office?: boolean | null
           id?: string
           main_challenges?: string[] | null
@@ -2056,6 +2058,7 @@ export type Database = {
           created_at?: string | null
           current_step?: number | null
           digital_presence?: string | null
+          filled_from_course_id?: string | null
           has_office?: boolean | null
           id?: string
           main_challenges?: string[] | null
@@ -2072,7 +2075,15 @@ export type Database = {
           weekly_study_hours?: string | null
           years_practicing?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "student_diagnostics_filled_from_course_id_fkey"
+            columns: ["filled_from_course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       study_reminders: {
         Row: {
