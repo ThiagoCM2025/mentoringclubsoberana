@@ -62,6 +62,13 @@ export const DiagnosticCTA = ({ courseId, onComplete, className }: DiagnosticCTA
     }
   }, [user]);
 
+  // Refresh status when form closes (auto-update progress)
+  useEffect(() => {
+    if (!showForm && user && !loading) {
+      checkDiagnosticStatus();
+    }
+  }, [showForm]);
+
   const checkDiagnosticStatus = async () => {
     if (!user) return;
 

@@ -40,8 +40,13 @@ export const ProgramTimeline = ({
   };
 
   const getMonthLabel = (monthIndex: number): string => {
-    const labels = ['Mês 1 - Fundação', 'Mês 2 - Conversão', 'Mês 3 - Escala'];
+    const labels = ['Mês 1', 'Mês 2', 'Mês 3'];
     return labels[monthIndex] || `Mês ${monthIndex + 1}`;
+  };
+
+  const getMonthSubtitle = (monthIndex: number): string => {
+    const subtitles = ['Fundação', 'Conversão', 'Escala'];
+    return subtitles[monthIndex] || '';
   };
 
   if (compact) {
@@ -76,8 +81,26 @@ export const ProgramTimeline = ({
 
   return (
     <TooltipProvider>
-      <div className="w-full overflow-x-auto pb-4">
-        <div className="flex items-center gap-2 min-w-max px-4">
+      <div className="w-full overflow-x-auto pb-2 scrollbar-hide">
+        {/* Month labels - positioned above weeks */}
+        <div className="flex justify-between px-2 mb-3 min-w-max">
+          {[0, 1, 2].map((monthIndex) => (
+            <div 
+              key={monthIndex}
+              className="flex-1 text-center px-2"
+            >
+              <span className="text-xs font-medium text-secondary">
+                {getMonthLabel(monthIndex)}
+              </span>
+              <span className="text-[10px] text-cream/40 ml-1">
+                {getMonthSubtitle(monthIndex)}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Week circles */}
+        <div className="flex items-center gap-2 min-w-max px-2">
           {weeks.map((week, index) => {
             const status = getWeekStatus(week);
             const isActive = week === currentWeek && !completedWeeks.includes(week);
@@ -156,26 +179,13 @@ export const ProgramTimeline = ({
                   <div 
                     className={cn(
                       "w-4 h-0.5 mx-0.5 transition-colors",
-                      completedWeeks.includes(week) ? "bg-green-500/50" : "bg-zinc-700"
+                      completedWeeks.includes(week) ? "bg-green-500/50" : "bg-zinc-700/50"
                     )}
                   />
                 )}
               </div>
             );
           })}
-        </div>
-
-        {/* Month labels */}
-        <div className="flex justify-between px-4 mt-3 min-w-max">
-          {Array.from({ length: Math.ceil(totalWeeks / 4) }, (_, i) => (
-            <div 
-              key={i}
-              className="text-xs text-cream/50 text-center" 
-              style={{ width: `${100 / Math.ceil(totalWeeks / 4)}%` }}
-            >
-              {getMonthLabel(i)}
-            </div>
-          ))}
         </div>
       </div>
     </TooltipProvider>
