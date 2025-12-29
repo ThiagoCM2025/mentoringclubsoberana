@@ -31,9 +31,9 @@ export const HeroSection = () => {
           isMobile ? 'text-xl' : 'text-xl sm:text-2xl md:text-4xl lg:text-5xl'
         }`}
       >
-        Transforme sua Advocacia Técnica em um Negócio{" "}
+        Saia da Advocacia Técnica e fature{" "}
         <span className="text-shimmer-gold">
-          Estruturado, Lucrativo e Posicionado
+          +R$ 50k/mês como Especialista em Direito Imobiliário.
         </span>
       </motion.h1>
 
@@ -46,8 +46,8 @@ export const HeroSection = () => {
           isMobile ? 'text-sm' : 'text-sm sm:text-base md:text-lg'
         }`}
       >
-        Chegou a hora de assumir seu lugar de{" "}
-        <strong className="text-secondary">CEO</strong> da sua própria história.
+        O método para advogadas estruturarem um negócio imobiliário lucrativo e assumirem o papel de{" "}
+        <strong className="text-secondary">CEO</strong>, mesmo começando do zero.
       </motion.p>
 
       {/* CTA - Only main button */}
