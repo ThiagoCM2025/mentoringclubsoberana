@@ -175,7 +175,7 @@ export const HeroSection = () => {
           <div className="w-6 h-10 border-2 border-cream/30 rounded-full flex items-start justify-center p-1">
             <motion.div
               animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
+              transition={{ duration: 1.5, repeat: Infinity, type: "tween" }}
               className="w-1.5 h-1.5 bg-secondary rounded-full"
             />
           </div>

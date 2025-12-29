@@ -306,7 +306,8 @@ const MobileCarousel = ({ pillars, isInView }: MobileCarouselProps) => {
                                     transition={{ 
                                       duration: 0.6, 
                                       delay: 0.25 + i * 0.12,
-                                      ease: "easeOut"
+                                      ease: "easeOut",
+                                      type: "tween"
                                     }}
                                   />
                                   
@@ -325,8 +326,7 @@ const MobileCarousel = ({ pillars, isInView }: MobileCarouselProps) => {
                                     transition={{ 
                                       duration: 0.5, 
                                       delay: 0.25 + i * 0.12,
-                                      type: "spring",
-                                      stiffness: 200
+                                      type: "tween"
                                     }}
                                   >
                                     ✔
@@ -516,6 +516,7 @@ export const MethodologySection = () => {
                   repeat: Infinity,
                   delay: i * 0.3,
                   ease: "easeInOut",
+                  type: "tween"
                 }}
               />
             ))}
@@ -637,7 +638,8 @@ export const MethodologySection = () => {
                           transition={{ 
                             duration: 0.5, 
                             delay: 0.85 + index * 0.15 + i * 0.1,
-                            ease: "easeOut"
+                            ease: "easeOut",
+                            type: "tween"
                           }}
                         />
                         <motion.span 
@@ -654,8 +656,7 @@ export const MethodologySection = () => {
                           transition={{ 
                             duration: 0.4, 
                             delay: 0.85 + index * 0.15 + i * 0.1,
-                            type: "spring",
-                            stiffness: 200
+                            type: "tween"
                           }}
                         >
                           ✔
@@ -773,7 +774,8 @@ export const MethodologySection = () => {
                           transition={{ 
                             duration: 0.5, 
                             delay: 1.15 + index * 0.15 + i * 0.1,
-                            ease: "easeOut"
+                            ease: "easeOut",
+                            type: "tween"
                           }}
                         />
                         <motion.span 
@@ -790,8 +792,7 @@ export const MethodologySection = () => {
                           transition={{ 
                             duration: 0.4, 
                             delay: 1.15 + index * 0.15 + i * 0.1,
-                            type: "spring",
-                            stiffness: 200
+                            type: "tween"
                           }}
                         >
                           ✔

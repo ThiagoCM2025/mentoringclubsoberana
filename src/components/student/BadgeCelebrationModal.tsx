@@ -135,7 +135,7 @@ export const BadgeCelebrationModal = ({ badge, isOpen, onClose }: BadgeCelebrati
                     scale: [1, 1.2, 1],
                     opacity: [0.5, 0.8, 0.5]
                   }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={{ duration: 2, repeat: Infinity, type: "tween" }}
                   className="absolute inset-0 bg-secondary/20 rounded-full blur-xl"
                 />
                 
@@ -158,7 +158,8 @@ export const BadgeCelebrationModal = ({ badge, isOpen, onClose }: BadgeCelebrati
                       duration: 1.5, 
                       delay: 0.5 + i * 0.2,
                       repeat: Infinity,
-                      repeatDelay: 2
+                      repeatDelay: 2,
+                      type: "tween"
                     }}
                     className="absolute"
                     style={{
