@@ -8,6 +8,39 @@ import { useAuth } from "@/hooks/useAuth";
 import { DiagnosticForm } from "@/components/student/DiagnosticForm";
 import { cn } from "@/lib/utils";
 
+// Função para calcular o step correto baseado em campos preenchidos
+function calculateResumeStep(data: {
+  years_practicing?: string | null;
+  practice_area?: string | null;
+  has_office?: boolean | null;
+  office_size?: string | null;
+  monthly_revenue?: string | null;
+  revenue_goal?: string | null;
+  main_challenges?: string[] | null;
+  main_goals?: string[] | null;
+  marketing_knowledge?: string | null;
+  digital_presence?: string | null;
+  referral_source?: string | null;
+  weekly_study_hours?: string | null;
+}): number {
+  // Step 1: years_practicing, practice_area, has_office
+  if (!data.years_practicing || !data.practice_area || data.has_office === null) return 1;
+  
+  // Step 2: office_size, monthly_revenue
+  if (!data.office_size || !data.monthly_revenue) return 2;
+  
+  // Step 3: revenue_goal, main_challenges, main_goals
+  if (!data.revenue_goal || !data.main_challenges?.length || !data.main_goals?.length) return 3;
+  
+  // Step 4: marketing_knowledge, digital_presence, referral_source
+  if (!data.marketing_knowledge || !data.digital_presence || !data.referral_source) return 4;
+  
+  // Step 5: weekly_study_hours
+  if (!data.weekly_study_hours) return 5;
+  
+  return 5; // Completed all
+}
+
 interface DiagnosticCTAProps {
   courseId: string;
   onComplete?: () => void;
@@ -21,6 +54,7 @@ export const DiagnosticCTA = ({ courseId, onComplete, className }: DiagnosticCTA
   const [filledFromCourse, setFilledFromCourse] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [resumeStep, setResumeStep] = useState(1);
 
   useEffect(() => {
     if (user) {
@@ -58,6 +92,10 @@ export const DiagnosticCTA = ({ courseId, onComplete, className }: DiagnosticCTA
         ];
         const filledFields = fields.filter(f => f !== null && f !== undefined).length;
         setDiagnosticProgress(Math.round((filledFields / 12) * 100));
+
+        // Calculate resume step based on filled fields
+        const step = calculateResumeStep(diagnostic);
+        setResumeStep(step);
 
         // Check origin course
         if (diagnostic.filled_from_course_id && diagnostic.filled_from_course_id !== courseId) {
@@ -188,7 +226,7 @@ export const DiagnosticCTA = ({ courseId, onComplete, className }: DiagnosticCTA
 
       {showForm && (
         <DiagnosticForm
-          initialStep={1}
+          initialStep={resumeStep}
           courseId={courseId}
           onComplete={handleComplete}
           onClose={() => setShowForm(false)}

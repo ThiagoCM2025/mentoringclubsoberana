@@ -90,8 +90,8 @@ export function DiagnosticForm({ onComplete, onClose, initialStep = 1, courseId 
     }
   };
 
-  const saveProgress = async (completed = false) => {
-    if (!user) return;
+  const saveProgress = async (completed = false): Promise<boolean> => {
+    if (!user) return false;
     setSaving(true);
 
     try {
@@ -108,9 +108,11 @@ export function DiagnosticForm({ onComplete, onClose, initialStep = 1, courseId 
         .upsert(payload as never, { onConflict: "user_id" });
 
       if (error) throw error;
+      return true;
     } catch (error) {
       console.error("Error saving diagnostic:", error);
       toast.error("Erro ao salvar progresso");
+      return false;
     } finally {
       setSaving(false);
     }
@@ -122,9 +124,12 @@ export function DiagnosticForm({ onComplete, onClose, initialStep = 1, courseId 
       setCurrentStep(nextStep);
       await saveProgress();
     } else {
-      await saveProgress(true);
-      toast.success("Diagnóstico concluído com sucesso!");
-      onComplete();
+      // Finalize: save with completed=true and only show success if save succeeds
+      const success = await saveProgress(true);
+      if (success) {
+        toast.success("Diagnóstico concluído com sucesso!");
+        onComplete();
+      }
     }
   };
 
