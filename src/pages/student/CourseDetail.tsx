@@ -31,6 +31,7 @@ interface Course {
   title: string;
   description: string;
   thumbnail_url: string | null;
+  program_type: string | null;
 }
 
 interface Module {
@@ -76,11 +77,18 @@ const CourseDetail = () => {
 
     const { data: courseData } = await supabase
       .from("courses")
-      .select("id, title, description, thumbnail_url")
+      .select("id, title, description, thumbnail_url, program_type")
       .eq("id", courseId)
       .single();
 
-    if (courseData) setCourse(courseData);
+    if (courseData) {
+      // Redirect to program page if it's a structured program
+      if (courseData.program_type) {
+        navigate(`/student/program/${courseId}`, { replace: true });
+        return;
+      }
+      setCourse(courseData);
+    }
 
     const { data: modulesData } = await supabase
       .from("modules")
