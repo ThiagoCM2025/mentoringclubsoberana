@@ -75,23 +75,22 @@ export const DiagnosticCTA = ({ courseId, onComplete, className }: DiagnosticCTA
       if (diagnostic) {
         setDiagnosticCompleted(diagnostic.completed || false);
         
-        // Calculate progress
-        const fields = [
-          diagnostic.years_practicing,
-          diagnostic.practice_area,
-          diagnostic.has_office,
-          diagnostic.office_size,
-          diagnostic.monthly_revenue,
-          diagnostic.revenue_goal,
-          diagnostic.main_challenges,
-          diagnostic.main_goals,
-          diagnostic.marketing_knowledge,
-          diagnostic.digital_presence,
-          diagnostic.referral_source,
-          diagnostic.weekly_study_hours
-        ];
-        const filledFields = fields.filter(f => f !== null && f !== undefined).length;
-        setDiagnosticProgress(Math.round((filledFields / 12) * 100));
+        // Calculate progress correctly (checking each field individually)
+        let filled = 0;
+        if (diagnostic.years_practicing) filled++;
+        if (diagnostic.practice_area) filled++;
+        if (diagnostic.has_office !== null && diagnostic.has_office !== undefined) filled++;
+        if (diagnostic.office_size) filled++;
+        if (diagnostic.monthly_revenue) filled++;
+        if (diagnostic.revenue_goal) filled++;
+        if (diagnostic.main_challenges && diagnostic.main_challenges.length > 0) filled++;
+        if (diagnostic.main_goals && diagnostic.main_goals.length > 0) filled++;
+        if (diagnostic.marketing_knowledge) filled++;
+        if (diagnostic.digital_presence) filled++;
+        if (diagnostic.referral_source) filled++;
+        if (diagnostic.weekly_study_hours) filled++;
+        
+        setDiagnosticProgress(Math.round((filled / 12) * 100));
 
         // Calculate resume step based on filled fields
         const step = calculateResumeStep(diagnostic);
