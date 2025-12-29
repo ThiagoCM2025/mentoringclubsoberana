@@ -12,6 +12,7 @@ import Blog from "@/pages/Blog";
 import BlogPost from "@/pages/BlogPost";
 import StudentDashboard from "@/pages/student/StudentDashboard";
 import CourseDetail from "@/pages/student/CourseDetail";
+import ProgramCourseDetail from "@/pages/student/ProgramCourseDetail";
 import LessonPlayer from "@/pages/student/LessonPlayer";
 import StudentAchievements from "@/pages/student/StudentAchievements";
 import StudentCertificates from "@/pages/student/StudentCertificates";
@@ -36,6 +37,8 @@ import AdminReports from "@/pages/admin/AdminReports";
 import AdminEngagement from "@/pages/admin/AdminEngagement";
 import AdminBlog from "@/pages/admin/AdminBlog";
 import BlogEditor from "@/pages/admin/BlogEditor";
+import AdminMissions from "@/pages/admin/AdminMissions";
+import AdminMissionReviews from "@/pages/admin/AdminMissionReviews";
 import ExperienceStartLanding from "@/pages/ExperienceStartLanding";
 import Privacidade from "@/pages/Privacidade";
 import Termos from "@/pages/Termos";
@@ -72,6 +75,14 @@ export const AnimatedRoutes = () => {
           element={
             <ProtectedRoute requireStudent>
               <PageTransition><CourseDetail /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/program/:courseId"
+          element={
+            <ProtectedRoute requireStudent>
+              <PageTransition><ProgramCourseDetail /></PageTransition>
             </ProtectedRoute>
           }
         />
@@ -264,6 +275,22 @@ export const AnimatedRoutes = () => {
           element={
             <ProtectedRoute requireAdmin>
               <PageTransition><BlogEditor /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/missions"
+          element={
+            <ProtectedRoute requireAdmin>
+              <PageTransition><AdminMissions /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/mission-reviews"
+          element={
+            <ProtectedRoute requireAdmin>
+              <PageTransition><AdminMissionReviews /></PageTransition>
             </ProtectedRoute>
           }
         />
