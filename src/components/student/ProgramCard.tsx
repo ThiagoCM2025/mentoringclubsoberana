@@ -34,8 +34,8 @@ export const ProgramCard = ({ program, index = 0, isEnrolled = false, courseId }
 
   const handleClick = () => {
     if (isEnrolled && courseId) {
-      // Navigate directly to course if enrolled
-      navigate(`/student/course/${courseId}`);
+      // Navigate to program page for structured programs
+      navigate(`/student/program/${courseId}`);
     } else {
       // Navigate to external products section if not enrolled
       window.location.href = "/#produtos";
