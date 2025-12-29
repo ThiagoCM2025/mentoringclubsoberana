@@ -460,6 +460,7 @@ const ProgramCourseDetail = () => {
                         )}
                       </div>
                       <div className="flex-1">
+                        <p className="text-xs text-cream/50 mb-0.5">Passo 0</p>
                         <p className="font-medium text-cream group-hover:text-secondary transition-colors">
                           {onboardingWelcomeLesson.title}
                         </p>

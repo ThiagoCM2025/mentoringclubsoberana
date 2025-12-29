@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,23 +13,36 @@ import {
   CheckCircle2, 
   ArrowRight,
   Sparkles,
-  Lock
+  Lock,
+  Play,
+  Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DiagnosticForm } from "@/components/student/DiagnosticForm";
+
+interface WelcomeVideoLesson {
+  id: string;
+  title: string;
+  duration_minutes: number | null;
+  video_url: string | null;
+  completed: boolean;
+}
 
 interface OnboardingModuleProps {
   courseId: string;
   calendarLink?: string;
   onDiagnosticComplete?: () => void;
+  welcomeVideo?: WelcomeVideoLesson | null;
 }
 
 export const OnboardingModule = ({
   courseId,
   calendarLink = "https://calendar.app.google/4SsS6E6crkZ2wQDAA",
-  onDiagnosticComplete
+  onDiagnosticComplete,
+  welcomeVideo
 }: OnboardingModuleProps) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [diagnosticCompleted, setDiagnosticCompleted] = useState(false);
   const [diagnosticProgress, setDiagnosticProgress] = useState(0);
   const [filledFromCourse, setFilledFromCourse] = useState<string | null>(null);
@@ -150,8 +164,46 @@ export const OnboardingModule = ({
             </div>
           </div>
 
-          {/* Welcome message */}
+          {/* Content */}
           <div className="p-6 space-y-6">
+            {/* Welcome Video - Step 0 */}
+            {welcomeVideo && (
+              <motion.button
+                onClick={() => navigate(`/student/lesson/${welcomeVideo.id}`)}
+                whileHover={{ scale: 1.01 }}
+                className="w-full flex items-center gap-4 p-4 rounded-xl bg-zinc-800/50 hover:bg-secondary/10 border border-secondary/20 transition-all text-left group"
+              >
+                <div className={cn(
+                  "w-12 h-12 rounded-xl flex items-center justify-center transition-colors",
+                  welcomeVideo.completed 
+                    ? "bg-green-500/20 text-green-400" 
+                    : "bg-secondary/20 text-secondary"
+                )}>
+                  {welcomeVideo.completed ? (
+                    <CheckCircle2 className="w-6 h-6" />
+                  ) : (
+                    <Play className="w-6 h-6" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-cream/50 mb-0.5">Passo 0</p>
+                  <p className="font-medium text-cream group-hover:text-secondary transition-colors">
+                    {welcomeVideo.title}
+                  </p>
+                  {welcomeVideo.duration_minutes && (
+                    <p className="text-xs text-cream/40 flex items-center gap-1 mt-1">
+                      <Clock className="w-3 h-3" />
+                      {welcomeVideo.duration_minutes} min
+                    </p>
+                  )}
+                </div>
+                <Badge variant="outline" className="border-secondary/30 text-secondary text-xs">
+                  Vídeo
+                </Badge>
+              </motion.button>
+            )}
+
+            {/* Welcome message */}
             <div className="bg-secondary/5 rounded-xl p-4 border border-secondary/20">
               <p className="text-cream/80 leading-relaxed">
                 <span className="text-secondary font-semibold">Bem-vinda, Soberana!</span> Este é o primeiro dia da tua nova advocacia. 
