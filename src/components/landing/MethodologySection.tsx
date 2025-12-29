@@ -4,6 +4,7 @@ import { Brain, TrendingUp, Users, Building2, Zap, ChevronDown, ChevronLeft, Che
 import { Button } from "@/components/ui/button";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
+import { staggerContainer, staggerItemScale } from "@/lib/animations";
 import patternGold from "@/assets/brand/pattern-circles-gold.png";
 import patternConnectedGold from "@/assets/brand/pattern-circles-connected-gold.png";
 import isotipoGold from "@/assets/brand/isotipo-s-gold.png";
@@ -258,18 +259,23 @@ const MobileCarousel = () => {
   );
 };
 
+// Highlight item variant for staggered animation inside cards
+const highlightItemVariant = {
+  hidden: { opacity: 0, x: -15 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.4, delay: i * 0.1, ease: "easeOut" as const },
+  }),
+};
+
 // Desktop Card Component
-const DesktopPillarCard = ({ pillar, index }: { pillar: typeof pillars[0]; index: number }) => {
+const DesktopPillarCard = ({ pillar }: { pillar: typeof pillars[0] }) => {
   const Icon = pillar.icon;
-  const cardRef = useRef(null);
-  const isInView = useInView(cardRef, { once: true, margin: "-50px" });
 
   return (
     <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      variants={staggerItemScale}
       className="group relative overflow-hidden rounded-2xl border border-gold/20 bg-gradient-to-br from-black via-black/95 to-marsala-dark/10 hover:border-gold/40 transition-all duration-500 hover:shadow-[0_0_40px_rgba(166,144,97,0.15)]"
     >
       {/* Glow Effect */}
@@ -304,15 +310,14 @@ const DesktopPillarCard = ({ pillar, index }: { pillar: typeof pillars[0]; index
           {pillar.description}
         </p>
 
-        {/* Highlights */}
+        {/* Highlights with Staggered Animation */}
         {pillar.highlights.length > 0 && (
           <ul className="space-y-3 pt-4 border-t border-gold/10">
             {pillar.highlights.map((highlight, hIndex) => (
               <motion.li
                 key={hIndex}
-                initial={{ opacity: 0, x: -10 }}
-                animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.3, delay: 0.3 + hIndex * 0.1 }}
+                variants={highlightItemVariant}
+                custom={hIndex}
                 className="flex items-start gap-3"
               >
                 <span className="text-gold mt-1 text-sm">✦</span>
@@ -415,25 +420,35 @@ const MethodologySection = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
+        {/* Section Header with Staggered Entry */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
           className="text-center mb-10 md:mb-12 lg:mb-16 xl:mb-20"
         >
-          <span className="inline-block text-gold text-sm font-medium tracking-wider uppercase mb-4">
+          <motion.span 
+            variants={staggerItemScale}
+            className="inline-block text-gold text-sm font-medium tracking-wider uppercase mb-4"
+          >
             O Método Comprovado
-          </span>
+          </motion.span>
           
-          <h2 className="font-playfair text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-cream mb-4 max-w-4xl mx-auto leading-tight">
+          <motion.h2 
+            variants={staggerItemScale}
+            className="font-playfair text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-cream mb-4 max-w-4xl mx-auto leading-tight"
+          >
             Os 5 Pilares do Método Soberana:{" "}
             <span className="text-shimmer-gold">O Caminho para os +50k/mês</span>
-          </h2>
+          </motion.h2>
           
-          <p className="text-cream/60 text-sm md:text-base lg:text-lg max-w-2xl mx-auto">
+          <motion.p 
+            variants={staggerItemScale}
+            className="text-cream/60 text-sm md:text-base lg:text-lg max-w-2xl mx-auto"
+          >
             Um sistema completo para transformar sua advocacia técnica em um negócio lucrativo e escalável.
-          </p>
+          </motion.p>
         </motion.div>
 
         {/* Mobile View - Carousel */}
@@ -441,21 +456,33 @@ const MethodologySection = () => {
           <MobileCarousel />
         </div>
 
-        {/* Desktop View - Grid */}
+        {/* Desktop View - Grid with Staggered Animation */}
         <div className="hidden lg:block">
           {/* First Row - 3 Cards */}
-          <div className="grid grid-cols-3 gap-4 lg:gap-5 xl:gap-6 mb-4 lg:mb-5 xl:mb-6">
-            {pillars.slice(0, 3).map((pillar, index) => (
-              <DesktopPillarCard key={pillar.number} pillar={pillar} index={index} />
+          <motion.div 
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="grid grid-cols-3 gap-4 lg:gap-5 xl:gap-6 mb-4 lg:mb-5 xl:mb-6"
+          >
+            {pillars.slice(0, 3).map((pillar) => (
+              <DesktopPillarCard key={pillar.number} pillar={pillar} />
             ))}
-          </div>
+          </motion.div>
           
           {/* Second Row - 2 Cards Centered */}
-          <div className="grid grid-cols-2 gap-4 lg:gap-5 xl:gap-6 max-w-4xl mx-auto">
-            {pillars.slice(3, 5).map((pillar, index) => (
-              <DesktopPillarCard key={pillar.number} pillar={pillar} index={index + 3} />
+          <motion.div 
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="grid grid-cols-2 gap-4 lg:gap-5 xl:gap-6 max-w-4xl mx-auto"
+          >
+            {pillars.slice(3, 5).map((pillar) => (
+              <DesktopPillarCard key={pillar.number} pillar={pillar} />
             ))}
-          </div>
+          </motion.div>
         </div>
 
         {/* CTA */}
