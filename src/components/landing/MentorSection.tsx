@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import mentorSobre from "@/assets/mentor-sobre.jpg";
+import mentorSobre from "@/assets/mentor-quem-sou.jpeg";
 import patternCirclesMarsala from "@/assets/brand/pattern-circles-marsala.png";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
 import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
@@ -137,7 +137,7 @@ export const MentorSection = () => {
                 Missão de <em className="italic normal-case text-sm text-secondary">Fabiana Duarte</em>
               </span>
               
-              <p className="text-cream font-serif text-lg md:text-xl leading-relaxed italic">"Ensino advogadas a gerir seu escritório para aumentar o faturamento com posicionamento, vendas e ferramentas de inteligência artificial."</p>
+              <p className="text-cream font-serif text-lg md:text-xl leading-relaxed italic">"🎯Ensino Advogadas a faturarem + 50k/mês sendo especialista em direito imobiliário, mesmo iniciando do zero."</p>
             </div>
           </motion.div>
         </div>
