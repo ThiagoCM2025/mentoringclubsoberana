@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import patternGold from "@/assets/brand/pattern-circles-gold.png";
+import patternConnectedGold from "@/assets/brand/pattern-circles-connected-gold.png";
 import isotipoGold from "@/assets/brand/isotipo-s-gold.png";
+import isotipoFramedGold from "@/assets/brand/isotipo-s-framed-gold-v2.png";
 
 const pillars = [
   {
@@ -338,7 +340,10 @@ const MethodologySection = () => {
     >
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Pattern Overlay */}
+        {/* Top Border Gradient */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent" />
+        
+        {/* Pattern Overlay - Original circles */}
         <div 
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -348,21 +353,65 @@ const MethodologySection = () => {
           }}
         />
         
+        {/* Pattern Overlay - Connected circles (new, subtle layer) */}
+        <div 
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: `url(${patternConnectedGold})`,
+            backgroundSize: '600px',
+            backgroundRepeat: 'repeat',
+            backgroundPosition: 'center',
+          }}
+        />
+        
         {/* Gradient Overlays */}
         <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-gradient-radial from-gold/5 via-transparent to-transparent" />
         <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-gradient-radial from-marsala/5 via-transparent to-transparent" />
         
-        {/* Decorative Isotipo */}
+        {/* Radial Vignette */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%)',
+          }}
+        />
+        
+        {/* Decorative Framed Isotipo - Top Right */}
+        <motion.img
+          src={isotipoFramedGold}
+          alt=""
+          className="absolute top-16 right-8 lg:right-16 w-20 md:w-28 lg:w-32 hidden md:block"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={isInView ? { opacity: 0.1, scale: 1 } : {}}
+          transition={{ duration: 1.2, delay: 0.3 }}
+          style={{ animationName: 'float-slow', animationDuration: '6s', animationIterationCount: 'infinite', animationTimingFunction: 'ease-in-out' }}
+        />
+        
+        {/* Decorative Framed Isotipo - Bottom Left */}
+        <motion.img
+          src={isotipoFramedGold}
+          alt=""
+          className="absolute bottom-20 left-8 lg:left-16 w-16 md:w-24 lg:w-28 hidden md:block"
+          initial={{ opacity: 0, scale: 0.8, rotate: -8 }}
+          animate={isInView ? { opacity: 0.08, scale: 1, rotate: -8 } : {}}
+          transition={{ duration: 1.2, delay: 0.6 }}
+          style={{ animationName: 'float-slow', animationDuration: '6s', animationIterationCount: 'infinite', animationTimingFunction: 'ease-in-out', animationDelay: '2s' }}
+        />
+        
+        {/* Small Decorative Isotipo - Simple gold */}
         <img
           src={isotipoGold}
           alt=""
-          className="absolute top-20 right-10 w-24 md:w-32 opacity-5"
+          className="absolute top-1/3 left-6 w-12 md:w-16 opacity-[0.04] rotate-12 hidden lg:block"
         />
         <img
           src={isotipoGold}
           alt=""
-          className="absolute bottom-20 left-10 w-20 md:w-28 opacity-5 rotate-12"
+          className="absolute bottom-1/3 right-6 w-10 md:w-14 opacity-[0.04] -rotate-6 hidden lg:block"
         />
+        
+        {/* Bottom Border Gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
