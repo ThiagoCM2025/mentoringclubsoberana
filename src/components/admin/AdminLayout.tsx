@@ -23,26 +23,27 @@ import {
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import { AdminNotificationBell } from "./AdminNotificationBell";
+import { PendingMissionsBadge } from "./PendingMissionsBadge";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
-  { icon: BookOpen, label: "Cursos", href: "/admin/courses" },
-  { icon: FileText, label: "Blog", href: "/admin/blog" },
-  { icon: Users, label: "Alunos", href: "/admin/students" },
-  { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments" },
-  { icon: Target, label: "Leads", href: "/admin/leads" },
-  { icon: BookOpen, label: "E-books", href: "/admin/ebooks" },
-  { icon: ClipboardCheck, label: "Revisar Missões", href: "/admin/mission-reviews" },
-  { icon: Mail, label: "Comunicação", href: "/admin/messaging" },
-  { icon: Activity, label: "Engajamento", href: "/admin/engagement" },
-  { icon: Bell, label: "Notificações", href: "/admin/notifications" },
-  { icon: Users, label: "Comunidade", href: "/admin/community" },
-  { icon: BarChart3, label: "Relatórios", href: "/admin/reports" },
-  { icon: Settings, label: "Configurações", href: "/admin/settings" },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/admin", hasBadge: false },
+  { icon: BookOpen, label: "Cursos", href: "/admin/courses", hasBadge: false },
+  { icon: FileText, label: "Blog", href: "/admin/blog", hasBadge: false },
+  { icon: Users, label: "Alunos", href: "/admin/students", hasBadge: false },
+  { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments", hasBadge: false },
+  { icon: Target, label: "Leads", href: "/admin/leads", hasBadge: false },
+  { icon: BookOpen, label: "E-books", href: "/admin/ebooks", hasBadge: false },
+  { icon: ClipboardCheck, label: "Revisar Missões", href: "/admin/mission-reviews", hasBadge: true },
+  { icon: Mail, label: "Comunicação", href: "/admin/messaging", hasBadge: false },
+  { icon: Activity, label: "Engajamento", href: "/admin/engagement", hasBadge: false },
+  { icon: Bell, label: "Notificações", href: "/admin/notifications", hasBadge: false },
+  { icon: Users, label: "Comunidade", href: "/admin/community", hasBadge: false },
+  { icon: BarChart3, label: "Relatórios", href: "/admin/reports", hasBadge: false },
+  { icon: Settings, label: "Configurações", href: "/admin/settings", hasBadge: false },
 ];
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
@@ -105,7 +106,8 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
                 )}
               >
                 <item.icon className="w-5 h-5" />
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {item.hasBadge && <PendingMissionsBadge />}
               </Link>
             ))}
             <button
@@ -185,7 +187,8 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
               <item.icon className={cn("w-5 h-5 flex-shrink-0", 
                 (location.pathname === item.href || location.pathname.startsWith(item.href + "/")) && "text-secondary"
               )} />
-              {isSidebarOpen && <span>{item.label}</span>}
+              {isSidebarOpen && <span className="flex-1">{item.label}</span>}
+              {isSidebarOpen && item.hasBadge && <PendingMissionsBadge />}
             </Link>
           ))}
         </nav>
