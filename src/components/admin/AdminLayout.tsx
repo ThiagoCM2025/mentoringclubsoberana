@@ -17,7 +17,8 @@ import {
   Bell,
   Mail,
   Activity,
-  FileText
+  FileText,
+  ClipboardCheck
 } from "lucide-react";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
@@ -35,6 +36,7 @@ const menuItems = [
   { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments" },
   { icon: Target, label: "Leads", href: "/admin/leads" },
   { icon: BookOpen, label: "E-books", href: "/admin/ebooks" },
+  { icon: ClipboardCheck, label: "Revisar Missões", href: "/admin/mission-reviews" },
   { icon: Mail, label: "Comunicação", href: "/admin/messaging" },
   { icon: Activity, label: "Engajamento", href: "/admin/engagement" },
   { icon: Bell, label: "Notificações", href: "/admin/notifications" },
