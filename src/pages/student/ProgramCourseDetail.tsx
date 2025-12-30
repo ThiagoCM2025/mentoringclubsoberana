@@ -256,33 +256,6 @@ const ProgramCourseDetail = () => {
               {course?.description}
             </p>
           </motion.div>
-
-          {/* Timeline */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-zinc-900/50 rounded-2xl p-6 border border-secondary/20 mb-8"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-serif font-semibold text-cream flex items-center gap-2">
-                <Target className="w-5 h-5 text-secondary" />
-                Sua Jornada de 12 Semanas
-              </h2>
-              <span className="text-sm text-cream/50">
-                Semana {currentWeek} de 12
-              </span>
-            </div>
-            <ProgramTimeline
-              missions={transformedMissions}
-              missionCompletions={missionCompletions}
-              currentWeek={currentWeek}
-              enrollmentDate={enrollmentDate}
-              onWeekClick={(mission) => {
-                setSelectedMission(mission);
-              }}
-            />
-          </motion.div>
         </div>
       </div>
 
@@ -362,7 +335,34 @@ const ProgramCourseDetail = () => {
             </motion.div>
           )}
 
-          {/* Row 1 Right: Sidebar - spans multiple rows on desktop */}
+          {/* Row 2: Sua Jornada de 12 Semanas - Timeline */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="lg:col-span-2 bg-zinc-900/50 rounded-2xl p-6 border border-secondary/20"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-serif font-semibold text-cream flex items-center gap-2">
+                <Target className="w-5 h-5 text-secondary" />
+                Sua Jornada de 12 Semanas
+              </h2>
+              <span className="text-sm text-cream/50">
+                Semana {currentWeek} de 12
+              </span>
+            </div>
+            <ProgramTimeline
+              missions={transformedMissions}
+              missionCompletions={missionCompletions}
+              currentWeek={currentWeek}
+              enrollmentDate={enrollmentDate}
+              onWeekClick={(mission) => {
+                setSelectedMission(mission);
+              }}
+            />
+          </motion.div>
+
+          {/* Row 2 Right: Sidebar - spans multiple rows on desktop */}
           <div className="lg:col-span-1 lg:row-span-3">
             <div className="sticky top-4">
               <CourseGamificationSidebar
