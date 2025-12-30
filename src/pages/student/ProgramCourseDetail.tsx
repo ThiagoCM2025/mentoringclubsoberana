@@ -363,6 +363,13 @@ const ProgramCourseDetail = () => {
               </motion.div>
             )}
 
+            {/* Content Modules Section */}
+            <ContentModulesSection
+              modules={transformedModules}
+              lessonProgress={lessonProgress}
+              onLessonClick={handleLessonClick}
+            />
+
             {/* Current Mission Section with Arena */}
             {user && (
               <CurrentMissionSection
@@ -375,13 +382,6 @@ const ProgramCourseDetail = () => {
                 userId={user.id}
               />
             )}
-
-            {/* Content Modules Section */}
-            <ContentModulesSection
-              modules={transformedModules}
-              lessonProgress={lessonProgress}
-              onLessonClick={handleLessonClick}
-            />
           </div>
 
           {/* Right: Sidebar */}
