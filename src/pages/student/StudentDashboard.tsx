@@ -75,7 +75,7 @@ interface Course {
 
 interface EnrollmentWithCourse {
   course_id: string;
-  courses: Course;
+  courses: Course | null;
 }
 
 interface ContinueItem {
@@ -136,56 +136,66 @@ const StudentDashboard = () => {
   const fetchData = async () => {
     if (!user) return;
 
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("full_name")
-      .eq("user_id", user.id)
-      .maybeSingle();
-    
-    if (profileData) setProfile(profileData);
+    try {
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("user_id", user.id)
+        .maybeSingle();
 
-    const { data: coursesData } = await supabase
-      .from("courses")
-      .select("id, title, description, thumbnail_url, price")
-      .eq("is_published", true);
+      if (profileData) setProfile(profileData);
 
-    if (coursesData) {
-      setAllCourses(coursesData);
-    }
+      const { data: coursesData } = await supabase
+        .from("courses")
+        .select("id, title, description, thumbnail_url, price")
+        .eq("is_published", true);
 
-    const { data: enrollmentData } = await supabase
-      .from("enrollments")
-      .select(`
-        course_id,
-        courses (
-          id,
-          title,
-          description,
-          thumbnail_url,
-          price
-        )
-      `)
-      .eq("user_id", user.id);
-
-    if (enrollmentData) {
-      setEnrollments(enrollmentData as unknown as EnrollmentWithCourse[]);
-      
-      for (const enrollment of enrollmentData) {
-        await fetchCourseProgress(enrollment.course_id);
+      if (coursesData) {
+        setAllCourses(coursesData);
       }
 
-      await fetchContinueWatching(enrollmentData as unknown as EnrollmentWithCourse[]);
+      const { data: enrollmentData } = await supabase
+        .from("enrollments")
+        .select(`
+          course_id,
+          courses (
+            id,
+            title,
+            description,
+            thumbnail_url,
+            price
+          )
+        `)
+        .eq("user_id", user.id);
+
+      if (enrollmentData) {
+        // Observação: se o curso estiver "não publicado", a RLS pode ocultar a linha em `courses`,
+        // retornando `courses: null` no join. Filtramos para evitar crash no dashboard.
+        const normalized = (enrollmentData as unknown as EnrollmentWithCourse[]).filter(
+          (e) => Boolean(e.courses)
+        );
+
+        setEnrollments(normalized);
+
+        for (const enrollment of normalized) {
+          await fetchCourseProgress(enrollment.course_id);
+        }
+
+        await fetchContinueWatching(normalized);
+      }
+
+      const { count } = await supabase
+        .from("progress")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("completed", true);
+
+      setTotalCompleted(count || 0);
+    } catch (error) {
+      console.error("StudentDashboard fetchData error:", error);
+    } finally {
+      setLoading(false);
     }
-
-    const { count } = await supabase
-      .from("progress")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .eq("completed", true);
-    
-    setTotalCompleted(count || 0);
-
-    setLoading(false);
   };
 
   const fetchCourseProgress = async (courseId: string) => {
@@ -236,6 +246,8 @@ const StudentDashboard = () => {
     const items: ContinueItem[] = [];
 
     for (const enrollment of enrollments) {
+      if (!enrollment.courses) continue;
+
       const { data: modules } = await supabase
         .from("modules")
         .select("id")
@@ -268,12 +280,12 @@ const StudentDashboard = () => {
             ? Math.round((lessonProgress.progress_seconds / durationSeconds) * 100)
             : 0;
 
-          items.push({
-            lessonId: lesson.id,
-            lessonTitle: lesson.title,
-            courseTitle: enrollment.courses.title,
-            thumbnail: enrollment.courses.thumbnail_url,
-            progress: Math.min(progressPercent, 99),
+            items.push({
+              lessonId: lesson.id,
+              lessonTitle: lesson.title,
+              courseTitle: enrollment.courses!.title,
+              thumbnail: enrollment.courses!.thumbnail_url,
+              progress: Math.min(progressPercent, 99),
             duration: lesson.duration_minutes
           });
         }
@@ -740,10 +752,10 @@ const StudentDashboard = () => {
               {enrollments.map((enrollment, index) => (
                 <CourseCard
                   key={enrollment.course_id}
-                  id={enrollment.courses.id}
-                  title={enrollment.courses.title}
-                  description={enrollment.courses.description}
-                  thumbnail={enrollment.courses.thumbnail_url}
+                  id={enrollment.courses!.id}
+                  title={enrollment.courses!.title}
+                  description={enrollment.courses!.description}
+                  thumbnail={enrollment.courses!.thumbnail_url}
                   progress={progress[enrollment.course_id] || 0}
                   totalLessons={courseStats[enrollment.course_id]?.total || 0}
                   completedLessons={courseStats[enrollment.course_id]?.completed || 0}
