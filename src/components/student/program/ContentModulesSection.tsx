@@ -60,9 +60,13 @@ export const ContentModulesSection = ({
   const navigate = useNavigate();
   const [showOnlyIncomplete, setShowOnlyIncomplete] = useState(false);
 
-  // Filter out onboarding and dynamic modules (they have their own sections)
+  // Filter out onboarding, dynamic modules, and "Ponto de Partida" (they have dedicated sections)
   const contentModules = modules.filter(m => 
-    m.module_type !== 'onboarding' && !m.is_dynamic
+    m.module_type !== 'onboarding' && 
+    !m.is_dynamic &&
+    !m.title.toLowerCase().includes('ponto de partida') &&
+    !m.title.toLowerCase().includes('módulo 0') &&
+    !m.title.toLowerCase().includes('modulo 0')
   );
 
   // Calculate overall progress
@@ -145,49 +149,45 @@ export const ContentModulesSection = ({
     : contentModules;
 
   return (
-    <div className="space-y-4">
-      {/* Header with Progress */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <h2 className="text-xl font-serif font-bold text-cream flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-secondary" />
-            Conteúdo do Programa
-          </h2>
-        </div>
+    <div className="space-y-3">
+      {/* Header with Progress - Compact */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+        <h2 className="text-lg sm:text-xl font-serif font-bold text-cream flex items-center gap-2">
+          <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
+          Conteúdo do Programa
+        </h2>
         
-        <div className="flex items-center gap-4">
-          {/* Filter toggle */}
-          <button
-            onClick={() => setShowOnlyIncomplete(!showOnlyIncomplete)}
-            className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors",
-              showOnlyIncomplete 
-                ? "bg-secondary/20 text-secondary" 
-                : "bg-zinc-800 text-cream/70 hover:bg-zinc-700"
-            )}
-          >
-            <Filter className="w-4 h-4" />
-            {showOnlyIncomplete ? "Mostrando pendentes" : "Mostrar pendentes"}
-          </button>
-        </div>
+        {/* Filter toggle */}
+        <button
+          onClick={() => setShowOnlyIncomplete(!showOnlyIncomplete)}
+          className={cn(
+            "flex items-center gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm transition-colors w-fit",
+            showOnlyIncomplete 
+              ? "bg-secondary/20 text-secondary" 
+              : "bg-zinc-800 text-cream/70 hover:bg-zinc-700"
+          )}
+        >
+          <Filter className="w-3 h-3 sm:w-4 sm:h-4" />
+          {showOnlyIncomplete ? "Pendentes" : "Filtrar pendentes"}
+        </button>
       </div>
 
-      {/* Progress Bar */}
-      <div className="bg-zinc-900/80 rounded-xl p-4 border border-secondary/20">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-cream/70">Progresso do conteúdo</span>
-          <span className="text-sm font-medium text-secondary">
-            {completedLessons}/{totalLessons} aulas ({Math.round(progressPercentage)}%)
+      {/* Progress Bar - Compact */}
+      <div className="bg-zinc-900/80 rounded-lg p-3 border border-secondary/20">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-xs sm:text-sm text-cream/70">Progresso</span>
+          <span className="text-xs sm:text-sm font-medium text-secondary">
+            {completedLessons}/{totalLessons} ({Math.round(progressPercentage)}%)
           </span>
         </div>
         <Progress 
           value={progressPercentage} 
-          className="h-2 bg-zinc-800 [&>div]:bg-gradient-to-r [&>div]:from-secondary [&>div]:to-amber-400"
+          className="h-1.5 bg-zinc-800 [&>div]:bg-gradient-to-r [&>div]:from-secondary [&>div]:to-amber-400"
         />
       </div>
 
-      {/* Modules Accordion */}
-      <Accordion type="multiple" className="space-y-3">
+      {/* Modules Accordion - Compact, no scroll */}
+      <Accordion type="multiple" className="space-y-2">
         {filteredModules.map((module, moduleIndex) => {
           const filteredLessons = getFilteredLessons(module.lessons);
           const moduleCompleted = module.lessons.every(l => lessonProgress[l.id]);
@@ -204,43 +204,43 @@ export const ContentModulesSection = ({
             <AccordionItem
               key={module.id}
               value={module.id}
-              className="bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden"
+              className="bg-zinc-900 rounded-lg border border-secondary/20 overflow-hidden"
             >
-              <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-secondary/5 transition-colors">
-                <div className="flex items-center gap-4 text-left w-full">
+              <AccordionTrigger className="px-3 py-2.5 sm:px-4 sm:py-3 hover:no-underline hover:bg-secondary/5 transition-colors">
+                <div className="flex items-center gap-2 sm:gap-3 text-left w-full">
                   <div className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center font-bold",
+                    "w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center font-bold text-sm",
                     moduleCompleted
                       ? "bg-green-500/20 text-green-400"
                       : "bg-secondary/20 text-secondary"
                   )}>
                     {moduleCompleted ? (
-                      <CheckCircle className="w-5 h-5" />
+                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                     ) : getModuleIcon(module, false) || (
                       <span>{pilarNumber || moduleIndex + 1}</span>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-serif font-semibold text-cream">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                      <h3 className="font-serif font-semibold text-cream text-sm sm:text-base truncate">
                         {module.title}
                       </h3>
                       {module.module_type === 'recordings' && (
-                        <Badge className="bg-purple-500/20 text-purple-400 text-[10px]">
+                        <Badge className="bg-purple-500/20 text-purple-400 text-[9px] sm:text-[10px] px-1.5 py-0">
                           GRAVAÇÕES
                         </Badge>
                       )}
                       {module.module_type === 'individual' && (
-                        <Badge className="bg-blue-500/20 text-blue-400 text-[10px]">
+                        <Badge className="bg-blue-500/20 text-blue-400 text-[9px] sm:text-[10px] px-1.5 py-0">
                           INDIVIDUAL
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 mt-1">
-                      <p className="text-xs text-cream/50">
-                        {moduleLessonsCompleted}/{module.lessons.length} aulas
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <p className="text-[10px] sm:text-xs text-cream/50">
+                        {moduleLessonsCompleted}/{module.lessons.length}
                       </p>
-                      <div className="flex-1 max-w-24">
+                      <div className="flex-1 max-w-16 sm:max-w-20">
                         <Progress 
                           value={moduleProgress} 
                           className="h-1 bg-zinc-800 [&>div]:bg-secondary"
@@ -251,11 +251,11 @@ export const ContentModulesSection = ({
                 </div>
               </AccordionTrigger>
               
-              <AccordionContent className="px-5 pb-4">
-                <div className="space-y-1 pt-2">
+              <AccordionContent className="px-3 pb-3 sm:px-4 sm:pb-4">
+                <div className="space-y-0.5 pt-1">
                   {filteredLessons.length === 0 ? (
-                    <p className="text-sm text-cream/50 text-center py-4">
-                      Todas as aulas deste módulo foram concluídas! 🎉
+                    <p className="text-xs sm:text-sm text-cream/50 text-center py-3">
+                      Módulo concluído! 🎉
                     </p>
                   ) : (
                     filteredLessons.map((lesson) => {
@@ -265,11 +265,11 @@ export const ContentModulesSection = ({
                         <motion.button
                           key={lesson.id}
                           onClick={() => onLessonClick(lesson.id)}
-                          whileHover={{ x: 4 }}
-                          className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/10 transition-all text-left group"
+                          whileHover={{ x: 2 }}
+                          className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg hover:bg-secondary/10 transition-all text-left group"
                         >
                           <div className={cn(
-                            "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
+                            "w-6 h-6 sm:w-7 sm:h-7 rounded-md flex items-center justify-center transition-colors shrink-0",
                             isCompleted 
                               ? "bg-green-500/20 text-green-400" 
                               : "bg-zinc-800 text-cream/50 group-hover:bg-secondary/20 group-hover:text-secondary"
@@ -278,17 +278,17 @@ export const ContentModulesSection = ({
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className={cn(
-                              "text-sm font-medium transition-colors truncate",
+                              "text-xs sm:text-sm font-medium transition-colors truncate",
                               isCompleted ? "text-cream/50 line-through" : "text-cream group-hover:text-secondary"
                             )}>
                               {lesson.title}
                             </p>
                           </div>
-                          <div className="flex items-center gap-2 shrink-0">
+                          <div className="hidden sm:flex items-center gap-1.5 shrink-0">
                             {getLessonBadge(lesson)}
                             {lesson.duration_minutes && (
-                              <span className="text-xs text-cream/40 flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
+                              <span className="text-[10px] text-cream/40 flex items-center gap-0.5">
+                                <Clock className="w-2.5 h-2.5" />
                                 {lesson.duration_minutes}m
                               </span>
                             )}
@@ -305,13 +305,13 @@ export const ContentModulesSection = ({
       </Accordion>
 
       {filteredModules.length === 0 && showOnlyIncomplete && (
-        <div className="text-center py-12 bg-zinc-900/50 rounded-xl border border-secondary/20">
-          <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-4" />
-          <h3 className="font-serif font-semibold text-cream text-lg mb-2">
-            Parabéns! Conteúdo 100% concluído! 🎉
+        <div className="text-center py-8 bg-zinc-900/50 rounded-lg border border-secondary/20">
+          <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-3" />
+          <h3 className="font-serif font-semibold text-cream text-base mb-1">
+            Conteúdo 100% concluído! 🎉
           </h3>
-          <p className="text-cream/60 text-sm">
-            Você completou todas as aulas do programa.
+          <p className="text-cream/60 text-xs sm:text-sm">
+            Você completou todas as aulas.
           </p>
         </div>
       )}
