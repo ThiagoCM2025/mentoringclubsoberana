@@ -9,6 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   ArrowLeft, 
   Star, 
@@ -24,7 +28,17 @@ import {
   FileText,
   CheckCircle2,
   AlertCircle,
-  MessageCircle
+  MessageCircle,
+  Pin,
+  PinOff,
+  Edit2,
+  Trash2,
+  Save,
+  X,
+  ChevronDown,
+  History,
+  StickyNote,
+  ArrowRight
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -94,6 +108,23 @@ interface CommunicationItem {
   message: string;
   status: string | null;
   sent_at: string;
+}
+
+interface AdminNote {
+  id: string;
+  content: string;
+  is_pinned: boolean;
+  created_at: string;
+  updated_at: string;
+  admin_user_id: string;
+  admin_name?: string;
+}
+
+interface DiagnosticHistoryItem {
+  id: string;
+  changed_fields: Record<string, { old: string | null; new: string | null }>;
+  changed_at: string;
+  change_type: string;
 }
 
 const YEARS_LABELS: Record<string, string> = {
@@ -177,9 +208,27 @@ const OFFICE_SIZE_LABELS: Record<string, string> = {
   'grande': 'Grande (16+ pessoas)'
 };
 
+// Field labels for diagnostic history
+const FIELD_LABELS: Record<string, string> = {
+  years_practicing: 'Tempo de advocacia',
+  practice_area: 'Área de atuação',
+  practice_area_other: 'Área de atuação (outro)',
+  has_office: 'Possui escritório próprio',
+  office_size: 'Tamanho do escritório',
+  monthly_revenue: 'Faturamento mensal',
+  revenue_goal: 'Meta de faturamento',
+  main_challenges: 'Principais desafios',
+  main_goals: 'Principais objetivos',
+  marketing_knowledge: 'Conhecimento em marketing',
+  digital_presence: 'Presença digital',
+  referral_source: 'Como conheceu',
+  weekly_study_hours: 'Horas de estudo/semana'
+};
+
 export default function AdminStudentProfile() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<StudentProfile | null>(null);
@@ -190,10 +239,23 @@ export default function AdminStudentProfile() {
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [communications, setCommunications] = useState<CommunicationItem[]>([]);
+  
+  // Admin notes state
+  const [adminNotes, setAdminNotes] = useState<AdminNote[]>([]);
+  const [newNoteContent, setNewNoteContent] = useState("");
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editingContent, setEditingContent] = useState("");
+  const [savingNote, setSavingNote] = useState(false);
+  
+  // Diagnostic history state
+  const [diagnosticHistory, setDiagnosticHistory] = useState<DiagnosticHistoryItem[]>([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   useEffect(() => {
     if (userId) {
       fetchStudentData();
+      fetchAdminNotes();
+      fetchDiagnosticHistory();
     }
   }, [userId]);
 
@@ -368,6 +430,173 @@ export default function AdminStudentProfile() {
     }
   };
 
+  const fetchAdminNotes = async () => {
+    if (!userId) return;
+    
+    try {
+      const { data: notes, error } = await supabase
+        .from("admin_student_notes")
+        .select("*")
+        .eq("student_user_id", userId)
+        .order("is_pinned", { ascending: false })
+        .order("created_at", { ascending: false });
+      
+      if (error) throw error;
+      
+      if (notes && notes.length > 0) {
+        // Fetch admin names for each note
+        const adminIds = [...new Set(notes.map(n => n.admin_user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, full_name")
+          .in("user_id", adminIds);
+        
+        const profileMap = new Map(profiles?.map(p => [p.user_id, p.full_name]) || []);
+        
+        setAdminNotes(notes.map(note => ({
+          ...note,
+          admin_name: profileMap.get(note.admin_user_id) || "Admin"
+        })));
+      } else {
+        setAdminNotes([]);
+      }
+    } catch (error) {
+      console.error("Error fetching admin notes:", error);
+    }
+  };
+
+  const fetchDiagnosticHistory = async () => {
+    if (!userId) return;
+    
+    try {
+      const { data: history, error } = await supabase
+        .from("diagnostic_history")
+        .select("*")
+        .eq("user_id", userId)
+        .order("changed_at", { ascending: false });
+      
+      if (error) throw error;
+      
+      // Map the data to match our interface
+      const mappedHistory: DiagnosticHistoryItem[] = (history || []).map(item => ({
+        id: item.id,
+        changed_fields: item.changed_fields as Record<string, { old: string | null; new: string | null }>,
+        changed_at: item.changed_at,
+        change_type: item.change_type || 'update'
+      }));
+      
+      setDiagnosticHistory(mappedHistory);
+    } catch (error) {
+      console.error("Error fetching diagnostic history:", error);
+    }
+  };
+
+  const handleSaveNote = async () => {
+    if (!userId || !user?.id || !newNoteContent.trim()) return;
+    
+    setSavingNote(true);
+    try {
+      const { error } = await supabase
+        .from("admin_student_notes")
+        .insert({
+          student_user_id: userId,
+          admin_user_id: user.id,
+          content: newNoteContent.trim()
+        });
+      
+      if (error) throw error;
+      
+      toast.success("Nota salva com sucesso!");
+      setNewNoteContent("");
+      fetchAdminNotes();
+    } catch (error) {
+      console.error("Error saving note:", error);
+      toast.error("Erro ao salvar nota");
+    } finally {
+      setSavingNote(false);
+    }
+  };
+
+  const handleUpdateNote = async (noteId: string) => {
+    if (!editingContent.trim()) return;
+    
+    try {
+      const { error } = await supabase
+        .from("admin_student_notes")
+        .update({ content: editingContent.trim() })
+        .eq("id", noteId);
+      
+      if (error) throw error;
+      
+      toast.success("Nota atualizada!");
+      setEditingNoteId(null);
+      setEditingContent("");
+      fetchAdminNotes();
+    } catch (error) {
+      console.error("Error updating note:", error);
+      toast.error("Erro ao atualizar nota");
+    }
+  };
+
+  const handleDeleteNote = async (noteId: string) => {
+    try {
+      const { error } = await supabase
+        .from("admin_student_notes")
+        .delete()
+        .eq("id", noteId);
+      
+      if (error) throw error;
+      
+      toast.success("Nota excluída!");
+      fetchAdminNotes();
+    } catch (error) {
+      console.error("Error deleting note:", error);
+      toast.error("Erro ao excluir nota");
+    }
+  };
+
+  const handleTogglePin = async (noteId: string, currentPinned: boolean) => {
+    try {
+      const { error } = await supabase
+        .from("admin_student_notes")
+        .update({ is_pinned: !currentPinned })
+        .eq("id", noteId);
+      
+      if (error) throw error;
+      
+      toast.success(currentPinned ? "Nota desafixada" : "Nota fixada");
+      fetchAdminNotes();
+    } catch (error) {
+      console.error("Error toggling pin:", error);
+      toast.error("Erro ao fixar/desafixar nota");
+    }
+  };
+
+  const formatFieldValue = (field: string, value: string | null): string => {
+    if (value === null || value === "null") return "Não informado";
+    if (value === "true") return "Sim";
+    if (value === "false") return "Não";
+    
+    // Try to match with known labels
+    const labelMaps: Record<string, Record<string, string>> = {
+      years_practicing: YEARS_LABELS,
+      practice_area: PRACTICE_LABELS,
+      office_size: OFFICE_SIZE_LABELS,
+      monthly_revenue: REVENUE_LABELS,
+      revenue_goal: REVENUE_LABELS,
+      marketing_knowledge: KNOWLEDGE_LABELS,
+      digital_presence: PRESENCE_LABELS,
+      referral_source: REFERRAL_LABELS,
+      weekly_study_hours: HOURS_LABELS
+    };
+    
+    if (labelMaps[field] && labelMaps[field][value]) {
+      return labelMaps[field][value];
+    }
+    
+    return value;
+  };
+
   const getInitials = (name: string | null) => {
     if (!name) return "A";
     return name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
@@ -495,6 +724,126 @@ export default function AdminStudentProfile() {
                 </div>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Admin Notes */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <StickyNote className="h-5 w-5" />
+              Observações do Admin ({adminNotes.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Add new note */}
+            <div className="space-y-2">
+              <Textarea
+                placeholder="Adicionar uma nova observação sobre este aluno..."
+                value={newNoteContent}
+                onChange={(e) => setNewNoteContent(e.target.value)}
+                className="min-h-[80px]"
+              />
+              <Button 
+                onClick={handleSaveNote}
+                disabled={!newNoteContent.trim() || savingNote}
+                size="sm"
+              >
+                <Save className="h-4 w-4 mr-1" />
+                {savingNote ? "Salvando..." : "Salvar Nota"}
+              </Button>
+            </div>
+
+            {/* Notes list */}
+            {adminNotes.length > 0 && (
+              <div className="border-t pt-4 space-y-3">
+                {adminNotes.map((note) => (
+                  <div 
+                    key={note.id} 
+                    className={`p-3 rounded-lg border ${note.is_pinned ? 'bg-primary/5 border-primary/20' : 'bg-muted/30'}`}
+                  >
+                    {editingNoteId === note.id ? (
+                      <div className="space-y-2">
+                        <Textarea
+                          value={editingContent}
+                          onChange={(e) => setEditingContent(e.target.value)}
+                          className="min-h-[60px]"
+                        />
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={() => handleUpdateNote(note.id)}>
+                            <Save className="h-3 w-3 mr-1" />
+                            Salvar
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            onClick={() => {
+                              setEditingNoteId(null);
+                              setEditingContent("");
+                            }}
+                          >
+                            <X className="h-3 w-3 mr-1" />
+                            Cancelar
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-sm whitespace-pre-wrap flex-1">{note.content}</p>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-7 w-7"
+                              onClick={() => handleTogglePin(note.id, note.is_pinned)}
+                              title={note.is_pinned ? "Desafixar" : "Fixar"}
+                            >
+                              {note.is_pinned ? (
+                                <PinOff className="h-3.5 w-3.5" />
+                              ) : (
+                                <Pin className="h-3.5 w-3.5" />
+                              )}
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-7 w-7"
+                              onClick={() => {
+                                setEditingNoteId(note.id);
+                                setEditingContent(note.content);
+                              }}
+                              title="Editar"
+                            >
+                              <Edit2 className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-7 w-7 text-destructive hover:text-destructive"
+                              onClick={() => handleDeleteNote(note.id)}
+                              title="Excluir"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                          {note.is_pinned && (
+                            <span className="flex items-center gap-1 text-primary">
+                              <Pin className="h-3 w-3" /> Fixada
+                            </span>
+                          )}
+                          <span>Por: {note.admin_name}</span>
+                          <span>•</span>
+                          <span>{formatDistanceToNow(new Date(note.created_at), { addSuffix: true, locale: ptBR })}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -761,6 +1110,45 @@ export default function AdminStudentProfile() {
                     </div>
                   )}
                 </div>
+              )}
+
+              {/* Diagnostic History */}
+              {diagnosticHistory.length > 0 && (
+                <Collapsible open={historyOpen} onOpenChange={setHistoryOpen} className="mt-6 pt-4 border-t">
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" className="w-full justify-between p-0 h-auto hover:bg-transparent">
+                      <span className="flex items-center gap-2 text-sm font-medium">
+                        <History className="h-4 w-4" />
+                        Histórico de Alterações ({diagnosticHistory.length})
+                      </span>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${historyOpen ? 'rotate-180' : ''}`} />
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pt-4 space-y-4">
+                    {diagnosticHistory.map((historyItem) => (
+                      <div key={historyItem.id} className="p-3 bg-muted/30 rounded-lg">
+                        <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
+                          <Calendar className="h-3.5 w-3.5" />
+                          {format(new Date(historyItem.changed_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                        </div>
+                        <div className="space-y-2">
+                          {Object.entries(historyItem.changed_fields).map(([field, values]) => (
+                            <div key={field} className="flex items-start gap-2 text-sm">
+                              <span className="font-medium shrink-0">{FIELD_LABELS[field] || field}:</span>
+                              <span className="text-muted-foreground line-through">
+                                {formatFieldValue(field, values.old)}
+                              </span>
+                              <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                              <span className="text-primary font-medium">
+                                {formatFieldValue(field, values.new)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
               )}
             </CardContent>
           </Card>

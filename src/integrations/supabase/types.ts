@@ -161,6 +161,36 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_student_notes: {
+        Row: {
+          admin_user_id: string
+          content: string
+          created_at: string
+          id: string
+          is_pinned: boolean | null
+          student_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean | null
+          student_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean | null
+          student_user_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_chat_history: {
         Row: {
           content: string
@@ -896,6 +926,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      diagnostic_history: {
+        Row: {
+          change_type: string | null
+          changed_at: string
+          changed_fields: Json
+          diagnostic_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          change_type?: string | null
+          changed_at?: string
+          changed_fields: Json
+          diagnostic_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          change_type?: string | null
+          changed_at?: string
+          changed_fields?: Json
+          diagnostic_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       ebook_downloads: {
         Row: {
