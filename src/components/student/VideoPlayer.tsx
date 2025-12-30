@@ -325,18 +325,24 @@ const VideoPlayer = ({ url, onTimeUpdate, onEnded, initialTime = 0 }: VideoPlaye
 
   if (videoType === "youtube" || videoType === "vimeo") {
     return (
-      <div className="relative w-full h-full">
-        <iframe
-          ref={iframeRef}
-          src={embedUrl || ""}
-          className="w-full h-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          allowFullScreen
-          title="Video player"
-        />
+      <div className="relative w-full h-full flex items-center justify-center bg-black">
+        <div className="relative w-full max-w-5xl mx-auto aspect-video">
+          <iframe
+            ref={iframeRef}
+            src={embedUrl || ""}
+            className="absolute inset-0 w-full h-full rounded-lg"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+            allowFullScreen
+            title="Video player"
+          />
+        </div>
         {/* Speed control hint for embedded videos */}
-        <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs text-muted-foreground">
-          Use os controles do player para ajustar velocidade
+        <div className="absolute bottom-4 left-4 bg-zinc-900/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs text-cream/60 border border-secondary/20">
+          💡 Use os controles do YouTube/Vimeo para velocidade e volume
+        </div>
+        {/* Protection notice */}
+        <div className="absolute bottom-4 right-4 bg-zinc-900/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs text-cream/40 border border-zinc-700">
+          Conteúdo exclusivo para alunas
         </div>
       </div>
     );
@@ -345,159 +351,161 @@ const VideoPlayer = ({ url, onTimeUpdate, onEnded, initialTime = 0 }: VideoPlaye
   return (
     <div 
       ref={containerRef}
-      className="relative w-full h-full bg-black group"
+      className="relative w-full h-full bg-black group flex items-center justify-center"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >
-      <video
-        ref={videoRef}
-        src={embedUrl || ""}
-        className="w-full h-full cursor-pointer"
-        onTimeUpdate={handleTimeUpdateInternal}
-        onEnded={handleVideoEnded}
-        onLoadedMetadata={handleLoadedMetadata}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        onClick={togglePlay}
-        playsInline
-      />
-
-      {/* Play overlay for paused state */}
-      {!isPlaying && (
-        <div 
-          className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer"
+      <div className="relative w-full max-w-5xl mx-auto aspect-video">
+        <video
+          ref={videoRef}
+          src={embedUrl || ""}
+          className="absolute inset-0 w-full h-full cursor-pointer rounded-lg"
+          onTimeUpdate={handleTimeUpdateInternal}
+          onEnded={handleVideoEnded}
+          onLoadedMetadata={handleLoadedMetadata}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
           onClick={togglePlay}
-        >
-          <div className="w-20 h-20 rounded-full bg-secondary/90 flex items-center justify-center shadow-2xl transition-transform hover:scale-110">
-            <Play className="w-10 h-10 text-secondary-foreground ml-1" />
+          playsInline
+        />
+
+        {/* Play overlay for paused state */}
+        {!isPlaying && (
+          <div 
+            className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer rounded-lg"
+            onClick={togglePlay}
+          >
+            <div className="w-20 h-20 rounded-full bg-secondary/90 flex items-center justify-center shadow-2xl transition-transform hover:scale-110">
+              <Play className="w-10 h-10 text-secondary-foreground ml-1" />
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* Custom Controls */}
-      <div 
-        className={cn(
-          "absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 transition-opacity duration-300",
-          showControls ? "opacity-100" : "opacity-0"
         )}
-      >
-        {/* Progress bar */}
-        <div className="mb-3">
-          <Slider
-            value={[currentTime]}
-            min={0}
-            max={duration || 100}
-            step={0.1}
-            onValueChange={handleSeek}
-            className="cursor-pointer [&>span:first-child]:h-1 [&>span:first-child]:bg-muted-foreground/30 [&_[role=slider]]:w-3 [&_[role=slider]]:h-3 [&_[role=slider]]:bg-secondary [&>span:first-child_>span]:bg-secondary"
-          />
-        </div>
 
-        <div className="flex items-center justify-between gap-4">
-          {/* Left controls */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={togglePlay}
-              className="text-white hover:bg-white/20 h-9 w-9"
-            >
-              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
-            </Button>
+        {/* Custom Controls */}
+        <div 
+          className={cn(
+            "absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 rounded-b-lg transition-opacity duration-300",
+            showControls ? "opacity-100" : "opacity-0"
+          )}
+        >
+          {/* Progress bar */}
+          <div className="mb-3">
+            <Slider
+              value={[currentTime]}
+              min={0}
+              max={duration || 100}
+              step={0.1}
+              onValueChange={handleSeek}
+              className="cursor-pointer [&>span:first-child]:h-1.5 [&>span:first-child]:bg-white/20 [&_[role=slider]]:w-4 [&_[role=slider]]:h-4 [&_[role=slider]]:bg-secondary [&_[role=slider]]:border-2 [&_[role=slider]]:border-white [&>span:first-child_>span]:bg-secondary"
+            />
+          </div>
 
-            {/* Volume */}
-            <div className="flex items-center gap-1 group/volume">
+          <div className="flex items-center justify-between gap-4">
+            {/* Left controls */}
+            <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={toggleMute}
-                className="text-white hover:bg-white/20 h-9 w-9"
+                onClick={togglePlay}
+                className="text-white hover:bg-white/20 h-10 w-10"
               >
-                {isMuted || volume === 0 ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
               </Button>
-              <div className="w-0 overflow-hidden group-hover/volume:w-20 transition-all duration-200">
-                <Slider
-                  value={[isMuted ? 0 : volume]}
-                  min={0}
-                  max={1}
-                  step={0.05}
-                  onValueChange={(v) => { setVolume(v[0]); setIsMuted(false); }}
-                  className="cursor-pointer [&>span:first-child]:h-1 [&>span:first-child]:bg-white/30 [&_[role=slider]]:w-3 [&_[role=slider]]:h-3 [&_[role=slider]]:bg-white [&>span:first-child_>span]:bg-white"
-                />
-              </div>
-            </div>
 
-            {/* Time */}
-            <span className="text-white text-sm font-mono ml-2">
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </span>
-          </div>
-
-          {/* Right controls */}
-          <div className="flex items-center gap-1">
-            {/* Speed control */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              {/* Volume */}
+              <div className="flex items-center gap-1 group/volume">
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="text-white hover:bg-white/20 font-mono text-sm h-9 px-2"
+                  size="icon"
+                  onClick={toggleMute}
+                  className="text-white hover:bg-white/20 h-10 w-10"
                 >
-                  {playbackSpeed}x
+                  {isMuted || volume === 0 ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-700">
-                {SPEED_OPTIONS.map((speed) => (
-                  <DropdownMenuItem
-                    key={speed}
-                    onClick={() => setPlaybackSpeed(speed)}
-                    className={cn(
-                      "cursor-pointer text-white hover:bg-white/10",
-                      playbackSpeed === speed && "bg-secondary/20 text-secondary"
-                    )}
-                  >
-                    {speed}x {speed === 1 && "(Normal)"}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                <div className="w-0 overflow-hidden group-hover/volume:w-24 transition-all duration-200">
+                  <Slider
+                    value={[isMuted ? 0 : volume]}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    onValueChange={(v) => { setVolume(v[0]); setIsMuted(false); }}
+                    className="cursor-pointer [&>span:first-child]:h-1.5 [&>span:first-child]:bg-white/30 [&_[role=slider]]:w-3 [&_[role=slider]]:h-3 [&_[role=slider]]:bg-white [&>span:first-child_>span]:bg-white"
+                  />
+                </div>
+              </div>
 
-            {/* PiP */}
-            {document.pictureInPictureEnabled && (
+              {/* Time */}
+              <span className="text-white text-sm font-mono ml-2">
+                {formatTime(currentTime)} / {formatTime(duration)}
+              </span>
+            </div>
+
+            {/* Right controls */}
+            <div className="flex items-center gap-1">
+              {/* Speed control */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-white hover:bg-white/20 font-mono text-sm h-10 px-3 bg-white/10"
+                  >
+                    {playbackSpeed}x
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-700">
+                  {SPEED_OPTIONS.map((speed) => (
+                    <DropdownMenuItem
+                      key={speed}
+                      onClick={() => setPlaybackSpeed(speed)}
+                      className={cn(
+                        "cursor-pointer text-white hover:bg-white/10",
+                        playbackSpeed === speed && "bg-secondary/20 text-secondary"
+                      )}
+                    >
+                      {speed}x {speed === 1 && "(Normal)"}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* PiP */}
+              {document.pictureInPictureEnabled && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={togglePiP}
+                  className={cn(
+                    "text-white hover:bg-white/20 h-10 w-10",
+                    isPiPActive && "bg-secondary/30 text-secondary"
+                  )}
+                  title="Picture-in-Picture (Shift+P)"
+                >
+                  <PictureInPicture2 className="w-5 h-5" />
+                </Button>
+              )}
+
+              {/* Fullscreen */}
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={togglePiP}
-                className={cn(
-                  "text-white hover:bg-white/20 h-9 w-9",
-                  isPiPActive && "bg-secondary/30 text-secondary"
-                )}
-                title="Picture-in-Picture (Shift+P)"
+                onClick={toggleFullscreen}
+                className="text-white hover:bg-white/20 h-10 w-10"
+                title="Tela cheia (F)"
               >
-                <PictureInPicture2 className="w-5 h-5" />
+                {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
               </Button>
-            )}
-
-            {/* Fullscreen */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleFullscreen}
-              className="text-white hover:bg-white/20 h-9 w-9"
-              title="Tela cheia (F)"
-            >
-              {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
-            </Button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Speed indicator toast */}
-      {playbackSpeed !== 1 && (
-        <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-mono">
-          {playbackSpeed}x
-        </div>
-      )}
+        {/* Speed indicator toast */}
+        {playbackSpeed !== 1 && (
+          <div className="absolute top-4 right-4 bg-zinc-900/90 backdrop-blur-sm px-3 py-2 rounded-lg text-secondary text-sm font-mono border border-secondary/30">
+            Velocidade: {playbackSpeed}x
+          </div>
+        )}
+      </div>
     </div>
   );
 };
