@@ -53,6 +53,9 @@ const LessonSidebar = ({ modules, currentLessonId, onLessonSelect }: LessonSideb
           const completedCount = module.lessons.filter(l => l.completed).length;
           const hasCurrentLesson = module.lessons.some(l => l.id === currentLessonId);
           const moduleNumber = moduleIndex + 1;
+          const totalLessons = module.lessons.length;
+          const completionPct = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
+          const isComplete = totalLessons > 0 && completedCount === totalLessons;
 
           return (
             <div key={module.id}>
@@ -60,42 +63,44 @@ const LessonSidebar = ({ modules, currentLessonId, onLessonSelect }: LessonSideb
               <button
                 onClick={() => toggleModule(module.id)}
                 className={cn(
-                  "w-full flex items-center justify-between p-4 hover:bg-zinc-900 transition-colors text-left",
+                  "w-full flex items-start justify-between p-4 hover:bg-zinc-900 transition-colors text-left gap-2",
                   hasCurrentLesson && "bg-secondary/10"
                 )}
               >
-                <div className="flex items-center gap-3 max-w-full overflow-hidden">
+                <div className="flex items-start gap-3 min-w-0 flex-1">
                   <div className={cn(
                     "w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0",
-                    completedCount === module.lessons.length
+                    isComplete
                       ? "bg-green-500/20 text-green-500"
                       : "bg-secondary/20 text-secondary"
                   )}>
                     {moduleNumber}
                   </div>
-                  <div className="flex-1 min-w-0 max-w-full">
-                    <p className="font-medium text-cream text-sm truncate max-w-full">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-cream text-sm whitespace-normal break-words leading-snug">
                       Módulo {moduleNumber}: {module.title}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <Progress 
-                        value={(completedCount / module.lessons.length) * 100} 
+                        value={completionPct} 
                         className="flex-1 h-1.5 bg-zinc-700 [&>div]:bg-secondary"
                       />
                       <span className={cn(
-                        "text-xs font-medium min-w-[32px] text-right",
-                        completedCount === module.lessons.length ? "text-green-500" : "text-cream/50"
+                        "text-xs font-medium min-w-[32px] text-right flex-shrink-0",
+                        isComplete ? "text-green-500" : "text-cream/50"
                       )}>
-                        {Math.round((completedCount / module.lessons.length) * 100)}%
+                        {Math.round(completionPct)}%
                       </span>
                     </div>
                   </div>
                 </div>
-                {isExpanded ? (
-                  <ChevronUp className="w-4 h-4 text-cream/50" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 text-cream/50" />
-                )}
+                <div className="flex-shrink-0 pt-1">
+                  {isExpanded ? (
+                    <ChevronUp className="w-4 h-4 text-cream/50" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-cream/50" />
+                  )}
+                </div>
               </button>
 
               {/* Lessons */}
@@ -136,7 +141,7 @@ const LessonSidebar = ({ modules, currentLessonId, onLessonSelect }: LessonSideb
 
                         <div className="flex-1 min-w-0">
                           <p className={cn(
-                            "text-sm truncate",
+                            "text-sm whitespace-normal break-words leading-snug",
                             lesson.completed
                               ? "text-cream/50"
                               : isCurrent
