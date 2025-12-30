@@ -14,7 +14,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Lock,
-  Flame
+  Flame,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WeeklyMission } from "./WeeklyMissionCard";
@@ -52,6 +53,7 @@ export const CurrentMissionSection = ({
   const isSubmitted = status === 'submitted' || status === 'pending';
   const isRejected = status === 'rejected';
   const isLocked = selectedWeek > currentWeek;
+  const isCurrentWeek = selectedWeek === currentWeek;
   
   const getDaysUntilUnlock = (week: number): number => {
     if (!enrollmentDate) return 0;
@@ -70,32 +72,67 @@ export const CurrentMissionSection = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="space-y-8"
     >
-      {/* Section Header */}
+      {/* Section Header with Premium Styling */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center">
-            <Flame className="w-5 h-5 text-secondary" />
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex items-center gap-4"
+        >
+          {/* Animated Icon Container */}
+          <div className="relative">
+            <motion.div
+              animate={{ 
+                boxShadow: [
+                  "0 0 20px hsla(var(--secondary) / 0.3)",
+                  "0 0 40px hsla(var(--secondary) / 0.5)",
+                  "0 0 20px hsla(var(--secondary) / 0.3)"
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary/30 to-secondary/10 flex items-center justify-center border border-secondary/30"
+            >
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <Flame className="w-6 h-6 text-secondary" />
+              </motion.div>
+            </motion.div>
           </div>
           <div>
-            <h2 className="font-serif font-bold text-cream text-xl">
+            <h2 className="font-serif font-bold text-2xl text-shimmer-gold">
               Sua Jornada Semanal
             </h2>
-            <p className="text-sm text-cream/50">Arena de Execução</p>
+            <p className="text-sm text-cream/60 flex items-center gap-2">
+              <Sparkles className="w-3 h-3 text-secondary" />
+              Arena de Execução
+            </p>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Week Navigation */}
-        <div className="flex items-center gap-2">
+        {/* Week Navigation with Enhanced Styling */}
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+          className="flex items-center gap-2 bg-zinc-900/60 rounded-xl p-1.5 border border-secondary/20 backdrop-blur-sm"
+        >
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setSelectedWeek(prev => Math.max(1, prev - 1))}
             disabled={!canNavigatePrev}
-            className="text-cream/50 hover:text-secondary hover:bg-secondary/10"
+            className={cn(
+              "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
+              !canNavigatePrev && "opacity-30"
+            )}
           >
             <ChevronLeft className="w-5 h-5" />
           </Button>
@@ -103,12 +140,13 @@ export const CurrentMissionSection = ({
           <Badge 
             variant="outline" 
             className={cn(
-              "min-w-[120px] justify-center text-sm py-1.5",
-              selectedWeek === currentWeek 
-                ? "border-secondary text-secondary bg-secondary/10" 
-                : "border-cream/30 text-cream/70"
+              "min-w-[140px] justify-center text-sm py-2 font-semibold transition-all",
+              isCurrentWeek 
+                ? "border-secondary text-secondary bg-secondary/15 shadow-[0_0_15px_hsla(var(--secondary)/0.3)]" 
+                : "border-cream/30 text-cream/70 bg-transparent"
             )}
           >
+            <Flame className={cn("w-4 h-4 mr-2", isCurrentWeek ? "text-secondary" : "text-cream/50")} />
             Semana {selectedWeek} de 12
           </Badge>
           
@@ -117,87 +155,116 @@ export const CurrentMissionSection = ({
             size="icon"
             onClick={() => setSelectedWeek(prev => Math.min(12, prev + 1))}
             disabled={!canNavigateNext}
-            className="text-cream/50 hover:text-secondary hover:bg-secondary/10"
+            className={cn(
+              "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
+              !canNavigateNext && "opacity-30"
+            )}
           >
             <ChevronRight className="w-5 h-5" />
           </Button>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Mission Card */}
+      {/* Mission Card with Enhanced Animations */}
       <AnimatePresence mode="wait">
         <motion.div
           key={selectedWeek}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.2 }}
+          initial={{ opacity: 0, x: 30, scale: 0.98 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: -30, scale: 0.98 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
         >
           {isLocked ? (
-            // Locked Week Card
-            <Card className="relative overflow-hidden border-2 border-zinc-800/50 bg-zinc-900/50 opacity-70">
-              <div className="p-6 text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-zinc-800/50 flex items-center justify-center mx-auto">
-                  <Lock className="w-8 h-8 text-zinc-600" />
-                </div>
+            // Locked Week Card - Enhanced
+            <Card className="relative overflow-hidden border-2 border-zinc-700/50 bg-gradient-to-br from-zinc-900/80 to-zinc-950/80 backdrop-blur-sm">
+              <div className="p-8 text-center space-y-4">
+                <motion.div 
+                  whileHover={{ rotate: [0, -5, 5, -5, 0] }}
+                  transition={{ duration: 0.5 }}
+                  className="w-20 h-20 rounded-full bg-gradient-to-br from-zinc-800/80 to-zinc-900/80 flex items-center justify-center mx-auto border border-zinc-700/50"
+                >
+                  <Lock className="w-10 h-10 text-zinc-500" />
+                </motion.div>
                 <div>
-                  <h3 className="font-serif font-bold text-cream/50 text-lg mb-2">
+                  <h3 className="font-serif font-bold text-cream/60 text-xl mb-2">
                     Semana {selectedWeek} Bloqueada
                   </h3>
-                  <p className="text-zinc-500">
+                  <p className="text-zinc-500 flex items-center justify-center gap-2">
+                    <Clock className="w-4 h-4" />
                     Disponível em {getDaysUntilUnlock(selectedWeek)} dias
                   </p>
                 </div>
               </div>
             </Card>
           ) : (
-            // Active Mission Card
+            // Active Mission Card - Enhanced
             <div className="relative">
-              {/* Glow effect for current week */}
-              {selectedWeek === currentWeek && !isCompleted && (
-                <motion.div
-                  animate={{ opacity: [0.3, 0.6, 0.3] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="absolute -inset-1 bg-secondary/20 rounded-2xl blur-xl"
-                />
+              {/* Intense Glow Effect for Current Week */}
+              {isCurrentWeek && !isCompleted && (
+                <>
+                  <motion.div
+                    animate={{ 
+                      opacity: [0.4, 0.8, 0.4],
+                      scale: [1, 1.02, 1]
+                    }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute -inset-2 bg-gradient-to-r from-secondary/30 via-secondary/50 to-secondary/30 rounded-2xl blur-2xl"
+                  />
+                  <motion.div
+                    animate={{ opacity: [0.2, 0.5, 0.2] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                    className="absolute -inset-1 bg-secondary/20 rounded-xl blur-lg"
+                  />
+                </>
               )}
 
               <Card className={cn(
-                "relative overflow-hidden border-2 transition-all bg-zinc-900/80 backdrop-blur-sm",
-                isCompleted && "border-green-500/50 bg-green-500/5",
-                isSubmitted && "border-amber-500/50 bg-amber-500/5",
-                isRejected && "border-red-500/50 bg-red-500/5",
-                selectedWeek === currentWeek && !isCompleted && !isSubmitted && !isRejected && "border-secondary glow-gold-subtle",
-                selectedWeek !== currentWeek && !isCompleted && !isSubmitted && !isRejected && "border-secondary/30"
+                "relative overflow-hidden border-2 transition-all bg-gradient-to-br from-zinc-900/90 to-zinc-950/90 backdrop-blur-sm",
+                isCompleted && "border-green-500/60 bg-green-500/5",
+                isSubmitted && "border-amber-500/60 bg-amber-500/5",
+                isRejected && "border-red-500/60 bg-red-500/5",
+                isCurrentWeek && !isCompleted && !isSubmitted && !isRejected && "border-secondary shadow-[0_0_30px_hsla(var(--secondary)/0.3)]",
+                !isCurrentWeek && !isCompleted && !isSubmitted && !isRejected && "border-secondary/40"
               )}>
-                {/* Month Banner */}
-                <div className="bg-gradient-to-r from-secondary/10 to-transparent px-5 py-2 border-b border-secondary/10">
-                  <p className="text-xs font-semibold text-secondary uppercase tracking-wider">
+                {/* Month Banner - Enhanced */}
+                <div className="bg-gradient-to-r from-secondary/20 via-secondary/10 to-transparent px-5 py-3 border-b border-secondary/20">
+                  <p className="text-sm font-bold text-secondary uppercase tracking-widest flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" />
                     {mission.month_title || `Mês ${mission.month_number}`}
                   </p>
                 </div>
 
-                {/* Header with week indicator */}
-                <div className="flex items-center justify-between p-5 border-b border-secondary/10">
+                {/* Header with Week Indicator - Enhanced */}
+                <div className="flex items-center justify-between p-5 border-b border-secondary/15">
                   <div className="flex items-center gap-4">
-                    <div className={cn(
-                      "w-14 h-14 rounded-xl flex items-center justify-center text-3xl",
-                      isCompleted ? "bg-green-500/20" : "bg-secondary/20"
-                    )}>
-                      {isCompleted ? <CheckCircle2 className="w-7 h-7 text-green-400" /> : mission.gamification_emoji}
-                    </div>
+                    <motion.div 
+                      whileHover={{ scale: 1.05, rotate: 5 }}
+                      className={cn(
+                        "w-16 h-16 rounded-xl flex items-center justify-center text-3xl shadow-lg",
+                        isCompleted 
+                          ? "bg-gradient-to-br from-green-500/30 to-green-600/20 border border-green-500/30" 
+                          : "bg-gradient-to-br from-secondary/30 to-secondary/10 border border-secondary/30"
+                      )}
+                    >
+                      {isCompleted ? <CheckCircle2 className="w-8 h-8 text-green-400" /> : mission.gamification_emoji}
+                    </motion.div>
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="outline" className="border-secondary/50 text-secondary text-xs">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <Badge variant="outline" className="border-secondary/50 text-secondary text-xs font-medium">
                           Semana {mission.week_number}
                         </Badge>
-                        {selectedWeek === currentWeek && !isCompleted && (
-                          <Badge className="bg-secondary/20 text-secondary text-xs border-0">
-                            Atual
-                          </Badge>
+                        {isCurrentWeek && !isCompleted && (
+                          <motion.div
+                            animate={{ scale: [1, 1.05, 1] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                          >
+                            <Badge className="bg-gradient-to-r from-secondary to-secondary/80 text-black text-xs border-0 font-bold shadow-lg">
+                              🔥 Atual
+                            </Badge>
+                          </motion.div>
                         )}
                       </div>
-                      <h3 className="font-serif font-bold text-cream text-xl">
+                      <h3 className="font-serif font-bold text-cream text-xl md:text-2xl">
                         {mission.title}
                       </h3>
                     </div>
@@ -206,11 +273,11 @@ export const CurrentMissionSection = ({
                   <Badge 
                     variant="outline" 
                     className={cn(
-                      "font-medium px-3 py-1",
-                      isCompleted && "border-green-500 text-green-400",
-                      isSubmitted && "border-amber-500 text-amber-400",
-                      isRejected && "border-red-500 text-red-400",
-                      !status && "border-secondary text-secondary"
+                      "font-semibold px-4 py-1.5 text-sm",
+                      isCompleted && "border-green-500 text-green-400 bg-green-500/10",
+                      isSubmitted && "border-amber-500 text-amber-400 bg-amber-500/10",
+                      isRejected && "border-red-500 text-red-400 bg-red-500/10",
+                      !status && "border-secondary text-secondary bg-secondary/10"
                     )}
                   >
                     {isCompleted && "✓ Concluída"}
@@ -220,65 +287,102 @@ export const CurrentMissionSection = ({
                   </Badge>
                 </div>
 
-                {/* Content */}
-                <div className="p-5 space-y-4">
+                {/* Content - Enhanced Spacing */}
+                <div className="p-6 space-y-5">
                   {/* Challenge */}
-                  <div className="flex gap-4">
-                    <Target className="w-5 h-5 text-secondary shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-semibold text-secondary mb-1">O Desafio</p>
-                      <p className="text-cream/90 leading-relaxed">{mission.challenge_description}</p>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="flex gap-4 group"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center shrink-0 group-hover:bg-secondary/30 transition-colors">
+                      <Target className="w-5 h-5 text-secondary" />
                     </div>
-                  </div>
+                    <div>
+                      <p className="text-sm font-bold text-secondary mb-1.5 uppercase tracking-wide">O Desafio</p>
+                      <p className="text-cream/90 leading-relaxed text-base">{mission.challenge_description}</p>
+                    </div>
+                  </motion.div>
 
                   {/* Why do */}
                   {mission.why_do && (
-                    <div className="flex gap-4">
-                      <Lightbulb className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-semibold text-amber-400 mb-1">Por que fazer</p>
-                        <p className="text-cream/70 text-sm leading-relaxed">{mission.why_do}</p>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="flex gap-4 group"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0 group-hover:bg-amber-500/30 transition-colors">
+                        <Lightbulb className="w-5 h-5 text-amber-400" />
                       </div>
-                    </div>
+                      <div>
+                        <p className="text-sm font-bold text-amber-400 mb-1.5 uppercase tracking-wide">Por que fazer</p>
+                        <p className="text-cream/80 text-sm leading-relaxed">{mission.why_do}</p>
+                      </div>
+                    </motion.div>
                   )}
 
-                  {/* Gamification */}
-                  <div className="flex gap-4 bg-gradient-to-r from-secondary/10 to-transparent rounded-xl p-4">
-                    <Trophy className="w-5 h-5 text-secondary shrink-0 mt-0.5" />
+                  {/* Gamification - Enhanced Box */}
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="flex gap-4 bg-gradient-to-r from-secondary/15 via-secondary/10 to-transparent rounded-xl p-5 border border-secondary/25 hover:border-secondary/40 transition-all group hover:shadow-[0_0_20px_hsla(var(--secondary)/0.15)]"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-secondary/25 flex items-center justify-center shrink-0 group-hover:bg-secondary/35 transition-colors">
+                      <Trophy className="w-5 h-5 text-secondary" />
+                    </div>
                     <div>
-                      <p className="text-sm font-semibold text-secondary mb-1">
+                      <p className="text-sm font-bold text-secondary mb-1.5 uppercase tracking-wide">
                         {mission.gamification_title}
                       </p>
                       {mission.gamification_reward && (
-                        <p className="text-cream/60 text-sm flex items-center gap-2">
-                          <Gift className="w-4 h-4" />
+                        <p className="text-cream/70 text-sm flex items-center gap-2">
+                          <Gift className="w-4 h-4 text-secondary/70" />
                           {mission.gamification_reward}
                         </p>
                       )}
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
 
-                {/* Action */}
-                <div className="p-5 border-t border-secondary/10 bg-black/30">
+                {/* Action - Enhanced Button */}
+                <div className="p-5 border-t border-secondary/15 bg-black/40">
                   {isCompleted ? (
-                    <div className="flex items-center justify-center gap-2 text-green-400 py-2">
-                      <CheckCircle2 className="w-5 h-5" />
-                      <span className="font-medium">Missão Completada! +{completion?.xp_earned || mission.xp_reward} XP</span>
-                    </div>
+                    <motion.div 
+                      initial={{ scale: 0.9, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="flex items-center justify-center gap-3 text-green-400 py-3 bg-green-500/10 rounded-lg border border-green-500/20"
+                    >
+                      <CheckCircle2 className="w-6 h-6" />
+                      <span className="font-bold text-lg">Missão Completada! +{completion?.xp_earned || mission.xp_reward} XP</span>
+                    </motion.div>
                   ) : isSubmitted ? (
-                    <div className="flex items-center justify-center gap-2 text-amber-400 py-2">
-                      <Clock className="w-5 h-5" />
-                      <span>Aguardando aprovação da mentora</span>
+                    <div className="flex items-center justify-center gap-3 text-amber-400 py-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Clock className="w-5 h-5" />
+                      </motion.div>
+                      <span className="font-medium">Aguardando aprovação da mentora</span>
                     </div>
                   ) : (
-                    <Button 
-                      onClick={() => onSubmit(mission)}
-                      className="w-full bg-secondary hover:bg-secondary/90 text-black font-semibold py-5"
-                    >
-                      <Send className="w-4 h-4 mr-2" />
-                      {isRejected ? "Reenviar Entrega" : "Entregar Missão"}
-                    </Button>
+                    <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                      <Button 
+                        onClick={() => onSubmit(mission)}
+                        className="w-full bg-gradient-to-r from-secondary via-secondary to-secondary/90 hover:from-secondary/90 hover:to-secondary text-black font-bold py-6 text-lg shadow-[0_0_25px_hsla(var(--secondary)/0.4)] hover:shadow-[0_0_35px_hsla(var(--secondary)/0.5)] transition-all"
+                      >
+                        <motion.div
+                          animate={{ x: [0, 4, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                          <Send className="w-5 h-5 mr-2" />
+                        </motion.div>
+                        {isRejected ? "Reenviar Entrega" : "Entregar Missão"}
+                      </Button>
+                    </motion.div>
                   )}
                 </div>
               </Card>
@@ -289,12 +393,18 @@ export const CurrentMissionSection = ({
 
       {/* Mission Arena - Comments Section */}
       {!isLocked && mission && (
-        <MissionArena
-          missionId={mission.id}
-          weekNumber={mission.week_number}
-          userId={userId}
-          courseId={courseId}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <MissionArena
+            missionId={mission.id}
+            weekNumber={mission.week_number}
+            userId={userId}
+            courseId={courseId}
+          />
+        </motion.div>
       )}
     </motion.div>
   );
