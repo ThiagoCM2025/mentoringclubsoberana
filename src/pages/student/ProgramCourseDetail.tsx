@@ -347,7 +347,16 @@ const ProgramCourseDetail = () => {
             </div>
           </div>
 
-          {/* Row 2: Sua Jornada de 12 Semanas - Timeline */}
+          {/* Row 2: Content Modules Section - Conteúdo do Programa */}
+          <div className="lg:col-span-2">
+            <ContentModulesSection
+              modules={transformedModules}
+              lessonProgress={lessonProgress}
+              onLessonClick={handleLessonClick}
+            />
+          </div>
+
+          {/* Row 3: Sua Jornada de 12 Semanas - Timeline */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -373,16 +382,6 @@ const ProgramCourseDetail = () => {
               }}
             />
           </motion.div>
-
-
-          {/* Row 2: Content Modules Section - Conteúdo do Programa */}
-          <div className="lg:col-span-2">
-            <ContentModulesSection
-              modules={transformedModules}
-              lessonProgress={lessonProgress}
-              onLessonClick={handleLessonClick}
-            />
-          </div>
 
           {/* Row 3: Sua Jornada de 12 Semanas - Timeline */}
           {user && (
