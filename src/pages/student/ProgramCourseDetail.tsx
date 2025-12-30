@@ -1,19 +1,16 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { motion, AnimatePresence } from "framer-motion";
+import { useProgramDetailData } from "@/hooks/useProgramDetailData";
+import { useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   ArrowLeft, 
-  PlayCircle, 
   CheckCircle, 
   Clock,
-  BookOpen,
-  Award,
   Play,
-  Lock,
   Target,
   Sparkles
 } from "lucide-react";
@@ -29,83 +26,24 @@ import { SchedulingCTA } from "@/components/student/program/SchedulingCTA";
 import { CertificateGenerator } from "@/components/student/CertificateGenerator";
 import { WeekCelebrationModal } from "@/components/student/program/WeekCelebrationModal";
 import { useRealtimeMissionCelebration } from "@/hooks/useRealtimeMissionCelebration";
-
 import { ContentModulesSection } from "@/components/student/program/ContentModulesSection";
 
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  thumbnail_url: string | null;
-  program_type: string | null;
-  requires_diagnostic: boolean;
-  calendar_link: string | null;
-  duration_weeks: number;
-}
-
-interface Module {
-  id: string;
-  title: string;
-  description: string | null;
-  order_index: number;
-  module_type: string;
-  unlock_week: number | null;
-  is_dynamic: boolean;
-  lessons: Lesson[];
-}
-
-interface Lesson {
-  id: string;
-  title: string;
-  description: string | null;
-  duration_minutes: number | null;
-  order_index: number;
-  is_free: boolean;
-  lesson_type: string;
-  lesson_label: string | null;
-}
-
-interface MissionCompletion {
-  mission_id: string;
-  status: 'pending' | 'submitted' | 'approved' | 'rejected';
-  xp_earned: number;
-}
-
-interface CourseGamification {
-  xp: number;
-  level: number;
-  current_title: string;
-  missions_completed: number;
-  week_progress: number;
-  badges_earned: string[];
-}
-
-interface ProgramTitle {
-  week_number: number;
-  title: string;
-  emoji: string;
-}
+// Local type for mission completions in timeline
+type MissionCompletionStatus = 'pending' | 'submitted' | 'approved' | 'rejected';
 
 const ProgramCourseDetail = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   
-  const [course, setCourse] = useState<Course | null>(null);
-  const [modules, setModules] = useState<Module[]>([]);
-  const [missions, setMissions] = useState<WeeklyMission[]>([]);
-  const [missionCompletions, setMissionCompletions] = useState<Record<string, MissionCompletion>>({});
-  const [lessonProgress, setLessonProgress] = useState<Record<string, boolean>>({});
-  const [courseGamification, setCourseGamification] = useState<CourseGamification | null>(null);
-  const [programTitles, setProgramTitles] = useState<ProgramTitle[]>([]);
-  const [currentWeek, setCurrentWeek] = useState(1);
-  const [enrollmentDate, setEnrollmentDate] = useState<Date | null>(null);
-  const [loading, setLoading] = useState(true);
+  // State for modals
   const [selectedMission, setSelectedMission] = useState<WeeklyMission | null>(null);
   const [deliveryModalOpen, setDeliveryModalOpen] = useState(false);
-  const [diagnosticCompleted, setDiagnosticCompleted] = useState(false);
-  const [certificate, setCertificate] = useState<any>(null);
   const [showCertificateModal, setShowCertificateModal] = useState(false);
+
+  // Use the optimized RPC hook - 1 query instead of 10+
+  const { data, isLoading, refetch } = useProgramDetailData(courseId, user?.id);
 
   // Realtime celebration hook
   const { celebration, clearCelebration } = useRealtimeMissionCelebration(user?.id, courseId);
@@ -113,188 +51,9 @@ const ProgramCourseDetail = () => {
   // Refresh data when a mission is approved via realtime
   useEffect(() => {
     if (celebration) {
-      fetchAllData();
+      refetch();
     }
-  }, [celebration]);
-
-  useEffect(() => {
-    if (courseId && user) {
-      fetchAllData();
-    }
-  }, [courseId, user]);
-
-  const fetchAllData = async () => {
-    if (!courseId || !user) return;
-
-    try {
-      // Fetch course
-      const { data: courseData } = await supabase
-        .from("courses")
-        .select("*")
-        .eq("id", courseId)
-        .single();
-
-      if (courseData) setCourse(courseData as Course);
-
-      // Fetch enrollment date
-      const { data: enrollmentData } = await supabase
-        .from("enrollments")
-        .select("enrolled_at")
-        .eq("course_id", courseId)
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (enrollmentData) {
-        const enrollDate = new Date(enrollmentData.enrolled_at);
-        setEnrollmentDate(enrollDate);
-        
-        // Calculate current week
-        const daysSinceEnrollment = Math.floor((Date.now() - enrollDate.getTime()) / (1000 * 60 * 60 * 24));
-        const week = Math.min(12, Math.max(1, Math.floor(daysSinceEnrollment / 7) + 1));
-        setCurrentWeek(week);
-      }
-
-      // Fetch modules with lessons
-      const { data: modulesData } = await supabase
-        .from("modules")
-        .select(`
-          id, title, description, order_index, module_type, unlock_week, is_dynamic,
-          lessons (id, title, description, duration_minutes, order_index, is_free, lesson_type, lesson_label)
-        `)
-        .eq("course_id", courseId)
-        .order("order_index");
-
-      if (modulesData) {
-        const sortedModules = modulesData.map(m => ({
-          ...m,
-          module_type: m.module_type || 'pillar',
-          unlock_week: m.unlock_week,
-          is_dynamic: m.is_dynamic || false,
-          lessons: (m.lessons || []).sort((a: Lesson, b: Lesson) => a.order_index - b.order_index)
-        }));
-        setModules(sortedModules as Module[]);
-
-        // Fetch lesson progress
-        const allLessonIds = sortedModules.flatMap(m => m.lessons.map((l: Lesson) => l.id));
-        if (allLessonIds.length > 0) {
-          const { data: progressData } = await supabase
-            .from("progress")
-            .select("lesson_id, completed")
-            .eq("user_id", user.id)
-            .in("lesson_id", allLessonIds);
-
-          if (progressData) {
-            const progressMap: Record<string, boolean> = {};
-            progressData.forEach((p: { lesson_id: string; completed: boolean }) => {
-              progressMap[p.lesson_id] = p.completed;
-            });
-            setLessonProgress(progressMap);
-          }
-        }
-      }
-
-      // Fetch weekly missions
-      const { data: missionsData } = await supabase
-        .from("weekly_missions")
-        .select("*")
-        .eq("course_id", courseId)
-        .eq("is_active", true)
-        .order("week_number");
-
-      if (missionsData) {
-        setMissions(missionsData as WeeklyMission[]);
-
-        // Fetch user completions
-        const missionIds = missionsData.map(m => m.id);
-        if (missionIds.length > 0) {
-          const { data: completionsData } = await supabase
-            .from("user_mission_completions")
-            .select("mission_id, status, xp_earned")
-            .eq("user_id", user.id)
-            .in("mission_id", missionIds);
-
-          if (completionsData) {
-            const completionsMap: Record<string, MissionCompletion> = {};
-            completionsData.forEach((c: MissionCompletion) => {
-              completionsMap[c.mission_id] = c;
-            });
-            setMissionCompletions(completionsMap);
-          }
-        }
-      }
-
-      // Fetch course gamification
-      const { data: gamificationData } = await supabase
-        .from("course_gamification")
-        .select("*")
-        .eq("course_id", courseId)
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (gamificationData) {
-        setCourseGamification(gamificationData as CourseGamification);
-      } else {
-        setCourseGamification({
-          xp: 0,
-          level: 1,
-          current_title: "Advogada Invisível",
-          missions_completed: 0,
-          week_progress: 1,
-          badges_earned: []
-        });
-      }
-
-      // Fetch program titles
-      const { data: titlesData } = await supabase
-        .from("program_titles")
-        .select("week_number, title, emoji")
-        .eq("course_id", courseId)
-        .order("week_number");
-
-      if (titlesData) {
-        setProgramTitles(titlesData as ProgramTitle[]);
-      }
-
-      // Check diagnostic status
-      const { data: diagnosticData } = await supabase
-        .from("student_diagnostics")
-        .select("completed")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      setDiagnosticCompleted(diagnosticData?.completed || false);
-
-      // Fetch certificate if program is 100% complete
-      const { data: certData } = await supabase
-        .from("certificates")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("course_id", courseId)
-        .maybeSingle();
-      
-      if (certData) {
-        setCertificate(certData);
-      }
-
-    } catch (error) {
-      console.error("Error fetching program data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // All modules are unlocked once enrolled - no weekly restrictions
-  const isModuleUnlocked = (_module: Module): boolean => {
-    return true;
-  };
-
-  const currentMission = missions.find(m => m.week_number === currentWeek);
-  const completedWeeks = missions
-    .filter(m => missionCompletions[m.id]?.status === 'approved')
-    .map(m => m.week_number);
-
-  const totalLessons = modules.reduce((acc, m) => acc + m.lessons.length, 0);
-  const completedLessons = Object.values(lessonProgress).filter(Boolean).length;
+  }, [celebration, refetch]);
 
   const handleLessonClick = (lessonId: string) => {
     navigate(`/student/lesson/${lessonId}`);
@@ -306,31 +65,113 @@ const ProgramCourseDetail = () => {
   };
 
   const handleDeliverySuccess = () => {
-    fetchAllData(); // Refresh data
+    refetch();
   };
 
-  if (loading) {
+  const handleDiagnosticComplete = () => {
+    refetch();
+  };
+
+  if (isLoading || !data) {
     return (
       <CourseSplashScreen 
-        courseTitle={course?.title || "Carregando programa..."}
+        courseTitle={data?.course?.title || "Carregando programa..."}
         autoProgress={true}
       />
     );
   }
 
-  // Sort modules: dynamic first, then by order (onboarding will be separate section)
-  const sortedModules = [...modules].sort((a, b) => {
+  const { 
+    course, 
+    enrollment, 
+    modules, 
+    missions, 
+    gamification, 
+    titles: programTitles, 
+    diagnostic, 
+    certificate,
+    current_week: currentWeek 
+  } = data;
+
+  // Transform modules for compatibility with existing components
+  const transformedModules = modules.map(m => ({
+    id: m.id,
+    title: m.title,
+    description: m.description,
+    order_index: m.order_index,
+    module_type: m.is_dynamic ? 'onboarding' : 'pillar',
+    unlock_week: m.unlock_week,
+    is_dynamic: m.is_dynamic,
+    lessons: m.lessons.map(l => ({
+      id: l.id,
+      title: l.title,
+      description: null,
+      duration_minutes: l.duration_minutes,
+      order_index: l.order_index,
+      is_free: false,
+      lesson_type: 'video',
+      lesson_label: null,
+    })),
+  }));
+
+  // Transform lesson progress for compatibility
+  const lessonProgress: Record<string, boolean> = {};
+  modules.forEach(m => {
+    m.lessons.forEach(l => {
+      lessonProgress[l.id] = l.completed;
+    });
+  });
+
+  // Transform missions for ProgramTimeline compatibility - add all required fields
+  const transformedMissions: WeeklyMission[] = missions.map(m => ({
+    id: m.id,
+    week_number: m.week_number,
+    month_number: Math.ceil(m.week_number / 4),
+    month_title: null,
+    title: m.title,
+    challenge_description: m.description || '',
+    why_do: null,
+    gamification_emoji: '🎯',
+    gamification_title: null,
+    gamification_reward: null,
+    xp_reward: m.xp_reward,
+    requires_proof: true,
+  }));
+
+  // Transform mission completions for ProgramTimeline with proper typing
+  const missionCompletions: Record<string, { mission_id: string; status: 'pending' | 'submitted' | 'approved' | 'rejected'; xp_earned: number }> = {};
+  missions.forEach(m => {
+    missionCompletions[m.id] = {
+      mission_id: m.id,
+      status: m.status,
+      xp_earned: m.xp_reward,
+    };
+  });
+
+  // Sort modules: dynamic first, then by order
+  const sortedModules = [...transformedModules].sort((a, b) => {
     if (a.is_dynamic && !b.is_dynamic) return -1;
     if (!a.is_dynamic && b.is_dynamic) return 1;
     return a.order_index - b.order_index;
   });
 
-  // Separate onboarding module for highlighted section
+  // Separate onboarding module
   const onboardingModule = sortedModules.find(m => m.module_type === 'onboarding');
   const onboardingWelcomeLesson = onboardingModule?.lessons[0];
-  
-  // Filter out onboarding from accordion (it's shown separately)
   const accordionModules = sortedModules.filter(m => m.module_type !== 'onboarding');
+
+  // Course gamification for sidebar
+  const courseGamification = {
+    xp: gamification.xp,
+    level: gamification.level,
+    current_title: gamification.current_title,
+    missions_completed: gamification.missions_completed,
+    week_progress: gamification.week_progress,
+    badges_earned: [] as string[],
+  };
+
+  const diagnosticCompleted = diagnostic?.is_completed || false;
+  const enrollmentDate = enrollment ? new Date(enrollment.enrolled_at) : null;
 
   return (
     <div className="min-h-screen bg-black">
@@ -364,11 +205,9 @@ const ProgramCourseDetail = () => {
             </div>
 
             {/* Current title badge */}
-            {courseGamification && (
-              <Badge variant="outline" className="border-secondary text-secondary">
-                {courseGamification.current_title}
-              </Badge>
-            )}
+            <Badge variant="outline" className="border-secondary text-secondary">
+              {gamification.current_title}
+            </Badge>
           </div>
         </header>
 
@@ -407,7 +246,7 @@ const ProgramCourseDetail = () => {
               </span>
             </div>
             <ProgramTimeline
-              missions={missions}
+              missions={transformedMissions}
               missionCompletions={missionCompletions}
               currentWeek={currentWeek}
               enrollmentDate={enrollmentDate}
@@ -424,7 +263,7 @@ const ProgramCourseDetail = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left: Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Ponto de Partida - Onboarding Section (FIRST!) */}
+            {/* Ponto de Partida - Onboarding Section */}
             {onboardingModule && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -485,10 +324,7 @@ const ProgramCourseDetail = () => {
                   {/* Diagnostic CTA */}
                   <DiagnosticCTA 
                     courseId={courseId!}
-                    onComplete={() => {
-                      setDiagnosticCompleted(true);
-                      fetchAllData();
-                    }}
+                    onComplete={handleDiagnosticComplete}
                   />
 
                   {/* Scheduling CTA */}
@@ -500,10 +336,9 @@ const ProgramCourseDetail = () => {
               </motion.div>
             )}
 
-
             {/* Content Modules Section */}
             <ContentModulesSection
-              modules={modules}
+              modules={transformedModules}
               lessonProgress={lessonProgress}
               onLessonClick={handleLessonClick}
             />
@@ -512,14 +347,12 @@ const ProgramCourseDetail = () => {
           {/* Right: Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-4">
-              {courseGamification && (
-                <CourseGamificationSidebar
-                  gamification={courseGamification}
-                  totalMissions={missions.length}
-                  allTitles={programTitles}
-                  courseId={courseId}
-                />
-              )}
+              <CourseGamificationSidebar
+                gamification={courseGamification}
+                totalMissions={missions.length}
+                allTitles={programTitles}
+                courseId={courseId}
+              />
             </div>
           </div>
         </div>
@@ -534,9 +367,16 @@ const ProgramCourseDetail = () => {
       />
 
       {/* Certificate Modal */}
-      {certificate && (
+      {certificate && certificate.student_name && certificate.course_title && certificate.completion_date && (
         <CertificateGenerator
-          certificate={certificate}
+          certificate={{
+            id: certificate.id,
+            certificate_number: certificate.certificate_number,
+            student_name: certificate.student_name,
+            course_title: certificate.course_title,
+            completion_date: certificate.completion_date,
+            issued_at: certificate.issued_at,
+          }}
           isOpen={showCertificateModal}
           onClose={() => setShowCertificateModal(false)}
         />

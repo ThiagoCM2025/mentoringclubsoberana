@@ -2588,6 +2588,10 @@ export type Database = {
           xp: number
         }[]
       }
+      get_program_detail_data: {
+        Args: { p_course_id: string; p_user_id: string }
+        Returns: Json
+      }
       get_program_leaderboard: {
         Args: { limit_count?: number; p_course_id: string }
         Returns: {
@@ -2601,6 +2605,7 @@ export type Database = {
           xp: number
         }[]
       }
+      get_student_dashboard_data: { Args: { p_user_id: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
