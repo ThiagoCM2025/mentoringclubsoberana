@@ -34,6 +34,8 @@ import { OnboardingModule } from "@/components/student/program/OnboardingModule"
 import { DiagnosticCTA } from "@/components/student/program/DiagnosticCTA";
 import { SchedulingCTA } from "@/components/student/program/SchedulingCTA";
 import { CertificateGenerator } from "@/components/student/CertificateGenerator";
+import { WeekCelebrationModal } from "@/components/student/program/WeekCelebrationModal";
+import { useRealtimeMissionCelebration } from "@/hooks/useRealtimeMissionCelebration";
 
 interface Course {
   id: string;
@@ -109,6 +111,16 @@ const ProgramCourseDetail = () => {
   const [diagnosticCompleted, setDiagnosticCompleted] = useState(false);
   const [certificate, setCertificate] = useState<any>(null);
   const [showCertificateModal, setShowCertificateModal] = useState(false);
+
+  // Realtime celebration hook
+  const { celebration, clearCelebration } = useRealtimeMissionCelebration(user?.id, courseId);
+
+  // Refresh data when a mission is approved via realtime
+  useEffect(() => {
+    if (celebration) {
+      fetchAllData();
+    }
+  }, [celebration]);
 
   useEffect(() => {
     if (courseId && user) {
@@ -683,6 +695,16 @@ const ProgramCourseDetail = () => {
           onClose={() => setShowCertificateModal(false)}
         />
       )}
+
+      {/* Week Celebration Modal */}
+      <WeekCelebrationModal
+        isOpen={!!celebration}
+        onClose={clearCelebration}
+        weekNumber={celebration?.weekNumber || 1}
+        missionTitle={celebration?.missionTitle || ""}
+        xpEarned={celebration?.xpEarned || 100}
+        emoji={celebration?.emoji || "🏆"}
+      />
     </div>
   );
 };
