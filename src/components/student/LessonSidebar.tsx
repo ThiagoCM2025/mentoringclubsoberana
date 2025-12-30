@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { CheckCircle, PlayCircle, Clock, ChevronDown, ChevronUp } from "lucide-react";
+import { CheckCircle, PlayCircle, Clock, ChevronDown, ChevronUp, Star } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -67,11 +67,15 @@ const LessonSidebar = ({ modules, currentLessonId, onLessonSelect }: LessonSideb
                       ? "bg-green-500/20 text-green-500"
                       : "bg-secondary/20 text-secondary"
                   )}>
-                    {moduleIndex + 1}
+                    {moduleIndex === 0 ? (
+                      <Star className="w-4 h-4" />
+                    ) : (
+                      moduleIndex
+                    )}
                   </div>
                   <div>
                     <p className="font-medium text-cream text-sm">
-                      {module.title}
+                      {moduleIndex > 0 ? `Módulo ${moduleIndex}: ` : ''}{module.title}
                     </p>
                     <p className="text-xs text-cream/50">
                       {completedCount}/{module.lessons.length} aulas

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from "react";
-import { PlayCircle, Pause, Play, Maximize, Minimize, Settings, PictureInPicture2, Volume2, VolumeX } from "lucide-react";
+import { PlayCircle, Pause, Play, Maximize, Minimize, Settings, PictureInPicture2, Volume2, VolumeX, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -337,8 +337,9 @@ const VideoPlayer = ({ url, onTimeUpdate, onEnded, initialTime = 0 }: VideoPlaye
           />
         </div>
         {/* Speed control hint for embedded videos */}
-        <div className="absolute bottom-4 left-4 bg-zinc-900/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs text-cream/60 border border-secondary/20">
-          💡 Use os controles do YouTube/Vimeo para velocidade e volume
+        <div className="absolute bottom-4 left-4 bg-secondary/90 backdrop-blur-sm px-4 py-2.5 rounded-lg text-sm text-secondary-foreground font-medium border border-secondary flex items-center gap-2 shadow-lg">
+          <Info className="w-4 h-4" />
+          Use os controles do YouTube/Vimeo para velocidade e volume
         </div>
         {/* Protection notice */}
         <div className="absolute bottom-4 right-4 bg-zinc-900/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs text-cream/40 border border-zinc-700">
