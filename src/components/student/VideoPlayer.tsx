@@ -325,9 +325,9 @@ const VideoPlayer = ({ url, onTimeUpdate, onEnded, initialTime = 0 }: VideoPlaye
 
   if (videoType === "youtube" || videoType === "vimeo") {
     return (
-      <div className="relative w-full h-full flex items-center justify-center bg-black">
+      <div className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
         {/* Centered video container with optimal sizing */}
-        <div className="relative w-full h-full max-w-[1400px] mx-auto flex items-center justify-center p-4">
+        <div className="relative w-full h-full max-w-[1400px] mx-auto flex items-center justify-center p-4 overflow-hidden">
           <div className="relative w-full aspect-video max-h-full rounded-lg overflow-hidden shadow-2xl">
             <iframe
               ref={iframeRef}
@@ -335,6 +335,9 @@ const VideoPlayer = ({ url, onTimeUpdate, onEnded, initialTime = 0 }: VideoPlaye
               className="absolute inset-0 w-full h-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               allowFullScreen
+              scrolling="no"
+              frameBorder={0}
+              style={{ overflow: 'hidden' }}
               title="Video player"
             />
           </div>

@@ -25,9 +25,11 @@ interface LessonSidebarProps {
 }
 
 const LessonSidebar = ({ modules, currentLessonId, onLessonSelect }: LessonSidebarProps) => {
-  const [expandedModules, setExpandedModules] = useState<string[]>(
-    modules.map(m => m.id)
-  );
+  // Only expand the module containing the current lesson
+  const [expandedModules, setExpandedModules] = useState<string[]>(() => {
+    const currentModule = modules.find(m => m.lessons.some(l => l.id === currentLessonId));
+    return currentModule ? [currentModule.id] : modules.length > 0 ? [modules[0].id] : [];
+  });
 
   const toggleModule = (moduleId: string) => {
     setExpandedModules(prev =>
