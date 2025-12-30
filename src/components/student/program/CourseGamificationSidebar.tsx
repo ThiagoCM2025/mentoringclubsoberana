@@ -101,9 +101,14 @@ export const CourseGamificationSidebar = ({
         </div>
 
         {nextTitle && (
-          <div className="flex items-center gap-2 text-sm text-cream/60 bg-black/20 rounded-lg p-2">
-            <ChevronRight className="w-4 h-4" />
-            <span>Próximo: {nextTitle.emoji} {nextTitle.title}</span>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm text-cream/60 bg-black/20 rounded-lg p-2">
+              <ChevronRight className="w-4 h-4" />
+              <span>Próximo: {nextTitle.emoji} {nextTitle.title}</span>
+            </div>
+            <p className="text-xs text-cream/50 text-center italic">
+              Complete a missão da Semana {nextTitle.week_number} para desbloquear
+            </p>
           </div>
         )}
       </motion.div>
@@ -115,9 +120,14 @@ export const CourseGamificationSidebar = ({
         transition={{ delay: 0.05 }}
         className="bg-zinc-900/80 rounded-2xl p-5 border border-secondary/20"
       >
-        <div className="flex items-center gap-2 mb-4">
-          <Sparkles className="w-5 h-5 text-secondary" />
-          <span className="font-medium text-cream">Jornada de Títulos</span>
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-1">
+            <Sparkles className="w-5 h-5 text-secondary" />
+            <span className="font-medium text-cream">Jornada de Títulos</span>
+          </div>
+          <p className="text-xs text-cream/50">
+            Cada título é desbloqueado ao ter sua missão semanal aprovada
+          </p>
         </div>
 
         {/* Mini Timeline */}
@@ -154,9 +164,9 @@ export const CourseGamificationSidebar = ({
                         isCurrent && "text-secondary",
                         isFuture && "text-cream/40"
                       )}>
-                        {isAchieved && "✓ Conquistado"}
-                        {isCurrent && "★ Você está aqui"}
-                        {isFuture && "🔒 Bloqueado"}
+                        {isAchieved && `✓ Conquistado na Semana ${title.week_number}`}
+                        {isCurrent && "★ Seu título atual"}
+                        {isFuture && `🔒 Complete a missão da Semana ${title.week_number}`}
                       </div>
                     </div>
                   </TooltipContent>
