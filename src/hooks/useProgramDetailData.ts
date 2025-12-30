@@ -8,7 +8,6 @@ interface ProgramCourse {
   thumbnail_url: string | null;
   program_type: string | null;
   duration_weeks: number;
-  welcome_video_url: string | null;
   calendar_link: string | null;
 }
 
