@@ -5,12 +5,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { 
   ArrowLeft, 
   PlayCircle, 
@@ -27,15 +21,16 @@ import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import { CourseSplashScreen } from "@/components/CourseSplashScreen";
 import { ProgramTimeline } from "@/components/student/program/ProgramTimeline";
-import { WeeklyMissionCard, WeeklyMission } from "@/components/student/program/WeeklyMissionCard";
+import { WeeklyMission } from "@/components/student/program/WeeklyMissionCard";
 import { MissionDeliveryModal } from "@/components/student/program/MissionDeliveryModal";
 import { CourseGamificationSidebar } from "@/components/student/program/CourseGamificationSidebar";
-import { OnboardingModule } from "@/components/student/program/OnboardingModule";
 import { DiagnosticCTA } from "@/components/student/program/DiagnosticCTA";
 import { SchedulingCTA } from "@/components/student/program/SchedulingCTA";
 import { CertificateGenerator } from "@/components/student/CertificateGenerator";
 import { WeekCelebrationModal } from "@/components/student/program/WeekCelebrationModal";
 import { useRealtimeMissionCelebration } from "@/hooks/useRealtimeMissionCelebration";
+import { WeeklyJourneySection } from "@/components/student/program/WeeklyJourneySection";
+import { ContentModulesSection } from "@/components/student/program/ContentModulesSection";
 
 interface Course {
   id: string;
@@ -507,160 +502,21 @@ const ProgramCourseDetail = () => {
               </motion.div>
             )}
 
-            {/* Current Week Mission - AFTER Onboarding */}
-            {currentMission && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <h2 className="text-xl font-serif font-bold text-cream mb-4 flex items-center gap-2">
-                  <Target className="w-5 h-5 text-secondary" />
-                  Sua Missão Esta Semana
-                </h2>
-                <WeeklyMissionCard
-                  mission={currentMission}
-                  userCompletion={missionCompletions[currentMission.id]}
-                  onSubmit={() => handleMissionSubmit(currentMission)}
-                  isCurrentWeek={true}
-                />
-              </motion.div>
-            )}
+            {/* Weekly Journey Section - Missions */}
+            <WeeklyJourneySection
+              missions={missions}
+              missionCompletions={missionCompletions}
+              currentWeek={currentWeek}
+              enrollmentDate={enrollmentDate}
+              onMissionSubmit={handleMissionSubmit}
+            />
 
-            {/* Modules */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <h2 className="text-xl font-serif font-bold text-cream mb-4 flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-secondary" />
-                Conteúdo do Programa
-              </h2>
-
-              <Accordion type="multiple" className="space-y-3">
-                {accordionModules.map((module, moduleIndex) => {
-                  const moduleCompleted = module.lessons.every(l => lessonProgress[l.id]);
-                  const moduleLessonsCompleted = module.lessons.filter(l => lessonProgress[l.id]).length;
-
-                  // Get lesson badge based on lesson_label (specific) or lesson_type (fallback)
-                  const getLessonBadge = (lesson: Lesson) => {
-                    // Priority: lesson_label (specific labels like estrategico, tecnico)
-                    if (lesson.lesson_label === 'estrategico') {
-                      return <Badge className="bg-secondary/20 text-secondary text-[10px] border-0">VÍDEO ESTRATÉGICO</Badge>;
-                    }
-                    if (lesson.lesson_label === 'tecnico') {
-                      return <Badge className="bg-blue-500/20 text-blue-400 text-[10px] border-0">VÍDEO TÉCNICO</Badge>;
-                    }
-                    if (lesson.lesson_label === 'material') {
-                      return <Badge className="bg-green-500/20 text-green-400 text-[10px] border-0">MATERIAL</Badge>;
-                    }
-                    if (lesson.lesson_label === 'acao') {
-                      return <Badge className="bg-orange-500/20 text-orange-400 text-[10px] border-0">AÇÃO</Badge>;
-                    }
-                    // Fallback to lesson_type
-                    switch (lesson.lesson_type) {
-                      case 'video':
-                        return <Badge variant="outline" className="border-secondary/30 text-secondary text-[10px]">VÍDEO</Badge>;
-                      case 'text':
-                        return <Badge variant="outline" className="border-blue-400/30 text-blue-400 text-[10px]">MATERIAL</Badge>;
-                      case 'action':
-                        return <Badge variant="outline" className="border-green-400/30 text-green-400 text-[10px]">AÇÃO</Badge>;
-                      default:
-                        return null;
-                    }
-                  };
-
-                  return (
-                    <AccordionItem
-                      key={module.id}
-                      value={module.id}
-                      className="bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden"
-                    >
-                      <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-secondary/5 transition-colors">
-                        <div className="flex items-center gap-4 text-left w-full">
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold ${
-                            moduleCompleted
-                              ? "bg-green-500/20 text-green-400"
-                              : module.is_dynamic
-                                ? "bg-secondary text-black"
-                                : "bg-secondary/20 text-secondary"
-                          }`}>
-                            {moduleCompleted ? (
-                              <CheckCircle className="w-5 h-5" />
-                            ) : module.is_dynamic ? (
-                              <Target className="w-5 h-5" />
-                            ) : (
-                              moduleIndex + 1
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <h3 className="font-serif font-semibold text-cream">
-                                {module.title}
-                              </h3>
-                              {module.is_dynamic && (
-                                <Badge className="bg-secondary/20 text-secondary text-[10px]">
-                                  Atualizado
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-xs text-cream/50 mt-0.5">
-                              {moduleLessonsCompleted}/{module.lessons.length} aulas concluídas
-                            </p>
-                          </div>
-                        </div>
-                      </AccordionTrigger>
-                      
-                      <AccordionContent className="px-5 pb-4">
-                        <div className="space-y-1 pt-2">
-                          {module.lessons.map((lesson) => {
-                            const isCompleted = lessonProgress[lesson.id];
-                            
-                            return (
-                              <motion.button
-                                key={lesson.id}
-                                onClick={() => handleLessonClick(lesson.id)}
-                                whileHover={{ x: 4 }}
-                                className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/10 transition-all text-left group"
-                              >
-                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                                  isCompleted 
-                                    ? "bg-green-500/20 text-green-400" 
-                                    : "bg-zinc-800 text-cream/50 group-hover:bg-secondary/20 group-hover:text-secondary"
-                                }`}>
-                                  {isCompleted ? (
-                                    <CheckCircle className="w-4 h-4" />
-                                  ) : (
-                                    <PlayCircle className="w-4 h-4" />
-                                  )}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className={`text-sm font-medium transition-colors truncate ${
-                                    isCompleted ? "text-cream/50" : "text-cream group-hover:text-secondary"
-                                  }`}>
-                                    {lesson.title}
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-2 shrink-0">
-                                  {getLessonBadge(lesson)}
-                                  {lesson.duration_minutes && (
-                                    <span className="text-xs text-cream/40 flex items-center gap-1">
-                                      <Clock className="w-3 h-3" />
-                                      {lesson.duration_minutes}m
-                                    </span>
-                                  )}
-                                </div>
-                              </motion.button>
-                            );
-                          })}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  );
-                })}
-              </Accordion>
-            </motion.div>
+            {/* Content Modules Section */}
+            <ContentModulesSection
+              modules={modules}
+              lessonProgress={lessonProgress}
+              onLessonClick={handleLessonClick}
+            />
           </div>
 
           {/* Right: Sidebar */}
