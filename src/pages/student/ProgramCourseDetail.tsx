@@ -29,7 +29,7 @@ import { SchedulingCTA } from "@/components/student/program/SchedulingCTA";
 import { CertificateGenerator } from "@/components/student/CertificateGenerator";
 import { WeekCelebrationModal } from "@/components/student/program/WeekCelebrationModal";
 import { useRealtimeMissionCelebration } from "@/hooks/useRealtimeMissionCelebration";
-import { WeeklyJourneySection } from "@/components/student/program/WeeklyJourneySection";
+
 import { ContentModulesSection } from "@/components/student/program/ContentModulesSection";
 
 interface Course {
@@ -500,14 +500,6 @@ const ProgramCourseDetail = () => {
               </motion.div>
             )}
 
-            {/* Weekly Journey Section - Missions */}
-            <WeeklyJourneySection
-              missions={missions}
-              missionCompletions={missionCompletions}
-              currentWeek={currentWeek}
-              enrollmentDate={enrollmentDate}
-              onMissionSubmit={handleMissionSubmit}
-            />
 
             {/* Content Modules Section */}
             <ContentModulesSection
