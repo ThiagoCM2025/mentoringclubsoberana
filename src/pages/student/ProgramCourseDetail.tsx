@@ -27,6 +27,7 @@ import { CertificateGenerator } from "@/components/student/CertificateGenerator"
 import { WeekCelebrationModal } from "@/components/student/program/WeekCelebrationModal";
 import { useRealtimeMissionCelebration } from "@/hooks/useRealtimeMissionCelebration";
 import { ContentModulesSection } from "@/components/student/program/ContentModulesSection";
+import { CurrentMissionSection } from "@/components/student/program/CurrentMissionSection";
 
 // Local type for mission completions in timeline
 type MissionCompletionStatus = 'pending' | 'submitted' | 'approved' | 'rejected';
@@ -135,20 +136,20 @@ const ProgramCourseDetail = () => {
     });
   });
 
-  // Transform missions for ProgramTimeline compatibility - add all required fields
+  // Transform missions for ProgramTimeline compatibility - use actual data from DB
   const transformedMissions: WeeklyMission[] = missions.map(m => ({
     id: m.id,
     week_number: m.week_number,
-    month_number: Math.ceil(m.week_number / 4),
-    month_title: null,
+    month_number: (m as any).month_number || Math.ceil(m.week_number / 4),
+    month_title: (m as any).month_title || null,
     title: m.title,
     challenge_description: m.description || '',
-    why_do: null,
-    gamification_emoji: '🎯',
-    gamification_title: null,
-    gamification_reward: null,
+    why_do: (m as any).why_do || null,
+    gamification_emoji: (m as any).gamification_emoji || '🎯',
+    gamification_title: (m as any).gamification_title || null,
+    gamification_reward: (m as any).gamification_reward || null,
     xp_reward: m.xp_reward,
-    requires_proof: true,
+    requires_proof: (m as any).requires_proof ?? true,
   }));
 
   // Transform mission completions for ProgramTimeline with proper typing
@@ -360,6 +361,19 @@ const ProgramCourseDetail = () => {
                   />
                 </div>
               </motion.div>
+            )}
+
+            {/* Current Mission Section with Arena */}
+            {user && (
+              <CurrentMissionSection
+                missions={transformedMissions}
+                missionCompletions={missionCompletions}
+                currentWeek={currentWeek}
+                enrollmentDate={enrollmentDate}
+                onSubmit={handleMissionSubmit}
+                courseId={courseId!}
+                userId={user.id}
+              />
             )}
 
             {/* Content Modules Section */}
