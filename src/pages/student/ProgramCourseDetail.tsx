@@ -335,6 +335,18 @@ const ProgramCourseDetail = () => {
             </motion.div>
           )}
 
+          {/* Row 1 Right: Sidebar - ao lado de Ponto de Partida */}
+          <div className="lg:col-span-1 lg:row-span-4">
+            <div className="sticky top-4">
+              <CourseGamificationSidebar
+                gamification={courseGamification}
+                totalMissions={missions.length}
+                allTitles={programTitles}
+                courseId={courseId}
+              />
+            </div>
+          </div>
+
           {/* Row 2: Sua Jornada de 12 Semanas - Timeline */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -362,17 +374,6 @@ const ProgramCourseDetail = () => {
             />
           </motion.div>
 
-          {/* Row 2 Right: Sidebar - spans multiple rows on desktop */}
-          <div className="lg:col-span-1 lg:row-span-3">
-            <div className="sticky top-4">
-              <CourseGamificationSidebar
-                gamification={courseGamification}
-                totalMissions={missions.length}
-                allTitles={programTitles}
-                courseId={courseId}
-              />
-            </div>
-          </div>
 
           {/* Row 2: Current Mission Section */}
           {user && (
