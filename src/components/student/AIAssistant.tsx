@@ -29,13 +29,45 @@ interface AIAssistantProps {
   contextTitle?: string;
 }
 
+const safeUUID = (): string => {
+  try {
+    if (
+      typeof crypto !== "undefined" &&
+      "randomUUID" in crypto &&
+      typeof crypto.randomUUID === "function"
+    ) {
+      return crypto.randomUUID();
+    }
+
+    if (
+      typeof crypto !== "undefined" &&
+      "getRandomValues" in crypto &&
+      typeof crypto.getRandomValues === "function"
+    ) {
+      const buf = new Uint8Array(16);
+      crypto.getRandomValues(buf);
+      // RFC 4122 v4
+      buf[6] = (buf[6] & 0x0f) | 0x40;
+      buf[8] = (buf[8] & 0x3f) | 0x80;
+      const hex = Array.from(buf)
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+  } catch {
+    // ignore
+  }
+
+  return `id_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+};
+
 export function AIAssistant({ contextType = "general", contextId, contextTitle }: AIAssistantProps) {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId] = useState(() => crypto.randomUUID());
+  const [sessionId] = useState(() => safeUUID());
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -49,12 +81,12 @@ export function AIAssistant({ contextType = "general", contextId, contextTitle }
     if (isOpen && messages.length === 0) {
       // Add welcome message
       const welcomeMessage: Message = {
-        id: crypto.randomUUID(),
+        id: safeUUID(),
         role: "assistant",
-        content: contextTitle 
+        content: contextTitle
           ? `Olá! 👋 Sou a assistente IA da Soberana. Estou aqui para ajudar com suas dúvidas sobre "${contextTitle}". Como posso ajudar?`
           : "Olá! 👋 Sou a assistente IA da Soberana. Posso ajudar com dúvidas sobre as aulas, resumir conteúdos ou sugerir próximos passos. Como posso ajudar você hoje?",
-        timestamp: new Date()
+        timestamp: new Date(),
       };
       setMessages([welcomeMessage]);
     }
@@ -64,13 +96,13 @@ export function AIAssistant({ contextType = "general", contextId, contextTitle }
     if (!input.trim() || isLoading || !user) return;
 
     const userMessage: Message = {
-      id: crypto.randomUUID(),
+      id: safeUUID(),
       role: "user",
       content: input.trim(),
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
@@ -82,34 +114,35 @@ export function AIAssistant({ contextType = "general", contextId, contextTitle }
         role: "user",
         content: userMessage.content,
         context_type: contextType,
-        context_id: contextId
+        context_id: contextId,
       });
 
       // Call AI endpoint
       const response = await supabase.functions.invoke("ai-assistant", {
         body: {
-          messages: messages.concat(userMessage).map(m => ({
+          messages: messages.concat(userMessage).map((m) => ({
             role: m.role,
-            content: m.content
+            content: m.content,
           })),
           contextType,
           contextId,
-          contextTitle
-        }
+          contextTitle,
+        },
       });
 
       if (response.error) throw response.error;
 
-      const assistantContent = response.data?.content || "Desculpe, não consegui processar sua mensagem.";
+      const assistantContent =
+        response.data?.content || "Desculpe, não consegui processar sua mensagem.";
 
       const assistantMessage: Message = {
-        id: crypto.randomUUID(),
+        id: safeUUID(),
         role: "assistant",
         content: assistantContent,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, assistantMessage]);
 
       // Save assistant message to history
       await supabase.from("ai_chat_history").insert({
@@ -118,18 +151,17 @@ export function AIAssistant({ contextType = "general", contextId, contextTitle }
         role: "assistant",
         content: assistantContent,
         context_type: contextType,
-        context_id: contextId
+        context_id: contextId,
       });
-
     } catch (error) {
       console.error("AI Assistant error:", error);
       const errorMessage: Message = {
-        id: crypto.randomUUID(),
+        id: safeUUID(),
         role: "assistant",
         content: "Desculpe, ocorreu um erro ao processar sua mensagem. Tente novamente.",
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
