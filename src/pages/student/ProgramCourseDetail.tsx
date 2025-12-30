@@ -93,13 +93,26 @@ const ProgramCourseDetail = () => {
     current_week: currentWeek 
   } = data;
 
+  // Determine module type based on order_index or title
+  const getModuleType = (m: typeof modules[0]): 'onboarding' | 'pillar' | 'dynamic' => {
+    // Onboarding is the first module (order_index 0) OR has specific keywords
+    const titleLower = m.title.toLowerCase();
+    if (m.order_index === 0 || titleLower.includes('ponto de partida') || titleLower.includes('módulo 0')) {
+      return 'onboarding';
+    }
+    if (m.is_dynamic) {
+      return 'dynamic';
+    }
+    return 'pillar';
+  };
+
   // Transform modules for compatibility with existing components
   const transformedModules = modules.map(m => ({
     id: m.id,
     title: m.title,
     description: m.description,
     order_index: m.order_index,
-    module_type: m.is_dynamic ? 'onboarding' : 'pillar',
+    module_type: getModuleType(m),
     unlock_week: m.unlock_week,
     is_dynamic: m.is_dynamic,
     lessons: m.lessons.map(l => ({
@@ -148,16 +161,29 @@ const ProgramCourseDetail = () => {
     };
   });
 
-  // Sort modules: dynamic first, then by order
+  // Sort modules: onboarding first, then pillars, then dynamic
   const sortedModules = [...transformedModules].sort((a, b) => {
-    if (a.is_dynamic && !b.is_dynamic) return -1;
-    if (!a.is_dynamic && b.is_dynamic) return 1;
+    const typeOrder = { onboarding: 0, pillar: 1, dynamic: 2 };
+    const aOrder = typeOrder[a.module_type] ?? 1;
+    const bOrder = typeOrder[b.module_type] ?? 1;
+    if (aOrder !== bOrder) return aOrder - bOrder;
     return a.order_index - b.order_index;
   });
 
-  // Separate onboarding module
+  // Separate onboarding module and find welcome lesson
   const onboardingModule = sortedModules.find(m => m.module_type === 'onboarding');
-  const onboardingWelcomeLesson = onboardingModule?.lessons[0];
+  
+  // Find welcome lesson: prefer order_index 0, fallback to title match, fallback to first
+  const findWelcomeLesson = (lessons: typeof onboardingModule.lessons) => {
+    if (!lessons || lessons.length === 0) return undefined;
+    const byIndex = lessons.find(l => l.order_index === 0);
+    if (byIndex) return byIndex;
+    const byTitle = lessons.find(l => l.title.toLowerCase().includes('boas-vindas') || l.title.toLowerCase().includes('boas vindas'));
+    if (byTitle) return byTitle;
+    return lessons[0];
+  };
+  
+  const onboardingWelcomeLesson = onboardingModule ? findWelcomeLesson(onboardingModule.lessons) : undefined;
   const accordionModules = sortedModules.filter(m => m.module_type !== 'onboarding');
 
   // Course gamification for sidebar
