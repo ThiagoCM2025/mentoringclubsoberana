@@ -50,9 +50,17 @@ export const CourseGamificationSidebar = ({
   const [activeTab, setActiveTab] = useState("progress");
   const progressPercent = (gamification.missions_completed / totalMissions) * 100;
   
-  // Find next title
-  const currentTitleIndex = allTitles.findIndex(t => t.title === gamification.current_title);
-  const nextTitle = allTitles[currentTitleIndex + 1];
+  // Create complete titles array including initial title (week 0)
+  const titlesWithInitial: ProgramTitle[] = [
+    { week_number: 0, title: "Advogada Invisível", emoji: "🔍" },
+    ...allTitles
+  ];
+  
+  // Find current title index in the complete array
+  const currentTitleIndex = titlesWithInitial.findIndex(t => t.title === gamification.current_title);
+  // If not found, default to 0 (initial title)
+  const safeCurrentIndex = currentTitleIndex >= 0 ? currentTitleIndex : 0;
+  const nextTitle = titlesWithInitial[safeCurrentIndex + 1];
 
   // Calculate XP to next level
   const xpForNextLevel = (gamification.level) * 200;
@@ -115,17 +123,17 @@ export const CourseGamificationSidebar = ({
         {/* Mini Timeline */}
         <TooltipProvider>
           <div className="flex justify-between items-center mb-4 px-1">
-            {allTitles.map((title, index) => {
-              const isAchieved = index < currentTitleIndex;
-              const isCurrent = index === currentTitleIndex;
-              const isFuture = index > currentTitleIndex;
+            {titlesWithInitial.map((title, index) => {
+              const isAchieved = index < safeCurrentIndex;
+              const isCurrent = index === safeCurrentIndex;
+              const isFuture = index > safeCurrentIndex;
               
               return (
                 <Tooltip key={title.week_number}>
                   <TooltipTrigger asChild>
                     <div 
                       className={cn(
-                        "w-3 h-3 rounded-full cursor-pointer transition-all duration-300",
+                        "w-2.5 h-2.5 rounded-full cursor-pointer transition-all duration-300",
                         isAchieved && "bg-secondary",
                         isCurrent && "bg-secondary ring-2 ring-secondary/50 ring-offset-1 ring-offset-zinc-900 animate-pulse",
                         isFuture && "bg-zinc-700"
@@ -138,7 +146,7 @@ export const CourseGamificationSidebar = ({
                         {title.emoji} {title.title}
                       </div>
                       <div className="text-xs text-cream/60">
-                        Semana {title.week_number}
+                        {title.week_number === 0 ? "Início" : `Semana ${title.week_number}`}
                       </div>
                       <div className={cn(
                         "text-xs mt-1",
@@ -160,19 +168,19 @@ export const CourseGamificationSidebar = ({
 
         {/* Progress Bar */}
         <Progress 
-          value={(currentTitleIndex / Math.max(allTitles.length - 1, 1)) * 100} 
+          value={(safeCurrentIndex / Math.max(titlesWithInitial.length - 1, 1)) * 100} 
           className="h-2 bg-secondary/20 mb-3" 
         />
 
         {/* Remaining Titles Text */}
         <div className="text-center">
-          {currentTitleIndex >= allTitles.length - 1 ? (
+          {safeCurrentIndex >= titlesWithInitial.length - 1 ? (
             <p className="text-sm text-secondary font-medium">
               👸 Você alcançou Advogada Soberana!
             </p>
           ) : (
             <p className="text-sm text-cream/70">
-              <span className="text-secondary font-medium">{allTitles.length - 1 - currentTitleIndex}</span> título{allTitles.length - 1 - currentTitleIndex !== 1 ? 's' : ''} para <span className="text-secondary">Advogada Soberana</span> 👸
+              <span className="text-secondary font-medium">{titlesWithInitial.length - 1 - safeCurrentIndex}</span> título{titlesWithInitial.length - 1 - safeCurrentIndex !== 1 ? 's' : ''} para <span className="text-secondary">Advogada Soberana</span> 👸
             </p>
           )}
         </div>
