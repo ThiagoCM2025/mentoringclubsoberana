@@ -407,14 +407,12 @@ const ProgramCourseDetail = () => {
               </span>
             </div>
             <ProgramTimeline
-              totalWeeks={12}
+              missions={missions}
+              missionCompletions={missionCompletions}
               currentWeek={currentWeek}
-              completedWeeks={completedWeeks}
-              onWeekClick={(week) => {
-                const mission = missions.find(m => m.week_number === week);
-                if (mission) {
-                  setSelectedMission(mission);
-                }
+              enrollmentDate={enrollmentDate}
+              onWeekClick={(mission) => {
+                setSelectedMission(mission);
               }}
             />
           </motion.div>
