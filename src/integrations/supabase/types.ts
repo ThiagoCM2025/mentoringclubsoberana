@@ -1635,6 +1635,56 @@ export type Database = {
         }
         Relationships: []
       }
+      mission_comments: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_approved: boolean | null
+          is_delivery: boolean | null
+          mission_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_approved?: boolean | null
+          is_delivery?: boolean | null
+          mission_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_approved?: boolean | null
+          is_delivery?: boolean | null
+          mission_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mission_comments_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       module_completions: {
         Row: {
           completed_at: string
