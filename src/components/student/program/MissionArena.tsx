@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { WeekCompletionRanking } from "./WeekCompletionRanking";
 
 interface MissionComment {
   id: string;
@@ -208,6 +209,13 @@ export const MissionArena = ({
             transition={{ duration: 0.2 }}
           >
             <div className="border-t border-secondary/10 p-4 space-y-4">
+              {/* Week Completion Ranking */}
+              <WeekCompletionRanking
+                missionId={missionId}
+                weekNumber={weekNumber}
+                currentUserId={userId}
+              />
+
               {/* New Comment Input */}
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
