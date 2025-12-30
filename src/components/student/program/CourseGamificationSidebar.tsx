@@ -10,10 +10,12 @@ import {
   Award,
   Crown,
   ChevronRight,
-  Users
+  Users,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProgramLeaderboard } from "./ProgramLeaderboard";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CourseGamificationData {
   xp: number;
@@ -96,6 +98,84 @@ export const CourseGamificationSidebar = ({
             <span>Próximo: {nextTitle.emoji} {nextTitle.title}</span>
           </div>
         )}
+      </motion.div>
+
+      {/* Title Journey Progress */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+        className="bg-zinc-900/80 rounded-2xl p-5 border border-secondary/20"
+      >
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles className="w-5 h-5 text-secondary" />
+          <span className="font-medium text-cream">Jornada de Títulos</span>
+        </div>
+
+        {/* Mini Timeline */}
+        <TooltipProvider>
+          <div className="flex justify-between items-center mb-4 px-1">
+            {allTitles.map((title, index) => {
+              const isAchieved = index < currentTitleIndex;
+              const isCurrent = index === currentTitleIndex;
+              const isFuture = index > currentTitleIndex;
+              
+              return (
+                <Tooltip key={title.week_number}>
+                  <TooltipTrigger asChild>
+                    <div 
+                      className={cn(
+                        "w-3 h-3 rounded-full cursor-pointer transition-all duration-300",
+                        isAchieved && "bg-secondary",
+                        isCurrent && "bg-secondary ring-2 ring-secondary/50 ring-offset-1 ring-offset-zinc-900 animate-pulse",
+                        isFuture && "bg-zinc-700"
+                      )}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="bg-zinc-800 border-secondary/30">
+                    <div className="text-center">
+                      <div className="font-medium text-cream">
+                        {title.emoji} {title.title}
+                      </div>
+                      <div className="text-xs text-cream/60">
+                        Semana {title.week_number}
+                      </div>
+                      <div className={cn(
+                        "text-xs mt-1",
+                        isAchieved && "text-green-400",
+                        isCurrent && "text-secondary",
+                        isFuture && "text-cream/40"
+                      )}>
+                        {isAchieved && "✓ Conquistado"}
+                        {isCurrent && "★ Você está aqui"}
+                        {isFuture && "🔒 Bloqueado"}
+                      </div>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })}
+          </div>
+        </TooltipProvider>
+
+        {/* Progress Bar */}
+        <Progress 
+          value={(currentTitleIndex / Math.max(allTitles.length - 1, 1)) * 100} 
+          className="h-2 bg-secondary/20 mb-3" 
+        />
+
+        {/* Remaining Titles Text */}
+        <div className="text-center">
+          {currentTitleIndex >= allTitles.length - 1 ? (
+            <p className="text-sm text-secondary font-medium">
+              👸 Você alcançou Advogada Soberana!
+            </p>
+          ) : (
+            <p className="text-sm text-cream/70">
+              <span className="text-secondary font-medium">{allTitles.length - 1 - currentTitleIndex}</span> título{allTitles.length - 1 - currentTitleIndex !== 1 ? 's' : ''} para <span className="text-secondary">Advogada Soberana</span> 👸
+            </p>
+          )}
+        </div>
       </motion.div>
 
       {/* XP Card */}
