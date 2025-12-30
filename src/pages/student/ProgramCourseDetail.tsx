@@ -375,7 +375,16 @@ const ProgramCourseDetail = () => {
           </motion.div>
 
 
-          {/* Row 2: Current Mission Section */}
+          {/* Row 2: Content Modules Section - Conteúdo do Programa */}
+          <div className="lg:col-span-2">
+            <ContentModulesSection
+              modules={transformedModules}
+              lessonProgress={lessonProgress}
+              onLessonClick={handleLessonClick}
+            />
+          </div>
+
+          {/* Row 3: Sua Jornada de 12 Semanas - Timeline */}
           {user && (
             <div className="lg:col-span-2">
               <CurrentMissionSection
@@ -389,15 +398,6 @@ const ProgramCourseDetail = () => {
               />
             </div>
           )}
-
-          {/* Row 3: Content Modules Section */}
-          <div className="lg:col-span-2">
-            <ContentModulesSection
-              modules={transformedModules}
-              lessonProgress={lessonProgress}
-              onLessonClick={handleLessonClick}
-            />
-          </div>
         </div>
       </main>
 
