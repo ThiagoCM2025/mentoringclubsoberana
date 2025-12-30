@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, PlayCircle, Clock, ChevronDown, ChevronUp, Star } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Progress } from "@/components/ui/progress";
 
 interface Lesson {
   id: string;
@@ -73,13 +74,22 @@ const LessonSidebar = ({ modules, currentLessonId, onLessonSelect }: LessonSideb
                       moduleIndex
                     )}
                   </div>
-                  <div>
-                    <p className="font-medium text-cream text-sm">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-cream text-sm truncate">
                       {moduleIndex > 0 ? `Módulo ${moduleIndex}: ` : ''}{module.title}
                     </p>
-                    <p className="text-xs text-cream/50">
-                      {completedCount}/{module.lessons.length} aulas
-                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Progress 
+                        value={(completedCount / module.lessons.length) * 100} 
+                        className="flex-1 h-1.5 bg-zinc-700 [&>div]:bg-secondary"
+                      />
+                      <span className={cn(
+                        "text-xs font-medium min-w-[32px] text-right",
+                        completedCount === module.lessons.length ? "text-green-500" : "text-cream/50"
+                      )}>
+                        {Math.round((completedCount / module.lessons.length) * 100)}%
+                      </span>
+                    </div>
                   </div>
                 </div>
                 {isExpanded ? (

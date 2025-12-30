@@ -326,20 +326,23 @@ const VideoPlayer = ({ url, onTimeUpdate, onEnded, initialTime = 0 }: VideoPlaye
   if (videoType === "youtube" || videoType === "vimeo") {
     return (
       <div className="relative w-full h-full flex items-center justify-center bg-black">
-        <div className="relative w-full max-w-5xl mx-auto aspect-video">
-          <iframe
-            ref={iframeRef}
-            src={embedUrl || ""}
-            className="absolute inset-0 w-full h-full rounded-lg"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-            allowFullScreen
-            title="Video player"
-          />
+        {/* Centered video container with optimal sizing */}
+        <div className="relative w-full h-full max-w-[1400px] mx-auto flex items-center justify-center p-4">
+          <div className="relative w-full aspect-video max-h-full rounded-lg overflow-hidden shadow-2xl">
+            <iframe
+              ref={iframeRef}
+              src={embedUrl || ""}
+              className="absolute inset-0 w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allowFullScreen
+              title="Video player"
+            />
+          </div>
         </div>
-        {/* Speed control hint for embedded videos */}
-        <div className="absolute bottom-4 left-4 bg-secondary/90 backdrop-blur-sm px-4 py-2.5 rounded-lg text-sm text-secondary-foreground font-medium border border-secondary flex items-center gap-2 shadow-lg">
-          <Info className="w-4 h-4" />
-          Use os controles do YouTube/Vimeo para velocidade e volume
+        {/* Discrete hint badge at top */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm px-4 py-2 rounded-full text-xs text-cream/70 border border-secondary/30 flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+          <Info className="w-3.5 h-3.5 text-secondary" />
+          <span>Use os controles nativos do player para velocidade e volume</span>
         </div>
         {/* Protection notice */}
         <div className="absolute bottom-4 right-4 bg-zinc-900/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs text-cream/40 border border-zinc-700">

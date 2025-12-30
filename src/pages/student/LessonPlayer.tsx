@@ -416,8 +416,15 @@ const LessonPlayer = () => {
       <div className="flex">
         {/* Main Content */}
         <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? "lg:mr-80" : ""}`}>
-          {/* Video Player - Black Background for immersion */}
-          <div className={`bg-black relative ${theaterMode ? "h-[80vh]" : "aspect-video max-h-[70vh]"}`}>
+          {/* Video Player - Optimized for YouTube/Vimeo embeds */}
+          <div 
+            className="bg-black relative w-full flex items-center justify-center"
+            style={{ 
+              height: theaterMode ? '80vh' : 'calc(100vh - 280px)', 
+              maxHeight: '720px', 
+              minHeight: '400px' 
+            }}
+          >
             <VideoPlayer
               url={lesson?.video_url || null}
               onTimeUpdate={handleTimeUpdate}
