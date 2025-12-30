@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { CheckCircle, PlayCircle, Clock, ChevronDown, ChevronUp, Star } from "lucide-react";
+import { CheckCircle, PlayCircle, Clock, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
@@ -40,7 +40,7 @@ const LessonSidebar = ({ modules, currentLessonId, onLessonSelect }: LessonSideb
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-zinc-950">
+    <div className="h-full overflow-y-auto overflow-x-hidden bg-zinc-950">
       <div className="p-4 border-b border-secondary/20 sticky top-0 bg-zinc-950/95 backdrop-blur-sm z-10">
         <h3 className="font-serif font-semibold text-cream">
           Conteúdo do Curso
@@ -52,6 +52,7 @@ const LessonSidebar = ({ modules, currentLessonId, onLessonSelect }: LessonSideb
           const isExpanded = expandedModules.includes(module.id);
           const completedCount = module.lessons.filter(l => l.completed).length;
           const hasCurrentLesson = module.lessons.some(l => l.id === currentLessonId);
+          const moduleNumber = moduleIndex + 1;
 
           return (
             <div key={module.id}>
@@ -63,22 +64,18 @@ const LessonSidebar = ({ modules, currentLessonId, onLessonSelect }: LessonSideb
                   hasCurrentLesson && "bg-secondary/10"
                 )}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 max-w-full overflow-hidden">
                   <div className={cn(
-                    "w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold",
+                    "w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0",
                     completedCount === module.lessons.length
                       ? "bg-green-500/20 text-green-500"
                       : "bg-secondary/20 text-secondary"
                   )}>
-                    {moduleIndex === 0 ? (
-                      <Star className="w-4 h-4" />
-                    ) : (
-                      moduleIndex
-                    )}
+                    {moduleNumber}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-cream text-sm truncate">
-                      {moduleIndex > 0 ? `Módulo ${moduleIndex}: ` : ''}{module.title}
+                  <div className="flex-1 min-w-0 max-w-full">
+                    <p className="font-medium text-cream text-sm truncate max-w-full">
+                      Módulo {moduleNumber}: {module.title}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <Progress 
