@@ -170,6 +170,13 @@ const HOURS_LABELS: Record<string, string> = {
   'mais_10': 'Mais de 10 horas'
 };
 
+const OFFICE_SIZE_LABELS: Record<string, string> = {
+  'solo': 'Advogada solo',
+  'pequeno': 'Pequeno (2-5 pessoas)',
+  'medio': 'Médio (6-15 pessoas)',
+  'grande': 'Grande (16+ pessoas)'
+};
+
 export default function AdminStudentProfile() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
@@ -673,6 +680,20 @@ export default function AdminStudentProfile() {
                           ? diagnostic.practice_area_other 
                           : PRACTICE_LABELS[diagnostic.practice_area] || diagnostic.practice_area}
                       </p>
+                    </div>
+                  )}
+
+                  {diagnostic.has_office !== null && diagnostic.has_office !== undefined && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">Possui escritório próprio</p>
+                      <p className="font-medium">{diagnostic.has_office ? 'Sim' : 'Não'}</p>
+                    </div>
+                  )}
+
+                  {diagnostic.office_size && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">Tamanho do escritório</p>
+                      <p className="font-medium">{OFFICE_SIZE_LABELS[diagnostic.office_size] || diagnostic.office_size}</p>
                     </div>
                   )}
                   
