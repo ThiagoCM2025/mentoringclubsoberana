@@ -153,9 +153,17 @@ const LessonPlayer = () => {
 
     if (!modules) return;
 
+    // Filter out "Ponto de Partida" and onboarding modules
+    const filteredModules = modules.filter(m => {
+      const titleLower = m.title.toLowerCase();
+      return !titleLower.includes('ponto de partida') && 
+             !titleLower.includes('módulo 0') &&
+             !titleLower.includes('modulo 0');
+    });
+
     const result: ModuleWithLessons[] = [];
 
-    for (const m of modules) {
+    for (const m of filteredModules) {
       const { data: lessons } = await supabase
         .from("lessons")
         .select("id, title, duration_minutes, order_index")
@@ -349,7 +357,7 @@ const LessonPlayer = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black overflow-x-hidden">
       {/* Header - Dark Theme */}
       <header className="bg-black/95 backdrop-blur-sm py-3 px-4 sticky top-0 z-50 border-b border-secondary/20">
         <div className="flex items-center justify-between max-w-[1920px] mx-auto">
