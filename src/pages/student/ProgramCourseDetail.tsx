@@ -289,10 +289,94 @@ const ProgramCourseDetail = () => {
       {/* Main Content */}
       <main className="container-soberana py-8 px-4">
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left: Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* 1. Current Mission Section with Arena - PRIMEIRO */}
-            {user && (
+          {/* Row 1: Ponto de Partida (left) */}
+          {onboardingModule && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="lg:col-span-2 relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 via-secondary/5 to-transparent rounded-2xl blur-xl" />
+              <div className="relative bg-zinc-900/80 rounded-2xl border-2 border-secondary/40 p-6 space-y-5">
+                {/* Header */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif font-bold text-cream text-lg">
+                      Ponto de Partida
+                    </h3>
+                    <p className="text-sm text-cream/50">Complete antes de começar sua jornada</p>
+                  </div>
+                </div>
+
+                {/* Welcome Video */}
+                {onboardingWelcomeLesson && (
+                  <motion.button
+                    onClick={() => handleLessonClick(onboardingWelcomeLesson.id)}
+                    whileHover={{ scale: 1.01 }}
+                    className="w-full flex items-center gap-4 p-4 rounded-xl bg-zinc-800/50 hover:bg-secondary/10 border border-secondary/20 transition-all text-left group"
+                  >
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+                      lessonProgress[onboardingWelcomeLesson.id] 
+                        ? "bg-green-500/20 text-green-400" 
+                        : "bg-secondary/20 text-secondary"
+                    }`}>
+                      {lessonProgress[onboardingWelcomeLesson.id] ? (
+                        <CheckCircle className="w-6 h-6" />
+                      ) : (
+                        <Play className="w-6 h-6" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-cream/50 mb-0.5">Passo 0</p>
+                      <p className="font-medium text-cream group-hover:text-secondary transition-colors">
+                        {onboardingWelcomeLesson.title}
+                      </p>
+                      {onboardingWelcomeLesson.duration_minutes && (
+                        <p className="text-xs text-cream/40 flex items-center gap-1 mt-1">
+                          <Clock className="w-3 h-3" />
+                          {onboardingWelcomeLesson.duration_minutes} min
+                        </p>
+                      )}
+                    </div>
+                    <Badge variant="outline" className="border-secondary/30 text-secondary text-xs">
+                      Vídeo
+                    </Badge>
+                  </motion.button>
+                )}
+
+                {/* Diagnostic CTA */}
+                <DiagnosticCTA 
+                  courseId={courseId!}
+                  onComplete={handleDiagnosticComplete}
+                />
+
+                {/* Scheduling CTA */}
+                <SchedulingCTA 
+                  calendarLink={course?.calendar_link || "https://calendar.app.google/4SsS6E6crkZ2wQDAA"}
+                  isEnabled={diagnosticCompleted}
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {/* Row 1 Right: Sidebar - spans multiple rows on desktop */}
+          <div className="lg:col-span-1 lg:row-span-3">
+            <div className="sticky top-4">
+              <CourseGamificationSidebar
+                gamification={courseGamification}
+                totalMissions={missions.length}
+                allTitles={programTitles}
+                courseId={courseId}
+              />
+            </div>
+          </div>
+
+          {/* Row 2: Current Mission Section */}
+          {user && (
+            <div className="lg:col-span-2">
               <CurrentMissionSection
                 missions={transformedMissions}
                 missionCompletions={missionCompletions}
@@ -302,99 +386,16 @@ const ProgramCourseDetail = () => {
                 courseId={courseId!}
                 userId={user.id}
               />
-            )}
+            </div>
+          )}
 
-            {/* 2. Ponto de Partida - Onboarding Section - SEGUNDO */}
-            {onboardingModule && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="relative"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 via-secondary/5 to-transparent rounded-2xl blur-xl" />
-                <div className="relative bg-zinc-900/80 rounded-2xl border-2 border-secondary/40 p-6 space-y-5">
-                  {/* Header */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-secondary" />
-                    </div>
-                    <div>
-                      <h3 className="font-serif font-bold text-cream text-lg">
-                        Ponto de Partida
-                      </h3>
-                      <p className="text-sm text-cream/50">Complete antes de começar sua jornada</p>
-                    </div>
-                  </div>
-
-                  {/* Welcome Video */}
-                  {onboardingWelcomeLesson && (
-                    <motion.button
-                      onClick={() => handleLessonClick(onboardingWelcomeLesson.id)}
-                      whileHover={{ scale: 1.01 }}
-                      className="w-full flex items-center gap-4 p-4 rounded-xl bg-zinc-800/50 hover:bg-secondary/10 border border-secondary/20 transition-all text-left group"
-                    >
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
-                        lessonProgress[onboardingWelcomeLesson.id] 
-                          ? "bg-green-500/20 text-green-400" 
-                          : "bg-secondary/20 text-secondary"
-                      }`}>
-                        {lessonProgress[onboardingWelcomeLesson.id] ? (
-                          <CheckCircle className="w-6 h-6" />
-                        ) : (
-                          <Play className="w-6 h-6" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs text-cream/50 mb-0.5">Passo 0</p>
-                        <p className="font-medium text-cream group-hover:text-secondary transition-colors">
-                          {onboardingWelcomeLesson.title}
-                        </p>
-                        {onboardingWelcomeLesson.duration_minutes && (
-                          <p className="text-xs text-cream/40 flex items-center gap-1 mt-1">
-                            <Clock className="w-3 h-3" />
-                            {onboardingWelcomeLesson.duration_minutes} min
-                          </p>
-                        )}
-                      </div>
-                      <Badge variant="outline" className="border-secondary/30 text-secondary text-xs">
-                        Vídeo
-                      </Badge>
-                    </motion.button>
-                  )}
-
-                  {/* Diagnostic CTA */}
-                  <DiagnosticCTA 
-                    courseId={courseId!}
-                    onComplete={handleDiagnosticComplete}
-                  />
-
-                  {/* Scheduling CTA */}
-                  <SchedulingCTA 
-                    calendarLink={course?.calendar_link || "https://calendar.app.google/4SsS6E6crkZ2wQDAA"}
-                    isEnabled={diagnosticCompleted}
-                  />
-                </div>
-              </motion.div>
-            )}
-
-            {/* 3. Content Modules Section - TERCEIRO */}
+          {/* Row 3: Content Modules Section */}
+          <div className="lg:col-span-2">
             <ContentModulesSection
               modules={transformedModules}
               lessonProgress={lessonProgress}
               onLessonClick={handleLessonClick}
             />
-          </div>
-
-          {/* Right: Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-4">
-              <CourseGamificationSidebar
-                gamification={courseGamification}
-                totalMissions={missions.length}
-                allTitles={programTitles}
-                courseId={courseId}
-              />
-            </div>
           </div>
         </div>
       </main>
