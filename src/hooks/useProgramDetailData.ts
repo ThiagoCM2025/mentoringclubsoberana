@@ -48,6 +48,7 @@ interface ProgramMission {
   is_active: boolean;
   status: 'pending' | 'submitted' | 'approved' | 'rejected';
   submitted_at: string | null;
+  admin_feedback: string | null;
   is_current_week: boolean;
   is_future: boolean;
 }

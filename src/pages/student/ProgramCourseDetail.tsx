@@ -153,12 +153,13 @@ const ProgramCourseDetail = () => {
   }));
 
   // Transform mission completions for ProgramTimeline with proper typing
-  const missionCompletions: Record<string, { mission_id: string; status: 'pending' | 'submitted' | 'approved' | 'rejected'; xp_earned: number }> = {};
+  const missionCompletions: Record<string, { mission_id: string; status: 'pending' | 'submitted' | 'approved' | 'rejected'; xp_earned: number; admin_feedback: string | null }> = {};
   missions.forEach(m => {
     missionCompletions[m.id] = {
       mission_id: m.id,
       status: m.status,
       xp_earned: m.xp_reward,
+      admin_feedback: (m as any).admin_feedback || null,
     };
   });
 
@@ -290,7 +291,20 @@ const ProgramCourseDetail = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left: Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Ponto de Partida - Onboarding Section */}
+            {/* 1. Current Mission Section with Arena - PRIMEIRO */}
+            {user && (
+              <CurrentMissionSection
+                missions={transformedMissions}
+                missionCompletions={missionCompletions}
+                currentWeek={currentWeek}
+                enrollmentDate={enrollmentDate}
+                onSubmit={handleMissionSubmit}
+                courseId={courseId!}
+                userId={user.id}
+              />
+            )}
+
+            {/* 2. Ponto de Partida - Onboarding Section - SEGUNDO */}
             {onboardingModule && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -363,25 +377,12 @@ const ProgramCourseDetail = () => {
               </motion.div>
             )}
 
-            {/* Content Modules Section */}
+            {/* 3. Content Modules Section - TERCEIRO */}
             <ContentModulesSection
               modules={transformedModules}
               lessonProgress={lessonProgress}
               onLessonClick={handleLessonClick}
             />
-
-            {/* Current Mission Section with Arena */}
-            {user && (
-              <CurrentMissionSection
-                missions={transformedMissions}
-                missionCompletions={missionCompletions}
-                currentWeek={currentWeek}
-                enrollmentDate={enrollmentDate}
-                onSubmit={handleMissionSubmit}
-                courseId={courseId!}
-                userId={user.id}
-              />
-            )}
           </div>
 
           {/* Right: Sidebar */}
