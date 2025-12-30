@@ -151,34 +151,6 @@ export const CourseGamificationSidebar = ({
         </p>
       </motion.div>
 
-      {/* Week Progress */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="bg-zinc-900/80 rounded-2xl p-5 border border-secondary/20"
-      >
-        <div className="flex items-center gap-2 mb-4">
-          <Trophy className="w-5 h-5 text-secondary" />
-          <span className="font-medium text-cream">Semana Atual</span>
-        </div>
-
-        <div className="grid grid-cols-4 gap-2">
-          {Array.from({ length: 12 }, (_, i) => i + 1).map(week => (
-            <div
-              key={week}
-              className={cn(
-                "aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all",
-                week < gamification.week_progress && "bg-green-500/20 text-green-400",
-                week === gamification.week_progress && "bg-secondary text-black",
-                week > gamification.week_progress && "bg-zinc-800 text-zinc-600"
-              )}
-            >
-              {week}
-            </div>
-          ))}
-        </div>
-      </motion.div>
 
       {/* Badges Earned */}
       {gamification.badges_earned.length > 0 && (
