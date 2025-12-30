@@ -586,9 +586,8 @@ const LessonPlayer = () => {
               {/* Back to Course Button */}
               <div className="flex justify-center mt-8 pt-6 border-t border-secondary/20">
                 <Button 
-                  variant="outline"
-                  onClick={goBack} 
-                  className="border-secondary/30 text-cream hover:bg-secondary/10"
+                  variant="outlineDark"
+                  onClick={goBack}
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Voltar ao curso
