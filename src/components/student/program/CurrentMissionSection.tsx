@@ -26,6 +26,7 @@ interface CurrentMissionSectionProps {
   missionCompletions: Record<string, { 
     status: 'pending' | 'submitted' | 'approved' | 'rejected'; 
     xp_earned: number;
+    admin_feedback: string | null;
   }>;
   currentWeek: number;
   enrollmentDate: Date | null;
@@ -49,6 +50,7 @@ export const CurrentMissionSection = ({
   const completion = mission ? missionCompletions[mission.id] : null;
   
   const status = completion?.status;
+  const adminFeedback = completion?.admin_feedback;
   const isCompleted = status === 'approved';
   const isSubmitted = status === 'submitted' || status === 'pending';
   const isRejected = status === 'rejected';
@@ -346,6 +348,39 @@ export const CurrentMissionSection = ({
                     </div>
                   </motion.div>
                 </div>
+
+                {/* Feedback da Mentora - Exibido para aprovadas ou rejeitadas */}
+                {adminFeedback && (isCompleted || isRejected) && (
+                  <div className={cn(
+                    "mx-6 mb-4 p-4 rounded-xl border",
+                    isCompleted 
+                      ? "bg-green-500/10 border-green-500/30" 
+                      : "bg-red-500/10 border-red-500/30"
+                  )}>
+                    <div className="flex items-start gap-3">
+                      <div className={cn(
+                        "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
+                        isCompleted ? "bg-green-500/20" : "bg-red-500/20"
+                      )}>
+                        💬
+                      </div>
+                      <div>
+                        <p className={cn(
+                          "text-xs font-bold uppercase tracking-wide mb-1",
+                          isCompleted ? "text-green-400" : "text-red-400"
+                        )}>
+                          {isCompleted ? "Comentário da Mentora" : "Feedback para Correção"}
+                        </p>
+                        <p className={cn(
+                          "text-sm leading-relaxed",
+                          isCompleted ? "text-green-300/90" : "text-red-300/90"
+                        )}>
+                          {adminFeedback}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Action - Enhanced Button */}
                 <div className="p-5 border-t border-secondary/15 bg-black/40">
