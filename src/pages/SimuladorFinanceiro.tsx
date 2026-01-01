@@ -17,12 +17,18 @@ import {
   Trash2,
   X,
   Calculator,
+  Shield,
+  Scale,
+  Rocket,
+  FileText,
+  Pencil,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,13 +64,36 @@ interface CalculatedResults {
   percentualInvestimento: number;
 }
 
-interface AISuggestion {
+interface AIScenario {
+  tipo: "conservador" | "equilibrado" | "agressivo";
+  nome: string;
   ticketMedio: number;
   cpl: number;
   taxaLeadReuniao: number;
   taxaConversao: number;
-  explicacao: string;
+  analise: string;
+  recomendacao: string;
 }
+
+interface AIResponse {
+  relatorioGeral: string;
+  cenarios: AIScenario[];
+  conclusao: string;
+}
+
+// Calculate results for a scenario
+const calculateResults = (values: SimulatorValues): CalculatedResults => {
+  const contratos = Math.ceil(values.meta / values.ticketMedio);
+  const reunioes = Math.ceil(contratos / (values.taxaConversao / 100));
+  const leads = Math.ceil(reunioes / (values.taxaLeadReuniao / 100));
+  const investimento = leads * values.cpl;
+  const cac = investimento / contratos;
+  const roi = values.meta / investimento;
+  const lucro = values.meta - investimento;
+  const percentualInvestimento = (investimento / values.meta) * 100;
+
+  return { contratos, reunioes, leads, investimento, cac, roi, lucro, percentualInvestimento };
+};
 
 // Animated Number Component
 const AnimatedNumber = ({ 
@@ -72,13 +101,11 @@ const AnimatedNumber = ({
   prefix = "", 
   suffix = "", 
   decimals = 0,
-  isAnimating = false 
 }: { 
   value: number; 
   prefix?: string; 
   suffix?: string; 
   decimals?: number;
-  isAnimating?: boolean;
 }) => {
   const [displayValue, setDisplayValue] = useState(value);
   const prevValue = useRef(value);
@@ -101,12 +128,11 @@ const AnimatedNumber = ({
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
-          setDisplayValue(endValue);
+          prevValue.current = value;
         }
       };
 
       requestAnimationFrame(animate);
-      prevValue.current = value;
     }
   }, [value]);
 
@@ -115,14 +141,10 @@ const AnimatedNumber = ({
     maximumFractionDigits: decimals,
   }).format(displayValue);
 
-  return (
-    <span className={isAnimating ? "text-gold animate-pulse" : ""}>
-      {prefix}{formatted}{suffix}
-    </span>
-  );
+  return <span>{prefix}{formatted}{suffix}</span>;
 };
 
-// Slider with editable input
+// Simulator Slider Component
 const SimulatorSlider = ({
   icon: Icon,
   label,
@@ -147,19 +169,25 @@ const SimulatorSlider = ({
   isAIAnimating?: boolean;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [inputValue, setInputValue] = useState(value.toString());
+  const [editValue, setEditValue] = useState(value.toString());
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!isEditing) {
-      setInputValue(value.toString());
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
     }
-  }, [value, isEditing]);
+  }, [isEditing]);
 
-  const handleInputSubmit = () => {
-    const parsed = parseFloat(inputValue.replace(/\D/g, ''));
-    if (!isNaN(parsed)) {
-      const clamped = Math.max(min, Math.min(max, parsed));
-      onChange(clamped);
+  useEffect(() => {
+    setEditValue(value.toString());
+  }, [value]);
+
+  const handleEditSubmit = () => {
+    const numValue = parseFloat(editValue.replace(/\D/g, ''));
+    if (!isNaN(numValue)) {
+      const clampedValue = Math.max(min, Math.min(max, numValue));
+      onChange(clampedValue);
     }
     setIsEditing(false);
   };
@@ -169,35 +197,34 @@ const SimulatorSlider = ({
   return (
     <div className={`space-y-3 p-4 rounded-xl bg-brand-black/60 border transition-all duration-300 ${
       isAIAnimating 
-        ? "border-gold shadow-lg shadow-gold/20 animate-pulse" 
+        ? "border-gold shadow-lg shadow-gold/20 ring-2 ring-gold/30" 
         : "border-gold/20 hover:border-gold/40"
     }`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4 text-gold" />
+          <Icon className={`w-4 h-4 ${isAIAnimating ? "text-gold" : "text-cream/60"}`} />
           <span className="text-sm text-cream/80 font-inter">{label}</span>
-          {isAIAnimating && (
-            <span className="px-2 py-0.5 text-xs bg-gold/20 text-gold rounded-full flex items-center gap-1">
-              <Sparkles className="w-3 h-3" /> IA
-            </span>
-          )}
         </div>
         {isEditing ? (
           <Input
+            ref={inputRef}
             type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onBlur={handleInputSubmit}
-            onKeyDown={(e) => e.key === 'Enter' && handleInputSubmit()}
-            className="w-32 h-8 text-right bg-brand-black border-gold/40 text-gold font-semibold"
-            autoFocus
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={handleEditSubmit}
+            onKeyDown={(e) => e.key === 'Enter' && handleEditSubmit()}
+            className="w-32 h-8 text-right bg-brand-black border-gold/50 text-gold font-semibold"
           />
         ) : (
           <button
             onClick={() => setIsEditing(true)}
-            className="text-gold font-semibold hover:text-gold-light transition-colors"
+            className={`text-lg font-playfair font-bold group flex items-center gap-1.5 transition-colors ${
+              isAIAnimating ? "text-gold animate-pulse" : "text-gold hover:text-gold-light"
+            }`}
+            title="Clique para editar"
           >
             {prefix}{formattedValue}{suffix}
+            <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-70 transition-opacity" />
           </button>
         )}
       </div>
@@ -305,6 +332,144 @@ const InsightCard = ({
   );
 };
 
+// AI Scenario Card Component
+const AIScenarioCard = ({
+  scenario,
+  meta,
+  onApply,
+  onSave,
+  delay = 0,
+}: {
+  scenario: AIScenario;
+  meta: number;
+  onApply: () => void;
+  onSave: () => void;
+  delay?: number;
+}) => {
+  const config = {
+    conservador: {
+      icon: Shield,
+      gradient: "from-blue-500/20 to-blue-600/10",
+      border: "border-blue-500/40",
+      iconColor: "text-blue-400",
+      badge: "bg-blue-500/20 text-blue-400",
+    },
+    equilibrado: {
+      icon: Scale,
+      gradient: "from-gold/20 to-gold/10",
+      border: "border-gold/40",
+      iconColor: "text-gold",
+      badge: "bg-gold/20 text-gold",
+    },
+    agressivo: {
+      icon: Rocket,
+      gradient: "from-orange-500/20 to-orange-600/10",
+      border: "border-orange-500/40",
+      iconColor: "text-orange-400",
+      badge: "bg-orange-500/20 text-orange-400",
+    },
+  };
+
+  const { icon: Icon, gradient, border, iconColor, badge } = config[scenario.tipo];
+
+  // Calculate results for this scenario
+  const scenarioValues: SimulatorValues = {
+    meta,
+    ticketMedio: scenario.ticketMedio,
+    cpl: scenario.cpl,
+    taxaLeadReuniao: scenario.taxaLeadReuniao,
+    taxaConversao: scenario.taxaConversao,
+  };
+  const results = calculateResults(scenarioValues);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.4 }}
+    >
+      <Card className={`bg-gradient-to-br ${gradient} border ${border} overflow-hidden`}>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Icon className={`w-5 h-5 ${iconColor}`} />
+              <span className={`px-2 py-0.5 text-xs rounded-full ${badge} uppercase font-semibold tracking-wide`}>
+                {scenario.tipo}
+              </span>
+            </div>
+          </div>
+          <CardTitle className="text-lg text-cream font-playfair mt-2">
+            {scenario.nome}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Values */}
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <span className="text-cream/50 text-xs">Ticket Médio</span>
+              <p className="text-cream font-semibold">R$ {scenario.ticketMedio.toLocaleString('pt-BR')}</p>
+            </div>
+            <div>
+              <span className="text-cream/50 text-xs">CPL</span>
+              <p className="text-cream font-semibold">R$ {scenario.cpl.toLocaleString('pt-BR')}</p>
+            </div>
+            <div>
+              <span className="text-cream/50 text-xs">Lead → Reunião</span>
+              <p className="text-cream font-semibold">{scenario.taxaLeadReuniao}%</p>
+            </div>
+            <div>
+              <span className="text-cream/50 text-xs">Conversão</span>
+              <p className="text-cream font-semibold">{scenario.taxaConversao}%</p>
+            </div>
+          </div>
+
+          {/* Calculated Results */}
+          <div className="pt-3 border-t border-white/10 space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-cream/60">Investimento:</span>
+              <span className="text-cream">R$ {results.investimento.toLocaleString('pt-BR')}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-cream/60">Lucro Esperado:</span>
+              <span className="text-green-400 font-semibold">R$ {results.lucro.toLocaleString('pt-BR')}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-cream/60">ROI:</span>
+              <span className={`font-bold ${results.roi > 10 ? "text-gold" : "text-cream"}`}>
+                {results.roi.toFixed(1)}x
+              </span>
+            </div>
+          </div>
+
+          {/* Analysis */}
+          <div className="pt-3 border-t border-white/10">
+            <p className="text-xs text-cream/70 mb-2">{scenario.analise}</p>
+            <p className="text-xs text-cream/50 italic">{scenario.recomendacao}</p>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-2 pt-2">
+            <Button
+              onClick={onApply}
+              size="sm"
+              className="flex-1 bg-gold text-brand-black hover:bg-gold-light font-semibold"
+            >
+              Aplicar
+            </Button>
+            <Button
+              onClick={onSave}
+              size="sm"
+              variant="outlineGold"
+            >
+              <Save className="w-4 h-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
+
 // Main Component
 const SimuladorFinanceiro = () => {
   // State
@@ -317,7 +482,8 @@ const SimuladorFinanceiro = () => {
   });
 
   const [isAILoading, setIsAILoading] = useState(false);
-  const [aiSuggestion, setAISuggestion] = useState<AISuggestion | null>(null);
+  const [aiResponse, setAIResponse] = useState<AIResponse | null>(null);
+  const [showAIModal, setShowAIModal] = useState(false);
   const [animatingFields, setAnimatingFields] = useState<Set<string>>(new Set());
   const [scenarios, setScenarios] = useState<Scenario[]>(() => {
     const saved = localStorage.getItem('soberana-simulator-scenarios');
@@ -328,27 +494,7 @@ const SimuladorFinanceiro = () => {
   const [isScenariosOpen, setIsScenariosOpen] = useState(false);
 
   // Calculations
-  const results = useMemo<CalculatedResults>(() => {
-    const contratos = Math.ceil(values.meta / values.ticketMedio);
-    const reunioes = Math.ceil(contratos / (values.taxaConversao / 100));
-    const leads = Math.ceil(reunioes / (values.taxaLeadReuniao / 100));
-    const investimento = leads * values.cpl;
-    const cac = investimento / contratos;
-    const roi = values.meta / investimento;
-    const lucro = values.meta - investimento;
-    const percentualInvestimento = (investimento / values.meta) * 100;
-
-    return {
-      contratos,
-      reunioes,
-      leads,
-      investimento,
-      cac,
-      roi,
-      lucro,
-      percentualInvestimento,
-    };
-  }, [values]);
+  const results = useMemo<CalculatedResults>(() => calculateResults(values), [values]);
 
   // Chart data
   const chartData = useMemo(() => [
@@ -392,10 +538,10 @@ const SimuladorFinanceiro = () => {
     return insights;
   };
 
-  // AI Suggestion Handler
-  const handleAISuggestion = async () => {
+  // AI Scenarios Handler
+  const handleAIScenarios = async () => {
     setIsAILoading(true);
-    setAISuggestion(null);
+    setAIResponse(null);
 
     try {
       const { data, error } = await supabase.functions.invoke('simulador-ai', {
@@ -404,49 +550,73 @@ const SimuladorFinanceiro = () => {
 
       if (error) throw error;
 
-      if (data?.suggestion) {
-        setAISuggestion(data.suggestion);
-        toast.success('Sugestões da IA recebidas!');
+      if (data?.scenarios) {
+        setAIResponse(data.scenarios);
+        setShowAIModal(true);
+        toast.success('Cenários da IA gerados com sucesso!');
       }
     } catch (error) {
-      console.error('Erro ao obter sugestões da IA:', error);
-      toast.error('Erro ao obter sugestões da IA. Tente novamente.');
+      console.error('Erro ao obter cenários da IA:', error);
+      toast.error('Erro ao gerar cenários. Tente novamente.');
     } finally {
       setIsAILoading(false);
     }
   };
 
-  // Apply AI Suggestion
-  const applyAISuggestion = () => {
-    if (!aiSuggestion) return;
-
+  // Apply AI Scenario
+  const applyAIScenario = (scenario: AIScenario) => {
     const fieldsToAnimate = ['ticketMedio', 'cpl', 'taxaLeadReuniao', 'taxaConversao'];
     setAnimatingFields(new Set(fieldsToAnimate));
 
-    // Apply values with slight delays for visual effect
     setTimeout(() => {
       setValues(prev => ({
         ...prev,
-        ticketMedio: aiSuggestion.ticketMedio,
-        cpl: aiSuggestion.cpl,
-        taxaLeadReuniao: aiSuggestion.taxaLeadReuniao,
-        taxaConversao: aiSuggestion.taxaConversao,
+        ticketMedio: scenario.ticketMedio,
+        cpl: scenario.cpl,
+        taxaLeadReuniao: scenario.taxaLeadReuniao,
+        taxaConversao: scenario.taxaConversao,
       }));
     }, 100);
 
-    // Clear animation after 1.5s
     setTimeout(() => {
       setAnimatingFields(new Set());
-      setAISuggestion(null);
     }, 1500);
 
-    toast.success('Valores aplicados com sucesso!');
+    setShowAIModal(false);
+    toast.success(`Cenário "${scenario.nome}" aplicado!`);
   };
 
-  // Save Scenario
+  // Save AI Scenario
+  const saveAIScenario = (scenario: AIScenario) => {
+    if (scenarios.length >= 10) {
+      toast.error('Limite de 10 cenários atingido. Delete um cenário para salvar outro.');
+      return;
+    }
+
+    const scenarioValues: SimulatorValues = {
+      meta: values.meta,
+      ticketMedio: scenario.ticketMedio,
+      cpl: scenario.cpl,
+      taxaLeadReuniao: scenario.taxaLeadReuniao,
+      taxaConversao: scenario.taxaConversao,
+    };
+
+    const newScenario: Scenario = {
+      id: Date.now().toString(),
+      name: scenario.nome,
+      date: new Date().toLocaleDateString('pt-BR'),
+      values: scenarioValues,
+      results: calculateResults(scenarioValues),
+    };
+
+    setScenarios(prev => [...prev, newScenario]);
+    toast.success(`Cenário "${scenario.nome}" salvo!`);
+  };
+
+  // Save Current Scenario
   const saveScenario = () => {
-    if (scenarios.length >= 5) {
-      toast.error('Limite de 5 cenários atingido. Delete um cenário para salvar outro.');
+    if (scenarios.length >= 10) {
+      toast.error('Limite de 10 cenários atingido. Delete um cenário para salvar outro.');
       return;
     }
 
@@ -542,7 +712,7 @@ const SimuladorFinanceiro = () => {
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 mb-8">
             <Button
-              onClick={handleAISuggestion}
+              onClick={handleAIScenarios}
               disabled={isAILoading}
               className="bg-gradient-to-r from-gold to-gold-dark text-brand-black hover:from-gold-light hover:to-gold font-semibold"
             >
@@ -556,13 +726,12 @@ const SimuladorFinanceiro = () => {
               ) : (
                 <Sparkles className="w-4 h-4 mr-2" />
               )}
-              {isAILoading ? "Analisando..." : "Preencher com IA"}
+              {isAILoading ? "Gerando Cenários..." : "Criar Cenários com IA"}
             </Button>
 
             <Button
               onClick={saveScenario}
-              variant="outline"
-              className="border-gold/40 text-gold hover:bg-gold/10"
+              variant="outlineGold"
             >
               <Save className="w-4 h-4 mr-2" />
               Guardar Cenário
@@ -570,10 +739,7 @@ const SimuladorFinanceiro = () => {
 
             <Sheet open={isScenariosOpen} onOpenChange={setIsScenariosOpen}>
               <SheetTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="border-gold/40 text-gold hover:bg-gold/10"
-                >
+                <Button variant="outlineGold">
                   <FolderOpen className="w-4 h-4 mr-2" />
                   Cenários ({scenarios.length})
                 </Button>
@@ -657,70 +823,6 @@ const SimuladorFinanceiro = () => {
               </Button>
             )}
           </div>
-
-          {/* AI Suggestion Banner */}
-          <AnimatePresence>
-            {aiSuggestion && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-gold/10 to-gold/5 border border-gold/30"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Sparkles className="w-5 h-5 text-gold" />
-                      <h3 className="text-lg font-playfair font-bold text-gold">
-                        Sugestão da IA
-                      </h3>
-                    </div>
-                    <p className="text-cream/80 text-sm font-inter mb-4">
-                      {aiSuggestion.explicacao}
-                    </p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <span className="text-cream/50">Ticket Médio:</span>
-                        <p className="text-gold font-semibold">
-                          R$ {aiSuggestion.ticketMedio.toLocaleString('pt-BR')}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-cream/50">CPL:</span>
-                        <p className="text-gold font-semibold">
-                          R$ {aiSuggestion.cpl.toLocaleString('pt-BR')}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-cream/50">Lead → Reunião:</span>
-                        <p className="text-gold font-semibold">{aiSuggestion.taxaLeadReuniao}%</p>
-                      </div>
-                      <div>
-                        <span className="text-cream/50">Conversão:</span>
-                        <p className="text-gold font-semibold">{aiSuggestion.taxaConversao}%</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      onClick={applyAISuggestion}
-                      className="bg-gold text-brand-black hover:bg-gold-light"
-                    >
-                      Aplicar
-                    </Button>
-                    <Button
-                      onClick={() => setAISuggestion(null)}
-                      variant="ghost"
-                      size="icon"
-                      className="text-cream/40 hover:text-cream"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* Comparison View */}
           <AnimatePresence>
@@ -998,6 +1100,87 @@ const SimuladorFinanceiro = () => {
           </div>
         </footer>
       </div>
+
+      {/* AI Scenarios Modal */}
+      <Dialog open={showAIModal} onOpenChange={setShowAIModal}>
+        <DialogContent className="bg-brand-black border-gold/30 max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-playfair text-gold flex items-center gap-3">
+              <Sparkles className="w-6 h-6" />
+              Análise Estratégica da IA
+            </DialogTitle>
+          </DialogHeader>
+
+          {aiResponse && (
+            <div className="space-y-6 mt-4">
+              {/* General Report */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-5 rounded-xl bg-gradient-to-br from-gold/10 to-transparent border border-gold/30"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <FileText className="w-5 h-5 text-gold" />
+                  <h3 className="text-lg font-playfair font-bold text-gold">Relatório de Mercado</h3>
+                </div>
+                <p className="text-cream/80 text-sm font-inter leading-relaxed whitespace-pre-line">
+                  {aiResponse.relatorioGeral}
+                </p>
+              </motion.div>
+
+              {/* Scenarios Grid */}
+              <div>
+                <h3 className="text-lg font-playfair font-bold text-cream mb-4">
+                  Cenários Estratégicos para sua Meta de R$ {values.meta.toLocaleString('pt-BR')}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {aiResponse.cenarios.map((scenario, index) => (
+                    <AIScenarioCard
+                      key={scenario.tipo}
+                      scenario={scenario}
+                      meta={values.meta}
+                      onApply={() => applyAIScenario(scenario)}
+                      onSave={() => saveAIScenario(scenario)}
+                      delay={index * 0.15}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Conclusion */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="p-5 rounded-xl bg-gradient-to-r from-green-500/10 to-transparent border border-green-500/30"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-400" />
+                  <h3 className="text-lg font-playfair font-bold text-green-400">Recomendação Final</h3>
+                </div>
+                <p className="text-cream/80 text-sm font-inter leading-relaxed">
+                  {aiResponse.conclusao}
+                </p>
+              </motion.div>
+
+              {/* Save All Button */}
+              <div className="flex justify-center pt-4">
+                <Button
+                  onClick={() => {
+                    aiResponse.cenarios.forEach(scenario => saveAIScenario(scenario));
+                    setShowAIModal(false);
+                    toast.success('Todos os 3 cenários foram salvos!');
+                  }}
+                  className="bg-gold text-brand-black hover:bg-gold-light font-semibold px-8"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  Salvar Todos os Cenários
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

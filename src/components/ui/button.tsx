@@ -12,6 +12,8 @@ const buttonVariants = cva(
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        // Outline Gold variant for dark backgrounds - gold text and border
+        outlineGold: "border border-secondary/30 bg-transparent text-secondary hover:bg-secondary/10 hover:text-secondary hover:border-secondary/50",
         // Outline variant for dark backgrounds (student area)
         outlineDark: "border border-secondary/30 bg-transparent text-cream hover:bg-secondary/10 hover:text-cream",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
