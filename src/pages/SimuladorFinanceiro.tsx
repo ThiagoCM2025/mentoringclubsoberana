@@ -349,28 +349,34 @@ const AIScenarioCard = ({
   const config = {
     conservador: {
       icon: Shield,
-      gradient: "from-blue-500/20 to-blue-600/10",
-      border: "border-blue-500/40",
+      gradient: "from-brand-black to-brand-black/95",
+      border: "border-blue-500/60",
+      topBorder: "bg-blue-500",
       iconColor: "text-blue-400",
-      badge: "bg-blue-500/20 text-blue-400",
+      badge: "bg-blue-500/30 text-blue-300",
+      labelColor: "text-blue-300",
     },
     equilibrado: {
       icon: Scale,
-      gradient: "from-gold/20 to-gold/10",
-      border: "border-gold/40",
+      gradient: "from-brand-black to-brand-black/95",
+      border: "border-gold/60",
+      topBorder: "bg-gold",
       iconColor: "text-gold",
-      badge: "bg-gold/20 text-gold",
+      badge: "bg-gold/30 text-gold",
+      labelColor: "text-gold",
     },
     agressivo: {
       icon: Rocket,
-      gradient: "from-orange-500/20 to-orange-600/10",
-      border: "border-orange-500/40",
+      gradient: "from-brand-black to-brand-black/95",
+      border: "border-orange-500/60",
+      topBorder: "bg-orange-500",
       iconColor: "text-orange-400",
-      badge: "bg-orange-500/20 text-orange-400",
+      badge: "bg-orange-500/30 text-orange-300",
+      labelColor: "text-orange-300",
     },
   };
 
-  const { icon: Icon, gradient, border, iconColor, badge } = config[scenario.tipo];
+  const { icon: Icon, gradient, border, topBorder, iconColor, badge, labelColor } = config[scenario.tipo];
 
   // Calculate results for this scenario
   const scenarioValues: SimulatorValues = {
@@ -388,8 +394,11 @@ const AIScenarioCard = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
     >
-      <Card className={`bg-gradient-to-br ${gradient} border ${border} overflow-hidden`}>
-        <CardHeader className="pb-3">
+      <Card className={`bg-gradient-to-br ${gradient} border ${border} overflow-hidden relative`}>
+        {/* Top colored bar */}
+        <div className={`absolute top-0 left-0 right-0 h-1 ${topBorder}`} />
+        
+        <CardHeader className="pb-3 pt-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Icon className={`w-5 h-5 ${iconColor}`} />
@@ -406,35 +415,35 @@ const AIScenarioCard = ({
           {/* Values */}
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <span className="text-cream/50 text-xs">Ticket Médio</span>
+              <span className={`${labelColor} text-xs`}>Ticket Médio</span>
               <p className="text-cream font-semibold">R$ {scenario.ticketMedio.toLocaleString('pt-BR')}</p>
             </div>
             <div>
-              <span className="text-cream/50 text-xs">CPL</span>
+              <span className={`${labelColor} text-xs`}>CPL</span>
               <p className="text-cream font-semibold">R$ {scenario.cpl.toLocaleString('pt-BR')}</p>
             </div>
             <div>
-              <span className="text-cream/50 text-xs">Lead → Reunião</span>
+              <span className={`${labelColor} text-xs`}>Lead → Reunião</span>
               <p className="text-cream font-semibold">{scenario.taxaLeadReuniao}%</p>
             </div>
             <div>
-              <span className="text-cream/50 text-xs">Conversão</span>
+              <span className={`${labelColor} text-xs`}>Conversão</span>
               <p className="text-cream font-semibold">{scenario.taxaConversao}%</p>
             </div>
           </div>
 
           {/* Calculated Results */}
-          <div className="pt-3 border-t border-white/10 space-y-2">
+          <div className="pt-3 border-t border-white/20 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-cream/60">Investimento:</span>
-              <span className="text-cream">R$ {results.investimento.toLocaleString('pt-BR')}</span>
+              <span className={labelColor}>Investimento:</span>
+              <span className="text-cream font-medium">R$ {results.investimento.toLocaleString('pt-BR')}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-cream/60">Lucro Esperado:</span>
+              <span className={labelColor}>Lucro Esperado:</span>
               <span className="text-green-400 font-semibold">R$ {results.lucro.toLocaleString('pt-BR')}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-cream/60">ROI:</span>
+              <span className={labelColor}>ROI:</span>
               <span className={`font-bold ${results.roi > 10 ? "text-gold" : "text-cream"}`}>
                 {results.roi.toFixed(1)}x
               </span>
@@ -442,9 +451,9 @@ const AIScenarioCard = ({
           </div>
 
           {/* Analysis */}
-          <div className="pt-3 border-t border-white/10">
-            <p className="text-xs text-cream/70 mb-2">{scenario.analise}</p>
-            <p className="text-xs text-cream/50 italic">{scenario.recomendacao}</p>
+          <div className="pt-3 border-t border-white/20">
+            <p className="text-xs text-cream/90 mb-2">{scenario.analise}</p>
+            <p className="text-xs text-cream/70 italic">{scenario.recomendacao}</p>
           </div>
 
           {/* Actions */}
@@ -484,6 +493,8 @@ const SimuladorFinanceiro = () => {
   const [isAILoading, setIsAILoading] = useState(false);
   const [aiResponse, setAIResponse] = useState<AIResponse | null>(null);
   const [showAIModal, setShowAIModal] = useState(false);
+  const [showAIInput, setShowAIInput] = useState(false);
+  const [aiMeta, setAiMeta] = useState<number>(50000);
   const [animatingFields, setAnimatingFields] = useState<Set<string>>(new Set());
   const [scenarios, setScenarios] = useState<Scenario[]>(() => {
     const saved = localStorage.getItem('soberana-simulator-scenarios');
@@ -545,13 +556,14 @@ const SimuladorFinanceiro = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke('simulador-ai', {
-        body: { meta: values.meta },
+        body: { meta: aiMeta },
       });
 
       if (error) throw error;
 
       if (data?.scenarios) {
         setAIResponse(data.scenarios);
+        setShowAIInput(false);
         setShowAIModal(true);
         toast.success('Cenários da IA gerados com sucesso!');
       }
@@ -712,21 +724,12 @@ const SimuladorFinanceiro = () => {
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 mb-8">
             <Button
-              onClick={handleAIScenarios}
+              onClick={() => setShowAIInput(true)}
               disabled={isAILoading}
               className="bg-gradient-to-r from-gold to-gold-dark text-brand-black hover:from-gold-light hover:to-gold font-semibold"
             >
-              {isAILoading ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                </motion.div>
-              ) : (
-                <Sparkles className="w-4 h-4 mr-2" />
-              )}
-              {isAILoading ? "Gerando Cenários..." : "Criar Cenários com IA"}
+              <Sparkles className="w-4 h-4 mr-2" />
+              Criar Cenários com IA
             </Button>
 
             <Button
@@ -813,7 +816,7 @@ const SimuladorFinanceiro = () => {
               </SheetContent>
             </Sheet>
 
-            {selectedScenarios.length >= 2 && !isComparing && (
+          {selectedScenarios.length >= 2 && !isComparing && (
               <Button
                 onClick={() => setIsComparing(true)}
                 className="bg-gold text-brand-black hover:bg-gold-light"
@@ -823,6 +826,88 @@ const SimuladorFinanceiro = () => {
               </Button>
             )}
           </div>
+
+          {/* AI Meta Input Section */}
+          <AnimatePresence>
+            {showAIInput && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mb-8"
+              >
+                <Card className="bg-brand-black/80 border border-gold/40 overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-gold via-gold-light to-gold" />
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Sparkles className="w-6 h-6 text-gold" />
+                      <h3 className="text-xl font-playfair font-bold text-gold">
+                        Criar Cenários com IA
+                      </h3>
+                      <button
+                        onClick={() => setShowAIInput(false)}
+                        className="ml-auto text-cream/50 hover:text-cream transition-colors"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                    
+                    <p className="text-cream/70 text-sm mb-6 font-inter">
+                      Digite sua meta de faturamento mensal e a IA irá criar 3 cenários estratégicos personalizados: 
+                      <span className="text-blue-300"> Conservador</span>, 
+                      <span className="text-gold"> Equilibrado</span> e 
+                      <span className="text-orange-300"> Agressivo</span>.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="flex-1">
+                        <label className="text-cream text-sm font-medium mb-2 block">
+                          Meta de Faturamento Mensal
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gold font-semibold">R$</span>
+                          <Input
+                            type="text"
+                            value={aiMeta.toLocaleString('pt-BR')}
+                            onChange={(e) => {
+                              const raw = e.target.value.replace(/\D/g, '');
+                              const num = parseInt(raw) || 0;
+                              setAiMeta(Math.min(num, 10000000));
+                            }}
+                            className="pl-12 bg-brand-black border-gold/50 text-cream text-xl font-semibold h-14 focus:border-gold"
+                            placeholder="50.000"
+                          />
+                        </div>
+                      </div>
+                      
+                      <Button
+                        onClick={handleAIScenarios}
+                        disabled={isAILoading || aiMeta < 1000}
+                        className="bg-gradient-to-r from-gold to-gold-dark text-brand-black hover:from-gold-light hover:to-gold font-semibold h-14 px-8 sm:self-end"
+                      >
+                        {isAILoading ? (
+                          <>
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            >
+                              <Sparkles className="w-5 h-5 mr-2" />
+                            </motion.div>
+                            Gerando...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-5 h-5 mr-2" />
+                            Gerar Cenários
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Comparison View */}
           <AnimatePresence>
@@ -1131,14 +1216,14 @@ const SimuladorFinanceiro = () => {
               {/* Scenarios Grid */}
               <div>
                 <h3 className="text-lg font-playfair font-bold text-cream mb-4">
-                  Cenários Estratégicos para sua Meta de R$ {values.meta.toLocaleString('pt-BR')}
+                  Cenários Estratégicos para sua Meta de R$ {aiMeta.toLocaleString('pt-BR')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {aiResponse.cenarios.map((scenario, index) => (
                     <AIScenarioCard
                       key={scenario.tipo}
                       scenario={scenario}
-                      meta={values.meta}
+                      meta={aiMeta}
                       onApply={() => applyAIScenario(scenario)}
                       onSave={() => saveAIScenario(scenario)}
                       delay={index * 0.15}
