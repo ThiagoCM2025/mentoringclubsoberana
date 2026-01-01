@@ -458,9 +458,6 @@ const OperacaoRegularizacaoLanding = () => {
             
           </div>
         </div>
-        
-        {/* Transition to next section */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-cream pointer-events-none" />
       </section>
 
       {/* SECTION 2: O Que é Essa Imersão */}
@@ -522,9 +519,6 @@ const OperacaoRegularizacaoLanding = () => {
             </div>
           </motion.div>
         </div>
-        
-        {/* Transition to next section */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-brand-black pointer-events-none" />
       </section>
 
       {/* SECTION 3: Pain Points */}
