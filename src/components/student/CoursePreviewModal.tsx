@@ -21,6 +21,7 @@ import {
   Gift,
   Loader2 
 } from "lucide-react";
+import { resolveImageUrl } from "@/lib/imageResolver";
 
 interface Module {
   id: string;
@@ -140,10 +141,10 @@ const CoursePreviewModal = ({ courseId, isOpen, onClose }: CoursePreviewModalPro
         ) : course ? (
           <>
             <DialogHeader className="space-y-4">
-              {course.thumbnail_url && (
+              {resolveImageUrl(course.thumbnail_url) && (
                 <div className="aspect-video rounded-lg overflow-hidden bg-muted -mx-6 -mt-6">
                   <img
-                    src={course.thumbnail_url}
+                    src={resolveImageUrl(course.thumbnail_url)!}
                     alt={course.title}
                     className="w-full h-full object-cover"
                   />

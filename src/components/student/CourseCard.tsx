@@ -3,6 +3,7 @@ import { Play, BookOpen, ChevronRight, Lock, ShoppingCart } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { resolveImageUrl } from "@/lib/imageResolver";
 
 interface CourseCardProps {
   id: string;
@@ -59,9 +60,9 @@ const CourseCard = ({
       className="group cursor-pointer"
     >
       <div className="relative aspect-[16/10] rounded-xl overflow-hidden mb-4 bg-gradient-to-br from-zinc-800 to-zinc-900 border border-secondary/10 group-hover:border-secondary/30 transition-colors">
-        {thumbnail ? (
+        {resolveImageUrl(thumbnail) ? (
           <img
-            src={thumbnail}
+            src={resolveImageUrl(thumbnail)!}
             alt={title}
             className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${isLocked ? 'grayscale opacity-50' : ''}`}
           />
