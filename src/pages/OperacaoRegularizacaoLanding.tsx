@@ -35,7 +35,13 @@ import mentorSobre from "@/assets/mentor-sobre.jpg";
 import fabianaHero from "@/assets/fabiana-operacao-regularizacao.jpg";
 import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 import isotipoSFramedGold from "@/assets/brand/isotipo-s-framed-gold-v3.png";
+import isotipoSFramedMarsala from "@/assets/brand/isotipo-s-framed-marsala-v3.png";
+import isotipoSWhite from "@/assets/brand/isotipo-s-white-v3.png";
 import patternCirclesDourado from "@/assets/brand/pattern-circles-dourado.png";
+import patternFlowerGold from "@/assets/brand/pattern-flower-gold.png";
+import patternFlowerMarsala from "@/assets/brand/pattern-flower-marsala.png";
+import patternFlowerPreto from "@/assets/brand/pattern-flower-preto.png";
+import patternFlowerBranco from "@/assets/brand/pattern-flower-branco.png";
 import { Progress } from "@/components/ui/progress";
 
 const OperacaoRegularizacaoLanding = () => {
@@ -162,39 +168,66 @@ const OperacaoRegularizacaoLanding = () => {
 
       {/* SECTION 1: Hero Premium - Split Layout */}
       <section className="relative min-h-screen overflow-hidden bg-brand-black">
-        {/* Background Pattern */}
+        {/* Background Pattern - Flower of Life Gold */}
         <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '300px', backgroundRepeat: 'repeat' }}
+          className="absolute inset-0 opacity-[0.06]"
+          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '350px', backgroundRepeat: 'repeat' }}
         />
         
-        {/* Radial Glow */}
-        <div className="absolute inset-0 bg-gradient-radial from-secondary/10 via-transparent to-transparent opacity-50" />
+        {/* Secondary Pattern Layer - Circles */}
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
+          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Radial Glow - Multiple points */}
+        <div className="absolute inset-0 bg-gradient-radial from-secondary/12 via-transparent to-transparent opacity-60" />
         
         {/* Golden Sphere Glow - Left side on desktop */}
-        <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full bg-secondary/8 blur-3xl golden-sphere-glow" />
+        <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full bg-secondary/10 blur-3xl golden-sphere-glow" />
         
-        {/* Floating Isotipos - 4 corners */}
+        {/* Secondary Glow - Right side */}
+        <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] md:w-[400px] md:h-[400px] rounded-full bg-secondary/6 blur-3xl" />
+        
+        {/* Floating Isotipos - 4 corners + center elements */}
         <img 
           src={isotipoSFramedGold} 
           alt="" 
-          className="hidden lg:block absolute top-8 left-8 w-14 h-14 opacity-20 animate-float-slow"
+          className="hidden lg:block absolute top-8 left-8 w-16 h-16 opacity-25 animate-float-slow drop-shadow-[0_0_15px_rgba(166,144,97,0.3)]"
         />
         <img 
           src={isotipoSGold} 
           alt="" 
-          className="hidden lg:block absolute top-12 right-12 w-12 h-12 opacity-15 animate-float-slow animation-delay-2000"
+          className="hidden lg:block absolute top-12 right-12 w-14 h-14 opacity-20 animate-float-slow animation-delay-2000 drop-shadow-[0_0_12px_rgba(166,144,97,0.25)]"
         />
         <img 
           src={isotipoSFramedGold} 
           alt="" 
-          className="hidden lg:block absolute bottom-16 left-12 w-12 h-12 opacity-15 animate-float-slow animation-delay-1000"
+          className="hidden lg:block absolute bottom-16 left-12 w-14 h-14 opacity-18 animate-float-slow animation-delay-1000 drop-shadow-[0_0_12px_rgba(166,144,97,0.25)]"
         />
         <img 
           src={isotipoSGold} 
           alt="" 
-          className="hidden lg:block absolute bottom-20 right-8 w-10 h-10 opacity-10 animate-float-slow animation-delay-3000"
+          className="hidden lg:block absolute bottom-20 right-8 w-12 h-12 opacity-15 animate-float-slow animation-delay-3000"
         />
+        
+        {/* Extra floating isotipos for more life */}
+        <img 
+          src={isotipoSGold} 
+          alt="" 
+          className="hidden xl:block absolute top-1/3 left-[10%] w-10 h-10 opacity-12 animate-float-slow animation-delay-1500"
+        />
+        <img 
+          src={isotipoSFramedGold} 
+          alt="" 
+          className="hidden xl:block absolute bottom-1/3 right-[8%] w-12 h-12 opacity-10 animate-float-slow animation-delay-2500"
+        />
+        
+        {/* Decorative golden particles */}
+        <div className="hidden lg:block absolute top-[20%] left-[15%] w-2 h-2 rounded-full bg-secondary/40 animate-pulse" />
+        <div className="hidden lg:block absolute top-[30%] right-[20%] w-1.5 h-1.5 rounded-full bg-secondary/30 animate-pulse animation-delay-1000" />
+        <div className="hidden lg:block absolute bottom-[25%] left-[25%] w-2 h-2 rounded-full bg-secondary/35 animate-pulse animation-delay-2000" />
+        <div className="hidden lg:block absolute bottom-[35%] right-[15%] w-1.5 h-1.5 rounded-full bg-secondary/25 animate-pulse animation-delay-500" />
         
         {/* Vignette */}
         <div className="absolute inset-0 bg-gradient-to-t from-brand-black/60 via-transparent to-brand-black/30" />
@@ -332,17 +365,33 @@ const OperacaoRegularizacaoLanding = () => {
 
       {/* SECTION 2: O Que é Essa Imersão */}
       <section className="relative py-16 sm:py-20 lg:py-28 bg-cream overflow-hidden">
-        {/* Pattern Background */}
+        {/* Pattern Background - Flower of Life Preto */}
         <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
+          className="absolute inset-0 opacity-[0.025]"
+          style={{ backgroundImage: `url(${patternFlowerPreto})`, backgroundSize: '280px', backgroundRepeat: 'repeat' }}
         />
         
-        {/* Floating Isotipo */}
+        {/* Secondary Pattern Layer */}
+        <div 
+          className="absolute inset-0 opacity-[0.015]"
+          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '180px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Floating Isotipos - Multiple */}
+        <img 
+          src={isotipoSFramedGold} 
+          alt="" 
+          className="hidden lg:block absolute top-16 right-16 w-20 h-20 opacity-12 animate-float-slow"
+        />
+        <img 
+          src={isotipoSFramedMarsala} 
+          alt="" 
+          className="hidden lg:block absolute bottom-16 left-16 w-16 h-16 opacity-10 animate-float-slow animation-delay-1500"
+        />
         <img 
           src={isotipoSGold} 
           alt="" 
-          className="hidden lg:block absolute bottom-10 right-10 w-24 h-24 opacity-10"
+          className="hidden xl:block absolute top-1/3 left-10 w-12 h-12 opacity-8 animate-float-slow animation-delay-1000"
         />
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={aboutRef}>
@@ -386,26 +435,49 @@ const OperacaoRegularizacaoLanding = () => {
 
       {/* SECTION 3: Pain Points */}
       <section className="relative py-16 sm:py-20 lg:py-28 bg-brand-black overflow-hidden">
-        {/* Pattern Background */}
+        {/* Pattern Background - Flower of Life Gold */}
         <div 
-          className="absolute inset-0 opacity-[0.04]"
-          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '250px', backgroundRepeat: 'repeat' }}
+          className="absolute inset-0 opacity-[0.05]"
+          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '300px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Secondary Pattern - Flower Branco for depth */}
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
+          style={{ backgroundImage: `url(${patternFlowerBranco})`, backgroundSize: '220px', backgroundRepeat: 'repeat' }}
         />
         
         {/* Central Golden Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-secondary/8 blur-3xl golden-sphere-glow" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-secondary/10 blur-3xl golden-sphere-glow" />
         
-        {/* Floating Isotipos */}
+        {/* Secondary Glow - Bottom */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-secondary/6 blur-3xl" />
+        
+        {/* Floating Isotipos - Mixed colors */}
         <img 
           src={isotipoSGold} 
           alt="" 
-          className="hidden lg:block absolute top-20 left-16 w-16 h-16 opacity-15 animate-float-slow"
+          className="hidden lg:block absolute top-16 left-16 w-18 h-18 opacity-18 animate-float-slow drop-shadow-[0_0_12px_rgba(166,144,97,0.25)]"
+        />
+        <img 
+          src={isotipoSWhite} 
+          alt="" 
+          className="hidden lg:block absolute top-24 right-20 w-14 h-14 opacity-12 animate-float-slow animation-delay-2000"
         />
         <img 
           src={isotipoSFramedGold} 
           alt="" 
-          className="hidden lg:block absolute bottom-20 right-20 w-20 h-20 opacity-12 animate-float-slow animation-delay-1000"
+          className="hidden lg:block absolute bottom-20 right-16 w-20 h-20 opacity-15 animate-float-slow animation-delay-1000 drop-shadow-[0_0_15px_rgba(166,144,97,0.2)]"
         />
+        <img 
+          src={isotipoSWhite} 
+          alt="" 
+          className="hidden xl:block absolute bottom-32 left-24 w-12 h-12 opacity-10 animate-float-slow animation-delay-1500"
+        />
+        
+        {/* Decorative particles */}
+        <div className="hidden lg:block absolute top-[15%] right-[25%] w-2 h-2 rounded-full bg-secondary/35 animate-pulse" />
+        <div className="hidden lg:block absolute bottom-[20%] left-[20%] w-1.5 h-1.5 rounded-full bg-cream/20 animate-pulse animation-delay-1000" />
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={painRef}>
           <motion.div
@@ -465,10 +537,33 @@ const OperacaoRegularizacaoLanding = () => {
 
       {/* SECTION 4: Cronograma + Para Quem É */}
       <section className="relative py-16 sm:py-20 lg:py-28 bg-cream overflow-hidden">
-        {/* Pattern Background */}
+        {/* Pattern Background - Flower of Life Marsala */}
         <div 
-          className="absolute inset-0 opacity-[0.02]"
-          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
+          className="absolute inset-0 opacity-[0.025]"
+          style={{ backgroundImage: `url(${patternFlowerMarsala})`, backgroundSize: '260px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Secondary Pattern Layer */}
+        <div 
+          className="absolute inset-0 opacity-[0.015]"
+          style={{ backgroundImage: `url(${patternFlowerPreto})`, backgroundSize: '180px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Floating Isotipos */}
+        <img 
+          src={isotipoSFramedMarsala} 
+          alt="" 
+          className="hidden lg:block absolute top-20 right-16 w-18 h-18 opacity-12 animate-float-slow"
+        />
+        <img 
+          src={isotipoSGold} 
+          alt="" 
+          className="hidden lg:block absolute bottom-20 left-16 w-16 h-16 opacity-10 animate-float-slow animation-delay-1000"
+        />
+        <img 
+          src={isotipoSFramedGold} 
+          alt="" 
+          className="hidden xl:block absolute top-1/2 right-8 w-12 h-12 opacity-8 animate-float-slow animation-delay-2000"
         />
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={scheduleRef}>
@@ -545,21 +640,50 @@ const OperacaoRegularizacaoLanding = () => {
 
       {/* SECTION 5: Pricing */}
       <section className="relative py-16 sm:py-20 lg:py-28 bg-brand-black overflow-hidden">
-        {/* Pattern Background */}
+        {/* Pattern Background - Flower of Life Gold */}
         <div 
-          className="absolute inset-0 opacity-[0.04]"
-          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '250px', backgroundRepeat: 'repeat' }}
+          className="absolute inset-0 opacity-[0.06]"
+          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '320px', backgroundRepeat: 'repeat' }}
         />
         
-        {/* Golden Glow Top */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-secondary/10 rounded-full blur-3xl opacity-50" />
+        {/* Secondary Pattern - Branco for depth */}
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
+          style={{ backgroundImage: `url(${patternFlowerBranco})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
+        />
         
-        {/* Floating Isotipo */}
+        {/* Golden Glow Top - More intense */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-secondary/12 rounded-full blur-3xl opacity-60" />
+        
+        {/* Secondary Glow - Center for price highlight */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-secondary/8 rounded-full blur-3xl" />
+        
+        {/* Floating Isotipos - Multiple */}
         <img 
           src={isotipoSGold} 
           alt="" 
-          className="hidden lg:block absolute top-20 right-20 w-20 h-20 opacity-15 animate-float-slow"
+          className="hidden lg:block absolute top-16 right-16 w-20 h-20 opacity-20 animate-float-slow drop-shadow-[0_0_15px_rgba(166,144,97,0.3)]"
         />
+        <img 
+          src={isotipoSFramedGold} 
+          alt="" 
+          className="hidden lg:block absolute top-24 left-16 w-16 h-16 opacity-15 animate-float-slow animation-delay-1500"
+        />
+        <img 
+          src={isotipoSWhite} 
+          alt="" 
+          className="hidden lg:block absolute bottom-20 left-20 w-14 h-14 opacity-12 animate-float-slow animation-delay-1000"
+        />
+        <img 
+          src={isotipoSGold} 
+          alt="" 
+          className="hidden xl:block absolute bottom-24 right-24 w-12 h-12 opacity-10 animate-float-slow animation-delay-2000"
+        />
+        
+        {/* Decorative particles around price */}
+        <div className="hidden lg:block absolute top-[40%] left-[30%] w-2.5 h-2.5 rounded-full bg-secondary/40 animate-pulse" />
+        <div className="hidden lg:block absolute top-[35%] right-[28%] w-2 h-2 rounded-full bg-secondary/35 animate-pulse animation-delay-500" />
+        <div className="hidden lg:block absolute bottom-[30%] left-[35%] w-1.5 h-1.5 rounded-full bg-cream/20 animate-pulse animation-delay-1500" />
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={pricingRef}>
           <motion.div
@@ -638,8 +762,37 @@ const OperacaoRegularizacaoLanding = () => {
 
       {/* SECTION 6: Mentora */}
       <section className="relative py-16 sm:py-20 lg:py-28 bg-primary overflow-hidden">
-        {/* Pattern Background */}
-        <div className="absolute inset-0 opacity-[0.06] bg-[url('/src/assets/brand/pattern-circles-white.png')] bg-repeat" style={{ backgroundSize: '200px' }} />
+        {/* Pattern Background - Flower of Life Marsala */}
+        <div 
+          className="absolute inset-0 opacity-[0.05]"
+          style={{ backgroundImage: `url(${patternFlowerMarsala})`, backgroundSize: '280px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Secondary Pattern - Flower Gold */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Golden Glow behind photo area */}
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[400px] h-[400px] bg-secondary/15 rounded-full blur-3xl hidden lg:block" />
+        
+        {/* Floating Isotipos */}
+        <img 
+          src={isotipoSFramedMarsala} 
+          alt="" 
+          className="hidden lg:block absolute top-16 left-16 w-16 h-16 opacity-15 animate-float-slow"
+        />
+        <img 
+          src={isotipoSGold} 
+          alt="" 
+          className="hidden lg:block absolute top-20 right-20 w-14 h-14 opacity-12 animate-float-slow animation-delay-1500"
+        />
+        <img 
+          src={isotipoSWhite} 
+          alt="" 
+          className="hidden xl:block absolute bottom-24 left-24 w-12 h-12 opacity-10 animate-float-slow animation-delay-1000"
+        />
         
         {/* Vignette */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-primary/30" />
@@ -704,10 +857,28 @@ const OperacaoRegularizacaoLanding = () => {
 
       {/* SECTION 7: FAQ */}
       <section className="relative py-16 sm:py-20 lg:py-28 bg-cream overflow-hidden">
-        {/* Pattern Background */}
+        {/* Pattern Background - Flower of Life Preto (very subtle) */}
         <div 
-          className="absolute inset-0 opacity-[0.02]"
-          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
+          className="absolute inset-0 opacity-[0.015]"
+          style={{ backgroundImage: `url(${patternFlowerPreto})`, backgroundSize: '240px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Secondary Pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.01]"
+          style={{ backgroundImage: `url(${patternFlowerMarsala})`, backgroundSize: '180px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Floating Isotipos */}
+        <img 
+          src={isotipoSGold} 
+          alt="" 
+          className="hidden lg:block absolute bottom-20 right-16 w-16 h-16 opacity-10 animate-float-slow"
+        />
+        <img 
+          src={isotipoSFramedMarsala} 
+          alt="" 
+          className="hidden xl:block absolute top-24 left-16 w-14 h-14 opacity-8 animate-float-slow animation-delay-1000"
         />
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={faqRef}>
@@ -767,26 +938,63 @@ const OperacaoRegularizacaoLanding = () => {
 
       {/* SECTION 8: Final CTA */}
       <section className="relative py-16 sm:py-20 lg:py-28 bg-brand-black overflow-hidden">
-        {/* Pattern Background */}
+        {/* Pattern Background - Flower of Life Gold (intense) */}
         <div 
-          className="absolute inset-0 opacity-[0.05]"
-          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '250px', backgroundRepeat: 'repeat' }}
+          className="absolute inset-0 opacity-[0.07]"
+          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '320px', backgroundRepeat: 'repeat' }}
         />
         
-        {/* Golden Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-secondary/15 rounded-full blur-3xl golden-sphere-glow" />
+        {/* Secondary Pattern - Marsala */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: `url(${patternFlowerMarsala})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
+        />
         
-        {/* Floating Isotipos */}
+        {/* Golden Glow - Central and intense */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-secondary/18 rounded-full blur-3xl golden-sphere-glow" />
+        
+        {/* Secondary Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-secondary/10 rounded-full blur-3xl" />
+        
+        {/* Floating Isotipos - All 4 corners + extras */}
+        <img 
+          src={isotipoSFramedGold} 
+          alt="" 
+          className="hidden lg:block absolute top-12 left-12 w-18 h-18 opacity-25 animate-float-slow drop-shadow-[0_0_15px_rgba(166,144,97,0.35)]"
+        />
         <img 
           src={isotipoSGold} 
           alt="" 
-          className="hidden lg:block absolute top-16 left-16 w-16 h-16 opacity-20 animate-float-slow"
+          className="hidden lg:block absolute top-16 right-16 w-16 h-16 opacity-20 animate-float-slow animation-delay-2000 drop-shadow-[0_0_12px_rgba(166,144,97,0.25)]"
         />
         <img 
           src={isotipoSFramedGold} 
           alt="" 
-          className="hidden lg:block absolute bottom-16 right-16 w-20 h-20 opacity-15 animate-float-slow animation-delay-1000"
+          className="hidden lg:block absolute bottom-12 left-16 w-14 h-14 opacity-18 animate-float-slow animation-delay-1000"
         />
+        <img 
+          src={isotipoSGold} 
+          alt="" 
+          className="hidden lg:block absolute bottom-16 right-12 w-20 h-20 opacity-22 animate-float-slow animation-delay-1500 drop-shadow-[0_0_18px_rgba(166,144,97,0.3)]"
+        />
+        
+        {/* Extra isotipos for maximum impact */}
+        <img 
+          src={isotipoSWhite} 
+          alt="" 
+          className="hidden xl:block absolute top-1/4 left-[8%] w-12 h-12 opacity-12 animate-float-slow animation-delay-500"
+        />
+        <img 
+          src={isotipoSWhite} 
+          alt="" 
+          className="hidden xl:block absolute bottom-1/4 right-[8%] w-10 h-10 opacity-10 animate-float-slow animation-delay-2500"
+        />
+        
+        {/* Decorative particles */}
+        <div className="hidden lg:block absolute top-[25%] left-[20%] w-3 h-3 rounded-full bg-secondary/50 animate-pulse" />
+        <div className="hidden lg:block absolute top-[30%] right-[22%] w-2 h-2 rounded-full bg-secondary/40 animate-pulse animation-delay-500" />
+        <div className="hidden lg:block absolute bottom-[28%] left-[25%] w-2.5 h-2.5 rounded-full bg-secondary/45 animate-pulse animation-delay-1000" />
+        <div className="hidden lg:block absolute bottom-[22%] right-[18%] w-2 h-2 rounded-full bg-cream/25 animate-pulse animation-delay-1500" />
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={finalCtaRef}>
           <motion.div
