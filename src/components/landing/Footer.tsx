@@ -118,8 +118,8 @@ export const Footer = () => {
               </li>
               <li className="flex items-start gap-3 text-sm text-background/70">
                 <Phone className="w-4 h-4 mt-0.5 text-secondary flex-shrink-0" />
-                <a href="https://wa.me/5511993563468" target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">
-                  (11) 99356-3468
+                <a href="https://wa.me/55959103182" target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">
+                  (95) 9103-182
                 </a>
               </li>
               <li className="flex items-start gap-3 text-sm text-background/70">

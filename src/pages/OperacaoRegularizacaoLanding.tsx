@@ -72,7 +72,7 @@ const OperacaoRegularizacaoLanding = () => {
 
   const whatsappNumber = "55959103182";
   const whatsappMessage = encodeURIComponent("Olá! Tenho dúvidas sobre a Operação Regularização Imobiliária.");
-  const paymentLink = "https://sun.eduzz.com/7WXQR14G9A";
+  const paymentLink = "https://sun.eduzz.com/7WXQR14G9A?utm_source=site&utm_medium=landing&utm_campaign=operacao_regularizacao";
 
   const benefits = [
     { icon: Clock, text: "04h de conteúdo" },
