@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Helmet } from "react-helmet-async";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import { 
   Calendar, 
   Clock, 
@@ -180,6 +181,9 @@ const OperacaoRegularizacaoLanding = () => {
         
         {/* Canonical URL */}
         <link rel="canonical" href="https://soberana.club/operacao-regularizacao" />
+        
+        {/* Preload Critical Hero Image */}
+        <link rel="preload" as="image" href={fabianaHero} />
         
         {/* Event Schema */}
         <script type="application/ld+json">
@@ -435,12 +439,12 @@ const OperacaoRegularizacaoLanding = () => {
               <div className="relative max-w-xs sm:max-w-sm md:max-w-md mx-auto lg:max-w-none lg:ml-auto">
                 {/* Photo Container with gradient blend */}
                 <div className="relative rounded-2xl overflow-hidden">
-                  <img
+                  <OptimizedImage
                     src={fabianaHero}
                     alt="Fabiana Duarte - Mentora de Advogadas"
                     className="w-full h-[45vh] sm:h-[50vh] md:h-[55vh] lg:h-[70vh] object-cover object-top"
-                    loading="eager"
-                    fetchPriority="high"
+                    wrapperClassName="w-full"
+                    priority={true}
                   />
                   {/* Gradient overlay for blending */}
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/20 to-transparent" />
@@ -826,17 +830,19 @@ const OperacaoRegularizacaoLanding = () => {
               {/* Photo */}
               <motion.div variants={staggerItem} className="relative order-2 lg:order-1">
                 <div className="golden-frame rounded-2xl overflow-hidden max-w-xs sm:max-w-sm md:max-w-md mx-auto">
-                  <img
+                  <OptimizedImage
                     src={mentorSobre}
                     alt="Fabiana Duarte"
                     className="w-full h-auto object-cover"
-                    loading="lazy"
+                    wrapperClassName="w-full"
+                    priority={false}
                   />
                 </div>
                 <img
                   src={isotipoSFramedGold}
                   alt=""
                   className="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-4 lg:-bottom-6 lg:-right-6 w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 opacity-60"
+                  loading="lazy"
                 />
               </motion.div>
 
