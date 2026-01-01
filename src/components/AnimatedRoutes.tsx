@@ -42,6 +42,7 @@ import AdminMissions from "@/pages/admin/AdminMissions";
 import AdminMissionReviews from "@/pages/admin/AdminMissionReviews";
 import ExperienceStartLanding from "@/pages/ExperienceStartLanding";
 import OperacaoRegularizacaoLanding from "@/pages/OperacaoRegularizacaoLanding";
+import SimuladorFinanceiro from "@/pages/SimuladorFinanceiro";
 import Privacidade from "@/pages/Privacidade";
 import Termos from "@/pages/Termos";
 import NotFound from "@/pages/NotFound";
@@ -61,6 +62,7 @@ export const AnimatedRoutes = () => {
         <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
         <Route path="/experience-start" element={<PageTransition><ExperienceStartLanding /></PageTransition>} />
         <Route path="/operacao-regularizacao" element={<PageTransition><OperacaoRegularizacaoLanding /></PageTransition>} />
+        <Route path="/simulador" element={<PageTransition><SimuladorFinanceiro /></PageTransition>} />
         <Route path="/privacidade" element={<PageTransition><Privacidade /></PageTransition>} />
         <Route path="/termos" element={<PageTransition><Termos /></PageTransition>} />
         
