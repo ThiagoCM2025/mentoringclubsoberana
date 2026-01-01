@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { lazy, Suspense } from "react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import PageTransition from "@/components/PageTransition";
 
@@ -40,6 +41,7 @@ import BlogEditor from "@/pages/admin/BlogEditor";
 import AdminMissions from "@/pages/admin/AdminMissions";
 import AdminMissionReviews from "@/pages/admin/AdminMissionReviews";
 import ExperienceStartLanding from "@/pages/ExperienceStartLanding";
+import OperacaoRegularizacaoLanding from "@/pages/OperacaoRegularizacaoLanding";
 import Privacidade from "@/pages/Privacidade";
 import Termos from "@/pages/Termos";
 import NotFound from "@/pages/NotFound";
@@ -58,6 +60,7 @@ export const AnimatedRoutes = () => {
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
         <Route path="/experience-start" element={<PageTransition><ExperienceStartLanding /></PageTransition>} />
+        <Route path="/operacao-regularizacao" element={<PageTransition><OperacaoRegularizacaoLanding /></PageTransition>} />
         <Route path="/privacidade" element={<PageTransition><Privacidade /></PageTransition>} />
         <Route path="/termos" element={<PageTransition><Termos /></PageTransition>} />
         
