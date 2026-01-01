@@ -1548,7 +1548,7 @@
     animation: textShimmer 3s linear infinite;
   }
   
-  /* Mobile disable expensive animations */
+  /* Mobile disable expensive animations and optimize performance */
   @media (max-width: 768px) {
     .price-card-glow {
       animation: none;
@@ -1576,10 +1576,28 @@
       animation: none;
       opacity: 0.15;
     }
+    
+    /* Disable all pulse animations on mobile for performance */
+    .animate-pulse {
+      animation: none !important;
+    }
+    
+    /* Optimize pattern backgrounds on mobile */
+    [style*="backgroundImage"][style*="pattern"] {
+      display: none;
+    }
   }
   
   /* Reduced motion - respect preferences */
   @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    
     .price-card-glow,
     .price-text-glow,
     .urgency-pulse,
@@ -1593,5 +1611,11 @@
     .card-premium-hover:hover {
       transform: none;
     }
+  }
+  
+  /* Optimize compositing for pattern backgrounds */
+  .pattern-bg {
+    contain: layout paint;
+    will-change: auto;
   }
 }

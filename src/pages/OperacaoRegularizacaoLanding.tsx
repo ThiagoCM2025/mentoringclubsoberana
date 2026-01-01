@@ -32,13 +32,12 @@ import { staggerContainer, staggerItem, scaleIn, fadeIn } from "@/lib/animations
 
 import mentorSobre from "@/assets/mentor-sobre.jpg";
 import fabianaHero from "@/assets/fabiana-operacao-regularizacao.jpg";
-import heroArchitectureBg from "@/assets/hero-architecture-bg.jpg";
+import heroRegularizacaoBg from "@/assets/hero-regularizacao-bg.jpg";
 import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 import isotipoSFramedGold from "@/assets/brand/isotipo-s-framed-gold-v3.png";
 import patternFlowerGold from "@/assets/brand/pattern-flower-gold.png";
 import patternFlowerMarsala from "@/assets/brand/pattern-flower-marsala.png";
 import patternFlowerPreto from "@/assets/brand/pattern-flower-preto.png";
-import patternFlowerBranco from "@/assets/brand/pattern-flower-branco.png";
 import { Progress } from "@/components/ui/progress";
 
 const OperacaoRegularizacaoLanding = () => {
@@ -165,40 +164,39 @@ const OperacaoRegularizacaoLanding = () => {
 
       {/* SECTION 1: Hero Premium - Split Layout */}
       <section className="relative min-h-screen overflow-hidden bg-brand-black">
-        {/* Background Image - Architecture/Real Estate Thematic */}
+        {/* Background Image - Real Estate Regularization Thematic (More visible) */}
         <div 
-          className="absolute inset-0 opacity-[0.12]"
+          className="absolute inset-0 opacity-[0.20]"
           style={{ 
-            backgroundImage: `url(${heroArchitectureBg})`, 
+            backgroundImage: `url(${heroRegularizacaoBg})`, 
             backgroundSize: 'cover', 
             backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
+            backgroundRepeat: 'no-repeat',
+            mixBlendMode: 'screen'
           }}
         />
         
-        {/* Pattern Overlay - Flower of Life Gold */}
+        {/* Pattern Overlay - Flower of Life Gold (subtle) */}
         <div 
-          className="absolute inset-0 opacity-[0.04]"
-          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '300px', backgroundRepeat: 'repeat' }}
+          className="absolute inset-0 opacity-[0.03] hidden md:block"
+          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
         />
         
         {/* Dark Overlay for legibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-brand-black/60 via-brand-black/40 to-brand-black/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-brand-black/50 via-brand-black/30 to-brand-black/70" />
         
-        {/* Radial Glow */}
-        <div className="absolute inset-0 bg-gradient-radial from-secondary/10 via-transparent to-transparent opacity-60" />
+        {/* Radial Glow - Reduced */}
+        <div className="absolute inset-0 bg-gradient-radial from-secondary/8 via-transparent to-transparent opacity-50 hidden md:block" />
         
-        {/* Golden Sphere Glow - Reduced for cleaner look */}
-        <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[500px] md:h-[500px] rounded-full bg-secondary/8 blur-3xl" />
+        {/* Golden Sphere Glow - Smaller for mobile */}
+        <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] md:w-[400px] md:h-[400px] rounded-full bg-secondary/6 blur-3xl" />
         
-        {/* Decorative golden particles only - no large isotipos */}
-        <div className="hidden md:block absolute top-[20%] left-[15%] w-2 h-2 rounded-full bg-secondary/40 animate-pulse" />
-        <div className="hidden md:block absolute top-[30%] right-[20%] w-1.5 h-1.5 rounded-full bg-secondary/30 animate-pulse animation-delay-1000" />
-        <div className="hidden md:block absolute bottom-[25%] left-[25%] w-2 h-2 rounded-full bg-secondary/35 animate-pulse animation-delay-2000" />
-        <div className="hidden md:block absolute bottom-[35%] right-[15%] w-1.5 h-1.5 rounded-full bg-secondary/25 animate-pulse animation-delay-500" />
+        {/* Decorative golden particles - hidden on mobile for performance */}
+        <div className="hidden lg:block absolute top-[20%] left-[15%] w-1.5 h-1.5 rounded-full bg-secondary/30" />
+        <div className="hidden lg:block absolute top-[30%] right-[20%] w-1 h-1 rounded-full bg-secondary/25" />
         
         {/* Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-black/60 via-transparent to-brand-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-black/50 via-transparent to-brand-black/20" />
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10 min-h-screen flex items-center" ref={heroRef}>
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center w-full py-8 sm:py-12 lg:py-12">
@@ -311,7 +309,9 @@ const OperacaoRegularizacaoLanding = () => {
                   <img
                     src={fabianaHero}
                     alt="Fabiana Duarte - Mentora de Advogadas"
-                    className="w-full h-[40vh] sm:h-[45vh] md:h-[50vh] lg:h-[70vh] object-cover object-top"
+                    className="w-full h-[45vh] sm:h-[50vh] md:h-[55vh] lg:h-[70vh] object-cover object-top"
+                    loading="eager"
+                    fetchPriority="high"
                   />
                   {/* Gradient overlay for blending */}
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/20 to-transparent" />
@@ -384,18 +384,14 @@ const OperacaoRegularizacaoLanding = () => {
 
       {/* SECTION 3: Pain Points */}
       <section className="relative py-12 sm:py-16 lg:py-24 bg-brand-black overflow-hidden">
-        {/* Pattern Background - Flower of Life Gold */}
+        {/* Pattern Background - Flower of Life Gold - hidden on mobile */}
         <div 
-          className="absolute inset-0 opacity-[0.04]"
-          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '280px', backgroundRepeat: 'repeat' }}
+          className="absolute inset-0 opacity-[0.03] hidden md:block"
+          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
         />
         
-        {/* Central Golden Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] sm:w-[500px] sm:h-[500px] rounded-full bg-secondary/8 blur-3xl" />
-        
-        {/* Decorative particles */}
-        <div className="hidden md:block absolute top-[15%] right-[25%] w-2 h-2 rounded-full bg-secondary/35 animate-pulse" />
-        <div className="hidden md:block absolute bottom-[20%] left-[20%] w-1.5 h-1.5 rounded-full bg-cream/20 animate-pulse animation-delay-1000" />
+        {/* Central Golden Glow - smaller on mobile */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] sm:w-[350px] sm:h-[350px] rounded-full bg-secondary/6 blur-3xl" />
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={painRef}>
           <motion.div
@@ -539,18 +535,14 @@ const OperacaoRegularizacaoLanding = () => {
 
       {/* SECTION 5: Pricing */}
       <section className="relative py-12 sm:py-16 lg:py-24 bg-brand-black overflow-hidden">
-        {/* Pattern Background - Flower of Life Gold */}
+        {/* Pattern Background - Flower of Life Gold - hidden on mobile */}
         <div 
-          className="absolute inset-0 opacity-[0.05]"
-          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '300px', backgroundRepeat: 'repeat' }}
+          className="absolute inset-0 opacity-[0.04] hidden md:block"
+          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
         />
         
-        {/* Golden Glow Top */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] sm:w-[700px] lg:w-[900px] h-[300px] sm:h-[400px] lg:h-[500px] bg-secondary/10 rounded-full blur-3xl opacity-50" />
-        
-        {/* Decorative particles */}
-        <div className="hidden md:block absolute top-[40%] left-[30%] w-2 h-2 rounded-full bg-secondary/35 animate-pulse" />
-        <div className="hidden md:block absolute bottom-[30%] right-[25%] w-1.5 h-1.5 rounded-full bg-secondary/30 animate-pulse animation-delay-1000" />
+        {/* Golden Glow Top - reduced on mobile */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] sm:w-[500px] lg:w-[700px] h-[200px] sm:h-[300px] lg:h-[400px] bg-secondary/8 rounded-full blur-3xl opacity-40" />
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={pricingRef}>
           <motion.div
@@ -767,18 +759,14 @@ const OperacaoRegularizacaoLanding = () => {
 
       {/* SECTION 8: Final CTA */}
       <section className="relative py-12 sm:py-16 lg:py-24 bg-brand-black overflow-hidden">
-        {/* Pattern Background - Flower of Life Gold */}
+        {/* Pattern Background - Flower of Life Gold - hidden on mobile */}
         <div 
-          className="absolute inset-0 opacity-[0.05]"
-          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '300px', backgroundRepeat: 'repeat' }}
+          className="absolute inset-0 opacity-[0.04] hidden md:block"
+          style={{ backgroundImage: `url(${patternFlowerGold})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
         />
         
-        {/* Golden Glow - Central */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] sm:w-[500px] sm:h-[500px] lg:w-[600px] lg:h-[600px] bg-secondary/12 rounded-full blur-3xl" />
-        
-        {/* Decorative particles */}
-        <div className="hidden md:block absolute top-[25%] left-[20%] w-2 h-2 rounded-full bg-secondary/40 animate-pulse" />
-        <div className="hidden md:block absolute bottom-[28%] right-[22%] w-2 h-2 rounded-full bg-secondary/35 animate-pulse animation-delay-1000" />
+        {/* Golden Glow - Central - smaller on mobile */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] sm:w-[350px] sm:h-[350px] lg:w-[500px] lg:h-[500px] bg-secondary/8 rounded-full blur-3xl" />
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={finalCtaRef}>
           <motion.div
