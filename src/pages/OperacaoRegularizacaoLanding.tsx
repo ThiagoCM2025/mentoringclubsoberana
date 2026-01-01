@@ -604,8 +604,6 @@ const OperacaoRegularizacaoLanding = () => {
           </motion.div>
         </div>
         
-        {/* Transition to next section */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-cream pointer-events-none" />
       </section>
 
       {/* SECTION 4: Cronograma + Para Quem É */}
@@ -682,9 +680,6 @@ const OperacaoRegularizacaoLanding = () => {
             </motion.div>
           </motion.div>
         </div>
-        
-        {/* Transition to next section */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-brand-black pointer-events-none" />
       </section>
 
       {/* SECTION 5: Pricing */}
@@ -793,9 +788,6 @@ const OperacaoRegularizacaoLanding = () => {
             </motion.div>
           </motion.div>
         </div>
-        
-        {/* Transition to next section */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-primary pointer-events-none" />
       </section>
 
       {/* SECTION 6: Mentora */}
@@ -879,9 +871,6 @@ const OperacaoRegularizacaoLanding = () => {
             </div>
           </motion.div>
         </div>
-        
-        {/* Transition to next section */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-cream pointer-events-none" />
       </section>
 
       {/* SECTION 7: FAQ */}
@@ -941,9 +930,6 @@ const OperacaoRegularizacaoLanding = () => {
             </motion.div>
           </motion.div>
         </div>
-        
-        {/* Transition to next section */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-brand-black pointer-events-none" />
       </section>
 
       {/* SECTION 8: Final CTA */}
