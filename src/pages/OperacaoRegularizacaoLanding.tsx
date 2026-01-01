@@ -339,7 +339,7 @@ const OperacaoRegularizacaoLanding = () => {
               variants={staggerContainer}
               initial="hidden"
               animate={heroInView ? "visible" : "hidden"}
-              className="order-2 lg:order-1 text-center lg:text-left"
+              className="order-1 text-center lg:text-left"
             >
               {/* Badge */}
               <motion.div variants={staggerItem} className="mb-4 sm:mb-5 flex justify-center lg:justify-start">
@@ -434,7 +434,7 @@ const OperacaoRegularizacaoLanding = () => {
               variants={fadeIn}
               initial="hidden"
               animate={heroInView ? "visible" : "hidden"}
-              className="order-1 lg:order-2 relative"
+              className="order-2 relative"
             >
               <div className="relative max-w-xs sm:max-w-sm md:max-w-md mx-auto lg:max-w-none lg:ml-auto">
                 {/* Photo Container with gradient blend */}
