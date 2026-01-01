@@ -17,7 +17,8 @@ import {
   HelpCircle,
   Lock,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  Zap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -28,10 +29,12 @@ import {
 } from "@/components/ui/accordion";
 import { PremiumBackground } from "@/components/ui/premium-background";
 import { Footer } from "@/components/landing/Footer";
-import { staggerContainer, staggerItem, scaleIn } from "@/lib/animations";
+import { staggerContainer, staggerItem, scaleIn, fadeIn } from "@/lib/animations";
 
 import mentorSobre from "@/assets/mentor-sobre.jpg";
 import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
+import isotipoSFramedGold from "@/assets/brand/isotipo-s-framed-gold-v3.png";
+import patternCirclesDourado from "@/assets/brand/pattern-circles-dourado.png";
 
 const OperacaoRegularizacaoLanding = () => {
   const heroRef = useRef(null);
@@ -41,6 +44,7 @@ const OperacaoRegularizacaoLanding = () => {
   const pricingRef = useRef(null);
   const mentorRef = useRef(null);
   const faqRef = useRef(null);
+  const finalCtaRef = useRef(null);
 
   const heroInView = useInView(heroRef, { once: true, amount: 0.2 });
   const aboutInView = useInView(aboutRef, { once: true, amount: 0.2 });
@@ -49,6 +53,7 @@ const OperacaoRegularizacaoLanding = () => {
   const pricingInView = useInView(pricingRef, { once: true, amount: 0.2 });
   const mentorInView = useInView(mentorRef, { once: true, amount: 0.2 });
   const faqInView = useInView(faqRef, { once: true, amount: 0.2 });
+  const finalCtaInView = useInView(finalCtaRef, { once: true, amount: 0.3 });
 
   const whatsappNumber = "5511993563468";
   const whatsappMessage = encodeURIComponent("Olá! Tenho dúvidas sobre a Operação Regularização Imobiliária.");
@@ -153,17 +158,41 @@ const OperacaoRegularizacaoLanding = () => {
         </script>
       </Helmet>
 
-      {/* SECTION 1: Hero */}
-      <PremiumBackground
-        variant="dark"
-        pattern="geometric"
-        patternOpacity={0.06}
-        showIsotipos
-        isotipoVariant="gold"
-        showVignette
-        className="min-h-screen flex items-center relative overflow-hidden"
-      >
-        <div className="container mx-auto px-4 py-20 lg:py-28" ref={heroRef}>
+      {/* SECTION 1: Hero Premium */}
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-brand-black">
+        {/* Background Pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.04]"
+          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '300px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Radial Glow */}
+        <div className="absolute inset-0 bg-gradient-radial from-secondary/10 via-transparent to-transparent opacity-60" />
+        
+        {/* Golden Sphere Center Glow */}
+        <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] md:w-[900px] md:h-[900px] rounded-full bg-secondary/10 blur-3xl golden-sphere-glow" />
+        
+        {/* Floating Isotipos - Hidden on mobile */}
+        <img 
+          src={isotipoSFramedGold} 
+          alt="" 
+          className="hidden lg:block absolute top-20 left-10 w-16 h-16 opacity-20 animate-float-slow"
+        />
+        <img 
+          src={isotipoSGold} 
+          alt="" 
+          className="hidden lg:block absolute bottom-32 right-16 w-20 h-20 opacity-15 animate-float-slow animation-delay-2000"
+        />
+        <img 
+          src={isotipoSFramedGold} 
+          alt="" 
+          className="hidden md:block absolute top-1/3 right-8 w-12 h-12 opacity-10 animate-float-slow animation-delay-1000"
+        />
+        
+        {/* Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-brand-black/50" />
+        
+        <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-20 lg:py-28 relative z-10" ref={heroRef}>
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -172,25 +201,25 @@ const OperacaoRegularizacaoLanding = () => {
           >
             {/* Badge */}
             <motion.div variants={staggerItem} className="mb-6">
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/20 border border-secondary/30 text-secondary text-sm font-medium">
-                <Sparkles className="w-4 h-4" />
-                Imersão ao Vivo • 18 de Janeiro
+              <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-secondary/15 border border-secondary/30 text-secondary text-sm font-medium backdrop-blur-sm">
+                <Sparkles className="w-4 h-4 animate-pulse" />
+                <span>Imersão ao Vivo • 18 de Janeiro</span>
               </span>
             </motion.div>
 
             {/* Title */}
             <motion.h1 
               variants={staggerItem}
-              className="font-serif text-4xl md:text-5xl lg:text-6xl text-cream mb-6 leading-tight"
+              className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-cream mb-6 leading-tight"
             >
               Operação Regularização Imobiliária de{" "}
-              <span className="text-secondary">Alta Escala</span>
+              <span className="text-shimmer-gold">Alta Escala</span>
             </motion.h1>
 
             {/* Subtitle */}
             <motion.p 
               variants={staggerItem}
-              className="text-lg md:text-xl text-cream/80 mb-8 max-w-3xl mx-auto leading-relaxed"
+              className="text-base sm:text-lg md:text-xl text-cream/80 mb-8 max-w-3xl mx-auto leading-relaxed px-2"
             >
               O caminho para as advogadas transformarem regularização imobiliária em uma operação previsível: 
               com método, posicionamento e rotina que gera volume de casos e crescimento real de escritório.
@@ -199,27 +228,27 @@ const OperacaoRegularizacaoLanding = () => {
             {/* Event Info */}
             <motion.div 
               variants={staggerItem}
-              className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mb-10 text-cream/70"
+              className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 mb-10 text-cream/70"
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 icon-bounce-hover">
                 <Calendar className="w-5 h-5 text-secondary" />
-                <span>18 de Janeiro</span>
+                <span className="text-sm sm:text-base">18 de Janeiro</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 icon-bounce-hover">
                 <Clock className="w-5 h-5 text-secondary" />
-                <span>09h00 às 13h00</span>
+                <span className="text-sm sm:text-base">09h00 às 13h00</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 icon-bounce-hover">
                 <MapPin className="w-5 h-5 text-secondary" />
-                <span>AO VIVO e Online</span>
+                <span className="text-sm sm:text-base">AO VIVO e Online</span>
               </div>
             </motion.div>
 
             {/* Pricing */}
             <motion.div variants={staggerItem} className="mb-8">
-              <div className="flex items-center justify-center gap-4 mb-4">
-                <span className="text-cream/50 line-through text-xl">R$197,00</span>
-                <span className="text-secondary text-4xl md:text-5xl font-bold">R$19,00</span>
+              <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4">
+                <span className="text-cream/40 line-through text-lg sm:text-xl">R$197,00</span>
+                <span className="text-secondary text-4xl sm:text-5xl md:text-6xl font-bold price-text-glow">R$19,00</span>
               </div>
               <p className="text-cream/60 text-sm">Lote 01 - Vagas Limitadas</p>
             </motion.div>
@@ -230,7 +259,7 @@ const OperacaoRegularizacaoLanding = () => {
                 asChild
                 variant="cta"
                 size="lg"
-                className="text-lg px-8 py-6 h-auto"
+                className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto w-full sm:w-auto"
               >
                 <a href={paymentLink} target="_blank" rel="noopener noreferrer">
                   <Lock className="w-5 h-5 mr-2" />
@@ -239,103 +268,125 @@ const OperacaoRegularizacaoLanding = () => {
               </Button>
               
               {/* Urgency Badge */}
-              <div className="flex items-center justify-center gap-2">
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/30 border border-primary/50 text-cream text-sm">
-                  <AlertCircle className="w-4 h-4 text-secondary animate-pulse" />
+              <div className="flex items-center justify-center">
+                <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary/30 border border-primary/50 text-cream text-xs sm:text-sm urgency-pulse">
+                  <AlertCircle className="w-4 h-4 text-secondary" />
                   90% dos ingressos vendidos a R$19,00
                 </span>
               </div>
             </motion.div>
           </motion.div>
         </div>
-      </PremiumBackground>
+      </section>
 
       {/* SECTION 2: O Que é Essa Imersão */}
-      <PremiumBackground
-        variant="light"
-        pattern="circles-gold"
-        patternOpacity={0.04}
-        className="py-20 lg:py-28"
-      >
-        <div className="container mx-auto px-4" ref={aboutRef}>
+      <section className="relative py-16 sm:py-20 lg:py-28 bg-cream overflow-hidden">
+        {/* Pattern Background */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Floating Isotipo */}
+        <img 
+          src={isotipoSGold} 
+          alt="" 
+          className="hidden lg:block absolute bottom-10 right-10 w-24 h-24 opacity-10"
+        />
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={aboutRef}>
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             animate={aboutInView ? "visible" : "hidden"}
             className="max-w-5xl mx-auto"
           >
-            <motion.div variants={staggerItem} className="text-center mb-12">
-              <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
+            <motion.div variants={staggerItem} className="text-center mb-10 sm:mb-12">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
                 O que é essa <span className="text-primary">Imersão</span>?
               </h2>
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto px-2">
                 Imersão ao vivo, com 4 horas, para você entender exatamente como advogadas estão 
                 construindo escala usando regularização imobiliária como especialidade principal.
               </p>
             </motion.div>
 
             <motion.div variants={staggerItem} className="mb-8">
-              <p className="text-center text-xl text-primary font-medium mb-8">
+              <p className="text-center text-lg sm:text-xl text-primary font-medium mb-8">
                 Você vai sair com clareza sobre:
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {learnings.map((learning, index) => (
                 <motion.div
                   key={index}
                   variants={staggerItem}
-                  className="flex items-start gap-3 p-5 rounded-xl bg-background border border-secondary/20 hover:border-secondary/40 hover:shadow-lg transition-all duration-300"
+                  className="flex items-start gap-3 p-4 sm:p-5 rounded-xl bg-background border border-secondary/15 card-premium-hover group"
                 >
-                  <CheckCircle2 className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
-                  <p className="text-muted-foreground">{learning}</p>
+                  <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-secondary flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                  <p className="text-muted-foreground text-sm sm:text-base">{learning}</p>
                 </motion.div>
               ))}
             </div>
           </motion.div>
         </div>
-      </PremiumBackground>
+      </section>
 
       {/* SECTION 3: Pain Points */}
-      <PremiumBackground
-        variant="dark"
-        pattern="geometric"
-        patternOpacity={0.05}
-        showIsotipos
-        isotipoVariant="gold"
-        className="py-20 lg:py-28"
-      >
-        <div className="container mx-auto px-4" ref={painRef}>
+      <section className="relative py-16 sm:py-20 lg:py-28 bg-brand-black overflow-hidden">
+        {/* Pattern Background */}
+        <div 
+          className="absolute inset-0 opacity-[0.04]"
+          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '250px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Central Golden Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-secondary/8 blur-3xl golden-sphere-glow" />
+        
+        {/* Floating Isotipos */}
+        <img 
+          src={isotipoSGold} 
+          alt="" 
+          className="hidden lg:block absolute top-20 left-16 w-16 h-16 opacity-15 animate-float-slow"
+        />
+        <img 
+          src={isotipoSFramedGold} 
+          alt="" 
+          className="hidden lg:block absolute bottom-20 right-20 w-20 h-20 opacity-12 animate-float-slow animation-delay-1000"
+        />
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={painRef}>
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             animate={painInView ? "visible" : "hidden"}
             className="max-w-4xl mx-auto"
           >
-            <motion.div variants={staggerItem} className="text-center mb-12">
-              <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-cream mb-6 leading-tight">
+            <motion.div variants={staggerItem} className="text-center mb-10 sm:mb-12">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-cream mb-4 sm:mb-6 leading-tight px-2">
                 Você sabe que regularização dá resultado…
               </h2>
-              <p className="text-xl text-secondary">
+              <p className="text-lg sm:text-xl text-secondary">
                 Mas ainda sente que seu escritório não está crescendo como poderia?
               </p>
             </motion.div>
 
-            <motion.p variants={staggerItem} className="text-center text-cream/70 mb-10 text-lg">
+            <motion.p variants={staggerItem} className="text-center text-cream/70 mb-8 sm:mb-10 text-base sm:text-lg">
               Talvez você se veja aqui:
             </motion.p>
 
-            <div className="grid md:grid-cols-2 gap-4 mb-12">
+            <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 mb-10 sm:mb-12">
               {painPoints.map((pain, index) => (
                 <motion.div
                   key={index}
                   variants={staggerItem}
-                  className="flex items-start gap-4 p-6 rounded-xl bg-zinc-900/50 border-l-4 border-secondary"
+                  className="flex items-start gap-3 sm:gap-4 p-5 sm:p-6 rounded-xl glass-card-dark border-l-4 border-secondary"
                 >
-                  <span className="text-3xl">{pain.emoji}</span>
+                  <span className="text-2xl sm:text-3xl emoji-glow">{pain.emoji}</span>
                   <div>
-                    <p className="text-cream font-semibold text-lg">{pain.title}</p>
-                    <p className="text-cream/60">{pain.description}</p>
+                    <p className="text-cream font-semibold text-base sm:text-lg">{pain.title}</p>
+                    <p className="text-cream/60 text-sm sm:text-base">{pain.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -343,12 +394,15 @@ const OperacaoRegularizacaoLanding = () => {
 
             <motion.div 
               variants={scaleIn}
-              className="text-center p-8 rounded-2xl bg-gradient-to-r from-primary/20 to-secondary/10 border border-secondary/30"
+              className="text-center p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-primary/20 to-secondary/10 border-2 border-secondary/40 border-glow-animated"
             >
-              <p className="text-2xl md:text-3xl font-serif text-cream mb-4">
-                Chegou a hora de mudar isso!
-              </p>
-              <p className="text-cream/80">
+              <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
+                <Zap className="w-6 h-6 text-secondary" />
+                <p className="text-xl sm:text-2xl md:text-3xl font-serif text-cream">
+                  Chegou a hora de mudar isso!
+                </p>
+              </div>
+              <p className="text-cream/80 text-sm sm:text-base px-2">
                 Você vai entender como transformar a regularização imobiliária em uma especialidade 
                 que sustenta crescimento — com método, constância e posicionamento — sem precisar 
                 virar refém do operacional.
@@ -356,47 +410,48 @@ const OperacaoRegularizacaoLanding = () => {
             </motion.div>
           </motion.div>
         </div>
-      </PremiumBackground>
+      </section>
 
       {/* SECTION 4: Cronograma + Para Quem É */}
-      <PremiumBackground
-        variant="light"
-        pattern="circles-gold"
-        patternOpacity={0.03}
-        className="py-20 lg:py-28"
-      >
-        <div className="container mx-auto px-4" ref={scheduleRef}>
+      <section className="relative py-16 sm:py-20 lg:py-28 bg-cream overflow-hidden">
+        {/* Pattern Background */}
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
+          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
+        />
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={scheduleRef}>
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             animate={scheduleInView ? "visible" : "hidden"}
             className="max-w-5xl mx-auto"
           >
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
               {/* Cronograma */}
               <motion.div 
                 variants={staggerItem}
-                className="bg-background rounded-2xl p-8 border border-secondary/20 shadow-lg"
+                className="bg-background rounded-2xl p-6 sm:p-8 border border-secondary/20 shadow-lg card-premium-hover"
               >
-                <h3 className="font-serif text-2xl md:text-3xl text-foreground mb-6 flex items-center gap-3">
-                  <Calendar className="w-8 h-8 text-secondary" />
+                <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-6 flex items-center gap-3">
+                  <Calendar className="w-7 h-7 sm:w-8 sm:h-8 text-secondary icon-bounce-hover" />
                   Cronograma
                 </h3>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl">
-                    <div className="w-16 h-16 rounded-xl bg-secondary/20 flex items-center justify-center">
-                      <span className="text-2xl font-bold text-secondary">18</span>
+                  <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl border border-secondary/10">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-secondary/20 flex items-center justify-center">
+                      <span className="text-xl sm:text-2xl font-bold text-secondary">18</span>
                     </div>
                     <div>
-                      <p className="text-lg font-semibold text-foreground">Janeiro de 2025</p>
-                      <p className="text-muted-foreground">Sábado</p>
+                      <p className="text-base sm:text-lg font-semibold text-foreground">Janeiro de 2025</p>
+                      <p className="text-muted-foreground text-sm sm:text-base">Sábado</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 text-muted-foreground">
+                  <div className="flex items-center gap-3 text-muted-foreground text-sm sm:text-base">
                     <Clock className="w-5 h-5 text-secondary" />
                     <span><strong>Início:</strong> 09h00 (Horário de Brasília)</span>
                   </div>
-                  <div className="flex items-center gap-3 text-muted-foreground">
+                  <div className="flex items-center gap-3 text-muted-foreground text-sm sm:text-base">
                     <Clock className="w-5 h-5 text-secondary" />
                     <span><strong>Encerramento:</strong> 13h00</span>
                   </div>
@@ -406,18 +461,18 @@ const OperacaoRegularizacaoLanding = () => {
               {/* Para Quem É */}
               <motion.div 
                 variants={staggerItem}
-                className="bg-background rounded-2xl p-8 border border-secondary/20 shadow-lg"
+                className="bg-background rounded-2xl p-6 sm:p-8 border border-secondary/20 shadow-lg card-premium-hover"
               >
-                <h3 className="font-serif text-2xl md:text-3xl text-foreground mb-6 flex items-center gap-3">
-                  <Target className="w-8 h-8 text-secondary" />
+                <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-6 flex items-center gap-3">
+                  <Target className="w-7 h-7 sm:w-8 sm:h-8 text-secondary icon-bounce-hover" />
                   Para quem é essa Imersão?
                 </h3>
-                <p className="text-muted-foreground mb-4">SE VOCÊ:</p>
+                <p className="text-muted-foreground mb-4 text-sm sm:text-base">SE VOCÊ:</p>
                 <div className="space-y-3">
                   {targetAudience.map((item, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-secondary flex-shrink-0 mt-0.5" />
-                      <p className="text-muted-foreground">{item}</p>
+                    <div key={index} className="flex items-start gap-3 group">
+                      <CheckCircle2 className="w-5 h-5 text-secondary flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                      <p className="text-muted-foreground text-sm sm:text-base">{item}</p>
                     </div>
                   ))}
                 </div>
@@ -427,48 +482,57 @@ const OperacaoRegularizacaoLanding = () => {
             {/* Impact Phrase */}
             <motion.div 
               variants={staggerItem}
-              className="mt-12 text-center"
+              className="mt-10 sm:mt-12 text-center px-2"
             >
-              <p className="text-xl md:text-2xl text-primary font-serif italic">
+              <p className="text-lg sm:text-xl md:text-2xl text-primary font-serif italic">
                 "O mercado premia quem escolhe uma especialidade, se posiciona e executa com consistência."
               </p>
             </motion.div>
           </motion.div>
         </div>
-      </PremiumBackground>
+      </section>
 
       {/* SECTION 5: Pricing */}
-      <PremiumBackground
-        variant="dark"
-        pattern="geometric"
-        patternOpacity={0.05}
-        showGlow
-        glowColor="gold"
-        className="py-20 lg:py-28"
-      >
-        <div className="container mx-auto px-4" ref={pricingRef}>
+      <section className="relative py-16 sm:py-20 lg:py-28 bg-brand-black overflow-hidden">
+        {/* Pattern Background */}
+        <div 
+          className="absolute inset-0 opacity-[0.04]"
+          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '250px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Golden Glow Top */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-secondary/10 rounded-full blur-3xl opacity-50" />
+        
+        {/* Floating Isotipo */}
+        <img 
+          src={isotipoSGold} 
+          alt="" 
+          className="hidden lg:block absolute top-20 right-20 w-20 h-20 opacity-15 animate-float-slow"
+        />
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={pricingRef}>
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             animate={pricingInView ? "visible" : "hidden"}
             className="max-w-4xl mx-auto"
           >
-            <motion.div variants={staggerItem} className="text-center mb-12">
-              <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-cream mb-4">
+            <motion.div variants={staggerItem} className="text-center mb-10 sm:mb-12">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-cream mb-4 px-2">
                 Quanto você vai gastar para adquirir todo esse conhecimento?
               </h2>
             </motion.div>
 
             {/* Benefits Grid */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-10 sm:mb-12">
               {benefits.map((benefit, index) => (
                 <motion.div
                   key={index}
                   variants={staggerItem}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-zinc-900/50 border border-secondary/20"
+                  className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl glass-card-dark group"
                 >
-                  <benefit.icon className="w-6 h-6 text-secondary" />
-                  <span className="text-cream">{benefit.text}</span>
+                  <benefit.icon className="w-5 h-5 sm:w-6 sm:h-6 text-secondary group-hover:scale-110 transition-transform" />
+                  <span className="text-cream text-xs sm:text-sm">{benefit.text}</span>
                 </motion.div>
               ))}
             </div>
@@ -476,20 +540,20 @@ const OperacaoRegularizacaoLanding = () => {
             {/* Price Card */}
             <motion.div 
               variants={scaleIn}
-              className="text-center p-10 rounded-3xl bg-gradient-to-br from-zinc-900 to-zinc-800 border border-secondary/30 shadow-2xl shadow-secondary/10"
+              className="text-center p-6 sm:p-8 md:p-10 rounded-3xl bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 price-card-glow"
             >
-              <p className="text-cream/50 line-through text-2xl mb-2">De R$197,00 por:</p>
+              <p className="text-cream/40 line-through text-xl sm:text-2xl mb-2">De R$197,00 por:</p>
               <div className="mb-6">
-                <span className="text-6xl md:text-7xl font-bold text-secondary">R$19</span>
-                <span className="text-2xl text-secondary">,00</span>
-                <p className="text-secondary/80 mt-2">no Lote 01</p>
+                <span className="text-5xl sm:text-6xl md:text-7xl font-bold text-secondary price-text-glow">R$19</span>
+                <span className="text-xl sm:text-2xl text-secondary">,00</span>
+                <p className="text-secondary/80 mt-2 text-sm sm:text-base">no Lote 01</p>
               </div>
 
               <Button
                 asChild
                 variant="cta"
                 size="lg"
-                className="text-lg px-10 py-7 h-auto mb-6"
+                className="text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 h-auto mb-6 w-full sm:w-auto"
               >
                 <a href={paymentLink} target="_blank" rel="noopener noreferrer">
                   <Lock className="w-5 h-5 mr-2" />
@@ -497,20 +561,20 @@ const OperacaoRegularizacaoLanding = () => {
                 </a>
               </Button>
 
-              <div className="flex items-center justify-center gap-2 mb-8">
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/30 border border-primary/50 text-cream text-sm">
-                  <AlertCircle className="w-4 h-4 text-secondary animate-pulse" />
+              <div className="flex items-center justify-center mb-8">
+                <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary/30 border border-primary/50 text-cream text-xs sm:text-sm urgency-pulse">
+                  <AlertCircle className="w-4 h-4 text-secondary" />
                   90% dos ingressos vendidos a R$19,00
                 </span>
               </div>
 
               {/* Why so cheap */}
-              <div className="pt-8 border-t border-secondary/20">
-                <h4 className="text-cream font-semibold text-lg mb-3 flex items-center justify-center gap-2">
+              <div className="pt-6 sm:pt-8 border-t border-secondary/20">
+                <h4 className="text-cream font-semibold text-base sm:text-lg mb-3 flex items-center justify-center gap-2">
                   <HelpCircle className="w-5 h-5 text-secondary" />
                   Por que tão barato?
                 </h4>
-                <p className="text-cream/70 max-w-2xl mx-auto">
+                <p className="text-cream/70 max-w-2xl mx-auto text-sm sm:text-base px-2">
                   Esse evento foi criado para abrir as portas e mostrar, com clareza, como essa 
                   oportunidade funciona na prática. O ingresso é acessível porque a ideia é que você 
                   participe, aplique e enxergue se faz sentido dar o próximo passo com a gente depois.
@@ -519,52 +583,53 @@ const OperacaoRegularizacaoLanding = () => {
             </motion.div>
           </motion.div>
         </div>
-      </PremiumBackground>
+      </section>
 
       {/* SECTION 6: Mentora */}
-      <PremiumBackground
-        variant="marsala"
-        pattern="circles-white"
-        patternOpacity={0.08}
-        showVignette
-        className="py-20 lg:py-28"
-      >
-        <div className="container mx-auto px-4" ref={mentorRef}>
+      <section className="relative py-16 sm:py-20 lg:py-28 bg-primary overflow-hidden">
+        {/* Pattern Background */}
+        <div className="absolute inset-0 opacity-[0.06] bg-[url('/src/assets/brand/pattern-circles-white.png')] bg-repeat" style={{ backgroundSize: '200px' }} />
+        
+        {/* Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-primary/30" />
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={mentorRef}>
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             animate={mentorInView ? "visible" : "hidden"}
             className="max-w-5xl mx-auto"
           >
-            <motion.div variants={staggerItem} className="text-center mb-12">
-              <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-cream mb-4">
+            <motion.div variants={staggerItem} className="text-center mb-10 sm:mb-12">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-cream mb-4">
                 Quem será sua <span className="text-secondary">mentora</span>?
               </h2>
             </motion.div>
 
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
               {/* Photo */}
-              <motion.div variants={staggerItem} className="relative">
-                <div className="golden-frame rounded-2xl overflow-hidden">
+              <motion.div variants={staggerItem} className="relative order-2 lg:order-1">
+                <div className="golden-frame rounded-2xl overflow-hidden max-w-md mx-auto">
                   <img
                     src={mentorSobre}
                     alt="Fabiana Duarte"
                     className="w-full h-auto object-cover"
+                    loading="lazy"
                   />
                 </div>
                 <img
-                  src={isotipoSGold}
+                  src={isotipoSFramedGold}
                   alt=""
-                  className="absolute -bottom-6 -right-6 w-20 h-20 opacity-60"
+                  className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 w-16 h-16 sm:w-20 sm:h-20 opacity-60"
                 />
               </motion.div>
 
               {/* Bio */}
-              <motion.div variants={staggerItem} className="space-y-6">
-                <h3 className="font-serif text-3xl md:text-4xl text-cream">
+              <motion.div variants={staggerItem} className="space-y-4 sm:space-y-6 order-1 lg:order-2">
+                <h3 className="signature-premium text-4xl sm:text-5xl md:text-6xl text-center lg:text-left">
                   Fabiana Duarte
                 </h3>
-                <div className="space-y-4 text-cream/80">
+                <div className="space-y-4 text-cream/85 text-sm sm:text-base">
                   <p>
                     Advogada, empresária jurídica e mentora de advogadas que desejam sair da estagnação, 
                     assumir a liderança dos seus escritórios e estruturar uma advocacia que gera autoridade, 
@@ -584,40 +649,41 @@ const OperacaoRegularizacaoLanding = () => {
             </div>
           </motion.div>
         </div>
-      </PremiumBackground>
+      </section>
 
-      {/* SECTION 7 & 8: FAQ */}
-      <PremiumBackground
-        variant="light"
-        pattern="circles-gold"
-        patternOpacity={0.03}
-        className="py-20 lg:py-28"
-      >
-        <div className="container mx-auto px-4" ref={faqRef}>
+      {/* SECTION 7: FAQ */}
+      <section className="relative py-16 sm:py-20 lg:py-28 bg-cream overflow-hidden">
+        {/* Pattern Background */}
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
+          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '200px', backgroundRepeat: 'repeat' }}
+        />
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={faqRef}>
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             animate={faqInView ? "visible" : "hidden"}
             className="max-w-3xl mx-auto"
           >
-            <motion.div variants={staggerItem} className="text-center mb-12">
-              <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground mb-4">
+            <motion.div variants={staggerItem} className="text-center mb-10 sm:mb-12">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground mb-4">
                 Dúvidas <span className="text-primary">Frequentes</span>
               </h2>
             </motion.div>
 
             <motion.div variants={staggerItem}>
-              <Accordion type="single" collapsible className="space-y-4">
+              <Accordion type="single" collapsible className="space-y-3 sm:space-y-4">
                 {faqs.map((faq, index) => (
                   <AccordionItem
                     key={index}
                     value={`item-${index}`}
-                    className="bg-background rounded-xl border border-secondary/20 px-6 overflow-hidden"
+                    className="bg-background rounded-xl border border-secondary/15 px-4 sm:px-6 overflow-hidden hover:border-secondary/40 transition-colors"
                   >
-                    <AccordionTrigger className="text-left text-foreground hover:text-primary py-5">
+                    <AccordionTrigger className="text-left text-foreground hover:text-primary py-4 sm:py-5 text-sm sm:text-base">
                       {faq.question}
                     </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground pb-5">
+                    <AccordionContent className="text-muted-foreground pb-4 sm:pb-5 text-sm sm:text-base">
                       {faq.answer}
                     </AccordionContent>
                   </AccordionItem>
@@ -626,13 +692,13 @@ const OperacaoRegularizacaoLanding = () => {
             </motion.div>
 
             {/* WhatsApp CTA */}
-            <motion.div variants={staggerItem} className="mt-12 text-center">
-              <p className="text-muted-foreground mb-4">Ficou com alguma dúvida?</p>
+            <motion.div variants={staggerItem} className="mt-10 sm:mt-12 text-center">
+              <p className="text-muted-foreground mb-4 text-sm sm:text-base">Ficou com alguma dúvida?</p>
               <Button
                 asChild
                 variant="outline"
                 size="lg"
-                className="border-primary text-primary hover:bg-primary hover:text-cream"
+                className="border-primary text-primary hover:bg-primary hover:text-cream w-full sm:w-auto"
               >
                 <a
                   href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`}
@@ -646,58 +712,85 @@ const OperacaoRegularizacaoLanding = () => {
             </motion.div>
           </motion.div>
         </div>
-      </PremiumBackground>
+      </section>
 
-      {/* SECTION 9: Final CTA */}
-      <PremiumBackground
-        variant="dark"
-        pattern="geometric"
-        patternOpacity={0.06}
-        showGlow
-        glowColor="gold"
-        className="py-20 lg:py-28"
-      >
-        <div className="container mx-auto px-4">
+      {/* SECTION 8: Final CTA */}
+      <section className="relative py-16 sm:py-20 lg:py-28 bg-brand-black overflow-hidden">
+        {/* Pattern Background */}
+        <div 
+          className="absolute inset-0 opacity-[0.05]"
+          style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '250px', backgroundRepeat: 'repeat' }}
+        />
+        
+        {/* Golden Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-secondary/15 rounded-full blur-3xl golden-sphere-glow" />
+        
+        {/* Floating Isotipos */}
+        <img 
+          src={isotipoSGold} 
+          alt="" 
+          className="hidden lg:block absolute top-16 left-16 w-16 h-16 opacity-20 animate-float-slow"
+        />
+        <img 
+          src={isotipoSFramedGold} 
+          alt="" 
+          className="hidden lg:block absolute bottom-16 right-16 w-20 h-20 opacity-15 animate-float-slow animation-delay-1000"
+        />
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-10" ref={finalCtaRef}>
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
+            variants={staggerContainer}
+            initial="hidden"
+            animate={finalCtaInView ? "visible" : "hidden"}
             className="max-w-3xl mx-auto text-center"
           >
-            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-cream mb-6">
-              Pronta para dar o <span className="text-secondary">próximo passo</span>?
-            </h2>
-            <p className="text-cream/70 text-lg mb-8">
-              Garanta seu ingresso agora e transforme sua prática em regularização imobiliária.
-            </p>
-
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <span className="text-cream/50 line-through text-xl">R$197,00</span>
-              <span className="text-secondary text-4xl font-bold">R$19,00</span>
-            </div>
-
-            <Button
-              asChild
-              variant="cta"
-              size="lg"
-              className="text-lg px-10 py-7 h-auto"
+            <motion.h2 
+              variants={staggerItem}
+              className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-cream mb-4 sm:mb-6 px-2"
             >
-              <a href={paymentLink} target="_blank" rel="noopener noreferrer">
-                <Lock className="w-5 h-5 mr-2" />
-                COMPRAR INGRESSO AGORA | LOTE 01
-              </a>
-            </Button>
+              Pronta para dar o <span className="text-shimmer-gold">próximo passo</span>?
+            </motion.h2>
+            <motion.p 
+              variants={staggerItem}
+              className="text-cream/70 text-base sm:text-lg mb-8 px-2"
+            >
+              Garanta seu ingresso agora e transforme sua prática em regularização imobiliária.
+            </motion.p>
 
-            <div className="mt-6 flex items-center justify-center gap-2">
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/30 border border-primary/50 text-cream text-sm">
-                <AlertCircle className="w-4 h-4 text-secondary animate-pulse" />
+            <motion.div 
+              variants={staggerItem}
+              className="flex items-center justify-center gap-3 sm:gap-4 mb-6"
+            >
+              <span className="text-cream/40 line-through text-lg sm:text-xl">R$197,00</span>
+              <span className="text-secondary text-3xl sm:text-4xl font-bold price-text-glow">R$19,00</span>
+            </motion.div>
+
+            <motion.div variants={scaleIn}>
+              <Button
+                asChild
+                variant="cta"
+                size="lg"
+                className="text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 h-auto w-full sm:w-auto"
+              >
+                <a href={paymentLink} target="_blank" rel="noopener noreferrer">
+                  <Lock className="w-5 h-5 mr-2" />
+                  COMPRAR INGRESSO AGORA | LOTE 01
+                </a>
+              </Button>
+            </motion.div>
+
+            <motion.div 
+              variants={staggerItem}
+              className="mt-6 flex items-center justify-center"
+            >
+              <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary/30 border border-primary/50 text-cream text-xs sm:text-sm urgency-pulse">
+                <AlertCircle className="w-4 h-4 text-secondary" />
                 90% dos ingressos vendidos a R$19,00
               </span>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
-      </PremiumBackground>
+      </section>
 
       <Footer />
     </>
