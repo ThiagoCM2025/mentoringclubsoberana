@@ -131,22 +131,62 @@ const OperacaoRegularizacaoLanding = () => {
     }
   ];
 
+  const faqSchemaData = faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer
+    }
+  }));
+
   return (
     <>
       <Helmet>
+        {/* Primary Meta Tags */}
         <title>Operação Regularização Imobiliária de Alta Escala | Soberana</title>
-        <meta name="description" content="Aprenda o método para transformar regularização imobiliária em uma esteira de escritório: atendimento padronizado, processos e execução técnica, com o caminho para escalar até 150k/mês." />
-        <meta name="keywords" content="regularização imobiliária, advocacia imobiliária, escritório de advocacia, escala, faturamento, advogadas" />
-        <meta property="og:title" content="Operação Regularização Imobiliária de Alta Escala | Soberana" />
-        <meta property="og:description" content="O caminho para advogadas transformarem regularização imobiliária em uma operação previsível com método, posicionamento e rotina." />
+        <meta name="title" content="Operação Regularização Imobiliária de Alta Escala | Soberana" />
+        <meta name="description" content="Imersão ao vivo para advogadas que querem transformar regularização imobiliária em uma operação previsível com método, posicionamento e rotina que gera volume de casos. 18 de Janeiro, das 09h às 13h. Apenas R$19." />
+        <meta name="keywords" content="regularização imobiliária, advocacia imobiliária, escritório de advocacia, escala jurídica, faturamento advocacia, advogadas empreendedoras, imersão jurídica, mentoria para advogadas, Fabiana Duarte, operação regularização, direito imobiliário, negócio jurídico, R$150k mês advocacia, evento online advogadas, curso regularização imobiliária, marketing jurídico, posicionamento advogada" />
+        <meta name="author" content="Fabiana Duarte - Soberana" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow" />
+        <meta name="language" content="pt-BR" />
+        <meta name="theme-color" content="#64001C" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        
+        {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://soberana.club/operacao-regularizacao" />
+        <meta property="og:title" content="Operação Regularização Imobiliária de Alta Escala | Soberana" />
+        <meta property="og:description" content="Imersão ao vivo para advogadas que querem transformar regularização imobiliária em uma operação previsível com método, posicionamento e rotina que gera volume de casos. 18 de Janeiro, das 09h às 13h. Apenas R$19." />
+        <meta property="og:image" content="https://soberana.club/og-operacao-regularizacao.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Operação Regularização Imobiliária de Alta Escala - Imersão ao Vivo com Fabiana Duarte" />
+        <meta property="og:locale" content="pt_BR" />
+        <meta property="og:site_name" content="Soberana" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://soberana.club/operacao-regularizacao" />
+        <meta name="twitter:title" content="Operação Regularização Imobiliária de Alta Escala | Soberana" />
+        <meta name="twitter:description" content="Imersão ao vivo para advogadas transformarem regularização imobiliária em operação escalável. 18/Jan, 09h-13h. R$19." />
+        <meta name="twitter:image" content="https://soberana.club/og-operacao-regularizacao.jpg" />
+        <meta name="twitter:image:alt" content="Operação Regularização Imobiliária - Fabiana Duarte" />
+        
+        {/* Canonical URL */}
         <link rel="canonical" href="https://soberana.club/operacao-regularizacao" />
+        
+        {/* Event Schema */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Event",
             "name": "Operação Regularização Imobiliária de Alta Escala",
-            "description": "Imersão ao vivo para advogadas que querem transformar regularização imobiliária em uma operação escalável.",
+            "description": "Imersão ao vivo para advogadas que querem transformar regularização imobiliária em uma operação escalável com método, posicionamento e rotina que gera volume de casos.",
+            "image": "https://soberana.club/og-operacao-regularizacao.jpg",
             "startDate": "2025-01-18T09:00:00-03:00",
             "endDate": "2025-01-18T13:00:00-03:00",
             "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
@@ -158,14 +198,82 @@ const OperacaoRegularizacaoLanding = () => {
             "organizer": {
               "@type": "Organization",
               "name": "Soberana",
-              "url": "https://soberana.club"
+              "url": "https://soberana.club",
+              "logo": "https://soberana.club/brand-logo.png"
+            },
+            "performer": {
+              "@type": "Person",
+              "name": "Fabiana Duarte",
+              "jobTitle": "Mentora de Advogadas",
+              "description": "Advogada, empresária jurídica e criadora da Metodologia SOBERANA"
             },
             "offers": {
               "@type": "Offer",
+              "name": "Ingresso Lote 01",
               "price": "19.00",
               "priceCurrency": "BRL",
-              "availability": "https://schema.org/LimitedAvailability"
+              "availability": "https://schema.org/LimitedAvailability",
+              "validFrom": "2024-12-01T00:00:00-03:00",
+              "url": "https://pay.kiwify.com.br/PLACEHOLDER"
             }
+          })}
+        </script>
+        
+        {/* FAQ Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": faqSchemaData
+          })}
+        </script>
+        
+        {/* BreadcrumbList Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://soberana.club"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Operação Regularização Imobiliária",
+                "item": "https://soberana.club/operacao-regularizacao"
+              }
+            ]
+          })}
+        </script>
+        
+        {/* Organization Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Soberana",
+            "alternateName": "Soberana Mentoring Club",
+            "url": "https://soberana.club",
+            "logo": "https://soberana.club/brand-logo.png",
+            "description": "Ecossistema de mentoria para advogadas que desejam construir negócios jurídicos lucrativos e escaláveis.",
+            "founder": {
+              "@type": "Person",
+              "name": "Fabiana Duarte"
+            },
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "telephone": "+55-11-99356-3468",
+              "availableLanguage": "Portuguese"
+            },
+            "sameAs": [
+              "https://instagram.com/soberana",
+              "https://linkedin.com/company/soberana"
+            ]
           })}
         </script>
       </Helmet>
@@ -283,32 +391,32 @@ const OperacaoRegularizacaoLanding = () => {
               </motion.div>
 
               {/* CTA */}
-              <motion.div variants={scaleIn} className="space-y-3 sm:space-y-4">
+              <motion.div variants={scaleIn} className="space-y-2.5 sm:space-y-3 max-w-xs lg:max-w-sm mx-auto lg:mx-0">
                 <Button
                   asChild
                   variant="cta"
-                  size="lg"
-                  className="text-sm sm:text-base lg:text-lg px-5 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 h-auto w-full lg:w-auto"
+                  size="default"
+                  className="text-xs sm:text-sm lg:text-base px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 lg:py-3.5 h-auto w-full"
                 >
                   <a href={paymentLink} target="_blank" rel="noopener noreferrer">
-                    <Lock className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                    <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
                     COMPRAR INGRESSO AGORA | LOTE 01
                   </a>
                 </Button>
                 
                 {/* Progress Bar - Vendas */}
-                <div className="max-w-sm mx-auto lg:mx-0">
-                  <div className="flex items-center justify-between mb-1.5 sm:mb-2 text-xs text-cream/60">
+                <div className="max-w-[200px] sm:max-w-[220px] mx-auto lg:mx-0">
+                  <div className="flex items-center justify-between mb-1 text-[10px] sm:text-xs text-cream/60">
                     <span>Ingressos vendidos</span>
                     <span className="text-secondary font-semibold">90%</span>
                   </div>
-                  <Progress value={90} className="h-1.5 sm:h-2 bg-zinc-800" />
+                  <Progress value={90} className="h-1 sm:h-1.5 bg-zinc-800" />
                 </div>
                 
                 {/* Urgency Badge */}
                 <div className="flex justify-center lg:justify-start">
-                  <span className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full bg-primary/20 border border-primary/40 text-cream text-xs urgency-pulse">
-                    <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-secondary" />
+                  <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full bg-primary/20 border border-primary/40 text-cream text-[10px] sm:text-xs urgency-pulse">
+                    <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-secondary" />
                     Últimas vagas a R$19,00
                   </span>
                 </div>
@@ -348,6 +456,9 @@ const OperacaoRegularizacaoLanding = () => {
             
           </div>
         </div>
+        
+        {/* Transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-cream pointer-events-none" />
       </section>
 
       {/* SECTION 2: O Que é Essa Imersão */}
@@ -409,6 +520,9 @@ const OperacaoRegularizacaoLanding = () => {
             </div>
           </motion.div>
         </div>
+        
+        {/* Transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-brand-black pointer-events-none" />
       </section>
 
       {/* SECTION 3: Pain Points */}
@@ -487,6 +601,9 @@ const OperacaoRegularizacaoLanding = () => {
             </motion.div>
           </motion.div>
         </div>
+        
+        {/* Transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-cream pointer-events-none" />
       </section>
 
       {/* SECTION 4: Cronograma + Para Quem É */}
@@ -585,6 +702,9 @@ const OperacaoRegularizacaoLanding = () => {
             </motion.div>
           </motion.div>
         </div>
+        
+        {/* Transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-brand-black pointer-events-none" />
       </section>
 
       {/* SECTION 5: Pricing */}
@@ -648,22 +768,33 @@ const OperacaoRegularizacaoLanding = () => {
                 <p className="text-secondary/80 mt-2 text-xs sm:text-sm lg:text-base">no Lote 01</p>
               </div>
 
-              <Button
-                asChild
-                variant="cta"
-                size="lg"
-                className="text-sm sm:text-base lg:text-lg px-6 sm:px-8 lg:px-10 py-5 sm:py-6 lg:py-7 h-auto mb-5 sm:mb-6 w-full sm:w-auto"
-              >
-                <a href={paymentLink} target="_blank" rel="noopener noreferrer">
-                  <Lock className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                  COMPRAR INGRESSO AGORA | LOTE 01
-                </a>
-              </Button>
+              <div className="max-w-xs sm:max-w-sm mx-auto">
+                <Button
+                  asChild
+                  variant="cta"
+                  size="default"
+                  className="text-xs sm:text-sm lg:text-base px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 lg:py-3.5 h-auto mb-3 sm:mb-4 w-full"
+                >
+                  <a href={paymentLink} target="_blank" rel="noopener noreferrer">
+                    <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
+                    COMPRAR INGRESSO AGORA | LOTE 01
+                  </a>
+                </Button>
+                
+                {/* Progress Bar */}
+                <div className="max-w-[200px] sm:max-w-[220px] mx-auto mb-3">
+                  <div className="flex items-center justify-between mb-1 text-[10px] sm:text-xs text-cream/60">
+                    <span>Ingressos vendidos</span>
+                    <span className="text-secondary font-semibold">90%</span>
+                  </div>
+                  <Progress value={90} className="h-1 sm:h-1.5 bg-zinc-800" />
+                </div>
+              </div>
 
-              <div className="flex items-center justify-center mb-6 sm:mb-8">
-                <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-primary/30 border border-primary/50 text-cream text-[10px] sm:text-xs lg:text-sm urgency-pulse">
-                  <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-secondary" />
-                  90% dos ingressos vendidos a R$19,00
+              <div className="flex items-center justify-center mb-4 sm:mb-5">
+                <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full bg-primary/30 border border-primary/50 text-cream text-[10px] sm:text-xs urgency-pulse">
+                  <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-secondary" />
+                  Últimas vagas a R$19,00
                 </span>
               </div>
 
@@ -682,6 +813,9 @@ const OperacaoRegularizacaoLanding = () => {
             </motion.div>
           </motion.div>
         </div>
+        
+        {/* Transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-primary pointer-events-none" />
       </section>
 
       {/* SECTION 6: Mentora */}
@@ -765,6 +899,9 @@ const OperacaoRegularizacaoLanding = () => {
             </div>
           </motion.div>
         </div>
+        
+        {/* Transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-cream pointer-events-none" />
       </section>
 
       {/* SECTION 7: FAQ */}
@@ -840,6 +977,9 @@ const OperacaoRegularizacaoLanding = () => {
             </motion.div>
           </motion.div>
         </div>
+        
+        {/* Transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 lg:h-24 bg-gradient-to-b from-transparent to-brand-black pointer-events-none" />
       </section>
 
       {/* SECTION 8: Final CTA */}
@@ -893,27 +1033,36 @@ const OperacaoRegularizacaoLanding = () => {
               <span className="text-secondary text-2xl sm:text-3xl lg:text-4xl font-bold price-text-glow">R$19,00</span>
             </motion.div>
 
-            <motion.div variants={scaleIn}>
+            <motion.div variants={scaleIn} className="max-w-xs sm:max-w-sm mx-auto">
               <Button
                 asChild
                 variant="cta"
-                size="lg"
-                className="text-sm sm:text-base lg:text-lg px-6 sm:px-8 lg:px-10 py-5 sm:py-6 lg:py-7 h-auto w-full sm:w-auto"
+                size="default"
+                className="text-xs sm:text-sm lg:text-base px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 lg:py-3.5 h-auto w-full"
               >
                 <a href={paymentLink} target="_blank" rel="noopener noreferrer">
-                  <Lock className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
                   COMPRAR INGRESSO AGORA | LOTE 01
                 </a>
               </Button>
+              
+              {/* Progress Bar */}
+              <div className="max-w-[200px] sm:max-w-[220px] mx-auto mt-3">
+                <div className="flex items-center justify-between mb-1 text-[10px] sm:text-xs text-cream/60">
+                  <span>Ingressos vendidos</span>
+                  <span className="text-secondary font-semibold">90%</span>
+                </div>
+                <Progress value={90} className="h-1 sm:h-1.5 bg-zinc-800" />
+              </div>
             </motion.div>
 
             <motion.div 
               variants={staggerItem}
-              className="mt-5 sm:mt-6 flex items-center justify-center"
+              className="mt-3 sm:mt-4 flex items-center justify-center"
             >
-              <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-primary/30 border border-primary/50 text-cream text-[10px] sm:text-xs lg:text-sm urgency-pulse">
-                <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-secondary" />
-                90% dos ingressos vendidos a R$19,00
+              <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full bg-primary/30 border border-primary/50 text-cream text-[10px] sm:text-xs urgency-pulse">
+                <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-secondary" />
+                Últimas vagas a R$19,00
               </span>
             </motion.div>
           </motion.div>
