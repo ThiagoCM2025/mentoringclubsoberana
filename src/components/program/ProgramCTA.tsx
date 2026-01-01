@@ -89,7 +89,7 @@ export const ProgramCTA = ({ program }: ProgramCTAProps) => {
               asChild
             >
               <a
-                href="https://wa.me/5511993563468?text=Olá! Tenho dúvidas sobre o programa"
+                href="https://wa.me/55959103182?text=Olá! Tenho dúvidas sobre o programa"
                 target="_blank"
                 rel="noopener noreferrer"
               >

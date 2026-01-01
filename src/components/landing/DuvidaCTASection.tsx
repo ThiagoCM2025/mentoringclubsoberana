@@ -62,7 +62,7 @@ export const DuvidaCTASection = () => {
             className="cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 py-6 text-lg group"
           >
             <a
-              href="https://wa.me/5511993563468?text=Olá! Estou em dúvida sobre qual programa escolher e gostaria de uma orientação."
+              href="https://wa.me/55959103182?text=Olá! Estou em dúvida sobre qual programa escolher e gostaria de uma orientação."
               target="_blank"
               rel="noopener noreferrer"
             >
