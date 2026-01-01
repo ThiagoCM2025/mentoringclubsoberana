@@ -32,9 +32,11 @@ import { Footer } from "@/components/landing/Footer";
 import { staggerContainer, staggerItem, scaleIn, fadeIn } from "@/lib/animations";
 
 import mentorSobre from "@/assets/mentor-sobre.jpg";
+import fabianaHero from "@/assets/fabiana-operacao-regularizacao.jpg";
 import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 import isotipoSFramedGold from "@/assets/brand/isotipo-s-framed-gold-v3.png";
 import patternCirclesDourado from "@/assets/brand/pattern-circles-dourado.png";
+import { Progress } from "@/components/ui/progress";
 
 const OperacaoRegularizacaoLanding = () => {
   const heroRef = useRef(null);
@@ -158,124 +160,173 @@ const OperacaoRegularizacaoLanding = () => {
         </script>
       </Helmet>
 
-      {/* SECTION 1: Hero Premium */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-brand-black">
+      {/* SECTION 1: Hero Premium - Split Layout */}
+      <section className="relative min-h-screen overflow-hidden bg-brand-black">
         {/* Background Pattern */}
         <div 
-          className="absolute inset-0 opacity-[0.04]"
+          className="absolute inset-0 opacity-[0.03]"
           style={{ backgroundImage: `url(${patternCirclesDourado})`, backgroundSize: '300px', backgroundRepeat: 'repeat' }}
         />
         
         {/* Radial Glow */}
-        <div className="absolute inset-0 bg-gradient-radial from-secondary/10 via-transparent to-transparent opacity-60" />
+        <div className="absolute inset-0 bg-gradient-radial from-secondary/10 via-transparent to-transparent opacity-50" />
         
-        {/* Golden Sphere Center Glow */}
-        <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] md:w-[900px] md:h-[900px] rounded-full bg-secondary/10 blur-3xl golden-sphere-glow" />
+        {/* Golden Sphere Glow - Left side on desktop */}
+        <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full bg-secondary/8 blur-3xl golden-sphere-glow" />
         
-        {/* Floating Isotipos - Hidden on mobile */}
+        {/* Floating Isotipos - 4 corners */}
         <img 
           src={isotipoSFramedGold} 
           alt="" 
-          className="hidden lg:block absolute top-20 left-10 w-16 h-16 opacity-20 animate-float-slow"
+          className="hidden lg:block absolute top-8 left-8 w-14 h-14 opacity-20 animate-float-slow"
         />
         <img 
           src={isotipoSGold} 
           alt="" 
-          className="hidden lg:block absolute bottom-32 right-16 w-20 h-20 opacity-15 animate-float-slow animation-delay-2000"
+          className="hidden lg:block absolute top-12 right-12 w-12 h-12 opacity-15 animate-float-slow animation-delay-2000"
         />
         <img 
           src={isotipoSFramedGold} 
           alt="" 
-          className="hidden md:block absolute top-1/3 right-8 w-12 h-12 opacity-10 animate-float-slow animation-delay-1000"
+          className="hidden lg:block absolute bottom-16 left-12 w-12 h-12 opacity-15 animate-float-slow animation-delay-1000"
+        />
+        <img 
+          src={isotipoSGold} 
+          alt="" 
+          className="hidden lg:block absolute bottom-20 right-8 w-10 h-10 opacity-10 animate-float-slow animation-delay-3000"
         />
         
         {/* Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-brand-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-black/60 via-transparent to-brand-black/30" />
         
-        <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-20 lg:py-28 relative z-10" ref={heroRef}>
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate={heroInView ? "visible" : "hidden"}
-            className="max-w-4xl mx-auto text-center"
-          >
-            {/* Badge */}
-            <motion.div variants={staggerItem} className="mb-6">
-              <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-secondary/15 border border-secondary/30 text-secondary text-sm font-medium backdrop-blur-sm">
-                <Sparkles className="w-4 h-4 animate-pulse" />
-                <span>Imersão ao Vivo • 18 de Janeiro</span>
-              </span>
-            </motion.div>
-
-            {/* Title */}
-            <motion.h1 
-              variants={staggerItem}
-              className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-cream mb-6 leading-tight"
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 min-h-screen flex items-center" ref={heroRef}>
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center w-full py-16 sm:py-20 lg:py-12">
+            
+            {/* Left Side - Content */}
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate={heroInView ? "visible" : "hidden"}
+              className="order-2 lg:order-1 text-center lg:text-left"
             >
-              Operação Regularização Imobiliária de{" "}
-              <span className="text-shimmer-gold">Alta Escala</span>
-            </motion.h1>
-
-            {/* Subtitle */}
-            <motion.p 
-              variants={staggerItem}
-              className="text-base sm:text-lg md:text-xl text-cream/80 mb-8 max-w-3xl mx-auto leading-relaxed px-2"
-            >
-              O caminho para as advogadas transformarem regularização imobiliária em uma operação previsível: 
-              com método, posicionamento e rotina que gera volume de casos e crescimento real de escritório.
-            </motion.p>
-
-            {/* Event Info */}
-            <motion.div 
-              variants={staggerItem}
-              className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 mb-10 text-cream/70"
-            >
-              <div className="flex items-center gap-2 icon-bounce-hover">
-                <Calendar className="w-5 h-5 text-secondary" />
-                <span className="text-sm sm:text-base">18 de Janeiro</span>
-              </div>
-              <div className="flex items-center gap-2 icon-bounce-hover">
-                <Clock className="w-5 h-5 text-secondary" />
-                <span className="text-sm sm:text-base">09h00 às 13h00</span>
-              </div>
-              <div className="flex items-center gap-2 icon-bounce-hover">
-                <MapPin className="w-5 h-5 text-secondary" />
-                <span className="text-sm sm:text-base">AO VIVO e Online</span>
-              </div>
-            </motion.div>
-
-            {/* Pricing */}
-            <motion.div variants={staggerItem} className="mb-8">
-              <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4">
-                <span className="text-cream/40 line-through text-lg sm:text-xl">R$197,00</span>
-                <span className="text-secondary text-4xl sm:text-5xl md:text-6xl font-bold price-text-glow">R$19,00</span>
-              </div>
-              <p className="text-cream/60 text-sm">Lote 01 - Vagas Limitadas</p>
-            </motion.div>
-
-            {/* CTA */}
-            <motion.div variants={scaleIn} className="space-y-4">
-              <Button
-                asChild
-                variant="cta"
-                size="lg"
-                className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto w-full sm:w-auto"
-              >
-                <a href={paymentLink} target="_blank" rel="noopener noreferrer">
-                  <Lock className="w-5 h-5 mr-2" />
-                  COMPRAR INGRESSO AGORA | LOTE 01
-                </a>
-              </Button>
-              
-              {/* Urgency Badge */}
-              <div className="flex items-center justify-center">
-                <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary/30 border border-primary/50 text-cream text-xs sm:text-sm urgency-pulse">
-                  <AlertCircle className="w-4 h-4 text-secondary" />
-                  90% dos ingressos vendidos a R$19,00
+              {/* Badge */}
+              <motion.div variants={staggerItem} className="mb-5 flex justify-center lg:justify-start">
+                <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-secondary/15 border border-secondary/30 text-secondary text-sm font-medium backdrop-blur-sm">
+                  <img src={isotipoSGold} alt="" className="w-4 h-4" />
+                  <span>Imersão ao Vivo • 18 de Janeiro</span>
+                  <Sparkles className="w-4 h-4 animate-pulse" />
                 </span>
+              </motion.div>
+
+              {/* Title */}
+              <motion.h1 
+                variants={staggerItem}
+                className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-4xl xl:text-5xl text-cream mb-5 leading-tight"
+              >
+                Operação Regularização Imobiliária de{" "}
+                <span className="text-shimmer-gold">Alta Escala</span>
+              </motion.h1>
+
+              {/* Subtitle */}
+              <motion.p 
+                variants={staggerItem}
+                className="text-base sm:text-lg text-cream/80 mb-6 leading-relaxed max-w-xl mx-auto lg:mx-0"
+              >
+                O caminho para as advogadas transformarem regularização imobiliária em uma operação previsível: com método, posicionamento e rotina que gera volume de casos e crescimento real.
+              </motion.p>
+
+              {/* Event Info */}
+              <motion.div 
+                variants={staggerItem}
+                className="flex flex-wrap items-center justify-center lg:justify-start gap-4 md:gap-5 mb-6 text-cream/70"
+              >
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-secondary" />
+                  <span className="text-sm">18 de Janeiro</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-secondary" />
+                  <span className="text-sm">09h às 13h</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-secondary" />
+                  <span className="text-sm">AO VIVO Online</span>
+                </div>
+              </motion.div>
+
+              {/* Pricing */}
+              <motion.div variants={staggerItem} className="mb-6">
+                <div className="flex items-center justify-center lg:justify-start gap-3 mb-2">
+                  <span className="text-cream/40 line-through text-lg">R$197,00</span>
+                  <span className="text-secondary text-4xl sm:text-5xl font-bold price-text-glow">R$19</span>
+                  <span className="text-secondary text-lg">,00</span>
+                </div>
+                <p className="text-cream/50 text-sm">Lote 01 • Vagas Limitadas</p>
+              </motion.div>
+
+              {/* CTA */}
+              <motion.div variants={scaleIn} className="space-y-4">
+                <Button
+                  asChild
+                  variant="cta"
+                  size="lg"
+                  className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto w-full lg:w-auto"
+                >
+                  <a href={paymentLink} target="_blank" rel="noopener noreferrer">
+                    <Lock className="w-5 h-5 mr-2" />
+                    COMPRAR INGRESSO AGORA | LOTE 01
+                  </a>
+                </Button>
+                
+                {/* Progress Bar - Vendas */}
+                <div className="max-w-sm mx-auto lg:mx-0">
+                  <div className="flex items-center justify-between mb-2 text-xs text-cream/60">
+                    <span>Ingressos vendidos</span>
+                    <span className="text-secondary font-semibold">90%</span>
+                  </div>
+                  <Progress value={90} className="h-2 bg-zinc-800" />
+                </div>
+                
+                {/* Urgency Badge */}
+                <div className="flex justify-center lg:justify-start">
+                  <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-primary/20 border border-primary/40 text-cream text-xs urgency-pulse">
+                    <AlertCircle className="w-3.5 h-3.5 text-secondary" />
+                    Últimas vagas a R$19,00
+                  </span>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Right Side - Fabiana Photo */}
+            <motion.div 
+              variants={fadeIn}
+              initial="hidden"
+              animate={heroInView ? "visible" : "hidden"}
+              className="order-1 lg:order-2 relative"
+            >
+              <div className="relative max-w-md mx-auto lg:max-w-none lg:ml-auto">
+                {/* Photo Container with gradient blend */}
+                <div className="relative rounded-2xl overflow-hidden">
+                  <img
+                    src={fabianaHero}
+                    alt="Fabiana Duarte - Mentora de Advogadas"
+                    className="w-full h-[50vh] sm:h-[55vh] lg:h-[75vh] object-cover object-top"
+                  />
+                  {/* Gradient overlay for blending */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-brand-black/40 hidden lg:block" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-brand-black/30 hidden lg:block" />
+                </div>
+                
+                {/* Decorative Frame Elements */}
+                <div className="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-secondary/40 rounded-tl-xl" />
+                <div className="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-secondary/40 rounded-tr-xl" />
+                <div className="absolute bottom-20 left-4 w-12 h-12 border-b-2 border-l-2 border-secondary/30 rounded-bl-xl hidden sm:block" />
+                <div className="absolute bottom-20 right-4 w-12 h-12 border-b-2 border-r-2 border-secondary/30 rounded-br-xl hidden sm:block" />
               </div>
             </motion.div>
-          </motion.div>
+            
+          </div>
         </div>
       </section>
 
@@ -404,7 +455,7 @@ const OperacaoRegularizacaoLanding = () => {
               </div>
               <p className="text-cream/80 text-sm sm:text-base px-2">
                 Você vai entender como transformar a regularização imobiliária em uma especialidade 
-                que sustenta crescimento — com método, constância e posicionamento — sem precisar 
+                que sustenta crescimento, com método, constância e posicionamento, sem precisar 
                 virar refém do operacional.
               </p>
             </motion.div>
@@ -638,7 +689,7 @@ const OperacaoRegularizacaoLanding = () => {
                   <p>
                     Criadora da Metodologia SOBERANA, desenvolvida para ajudar advogadas a romperem com o 
                     ciclo da informalidade e da sobrecarga, e construírem um negócio jurídico posicionado, 
-                    estratégico e lucrativo — com clareza, visão e direção.
+                    estratégico e lucrativo, com clareza, visão e direção.
                   </p>
                   <p>
                     Conduz um ecossistema que inicia, acelera, escala e sustenta o crescimento das advogadas 
