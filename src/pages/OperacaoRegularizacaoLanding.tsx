@@ -70,9 +70,9 @@ const OperacaoRegularizacaoLanding = () => {
   const faqInView = useInView(faqRef, { once: true, amount: 0.2 });
   const finalCtaInView = useInView(finalCtaRef, { once: true, amount: 0.3 });
 
-  const whatsappNumber = "5511993563468";
+  const whatsappNumber = "55959103182";
   const whatsappMessage = encodeURIComponent("Olá! Tenho dúvidas sobre a Operação Regularização Imobiliária.");
-  const paymentLink = "https://pay.kiwify.com.br/PLACEHOLDER"; // TODO: Replace with actual link
+  const paymentLink = "https://sun.eduzz.com/7WXQR14G9A";
 
   const benefits = [
     { icon: Clock, text: "04h de conteúdo" },
@@ -220,7 +220,7 @@ const OperacaoRegularizacaoLanding = () => {
               "priceCurrency": "BRL",
               "availability": "https://schema.org/LimitedAvailability",
               "validFrom": "2024-12-01T00:00:00-03:00",
-              "url": "https://pay.kiwify.com.br/PLACEHOLDER"
+              "url": "https://sun.eduzz.com/7WXQR14G9A"
             }
           })}
         </script>
