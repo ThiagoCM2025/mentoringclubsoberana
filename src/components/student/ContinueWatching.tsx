@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Play, Clock } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
+import { resolveImageUrl } from "@/lib/imageResolver";
 
 interface ContinueWatchingItem {
   lessonId: string;
@@ -38,9 +39,9 @@ const ContinueWatching = ({ items }: ContinueWatchingProps) => {
             className="flex-shrink-0 w-72 bg-zinc-900 rounded-xl overflow-hidden cursor-pointer group border border-secondary/10 hover:border-secondary/30 transition-all duration-300"
           >
             <div className="relative aspect-video bg-gradient-to-br from-zinc-800 to-zinc-900">
-              {item.thumbnail ? (
+              {resolveImageUrl(item.thumbnail) ? (
                 <img
-                  src={item.thumbnail}
+                  src={resolveImageUrl(item.thumbnail)!}
                   alt={item.lessonTitle}
                   className="w-full h-full object-cover"
                 />
