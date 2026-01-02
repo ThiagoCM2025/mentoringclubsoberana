@@ -185,7 +185,7 @@ export const QuickActionsCenter = ({
 
         {/* Pulse animation when closed */}
         {!isOpen && (
-          <span className="absolute inset-0 rounded-full bg-secondary/30 animate-ping" />
+          <span className="absolute inset-0 rounded-full bg-secondary/30 animate-ping pointer-events-none" />
         )}
       </div>
     </TooltipProvider>
