@@ -1160,6 +1160,50 @@ export type Database = {
           },
         ]
       }
+      lead_events: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_name: string
+          event_type: string
+          id: string
+          lead_id: string | null
+          page_title: string | null
+          page_url: string | null
+          session_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_name: string
+          event_type: string
+          id?: string
+          lead_id?: string | null
+          page_title?: string | null
+          page_url?: string | null
+          session_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_name?: string
+          event_type?: string
+          id?: string
+          lead_id?: string | null
+          page_title?: string | null
+          page_url?: string | null
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_interactions: {
         Row: {
           created_at: string
@@ -1197,6 +1241,7 @@ export type Database = {
       }
       leads: {
         Row: {
+          behavior_score: number | null
           created_at: string
           email: string
           full_name: string
@@ -1214,6 +1259,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          behavior_score?: number | null
           created_at?: string
           email: string
           full_name: string
@@ -1231,6 +1277,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          behavior_score?: number | null
           created_at?: string
           email?: string
           full_name?: string
