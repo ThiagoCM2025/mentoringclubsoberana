@@ -56,8 +56,8 @@ export const LeadCaptureSection = () => {
       const nameTrimmed = formData.fullName.trim();
       const ebookName = "7 Erros que Travam seu Escritório";
 
-      // Insert lead
-      const { data: leadData, error: leadError } = await supabase
+      // Insert lead (without SELECT to avoid RLS issues for anonymous users)
+      const { error: leadError } = await supabase
         .from("leads")
         .insert({
           full_name: nameTrimmed,
@@ -67,9 +67,7 @@ export const LeadCaptureSection = () => {
           status: "new",
           temperature: "warm",
           score: 10
-        })
-        .select("id")
-        .single();
+        });
 
       if (leadError) {
         if (leadError.code === "23505") {
@@ -81,11 +79,6 @@ export const LeadCaptureSection = () => {
           return;
         }
         throw leadError;
-      }
-
-      // Link behavioral events to this lead
-      if (leadData?.id) {
-        await linkEventsToLead(leadData.id);
       }
 
       // Track form completion
