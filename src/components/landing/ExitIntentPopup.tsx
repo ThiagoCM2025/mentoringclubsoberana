@@ -32,7 +32,7 @@ export const ExitIntentPopup = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [hasShown, setHasShown] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
   const { trackFormStart, trackFormComplete, linkEventsToLead, trackCTAClick } = useEventTracking();
 
   useEffect(() => {
@@ -82,52 +82,45 @@ export const ExitIntentPopup = () => {
     try {
       const emailNormalized = formData.email.trim().toLowerCase();
       const nameTrimmed = formData.name.trim();
+      const phoneTrimmed = formData.phone.trim() || null;
       const ebookName = "7 Erros que Travam seu Escritório";
       
-      // First, check if lead already exists
-      let leadId: string | null = null;
-      
-      const { data: existingLead } = await supabase
+      // Insert lead using upsert WITHOUT .select() to avoid RLS issues for anonymous users
+      // The RLS policy allows INSERT but blocks SELECT for anonymous users
+      const { error: leadError } = await supabase
         .from("leads")
-        .select("id")
-        .eq("email", emailNormalized)
-        .maybeSingle();
+        .upsert({
+          full_name: nameTrimmed,
+          email: emailNormalized,
+          phone: phoneTrimmed,
+          source: "exit_intent_popup",
+          status: "new",
+          temperature: "warm",
+          nurturing_active: true,
+          nurturing_step: 0,
+        }, { 
+          onConflict: 'email',
+          ignoreDuplicates: false 
+        });
 
-      if (existingLead) {
-        // Lead already exists - use existing ID
-        leadId = existingLead.id;
-        toast.info("Este email já está cadastrado! Verifique sua caixa de entrada.");
-      } else {
-        // Insert new lead
-        const { data: newLead, error: leadError } = await supabase
+      if (leadError && leadError.code !== "23505") {
+        console.error("Lead upsert error:", leadError);
+        // Continue anyway - lead might already exist
+      }
+
+      // Fetch lead_id after upsert (this is allowed by RLS for the specific email we just inserted)
+      // Note: If this fails, we'll still create the download without lead_id
+      let leadId: string | null = null;
+      try {
+        const { data: leadData } = await supabase
           .from("leads")
-          .insert({
-            full_name: nameTrimmed,
-            email: emailNormalized,
-            source: "exit_intent_popup",
-            status: "new",
-            temperature: "warm",
-            nurturing_active: true,
-            nurturing_step: 0,
-          })
           .select("id")
-          .single();
-
-        if (leadError) {
-          // Handle race condition
-          if (leadError.code === "23505") {
-            const { data: retryLead } = await supabase
-              .from("leads")
-              .select("id")
-              .eq("email", emailNormalized)
-              .maybeSingle();
-            leadId = retryLead?.id || null;
-          } else {
-            throw leadError;
-          }
-        } else {
-          leadId = newLead?.id || null;
-        }
+          .eq("email", emailNormalized)
+          .maybeSingle();
+        leadId = leadData?.id || null;
+      } catch {
+        // If fetch fails, proceed without lead_id - it will show as "Sem lead vinculado"
+        console.warn("Could not fetch lead_id, proceeding without it");
       }
 
       // Track form completion
@@ -293,7 +286,7 @@ export const ExitIntentPopup = () => {
                     {/* Premium Form */}
                     <motion.form 
                       onSubmit={handleSubmit} 
-                      className="space-y-4"
+                      className="space-y-3"
                       variants={itemVariants}
                     >
                       <Input
@@ -304,12 +297,22 @@ export const ExitIntentPopup = () => {
                         onFocus={handleInputFocus}
                         className="bg-cream/30 border-secondary/20 focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-300 placeholder:text-muted-foreground/60 placeholder:italic h-12"
                         disabled={isLoading}
+                        required
                       />
                       <Input
                         type="email"
                         placeholder="Seu melhor email"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="bg-cream/30 border-secondary/20 focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-300 placeholder:text-muted-foreground/60 placeholder:italic h-12"
+                        disabled={isLoading}
+                        required
+                      />
+                      <Input
+                        type="tel"
+                        placeholder="WhatsApp (opcional)"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         className="bg-cream/30 border-secondary/20 focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-300 placeholder:text-muted-foreground/60 placeholder:italic h-12"
                         disabled={isLoading}
                       />
@@ -326,7 +329,7 @@ export const ExitIntentPopup = () => {
                           disabled={isLoading}
                         >
                           <span className="relative z-10">
-                            {isLoading ? "Enviando..." : "QUERO MEU GUIA GRÁTIS"}
+                            {isLoading ? "Enviando..." : "QUERO MEU CHECKLIST GRÁTIS"}
                           </span>
                           {/* Shimmer effect */}
                           <motion.div

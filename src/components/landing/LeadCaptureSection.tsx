@@ -54,57 +54,43 @@ export const LeadCaptureSection = () => {
     try {
       const emailNormalized = formData.email.trim().toLowerCase();
       const nameTrimmed = formData.fullName.trim();
+      const phoneTrimmed = formData.phone.trim() || null;
       const ebookName = "7 Erros que Travam seu Escritório";
 
-      // First, check if lead already exists
-      let leadId: string | null = null;
-      
-      const { data: existingLead } = await supabase
+      // Insert lead using upsert WITHOUT .select() to avoid RLS issues for anonymous users
+      const { error: leadError } = await supabase
         .from("leads")
-        .select("id")
-        .eq("email", emailNormalized)
-        .maybeSingle();
-
-      if (existingLead) {
-        // Lead already exists - use existing ID
-        leadId = existingLead.id;
-        toast({
-          title: "Email já cadastrado",
-          description: "Este email já está na nossa lista. Verifique sua caixa de entrada."
+        .upsert({
+          full_name: nameTrimmed,
+          email: emailNormalized,
+          phone: phoneTrimmed,
+          source: "landing_page_ebook",
+          status: "new",
+          temperature: "warm",
+          score: 10,
+          nurturing_active: true,
+          nurturing_step: 0
+        }, { 
+          onConflict: 'email',
+          ignoreDuplicates: false 
         });
-      } else {
-        // Insert new lead
-        const { data: newLead, error: leadError } = await supabase
-          .from("leads")
-          .insert({
-            full_name: nameTrimmed,
-            email: emailNormalized,
-            phone: formData.phone || null,
-            source: "landing_page_ebook",
-            status: "new",
-            temperature: "warm",
-            score: 10,
-            nurturing_active: true,
-            nurturing_step: 0
-          })
-          .select("id")
-          .single();
 
-        if (leadError) {
-          // Handle race condition - lead might have been created between check and insert
-          if (leadError.code === "23505") {
-            const { data: retryLead } = await supabase
-              .from("leads")
-              .select("id")
-              .eq("email", emailNormalized)
-              .maybeSingle();
-            leadId = retryLead?.id || null;
-          } else {
-            throw leadError;
-          }
-        } else {
-          leadId = newLead?.id || null;
-        }
+      if (leadError && leadError.code !== "23505") {
+        console.error("Lead upsert error:", leadError);
+        // Continue anyway - lead might already exist
+      }
+
+      // Fetch lead_id after upsert
+      let leadId: string | null = null;
+      try {
+        const { data: leadData } = await supabase
+          .from("leads")
+          .select("id")
+          .eq("email", emailNormalized)
+          .maybeSingle();
+        leadId = leadData?.id || null;
+      } catch {
+        console.warn("Could not fetch lead_id, proceeding without it");
       }
 
       // Track form completion
