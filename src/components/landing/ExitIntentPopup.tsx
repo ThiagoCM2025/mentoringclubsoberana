@@ -84,35 +84,60 @@ export const ExitIntentPopup = () => {
       const nameTrimmed = formData.name.trim();
       const ebookName = "7 Erros que Travam seu Escritório";
       
-      // Insert lead (without SELECT to avoid RLS issues for anonymous users)
-      const { error: leadError } = await supabase
+      // First, check if lead already exists
+      let leadId: string | null = null;
+      
+      const { data: existingLead } = await supabase
         .from("leads")
-        .insert({
-          full_name: nameTrimmed,
-          email: emailNormalized,
-          source: "exit_intent_popup",
-          status: "new",
-          temperature: "warm",
-          nurturing_active: true,
-          nurturing_step: 0,
-        });
+        .select("id")
+        .eq("email", emailNormalized)
+        .maybeSingle();
 
-      if (leadError) {
-        // Check if it's a duplicate email
-        if (leadError.code === "23505") {
-          toast.info("Este email já está cadastrado! Verifique sua caixa de entrada.");
+      if (existingLead) {
+        // Lead already exists - use existing ID
+        leadId = existingLead.id;
+        toast.info("Este email já está cadastrado! Verifique sua caixa de entrada.");
+      } else {
+        // Insert new lead
+        const { data: newLead, error: leadError } = await supabase
+          .from("leads")
+          .insert({
+            full_name: nameTrimmed,
+            email: emailNormalized,
+            source: "exit_intent_popup",
+            status: "new",
+            temperature: "warm",
+            nurturing_active: true,
+            nurturing_step: 0,
+          })
+          .select("id")
+          .single();
+
+        if (leadError) {
+          // Handle race condition
+          if (leadError.code === "23505") {
+            const { data: retryLead } = await supabase
+              .from("leads")
+              .select("id")
+              .eq("email", emailNormalized)
+              .maybeSingle();
+            leadId = retryLead?.id || null;
+          } else {
+            throw leadError;
+          }
         } else {
-          throw leadError;
+          leadId = newLead?.id || null;
         }
       }
 
       // Track form completion
       trackFormComplete("exit_intent_popup", { source: "exit_intent_popup" });
 
-      // Register ebook download (using email instead of lead_id)
+      // Register ebook download WITH lead_id
       await supabase.from("ebook_downloads").insert({
         email: emailNormalized,
         ebook_name: ebookName,
+        lead_id: leadId,
       });
 
       // Send ebook email via edge function
