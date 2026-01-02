@@ -44,7 +44,6 @@ const menuItems = [
   { icon: Users, label: "Alunos", href: "/admin/students", hasBadge: false },
   { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments", hasBadge: false },
   { icon: Target, label: "Leads", href: "/admin/leads", hasBadge: false },
-  { icon: BookOpen, label: "E-books", href: "/admin/ebooks", hasBadge: false },
   { icon: ClipboardCheck, label: "Revisar Missões", href: "/admin/mission-reviews", hasBadge: true },
   { icon: Mail, label: "Comunicação", href: "/admin/messaging", hasBadge: false },
   { icon: Activity, label: "Engajamento", href: "/admin/engagement", hasBadge: false },

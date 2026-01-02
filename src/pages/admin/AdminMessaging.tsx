@@ -2,12 +2,10 @@ import { useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import SEO from "@/components/SEO";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, FileText, History, Zap, Clock } from "lucide-react";
-import { RecipientSelector } from "@/components/admin/messaging/RecipientSelector";
+import { Mail, FileText, History } from "lucide-react";
+import { StudentRecipientSelector } from "@/components/admin/messaging/StudentRecipientSelector";
 import { MessageHistory } from "@/components/admin/messaging/MessageHistory";
 import { TemplatesManager } from "@/components/admin/messaging/TemplatesManager";
-import { NurturingManager } from "@/components/admin/messaging/NurturingManager";
-import { FollowUpRulesManager } from "@/components/admin/leads/FollowUpRulesManager";
 
 export default function AdminMessaging() {
   const [activeTab, setActiveTab] = useState("send");
@@ -15,33 +13,25 @@ export default function AdminMessaging() {
   return (
     <AdminLayout>
       <SEO
-        title="Central de Comunicação | Admin Soberana"
-        description="Envie mensagens para alunos e leads"
+        title="Comunicação com Alunas | Admin Soberana"
+        description="Envie mensagens para alunas matriculadas"
       />
 
       <div className="p-6 lg:p-8 space-y-6">
         <div>
           <h1 className="text-3xl font-serif font-bold text-foreground title-premium">
-            Central de Comunicação
+            Comunicação com Alunas
           </h1>
           <p className="text-muted-foreground mt-1">
-            Envie emails, WhatsApp e notificações para alunos e leads
+            Envie emails e notificações para alunas matriculadas
           </p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-2xl grid-cols-5 bg-muted border border-border">
+          <TabsList className="grid w-full max-w-md grid-cols-3 bg-muted border border-border">
             <TabsTrigger value="send" className="flex items-center gap-2 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
               <Mail className="h-4 w-4" />
               Enviar
-            </TabsTrigger>
-            <TabsTrigger value="nurturing" className="flex items-center gap-2 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
-              <Zap className="h-4 w-4" />
-              Automação
-            </TabsTrigger>
-            <TabsTrigger value="followup" className="flex items-center gap-2 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
-              <Clock className="h-4 w-4" />
-              Follow-up
             </TabsTrigger>
             <TabsTrigger value="templates" className="flex items-center gap-2 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
               <FileText className="h-4 w-4" />
@@ -54,15 +44,7 @@ export default function AdminMessaging() {
           </TabsList>
 
           <TabsContent value="send" className="space-y-6">
-            <RecipientSelector />
-          </TabsContent>
-
-          <TabsContent value="nurturing" className="space-y-6">
-            <NurturingManager />
-          </TabsContent>
-
-          <TabsContent value="followup" className="space-y-6">
-            <FollowUpRulesManager />
+            <StudentRecipientSelector />
           </TabsContent>
 
           <TabsContent value="templates" className="space-y-6">
