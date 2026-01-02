@@ -120,26 +120,42 @@ const AdminEbooks = () => {
       return;
     }
 
-    // Fetch leads data for each download - using both lead_id AND email as fallback
+    // Fetch leads data for each download - ONLY by lead_id, no email fallback
     if (ebookData) {
-      // Get all unique emails from downloads
-      const emails = [...new Set(ebookData.map(d => d.email))];
+      // Get all lead_ids that are not null
+      const leadIds = ebookData.map(d => d.lead_id).filter((id): id is string => id !== null);
       
-      // Fetch all leads that match either by id or email
-      const { data: leadsData } = await supabase
-        .from("leads")
-        .select("id, full_name, email, phone, status, temperature, messages_sent, nurturing_step, nurturing_active, last_contact_at")
-        .in("email", emails);
+      // Define lead type
+      type LeadData = {
+        id: string;
+        full_name: string;
+        email: string;
+        phone: string | null;
+        status: string | null;
+        temperature: string | null;
+        messages_sent: number | null;
+        nurturing_step: number | null;
+        nurturing_active: boolean | null;
+        last_contact_at: string | null;
+      };
 
-      // Create maps for both id and email lookups
-      const leadsByEmail = new Map(leadsData?.map(l => [l.email, l]) || []);
+      // Fetch leads ONLY by their IDs (no email fallback to avoid wrong associations)
+      const leadsData: LeadData[] = [];
+      if (leadIds.length > 0) {
+        const { data } = await supabase
+          .from("leads")
+          .select("id, full_name, email, phone, status, temperature, messages_sent, nurturing_step, nurturing_active, last_contact_at")
+          .in("id", leadIds);
+        if (data) leadsData.push(...(data as LeadData[]));
+      }
 
-      const enrichedDownloads = ebookData.map(d => ({
+      // Create map by lead ID only
+      const leadsById = new Map<string, LeadData>(leadsData.map(l => [l.id, l]));
+
+      const enrichedDownloads: EbookDownload[] = ebookData.map(d => ({
         ...d,
-        // Try to find lead by lead_id first, then fallback to email
-        lead: d.lead_id 
-          ? leadsData?.find(l => l.id === d.lead_id) || leadsByEmail.get(d.email) 
-          : leadsByEmail.get(d.email) || null
+        // ONLY use lead_id - no email fallback (prevents showing wrong names)
+        lead: d.lead_id ? leadsById.get(d.lead_id) || null : null
       }));
 
       setDownloads(enrichedDownloads);
@@ -395,20 +411,29 @@ const AdminEbooks = () => {
                     <TableRow key={download.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-secondary-light flex items-center justify-center">
-                            <span className="text-black font-semibold">
-                              {(download.lead?.full_name || download.email).charAt(0).toUpperCase()}
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            download.lead 
+                              ? "bg-gradient-to-br from-secondary to-secondary-light" 
+                              : "bg-muted"
+                          }`}>
+                            <span className={download.lead ? "text-black font-semibold" : "text-muted-foreground font-medium"}>
+                              {download.lead?.full_name 
+                                ? download.lead.full_name.charAt(0).toUpperCase() 
+                                : "?"}
                             </span>
                           </div>
                           <div>
-                            <p className="font-medium text-foreground">
-                              {download.lead?.full_name || "Sem nome"}
+                            <p className={`font-medium ${download.lead ? "text-foreground" : "text-muted-foreground italic"}`}>
+                              {download.lead?.full_name || "Sem lead vinculado"}
                             </p>
                             {download.lead?.messages_sent && download.lead.messages_sent > 0 && (
                               <p className="text-xs text-muted-foreground flex items-center gap-1">
                                 <Mail className="w-3 h-3" />
                                 {download.lead.messages_sent} mensagens
                               </p>
+                            )}
+                            {!download.lead && (
+                              <p className="text-xs text-orange-500">lead_id não associado</p>
                             )}
                           </div>
                         </div>
