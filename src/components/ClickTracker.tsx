@@ -11,6 +11,10 @@ const getSessionId = (): string => {
   return sessionId;
 };
 
+const getLeadId = (): string | null => {
+  return localStorage.getItem("soberana_lead_id");
+};
+
 const getElementSelector = (element: HTMLElement): string => {
   if (element.id) return `#${element.id}`;
   
@@ -49,6 +53,7 @@ export const ClickTracker = () => {
       clickQueue.current = [];
 
       // Batch insert all clicks
+      const leadId = getLeadId();
       const events = clicks.map((click) => ({
         session_id: sessionId,
         event_type: "click_position" as const,
@@ -56,6 +61,7 @@ export const ClickTracker = () => {
         event_data: click,
         page_url: window.location.href,
         page_title: document.title,
+        lead_id: leadId,
       }));
 
       try {
@@ -104,6 +110,7 @@ export const ClickTracker = () => {
     // Flush on page exit
     const handleUnload = () => {
       if (clickQueue.current.length > 0) {
+        const leadId = getLeadId();
         const payload = clickQueue.current.map((click) => ({
           session_id: sessionId,
           event_type: "click_position",
@@ -111,6 +118,7 @@ export const ClickTracker = () => {
           event_data: click,
           page_url: window.location.href,
           page_title: document.title,
+          lead_id: leadId,
         }));
 
         const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
