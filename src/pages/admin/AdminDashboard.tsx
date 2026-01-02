@@ -4,6 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { StatsCardSkeleton, ChartSkeleton, PieChartSkeleton, ActivityTimelineSkeleton } from "@/components/admin/skeletons/AdminSkeletons";
 import { LeadFunnelChart } from "@/components/admin/leads/LeadFunnelChart";
+import { ActiveAlertsPanel } from "@/components/admin/alerts/ActiveAlertsPanel";
+import { TagManager } from "@/components/admin/tags/TagManager";
+import { WidgetSelector, useWidgetLayout } from "@/components/admin/widgets/WidgetSelector";
+import { Button } from "@/components/ui/button";
 import { 
   BookOpen, 
   Users, 
@@ -31,7 +35,10 @@ import {
   Sparkles,
   TrendingDown,
   CheckCircle2,
-  Clock
+  Clock,
+  Tag,
+  Settings,
+  LayoutGrid
 } from "lucide-react";
 import {
   XAxis,
@@ -428,6 +435,9 @@ const AdminDashboard = () => {
   const [leadsPeriod, setLeadsPeriod] = useState<PeriodFilter>('30d');
   const [progressPeriod, setProgressPeriod] = useState<PeriodFilter>('30d');
   const [communityPeriod, setCommunityPeriod] = useState<PeriodFilter>('30d');
+  const [showTagManager, setShowTagManager] = useState(false);
+  const [showWidgetSelector, setShowWidgetSelector] = useState(false);
+  const { layout, saveLayout } = useWidgetLayout();
 
   useEffect(() => {
     fetchStats();
@@ -1634,6 +1644,15 @@ const AdminDashboard = () => {
           </Card>
         </motion.div>
       </div>
+      
+      {/* Modals */}
+      <TagManager open={showTagManager} onOpenChange={setShowTagManager} />
+      <WidgetSelector
+        open={showWidgetSelector}
+        onOpenChange={setShowWidgetSelector}
+        selectedWidgets={layout}
+        onSave={saveLayout}
+      />
     </AdminLayout>
   );
 };

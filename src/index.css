@@ -1619,3 +1619,60 @@
     will-change: auto;
   }
 }
+
+/* Admin Compact Mode */
+.admin-compact {
+  /* Cards and containers */
+  .admin-compact .card-content,
+  .admin-compact [class*="CardContent"] {
+    padding: 0.75rem !important;
+  }
+  
+  /* Smaller fonts in compact mode */
+  .admin-compact .text-2xl {
+    font-size: 1.25rem !important;
+  }
+  
+  .admin-compact .text-3xl {
+    font-size: 1.5rem !important;
+  }
+  
+  /* Tighter spacing */
+  .admin-compact .gap-4 {
+    gap: 0.5rem !important;
+  }
+  
+  .admin-compact .gap-6 {
+    gap: 1rem !important;
+  }
+  
+  .admin-compact .p-4 {
+    padding: 0.75rem !important;
+  }
+  
+  .admin-compact .p-6 {
+    padding: 1rem !important;
+  }
+  
+  /* Smaller icons */
+  .admin-compact .w-10.h-10 {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+  
+  .admin-compact .w-12.h-12 {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+  }
+  
+  /* Table density */
+  .admin-compact table tbody tr td {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+  
+  /* Chart heights */
+  .admin-compact .recharts-wrapper {
+    height: auto !important;
+  }
+}
