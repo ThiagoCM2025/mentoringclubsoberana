@@ -114,7 +114,7 @@ export const ClickHeatmap = ({ startDate }: ClickHeatmapProps) => {
 
     // Set canvas size
     const width = canvas.offsetWidth;
-    const height = 400;
+    const height = 280;
     canvas.width = width;
     canvas.height = height;
 
@@ -246,15 +246,15 @@ export const ClickHeatmap = ({ startDate }: ClickHeatmapProps) => {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           {loading ? (
-            <div className="h-[400px] flex items-center justify-center">
+            <div className="h-[280px] flex items-center justify-center">
               <div className="animate-pulse text-muted-foreground">Carregando...</div>
             </div>
           ) : clicks.length === 0 ? (
-            <div className="h-[400px] flex flex-col items-center justify-center text-muted-foreground gap-2">
-              <Eye className="h-8 w-8 opacity-50" />
-              <p>Nenhum clique registrado nesta página</p>
+            <div className="h-[280px] flex flex-col items-center justify-center text-muted-foreground gap-2">
+              <Eye className="h-6 w-6 opacity-50" />
+              <p className="text-sm">Nenhum clique registrado nesta página</p>
             </div>
           ) : (
             <>
@@ -262,7 +262,7 @@ export const ClickHeatmap = ({ startDate }: ClickHeatmapProps) => {
               <div className="relative rounded-lg overflow-hidden border border-border/50">
                 <canvas
                   ref={canvasRef}
-                  className="w-full h-[400px]"
+                  className="w-full h-[280px]"
                   style={{ background: "hsl(var(--muted))" }}
                 />
                 <div className="absolute bottom-2 right-2 flex items-center gap-2 text-xs bg-background/80 px-2 py-1 rounded">

@@ -320,14 +320,14 @@ export const BehavioralAnalytics = ({ startDate }: BehavioralAnalyticsProps) => 
     >
       <Card className="relative overflow-hidden admin-stat-card border-0">
         <div className={`absolute inset-0 ${color} opacity-10`} />
-        <CardContent className="p-6">
+        <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">{label}</p>
-              <p className="text-3xl font-bold text-foreground mt-1">{value}{suffix}</p>
+              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className="text-2xl font-bold text-foreground mt-0.5">{value}{suffix}</p>
             </div>
-            <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center`}>
-              <Icon className="w-6 h-6 text-white" />
+            <div className={`w-10 h-10 rounded-lg ${color} flex items-center justify-center`}>
+              <Icon className="w-5 h-5 text-white" />
             </div>
           </div>
         </CardContent>
@@ -336,7 +336,7 @@ export const BehavioralAnalytics = ({ startDate }: BehavioralAnalyticsProps) => 
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -344,11 +344,11 @@ export const BehavioralAnalytics = ({ startDate }: BehavioralAnalyticsProps) => 
         className="flex items-center justify-between"
       >
         <div>
-          <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <Globe className="w-6 h-6 text-secondary" />
+          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Globe className="w-5 h-5 text-secondary" />
             Analytics Comportamental
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Comportamento de todos os visitantes, independente de serem leads
           </p>
         </div>
@@ -362,7 +362,7 @@ export const BehavioralAnalytics = ({ startDate }: BehavioralAnalyticsProps) => 
       </motion.div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {loading ? (
           <StatsCardSkeleton count={4} />
         ) : (
@@ -461,7 +461,7 @@ export const BehavioralAnalytics = ({ startDate }: BehavioralAnalyticsProps) => 
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-72">
+            <div className="h-56">
               {loading ? (
                 <ChartSkeleton height={288} variant="area" />
               ) : eventsByDay.length > 0 ? (
