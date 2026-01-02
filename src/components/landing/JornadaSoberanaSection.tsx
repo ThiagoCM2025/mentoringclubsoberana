@@ -297,7 +297,7 @@ export const JornadaSoberanaSection = () => {
               <span className="absolute inset-0 -m-4 rounded-2xl bg-secondary/20 animate-[pulse_2s_ease-in-out_infinite_0.5s] hidden sm:block" />
               <span className="absolute inset-0 -m-6 rounded-3xl bg-secondary/10 animate-[pulse_2s_ease-in-out_infinite_1s] hidden sm:block" />
               
-              <motion.a href="https://wa.me/55959103182?text=Olá! Quero ajuda para escolher o programa ideal para mim" target="_blank" rel="noopener noreferrer" className="group relative inline-flex items-center gap-2 sm:gap-3 px-6 sm:px-12 py-4 sm:py-6 rounded-xl font-semibold text-sm sm:text-lg tracking-wide overflow-hidden" whileHover={{
+              <motion.a href="https://wa.me/5511959103182?text=Olá! Quero ajuda para escolher o programa ideal para mim" target="_blank" rel="noopener noreferrer" className="group relative inline-flex items-center gap-2 sm:gap-3 px-6 sm:px-12 py-4 sm:py-6 rounded-xl font-semibold text-sm sm:text-lg tracking-wide overflow-hidden" whileHover={{
               scale: 1.05
             }} whileTap={{
               scale: 0.98

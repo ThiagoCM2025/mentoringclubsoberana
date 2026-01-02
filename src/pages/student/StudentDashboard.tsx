@@ -926,7 +926,7 @@ const StudentDashboard = () => {
           >
             {/* WhatsApp Comunidade */}
             <motion.a
-              href="https://wa.me/5511993563468?text=Olá! Sou aluna da plataforma Soberana e gostaria de entrar no grupo da comunidade."
+              href="https://wa.me/5511959103182?text=Olá! Sou aluna da plataforma Soberana e gostaria de entrar no grupo da comunidade."
               target="_blank"
               rel="noopener noreferrer"
               variants={{
@@ -961,7 +961,7 @@ const StudentDashboard = () => {
 
             {/* Agendar Mentoria */}
             <motion.a
-              href="https://wa.me/5511993563468?text=Olá Fabiana! Sou aluna da plataforma e gostaria de agendar uma mentoria individual."
+              href="https://wa.me/5511959103182?text=Olá Fabiana! Sou aluna da plataforma e gostaria de agendar uma mentoria individual."
               target="_blank"
               rel="noopener noreferrer"
               variants={{
