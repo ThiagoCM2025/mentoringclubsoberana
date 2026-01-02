@@ -1,1 +1,5 @@
+# Servir arquivos estáticos diretamente (não redirecionar para SPA)
+/assets/*  /assets/:splat  200
+
+# Redirecionar todas as outras rotas para o SPA
 /*    /index.html   200
