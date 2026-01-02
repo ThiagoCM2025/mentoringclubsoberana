@@ -11,6 +11,10 @@ const getSessionId = (): string => {
   return sessionId;
 };
 
+const getLeadId = (): string | null => {
+  return localStorage.getItem("soberana_lead_id");
+};
+
 export const TimeTracker = () => {
   const pageEntryTime = useRef<number>(Date.now());
   const hasTrackedExit = useRef<boolean>(false);
@@ -29,6 +33,7 @@ export const TimeTracker = () => {
       if (timeOnPage < 1) return;
 
       // Use sendBeacon for reliability on page exit
+      const leadId = getLeadId();
       const payload = {
         session_id: sessionId,
         event_type: "page_exit",
@@ -39,6 +44,7 @@ export const TimeTracker = () => {
         },
         page_url: window.location.href,
         page_title: document.title,
+        lead_id: leadId,
       };
 
       // Try sendBeacon first (works on unload)

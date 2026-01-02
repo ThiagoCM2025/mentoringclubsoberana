@@ -153,6 +153,9 @@ export const ExitIntentPopup = () => {
 
       if (leadError) {
         console.error("Lead upsert error:", leadError);
+      } else if (leadId) {
+        // Save lead_id to localStorage for tracking
+        localStorage.setItem("soberana_lead_id", leadId);
       }
 
       // Track form completion
