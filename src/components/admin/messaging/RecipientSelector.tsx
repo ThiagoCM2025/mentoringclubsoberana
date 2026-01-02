@@ -48,12 +48,35 @@ export function RecipientSelector() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isComposerOpen, setIsComposerOpen] = useState(false);
 
+  // Fetch inicial de ambos os dados + realtime para leads
   useEffect(() => {
-    if (audienceType === "student") {
-      fetchStudents();
-    } else {
-      fetchLeads();
-    }
+    fetchStudents();
+    fetchLeads();
+
+    // Subscription realtime para leads
+    const channel = supabase
+      .channel('leads-realtime-recipient')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'leads'
+        },
+        (payload) => {
+          console.log('Lead change detected:', payload);
+          fetchLeads();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Limpar seleção quando muda o tipo de público
+  useEffect(() => {
     setSelectedIds(new Set());
   }, [audienceType]);
 
