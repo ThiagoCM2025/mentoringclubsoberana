@@ -4,32 +4,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download, Columns, TableIcon, TrendingUp, Play, Pause } from "lucide-react";
+import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download, Columns, TableIcon, TrendingUp, FileText, History } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -38,6 +26,9 @@ import { NewLeadDialog } from "@/components/admin/NewLeadDialog";
 import { LeadPipelineView } from "@/components/admin/leads/LeadPipelineView";
 import { LeadScoreDisplay } from "@/components/admin/leads/LeadScoreDisplay";
 import { LeadBehaviorTab } from "@/components/admin/leads/LeadBehaviorTab";
+import { LeadNurturingTab } from "@/components/admin/leads/LeadNurturingTab";
+import { LeadTemplatesTab } from "@/components/admin/leads/LeadTemplatesTab";
+import { LeadHistoryTab } from "@/components/admin/leads/LeadHistoryTab";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
@@ -108,6 +99,7 @@ const AdminLeads = () => {
   const [newLeadDialogOpen, setNewLeadDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"pipeline" | "table">("pipeline");
   const [detailTab, setDetailTab] = useState<"info" | "behavior">("info");
+  const [mainTab, setMainTab] = useState<"crm" | "automacao" | "templates" | "historico">("crm");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
@@ -273,14 +265,35 @@ const AdminLeads = () => {
           className="mb-4"
         >
           <h1 className="text-xl lg:text-2xl font-serif font-bold text-foreground title-premium mb-1">
-            Leads
+            CRM de Leads
           </h1>
           <p className="text-sm text-muted-foreground">
-            Gerencie os leads capturados pela landing page
+            Gerencie leads, automação e comunicação em um só lugar
           </p>
         </motion.div>
 
+        {/* Main Tabs */}
+        <Tabs value={mainTab} onValueChange={(v) => setMainTab(v as any)} className="space-y-4">
+          <TabsList className="bg-muted border border-border">
+            <TabsTrigger value="crm" className="text-sm data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
+              <Users className="w-3.5 h-3.5 mr-1.5" />
+              Pipeline
+            </TabsTrigger>
+            <TabsTrigger value="automacao" className="text-sm data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
+              <Zap className="w-3.5 h-3.5 mr-1.5" />
+              Automação
+            </TabsTrigger>
+            <TabsTrigger value="templates" className="text-sm data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
+              <FileText className="w-3.5 h-3.5 mr-1.5" />
+              Templates
+            </TabsTrigger>
+            <TabsTrigger value="historico" className="text-sm data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
+              <History className="w-3.5 h-3.5 mr-1.5" />
+              Histórico
+            </TabsTrigger>
+          </TabsList>
 
+          <TabsContent value="crm" className="space-y-4">
         {/* View Mode Toggle */}
         <div className="flex items-center justify-between mb-4">
           <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "pipeline" | "table")}>
@@ -704,6 +717,20 @@ const AdminLeads = () => {
           onOpenChange={setNewLeadDialogOpen}
           onSuccess={fetchLeads}
         />
+          </TabsContent>
+
+          <TabsContent value="automacao">
+            <LeadNurturingTab />
+          </TabsContent>
+
+          <TabsContent value="templates">
+            <LeadTemplatesTab />
+          </TabsContent>
+
+          <TabsContent value="historico">
+            <LeadHistoryTab />
+          </TabsContent>
+        </Tabs>
       </div>
     </AdminLayout>
   );
