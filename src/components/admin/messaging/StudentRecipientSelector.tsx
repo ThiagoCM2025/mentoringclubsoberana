@@ -31,13 +31,38 @@ export function StudentRecipientSelector() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isComposerOpen, setIsComposerOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchStudents();
+
+    // Realtime subscription for new students
+    const channel = supabase
+      .channel('student-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_roles',
+          filter: 'role=eq.student'
+        },
+        () => {
+          console.log('Student role changed, refreshing...');
+          fetchStudents(true);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
-  const fetchStudents = async () => {
-    setLoading(true);
+  const fetchStudents = async (silent = false) => {
+    if (!silent) setLoading(true);
+    else setRefreshing(true);
+    
     try {
       // Fetch students with their emails from auth
       const { data: userRoles, error: rolesError } = await supabase
@@ -52,6 +77,7 @@ export function StudentRecipientSelector() {
       if (userIds.length === 0) {
         setStudents([]);
         setLoading(false);
+        setRefreshing(false);
         return;
       }
 
@@ -70,8 +96,9 @@ export function StudentRecipientSelector() {
 
       const emailMap = new Map<string, string>();
       if (!emailError && emailData?.emails) {
-        emailData.emails.forEach((e: { id: string; email: string }) => {
-          emailMap.set(e.id, e.email);
+        // emails is an object { user_id: email }, not an array
+        Object.entries(emailData.emails).forEach(([userId, email]) => {
+          emailMap.set(userId, email as string);
         });
       }
 
@@ -88,6 +115,7 @@ export function StudentRecipientSelector() {
       console.error("Error fetching students:", error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
