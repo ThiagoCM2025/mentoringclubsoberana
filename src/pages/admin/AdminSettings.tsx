@@ -206,67 +206,67 @@ export default function AdminSettings() {
 
   return (
     <AdminLayout>
-      <div className="p-6 lg:p-8 space-y-6 admin-area">
-        <div className="flex items-center gap-3">
-          <Settings className="w-8 h-8 text-secondary" />
-          <h1 className="text-3xl font-serif font-bold text-foreground">Configurações</h1>
+      <div className="p-3 lg:p-6 space-y-4 admin-area">
+        <div className="flex items-center gap-2">
+          <Settings className="w-6 h-6 text-secondary" />
+          <h1 className="text-xl lg:text-2xl font-serif font-bold text-foreground">Configurações</h1>
         </div>
 
-        <Tabs defaultValue="admins" className="space-y-6">
+        <Tabs defaultValue="admins" className="space-y-4">
           <TabsList className="bg-muted border border-border">
-            <TabsTrigger value="admins" className="flex items-center gap-2 data-[state=active]:bg-secondary data-[state=active]:text-black">
-              <Users className="w-4 h-4" />
+            <TabsTrigger value="admins" className="flex items-center gap-1.5 text-sm data-[state=active]:bg-secondary data-[state=active]:text-black">
+              <Users className="w-3.5 h-3.5" />
               Administradores
             </TabsTrigger>
-            <TabsTrigger value="templates" className="flex items-center gap-2 data-[state=active]:bg-secondary data-[state=active]:text-black">
-              <FileText className="w-4 h-4" />
+            <TabsTrigger value="templates" className="flex items-center gap-1.5 text-sm data-[state=active]:bg-secondary data-[state=active]:text-black">
+              <FileText className="w-3.5 h-3.5" />
               Templates
             </TabsTrigger>
-            <TabsTrigger value="general" className="flex items-center gap-2 data-[state=active]:bg-secondary data-[state=active]:text-black">
-              <Settings className="w-4 h-4" />
+            <TabsTrigger value="general" className="flex items-center gap-1.5 text-sm data-[state=active]:bg-secondary data-[state=active]:text-black">
+              <Settings className="w-3.5 h-3.5" />
               Geral
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="admins" className="space-y-4">
+          <TabsContent value="admins" className="space-y-3">
             <Card className="admin-card">
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-row items-center justify-between p-4">
                 <div>
-                  <CardTitle className="flex items-center gap-2 text-foreground">
-                    <ShieldCheck className="w-5 h-5 text-secondary" />
+                  <CardTitle className="flex items-center gap-1.5 text-sm text-foreground">
+                    <ShieldCheck className="w-4 h-4 text-secondary" />
                     Administradores do Sistema
                   </CardTitle>
-                  <CardDescription className="text-muted-foreground">
+                  <CardDescription className="text-xs text-muted-foreground">
                     Gerencie quem tem acesso ao painel administrativo e suas permissões
                   </CardDescription>
                 </div>
                 {canManageAdmins && (
-                  <Button onClick={() => setShowNewAdminDialog(true)} className="bg-secondary hover:bg-secondary/90 text-black btn-glow-gold">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Novo Administrador
+                  <Button onClick={() => setShowNewAdminDialog(true)} className="h-8 text-sm gap-1.5 bg-secondary hover:bg-secondary/90 text-black btn-glow-gold">
+                    <Plus className="w-3.5 h-3.5" />
+                    Novo Admin
                   </Button>
                 )}
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-0">
                 {loading ? (
-                  <div className="flex justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin" />
+                  <div className="flex justify-center py-6">
+                    <Loader2 className="w-5 h-5 animate-spin" />
                   </div>
                 ) : admins.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">
+                  <p className="text-center text-sm text-muted-foreground py-6">
                     Nenhum administrador encontrado
                   </p>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {admins.map((admin) => (
                       <div
                         key={admin.user_id}
-                        className="border border-border rounded-lg p-4 space-y-3 bg-card"
+                        className="border border-border rounded-lg p-3 space-y-2 bg-card"
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <h4 className="font-medium text-foreground">{admin.full_name}</h4>
-                            <p className="text-sm text-muted-foreground">
+                            <h4 className="font-medium text-sm text-foreground">{admin.full_name}</h4>
+                            <p className="text-xs text-muted-foreground">
                               ID: {admin.user_id.slice(0, 8)}...
                             </p>
                           </div>
@@ -318,7 +318,7 @@ export default function AdminSettings() {
                         </div>
 
                         {editingAdmin?.user_id === admin.user_id ? (
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-secondary/20">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2 border-t border-secondary/20">
                             {Object.entries(permissionLabels).map(([key, label]) => (
                               <div key={key} className="flex items-center space-x-2">
                                 <Checkbox
