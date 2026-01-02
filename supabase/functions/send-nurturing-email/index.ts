@@ -31,18 +31,14 @@ const replaceVariables = (text: string, lead: Lead): string => {
   const fullName = lead.full_name || "Querida";
   
   return text
-    // Padrão com três chaves (corrigir legado)
     .replace(/\{\{\{nome\}\}\}/g, firstName)
     .replace(/\{\{\{nome_completo\}\}\}/g, fullName)
-    // Padrão com duas chaves (preferido)
     .replace(/\{\{nome\}\}/g, firstName)
     .replace(/\{\{nome_completo\}\}/g, fullName)
     .replace(/\{\{email\}\}/g, lead.email)
-    // Variação com uma chave (legado)
     .replace(/\{nome\}/g, firstName)
     .replace(/\{nome_completo\}/g, fullName)
     .replace(/\{email\}/g, lead.email)
-    // Compatibilidade com variáveis antigas em inglês
     .replace(/\{\{name\}\}/g, firstName)
     .replace(/\{\{full_name\}\}/g, fullName);
 };
@@ -105,6 +101,11 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const startTime = Date.now();
+  let emailsSent = 0;
+  let errorsCount = 0;
+  const leadsProcessed: string[] = [];
+
   try {
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (!resendApiKey) {
@@ -145,8 +146,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Found ${leads?.length || 0} leads with active nurturing`);
 
-    let emailsSent = 0;
-    let errorsCount = 0;
     const now = new Date();
 
     for (const lead of leads || []) {
@@ -165,7 +164,7 @@ const handler = async (req: Request): Promise<Response> => {
         : sequence.delay_hours + 1;
 
       if (hoursElapsed < sequence.delay_hours) {
-        console.log(`Lead ${lead.email}: waiting ${sequence.delay_hours - hoursElapsed} more hours`);
+        console.log(`Lead ${lead.email}: waiting ${(sequence.delay_hours - hoursElapsed).toFixed(1)} more hours`);
         continue;
       }
 
@@ -209,19 +208,31 @@ const handler = async (req: Request): Promise<Response> => {
         });
 
         emailsSent++;
+        leadsProcessed.push(lead.email);
       } catch (emailError) {
         console.error(`Error sending to ${lead.email}:`, emailError);
         errorsCount++;
       }
     }
 
-    console.log(`Nurturing complete: ${emailsSent} emails sent, ${errorsCount} errors`);
+    const executionTimeMs = Date.now() - startTime;
+    console.log(`Nurturing complete: ${emailsSent} emails sent, ${errorsCount} errors in ${executionTimeMs}ms`);
+
+    // Log execution to nurturing_executions table
+    await supabase.from("nurturing_executions").insert({
+      emails_sent: emailsSent,
+      errors_count: errorsCount,
+      leads_processed: leadsProcessed,
+      execution_time_ms: executionTimeMs,
+      status: errorsCount > 0 ? "partial" : "success",
+    });
 
     return new Response(
       JSON.stringify({
         success: true,
         emailsSent,
         errorsCount,
+        executionTimeMs,
         message: `Nurturing processado: ${emailsSent} emails enviados, ${errorsCount} erros`,
       }),
       {
@@ -231,6 +242,22 @@ const handler = async (req: Request): Promise<Response> => {
     );
   } catch (error: any) {
     console.error("Error in nurturing function:", error);
+    
+    // Log failed execution
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (supabaseUrl && supabaseKey) {
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      await supabase.from("nurturing_executions").insert({
+        emails_sent: emailsSent,
+        errors_count: errorsCount + 1,
+        leads_processed: leadsProcessed,
+        execution_time_ms: Date.now() - startTime,
+        status: "error",
+        error_details: error.message,
+      });
+    }
+
     return new Response(
       JSON.stringify({ error: error.message }),
       {
