@@ -15,12 +15,12 @@ interface EbookEmailRequest {
 // Map ebook names to their download URLs and descriptions
 const ebookConfig: Record<string, { downloadUrl: string; description: string; fileName: string }> = {
   "Checklist 5 Passos para Estruturar seu Escritório": {
-    downloadUrl: "https://ugmvhuxcncfwbehjlwbe.supabase.co/storage/v1/object/public/ebooks/checklist-5-passos.pdf",
+    downloadUrl: "https://soberanamentoria.com.br/assets/ebooks/checklist-5-passos.pdf",
     description: "o Checklist com os 5 Passos Essenciais para Estruturar seu Escritório de forma profissional e eficiente",
     fileName: "Checklist 5 Passos para Estruturar seu Escritório.pdf"
   },
   "7 Erros que Travam seu Escritório": {
-    downloadUrl: "https://ugmvhuxcncfwbehjlwbe.supabase.co/storage/v1/object/public/ebooks/7-erros-escritorio.pdf",
+    downloadUrl: "https://soberanamentoria.com.br/assets/ebooks/7-erros-escritorio.pdf",
     description: "o Guia Exclusivo com os 7 Erros Fatais que Travam o Crescimento do seu Escritório (e como evitá-los)",
     fileName: "7 Erros que Travam seu Escritório.pdf"
   }
