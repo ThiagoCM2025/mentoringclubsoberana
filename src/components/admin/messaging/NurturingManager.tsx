@@ -83,6 +83,27 @@ export const NurturingManager = () => {
     fetchSequences();
     fetchStats();
     fetchLastExecutions();
+
+    // Realtime subscription for leads changes
+    const channel = supabase
+      .channel('leads-nurturing-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'leads'
+        },
+        () => {
+          console.log('Lead change detected in nurturing manager');
+          fetchStats();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchSequences = async () => {
@@ -131,9 +152,13 @@ export const NurturingManager = () => {
       setFunnelData(funnel);
 
       // Stuck leads (active but no contact in 3+ days)
+      // NEW: Exclude new leads (step 0, no contact) - they're awaiting first email, not stuck
       const now = new Date();
       const stuck = active
         .filter(l => {
+          const isNewLead = (l.nurturing_step || 0) === 0 && !l.last_contact_at;
+          if (isNewLead) return false; // New leads are NOT stuck
+          
           if (!l.last_contact_at) return true;
           const lastContact = new Date(l.last_contact_at);
           const daysSince = (now.getTime() - lastContact.getTime()) / (1000 * 60 * 60 * 24);
@@ -147,28 +172,40 @@ export const NurturingManager = () => {
           last_contact_at: l.last_contact_at,
           days_stuck: l.last_contact_at 
             ? Math.floor((now.getTime() - new Date(l.last_contact_at).getTime()) / (1000 * 60 * 60 * 24))
-            : 999,
+            : 0,
         }))
         .sort((a, b) => b.days_stuck - a.days_stuck)
         .slice(0, 5);
       setStuckLeads(stuck);
 
-      // Upcoming sends
+      // Upcoming sends - NEW: Include new leads with "immediate" send
       if (seqs) {
         const upcoming: UpcomingSend[] = [];
-        for (const lead of active.slice(0, 10)) {
+        for (const lead of active.slice(0, 15)) {
           const nextStep = (lead.nurturing_step || 0) + 1;
           const seq = seqs.find(s => s.step_number === nextStep);
-          if (seq && lead.last_contact_at) {
-            const lastContact = new Date(lead.last_contact_at);
-            const estimatedSend = addHours(lastContact, seq.delay_hours);
-            if (estimatedSend > now) {
+          if (seq) {
+            const isNewLead = (lead.nurturing_step || 0) === 0 && !lead.last_contact_at;
+            
+            if (isNewLead) {
+              // New leads get immediate email on next cron run
               upcoming.push({
                 lead_name: lead.full_name,
                 lead_email: lead.email,
                 next_step: nextStep,
-                estimated_send: estimatedSend,
+                estimated_send: new Date(), // Immediate
               });
+            } else if (lead.last_contact_at) {
+              const lastContact = new Date(lead.last_contact_at);
+              const estimatedSend = addHours(lastContact, seq.delay_hours);
+              if (estimatedSend > now) {
+                upcoming.push({
+                  lead_name: lead.full_name,
+                  lead_email: lead.email,
+                  next_step: nextStep,
+                  estimated_send: estimatedSend,
+                });
+              }
             }
           }
         }
@@ -398,17 +435,23 @@ export const NurturingManager = () => {
               <p className="text-sm text-muted-foreground text-center py-4">Nenhum envio agendado</p>
             ) : (
               <div className="space-y-2">
-                {upcomingSends.map((send, idx) => (
-                  <div key={idx} className="flex items-center justify-between text-sm p-2 bg-muted/50 rounded">
-                    <div className="truncate flex-1">
-                      <p className="font-medium truncate">{send.lead_name}</p>
-                      <p className="text-xs text-muted-foreground">Etapa {send.next_step}</p>
+                {upcomingSends.map((send, idx) => {
+                  const isImmediate = send.next_step === 1 && send.estimated_send <= new Date();
+                  return (
+                    <div key={idx} className="flex items-center justify-between text-sm p-2 bg-muted/50 rounded">
+                      <div className="truncate flex-1">
+                        <p className="font-medium truncate">{send.lead_name}</p>
+                        <p className="text-xs text-muted-foreground">Etapa {send.next_step}</p>
+                      </div>
+                      <Badge 
+                        variant="outline" 
+                        className={`text-xs ${isImmediate ? 'text-green-600 border-green-300' : ''}`}
+                      >
+                        {isImmediate ? "Imediato" : formatDistanceToNow(send.estimated_send, { addSuffix: true, locale: ptBR })}
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="text-xs">
-                      {formatDistanceToNow(send.estimated_send, { addSuffix: true, locale: ptBR })}
-                    </Badge>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>

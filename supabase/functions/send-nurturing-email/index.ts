@@ -159,13 +159,23 @@ const handler = async (req: Request): Promise<Response> => {
 
       // Check if enough time has passed since last contact
       const lastContact = lead.last_contact_at ? new Date(lead.last_contact_at) : null;
+      const isNewLead = (lead.nurturing_step || 0) === 0 && !lastContact;
+      
+      // New leads (step 0, no contact) get immediate first email
+      // Otherwise, wait for delay_hours since last contact
       const hoursElapsed = lastContact 
         ? (now.getTime() - lastContact.getTime()) / (1000 * 60 * 60)
-        : sequence.delay_hours + 1;
+        : isNewLead 
+          ? sequence.delay_hours + 1  // Bypass delay for new leads
+          : 0;
 
       if (hoursElapsed < sequence.delay_hours) {
         console.log(`Lead ${lead.email}: waiting ${(sequence.delay_hours - hoursElapsed).toFixed(1)} more hours`);
         continue;
+      }
+      
+      if (isNewLead) {
+        console.log(`New lead ${lead.email}: sending immediate welcome email`);
       }
 
       // Prepare personalized email
