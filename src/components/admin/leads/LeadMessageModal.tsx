@@ -100,10 +100,20 @@ export function LeadMessageModal({ open, onClose, lead, onMessageSent }: LeadMes
 
   const replaceVariables = (text: string) => {
     if (!lead) return text;
+    const firstName = lead.full_name.split(" ")[0];
     return text
-      .replace(/{nome}/g, lead.full_name.split(" ")[0])
-      .replace(/{nome_completo}/g, lead.full_name)
-      .replace(/{email}/g, lead.email);
+      // Três chaves (legados)
+      .replace(/\{\{\{nome\}\}\}/g, firstName)
+      .replace(/\{\{\{nome_completo\}\}\}/g, lead.full_name)
+      .replace(/\{\{\{email\}\}\}/g, lead.email)
+      // Duas chaves (padrão)
+      .replace(/\{\{nome\}\}/g, firstName)
+      .replace(/\{\{nome_completo\}\}/g, lead.full_name)
+      .replace(/\{\{email\}\}/g, lead.email)
+      // Uma chave (legado)
+      .replace(/\{nome\}/g, firstName)
+      .replace(/\{nome_completo\}/g, lead.full_name)
+      .replace(/\{email\}/g, lead.email);
   };
 
   const handleSend = async () => {
@@ -274,7 +284,7 @@ export function LeadMessageModal({ open, onClose, lead, onMessageSent }: LeadMes
               className="bg-card border-border resize-none"
             />
             <p className="text-xs text-muted-foreground mt-2">
-              Variáveis: {"{nome}"}, {"{nome_completo}"}, {"{email}"}
+              Variáveis: {"{{nome}}"}, {"{{nome_completo}}"}, {"{{email}}"}
             </p>
           </div>
 
