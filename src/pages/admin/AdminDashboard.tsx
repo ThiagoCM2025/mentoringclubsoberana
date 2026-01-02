@@ -255,22 +255,22 @@ const PremiumStatCard = ({
       whileHover={{ scale: 1.02, y: -2 }}
       className="group"
     >
-      <div className="relative p-4 rounded-xl bg-card border border-border/50 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-secondary/40 hover:bg-card/80">
+      <div className="relative p-3 rounded-xl bg-card border border-border/50 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-secondary/40 hover:bg-card/80">
         {/* Glassmorphism overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
         
         {/* Decorative glow */}
         <div className={cn(
-          "absolute -top-10 -right-10 w-24 h-24 rounded-full blur-3xl opacity-20 transition-opacity duration-500 group-hover:opacity-40",
+          "absolute -top-10 -right-10 w-20 h-20 rounded-full blur-3xl opacity-20 transition-opacity duration-500 group-hover:opacity-40",
           gradient
         )} />
         
         {/* Icon container with glow */}
         <div className={cn(
-          "relative w-10 h-10 rounded-lg flex items-center justify-center mb-3 shadow-md transition-transform duration-300 group-hover:scale-110",
+          "relative w-8 h-8 rounded-lg flex items-center justify-center mb-2 shadow-md transition-transform duration-300 group-hover:scale-110",
           `bg-gradient-to-br ${gradient}`
         )}>
-          <Icon className="w-5 h-5 text-white" />
+          <Icon className="w-4 h-4 text-white" />
           <div className={cn(
             "absolute inset-0 rounded-lg blur-lg opacity-50",
             `bg-gradient-to-br ${gradient}`
@@ -280,7 +280,7 @@ const PremiumStatCard = ({
         {/* Value and trend */}
         <div className="flex items-end gap-2 mb-0.5">
           <motion.p 
-            className="text-xl lg:text-2xl font-bold text-foreground tracking-tight"
+            className="text-lg lg:text-xl font-bold text-foreground tracking-tight"
             key={displayValue}
           >
             {displayValue}
@@ -302,7 +302,7 @@ const PremiumStatCard = ({
         </div>
         
         {/* Label */}
-        <p className="text-sm text-muted-foreground font-medium">{label}</p>
+        <p className="text-xs text-muted-foreground font-medium">{label}</p>
       </div>
     </motion.div>
   );
@@ -338,12 +338,12 @@ const SectionHeader = ({
   <motion.div 
     initial={{ opacity: 0, x: -20 }}
     animate={{ opacity: 1, x: 0 }}
-    className="flex items-center gap-2 mb-4"
+    className="flex items-center gap-2 mb-3"
   >
-    <div className="p-1.5 rounded-md bg-secondary/10">
-      <Icon className={cn("w-4 h-4", iconColor)} />
+    <div className="p-1 rounded-md bg-secondary/10">
+      <Icon className={cn("w-3.5 h-3.5", iconColor)} />
     </div>
-    <h2 className="text-base font-semibold text-foreground">{title}</h2>
+    <h2 className="text-sm font-semibold text-foreground">{title}</h2>
   </motion.div>
 );
 
@@ -373,13 +373,13 @@ const ChartCard = ({
     <Card className="relative overflow-hidden border-border/50 shadow-sm hover:shadow-lg transition-all duration-300 bg-card/80 backdrop-blur-sm">
       <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent pointer-events-none" />
       <CardHeader className="relative flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-base font-semibold flex items-center gap-2 text-foreground">
-          <Icon className={cn("w-4 h-4", iconColor)} />
+        <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
+          <Icon className={cn("w-3.5 h-3.5", iconColor)} />
           {title}
         </CardTitle>
         {period && onPeriodChange && (
           <Select value={period} onValueChange={(v) => onPeriodChange(v as PeriodFilter)}>
-            <SelectTrigger className="w-[120px] h-8 text-xs border-border/50 bg-background/50 text-foreground backdrop-blur-sm">
+            <SelectTrigger className="w-[110px] h-7 text-xs border-border/50 bg-background/50 text-foreground backdrop-blur-sm">
               <Calendar className="w-3 h-3 mr-1" />
               <SelectValue />
             </SelectTrigger>
@@ -1025,25 +1025,25 @@ const AdminDashboard = () => {
 
   return (
     <AdminLayout>
-      <div className="p-4 lg:p-8 admin-area space-y-8">
+      <div className="p-3 lg:p-6 admin-area space-y-6">
         {/* Premium Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-secondary/5 to-transparent border border-secondary/20 p-6 lg:p-8"
+          className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary/10 via-secondary/5 to-transparent border border-secondary/20 p-4 lg:p-6"
         >
           <div className="absolute inset-0 bg-[url('/src/assets/brand/pattern-gold.png')] bg-repeat opacity-5" />
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-secondary/20 to-transparent rounded-full blur-3xl -translate-y-32 translate-x-32" />
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-secondary/20 to-transparent rounded-full blur-3xl -translate-y-24 translate-x-24" />
           
-          <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <Crown className="w-8 h-8 text-secondary" />
-                <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+              <div className="flex items-center gap-2 mb-1">
+                <Crown className="w-6 h-6 text-secondary" />
+                <h1 className="text-xl lg:text-2xl font-bold text-foreground">
                   Dashboard Premium
                 </h1>
               </div>
-              <p className="text-muted-foreground max-w-xl">
+              <p className="text-sm text-muted-foreground max-w-xl">
                 Visão completa do seu ecossistema de cursos, alunos e comunidade
               </p>
             </div>
@@ -1073,7 +1073,7 @@ const AdminDashboard = () => {
         {/* Main Stats Grid - 12 Premium Cards */}
         <div>
           <SectionHeader title="Visão Geral" icon={Sparkles} />
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             <AnimatePresence mode="wait">
               {loading ? (
                 <motion.div
@@ -1081,7 +1081,7 @@ const AdminDashboard = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="col-span-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
+                  className="col-span-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3"
                 >
                   <StatsCardSkeleton count={12} />
                 </motion.div>
@@ -1195,7 +1195,7 @@ const AdminDashboard = () => {
         {/* Growth Section */}
         <div>
           <SectionHeader title="Crescimento" icon={TrendingUp} iconColor="text-emerald-500" />
-          <div className="grid lg:grid-cols-2 gap-6">
+          <div className="grid lg:grid-cols-2 gap-4">
             {/* Enrollment Trends */}
             <ChartCard
               title="Evolução de Matrículas"
@@ -1204,7 +1204,7 @@ const AdminDashboard = () => {
               onPeriodChange={setEnrollmentPeriod}
               delay={0.3}
             >
-              <div className="h-64">
+              <div className="h-52">
                 <AnimatePresence mode="wait">
                   {loading ? (
                     <ChartSkeleton height={256} />
@@ -1262,11 +1262,11 @@ const AdminDashboard = () => {
               onPeriodChange={setLeadsPeriod}
               delay={0.4}
             >
-              <div className="h-64">
+              <div className="h-52">
                 <AnimatePresence mode="wait">
                   {loading ? (
                     <div className="h-full flex items-center justify-center">
-                      <PieChartSkeleton size={180} />
+                      <PieChartSkeleton size={150} />
                     </div>
                   ) : leadsByStatus.length > 0 ? (
                     <motion.div
@@ -1318,7 +1318,7 @@ const AdminDashboard = () => {
         {/* Engagement Section */}
         <div>
           <SectionHeader title="Engajamento" icon={Heart} iconColor="text-rose-500" />
-          <div className="grid lg:grid-cols-3 gap-6">
+          <div className="grid lg:grid-cols-3 gap-4">
             {/* Community Engagement Chart */}
             <ChartCard
               title="Engajamento da Comunidade"
@@ -1328,10 +1328,10 @@ const AdminDashboard = () => {
               onPeriodChange={setCommunityPeriod}
               delay={0.45}
             >
-              <div className="h-64">
+              <div className="h-52">
                 <AnimatePresence mode="wait">
                   {loading ? (
-                    <ChartSkeleton height={256} />
+                    <ChartSkeleton height={208} />
                   ) : communityEngagement.length > 0 ? (
                     <motion.div
                       initial={{ opacity: 0 }}
@@ -1379,12 +1379,12 @@ const AdminDashboard = () => {
               <Card className="relative overflow-hidden border-border/50 shadow-sm hover:shadow-lg transition-all duration-300 bg-card/80 backdrop-blur-sm h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent pointer-events-none" />
                 <CardHeader className="relative pb-2">
-                  <CardTitle className="text-base font-semibold flex items-center gap-2 text-foreground">
-                    <Crown className="w-4 h-4 text-yellow-500" />
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
+                    <Crown className="w-3.5 h-3.5 text-yellow-500" />
                     Top 5 Alunos (XP)
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="relative space-y-3">
+                <CardContent className="relative space-y-2">
                   {loading ? (
                     <div className="space-y-3">
                       {[...Array(5)].map((_, i) => (
