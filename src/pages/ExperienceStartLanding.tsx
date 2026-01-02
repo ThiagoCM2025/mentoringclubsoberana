@@ -8,6 +8,8 @@ import { SoberanaLogoMark } from "@/components/landing/SoberanaLogoMark";
 import { ExperienceExitPopup } from "@/components/landing/ExperienceExitPopup";
 import { SectionSkeleton } from "@/components/landing/SectionSkeleton";
 import { ScrollTracker } from "@/components/ScrollTracker";
+import { TimeTracker } from "@/components/TimeTracker";
+import { ClickTracker } from "@/components/ClickTracker";
 import { useUTMParams } from "@/hooks/useUTMParams";
 import { useEventTracking } from "@/hooks/useEventTracking";
 import { useIsMobile, usePrefersReducedMotion } from "@/components/ui/optimized-image";
@@ -1134,8 +1136,10 @@ const ExperienceStartLanding = () => {
       {/* Exit Intent Popup */}
       <ExperienceExitPopup />
       
-      {/* Scroll Tracking */}
+      {/* Scroll & Behavior Tracking */}
       <ScrollTracker />
+      <TimeTracker />
+      <ClickTracker />
     </div>;
 };
 export default ExperienceStartLanding;
