@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Crown, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useEventTracking } from "@/hooks/useEventTracking";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Animation variants for staggered entrance
 const containerVariants = {
@@ -34,9 +35,17 @@ export const ExitIntentPopup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
   const { trackFormStart, trackFormComplete, linkEventsToLead, trackCTAClick } = useEventTracking();
+  const isMobile = useIsMobile();
+  
+  // Refs for mobile scroll detection
+  const lastScrollY = useRef(0);
+  const scrollUpDistance = useRef(0);
+  const isActiveRef = useRef(false);
 
+  // Desktop exit intent (mouseleave)
   useEffect(() => {
-    // Check if already shown this session
+    if (isMobile) return;
+    
     const alreadyShown = sessionStorage.getItem("exitIntentShown");
     const alreadySubmitted = localStorage.getItem("leadSubmitted");
     
@@ -46,7 +55,6 @@ export const ExitIntentPopup = () => {
     }
 
     const handleMouseLeave = (e: MouseEvent) => {
-      // Only trigger when mouse leaves from the top
       if (e.clientY <= 0 && !hasShown) {
         setShowPopup(true);
         setHasShown(true);
@@ -54,7 +62,6 @@ export const ExitIntentPopup = () => {
       }
     };
 
-    // Add delay before enabling exit intent (don't show immediately)
     const timer = setTimeout(() => {
       document.addEventListener("mouseleave", handleMouseLeave);
     }, 5000);
@@ -63,7 +70,58 @@ export const ExitIntentPopup = () => {
       clearTimeout(timer);
       document.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [hasShown]);
+  }, [hasShown, isMobile]);
+
+  // Mobile exit intent (scroll-up detection)
+  useEffect(() => {
+    if (!isMobile) return;
+    
+    const alreadyShown = sessionStorage.getItem("exitIntentShown");
+    const alreadySubmitted = localStorage.getItem("leadSubmitted");
+    
+    if (alreadyShown || alreadySubmitted) {
+      setHasShown(true);
+      return;
+    }
+
+    const handleScroll = () => {
+      if (!isActiveRef.current || hasShown) return;
+      
+      const currentScrollY = window.scrollY;
+      const pageHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercentage = (currentScrollY / pageHeight) * 100;
+      
+      if (currentScrollY < lastScrollY.current) {
+        // Scrolling up
+        scrollUpDistance.current += lastScrollY.current - currentScrollY;
+        
+        // Trigger if scrolled 30%+ of page AND scrolled up 100px+
+        if (scrollUpDistance.current > 100 && scrollPercentage > 30) {
+          setShowPopup(true);
+          setHasShown(true);
+          sessionStorage.setItem("exitIntentShown", "true");
+          window.removeEventListener("scroll", handleScroll);
+        }
+      } else {
+        // Scrolling down - reset counter
+        scrollUpDistance.current = 0;
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    // Activate after 8 seconds on mobile
+    const timer = setTimeout(() => {
+      lastScrollY.current = window.scrollY;
+      isActiveRef.current = true;
+      window.addEventListener("scroll", handleScroll, { passive: true });
+    }, 8000);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [hasShown, isMobile]);
 
   const handleInputFocus = () => {
     trackFormStart("exit_intent_popup");
