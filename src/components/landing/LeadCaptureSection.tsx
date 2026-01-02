@@ -56,29 +56,55 @@ export const LeadCaptureSection = () => {
       const nameTrimmed = formData.fullName.trim();
       const ebookName = "7 Erros que Travam seu Escritório";
 
-      // Insert lead (without SELECT to avoid RLS issues for anonymous users)
-      const { error: leadError } = await supabase
+      // First, check if lead already exists
+      let leadId: string | null = null;
+      
+      const { data: existingLead } = await supabase
         .from("leads")
-        .insert({
-          full_name: nameTrimmed,
-          email: emailNormalized,
-          phone: formData.phone || null,
-          source: "landing_page_ebook",
-          status: "new",
-          temperature: "warm",
-          score: 10
-        });
+        .select("id")
+        .eq("email", emailNormalized)
+        .maybeSingle();
 
-      if (leadError) {
-        if (leadError.code === "23505") {
-          toast({
-            title: "Email já cadastrado",
-            description: "Este email já está na nossa lista. Verifique sua caixa de entrada."
-          });
-          setIsSuccess(true);
-          return;
+      if (existingLead) {
+        // Lead already exists - use existing ID
+        leadId = existingLead.id;
+        toast({
+          title: "Email já cadastrado",
+          description: "Este email já está na nossa lista. Verifique sua caixa de entrada."
+        });
+      } else {
+        // Insert new lead
+        const { data: newLead, error: leadError } = await supabase
+          .from("leads")
+          .insert({
+            full_name: nameTrimmed,
+            email: emailNormalized,
+            phone: formData.phone || null,
+            source: "landing_page_ebook",
+            status: "new",
+            temperature: "warm",
+            score: 10,
+            nurturing_active: true,
+            nurturing_step: 0
+          })
+          .select("id")
+          .single();
+
+        if (leadError) {
+          // Handle race condition - lead might have been created between check and insert
+          if (leadError.code === "23505") {
+            const { data: retryLead } = await supabase
+              .from("leads")
+              .select("id")
+              .eq("email", emailNormalized)
+              .maybeSingle();
+            leadId = retryLead?.id || null;
+          } else {
+            throw leadError;
+          }
+        } else {
+          leadId = newLead?.id || null;
         }
-        throw leadError;
       }
 
       // Track form completion
@@ -87,10 +113,11 @@ export const LeadCaptureSection = () => {
         has_phone: !!formData.phone 
       });
 
-      // Register ebook download
+      // Register ebook download WITH lead_id
       await supabase.from("ebook_downloads").insert({
         email: emailNormalized,
-        ebook_name: ebookName
+        ebook_name: ebookName,
+        lead_id: leadId
       });
 
       // Send ebook email via edge function
