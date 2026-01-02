@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -18,12 +18,20 @@ import {
   Mail,
   Activity,
   FileText,
-  ClipboardCheck
+  ClipboardCheck,
+  Search,
 } from "lucide-react";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import { AdminNotificationBell } from "./AdminNotificationBell";
 import { PendingMissionsBadge } from "./PendingMissionsBadge";
+import { CommandPalette } from "./CommandPalette";
+import { QuickActionsCenter } from "./QuickActionsCenter";
+import { QuickEnrollDialog } from "./QuickEnrollDialog";
+import { AdminBreadcrumbs } from "./AdminBreadcrumbs";
+import { DensityToggle } from "./DensityToggle";
+import { NewLeadDialog } from "./NewLeadDialog";
+import { BulkNotificationDialog } from "./BulkNotificationDialog";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -52,10 +60,34 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Quick action dialogs
+  const [showNewLeadDialog, setShowNewLeadDialog] = useState(false);
+  const [showEnrollDialog, setShowEnrollDialog] = useState(false);
+  const [showBulkNotificationDialog, setShowBulkNotificationDialog] = useState(false);
+  const [showCreateStudentDialog, setShowCreateStudentDialog] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
     navigate("/", { replace: true });
+  };
+  
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case "create-student":
+        // Navigate to students page where the create dialog can be opened
+        navigate("/admin/students?action=create");
+        break;
+      case "create-lead":
+        setShowNewLeadDialog(true);
+        break;
+      case "enroll-student":
+        setShowEnrollDialog(true);
+        break;
+      case "bulk-notification":
+        setShowBulkNotificationDialog(true);
+        break;
+    }
   };
 
   return (
@@ -76,7 +108,16 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          {/* Search shortcut button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
+            className="text-muted-foreground"
+          >
+            <Search className="w-5 h-5" />
+          </Button>
           <AdminNotificationBell />
           <Button
             variant="ghost"
@@ -157,6 +198,17 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
             )}
           </div>
           <div className={cn("flex items-center gap-1", !isSidebarOpen && "hidden")}>
+            {/* Desktop: Search shortcut + Density Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
+              className="text-muted-foreground hover:text-secondary hover:bg-secondary/10"
+              title="Buscar (⌘K)"
+            >
+              <Search className="w-4 h-4" />
+            </Button>
+            <DensityToggle />
             <AdminNotificationBell />
             <Button
               variant="ghost"
@@ -215,8 +267,40 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
           isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
         )}
       >
-        {children}
+        <div className="p-4 lg:p-6">
+          <AdminBreadcrumbs />
+          {children}
+        </div>
       </main>
+      
+      {/* Command Palette */}
+      <CommandPalette onQuickAction={handleQuickAction} />
+      
+      {/* Quick Actions FAB */}
+      <QuickActionsCenter
+        onCreateStudent={() => navigate("/admin/students?action=create")}
+        onCreateLead={() => setShowNewLeadDialog(true)}
+        onEnrollStudent={() => setShowEnrollDialog(true)}
+        onBulkNotification={() => setShowBulkNotificationDialog(true)}
+      />
+      
+      {/* Dialogs */}
+      <NewLeadDialog 
+        open={showNewLeadDialog} 
+        onOpenChange={setShowNewLeadDialog}
+        onSuccess={() => {
+          setShowNewLeadDialog(false);
+        }}
+      />
+      
+      <QuickEnrollDialog 
+        open={showEnrollDialog} 
+        onOpenChange={setShowEnrollDialog} 
+      />
+      
+      {showBulkNotificationDialog && (
+        <BulkNotificationDialog />
+      )}
     </div>
   );
 };
