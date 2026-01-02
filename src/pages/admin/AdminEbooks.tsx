@@ -20,7 +20,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { 
@@ -162,20 +161,6 @@ const AdminEbooks = () => {
     }
     
     setLoading(false);
-  };
-
-  const toggleNurturing = async (leadId: string, currentActive: boolean) => {
-    const { error } = await supabase
-      .from("leads")
-      .update({ nurturing_active: !currentActive })
-      .eq("id", leadId);
-
-    if (error) {
-      toast({ title: "Erro ao atualizar", variant: "destructive" });
-    } else {
-      toast({ title: currentActive ? "Nurturing pausado" : "Nurturing ativado" });
-      fetchDownloads();
-    }
   };
 
   const deleteEbookDownload = async (downloadId: string, leadId: string | null) => {
@@ -382,20 +367,19 @@ const AdminEbooks = () => {
                 <TableHead className="text-center">Nurturing</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Data</TableHead>
-                <TableHead className="text-center">Ativo</TableHead>
                 <TableHead className="text-center">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredDownloads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={7} className="text-center py-8">
                     <Download className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                     <p className="text-muted-foreground">Nenhum download encontrado</p>
                   </TableCell>
@@ -467,16 +451,6 @@ const AdminEbooks = () => {
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {format(new Date(download.downloaded_at), "dd/MM/yy HH:mm", { locale: ptBR })}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {download.lead ? (
-                          <Switch
-                            checked={download.lead.nurturing_active || false}
-                            onCheckedChange={() => toggleNurturing(download.lead!.id, download.lead!.nurturing_active || false)}
-                          />
-                        ) : (
-                          <span className="text-xs text-muted-foreground">-</span>
-                        )}
                       </TableCell>
                       <TableCell className="text-center">
                         <AlertDialog>
