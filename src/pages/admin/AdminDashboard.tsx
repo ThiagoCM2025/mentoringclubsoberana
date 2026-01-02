@@ -248,32 +248,32 @@ const PremiumStatCard = ({
       whileHover={{ scale: 1.02, y: -2 }}
       className="group"
     >
-      <div className="relative p-5 rounded-2xl bg-card border border-border/50 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-secondary/40 hover:bg-card/80">
+      <div className="relative p-4 rounded-xl bg-card border border-border/50 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-secondary/40 hover:bg-card/80">
         {/* Glassmorphism overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
         
         {/* Decorative glow */}
         <div className={cn(
-          "absolute -top-12 -right-12 w-32 h-32 rounded-full blur-3xl opacity-20 transition-opacity duration-500 group-hover:opacity-40",
+          "absolute -top-10 -right-10 w-24 h-24 rounded-full blur-3xl opacity-20 transition-opacity duration-500 group-hover:opacity-40",
           gradient
         )} />
         
         {/* Icon container with glow */}
         <div className={cn(
-          "relative w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-lg transition-transform duration-300 group-hover:scale-110",
+          "relative w-10 h-10 rounded-lg flex items-center justify-center mb-3 shadow-md transition-transform duration-300 group-hover:scale-110",
           `bg-gradient-to-br ${gradient}`
         )}>
-          <Icon className="w-6 h-6 text-white" />
+          <Icon className="w-5 h-5 text-white" />
           <div className={cn(
-            "absolute inset-0 rounded-xl blur-xl opacity-50",
+            "absolute inset-0 rounded-lg blur-lg opacity-50",
             `bg-gradient-to-br ${gradient}`
           )} />
         </div>
         
         {/* Value and trend */}
-        <div className="flex items-end gap-2 mb-1">
+        <div className="flex items-end gap-2 mb-0.5">
           <motion.p 
-            className="text-2xl lg:text-3xl font-bold text-foreground tracking-tight"
+            className="text-xl lg:text-2xl font-bold text-foreground tracking-tight"
             key={displayValue}
           >
             {displayValue}
@@ -331,12 +331,12 @@ const SectionHeader = ({
   <motion.div 
     initial={{ opacity: 0, x: -20 }}
     animate={{ opacity: 1, x: 0 }}
-    className="flex items-center gap-3 mb-6"
+    className="flex items-center gap-2 mb-4"
   >
-    <div className="p-2 rounded-lg bg-secondary/10">
-      <Icon className={cn("w-5 h-5", iconColor)} />
+    <div className="p-1.5 rounded-md bg-secondary/10">
+      <Icon className={cn("w-4 h-4", iconColor)} />
     </div>
-    <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+    <h2 className="text-base font-semibold text-foreground">{title}</h2>
   </motion.div>
 );
 

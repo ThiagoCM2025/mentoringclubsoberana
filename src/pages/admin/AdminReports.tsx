@@ -318,14 +318,14 @@ const AdminReports = () => {
     >
       <Card className="relative overflow-hidden admin-stat-card border-0">
         <div className={`absolute inset-0 ${color} opacity-10`} />
-        <CardContent className="p-6">
+        <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">{label}</p>
-              <p className="text-3xl font-bold text-foreground mt-1">{value}{suffix}</p>
+              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className="text-2xl font-bold text-foreground mt-0.5">{value}{suffix}</p>
             </div>
-            <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center`}>
-              <Icon className="w-6 h-6 text-white" />
+            <div className={`w-10 h-10 rounded-lg ${color} flex items-center justify-center`}>
+              <Icon className="w-5 h-5 text-white" />
             </div>
           </div>
         </CardContent>
@@ -335,18 +335,18 @@ const AdminReports = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 lg:p-8 admin-area">
+      <div className="p-4 lg:p-6 admin-area">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8"
+          className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6"
         >
           <div>
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-2xl font-bold text-foreground">
               Relatórios
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground">
               Métricas detalhadas do seu ecossistema
             </p>
           </div>
@@ -363,7 +363,7 @@ const AdminReports = () => {
         </motion.div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
           {loading ? (
             <StatsCardSkeleton count={5} />
           ) : (
@@ -405,7 +405,7 @@ const AdminReports = () => {
         </div>
 
         {/* Charts Row 1 */}
-        <div className="grid lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid lg:grid-cols-2 gap-4 mb-5">
           {/* Enrollments Chart */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -430,7 +430,7 @@ const AdminReports = () => {
                 </Button>
               </CardHeader>
               <CardContent>
-                <div className="h-72">
+                <div className="h-56">
                   {loading ? (
                     <ChartSkeleton height={288} variant="area" />
                   ) : enrollmentData.length > 0 ? (
@@ -496,7 +496,7 @@ const AdminReports = () => {
                 </Button>
               </CardHeader>
               <CardContent>
-                <div className="h-72">
+                <div className="h-56">
                   {leadData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={leadData}>

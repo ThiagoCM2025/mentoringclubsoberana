@@ -109,7 +109,7 @@ export const TimeOnPageChart = ({ startDate }: TimeOnPageChartProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px] flex items-center justify-center">
+          <div className="h-[240px] flex items-center justify-center">
             <div className="animate-pulse text-muted-foreground">Carregando...</div>
           </div>
         </CardContent>
@@ -138,11 +138,11 @@ export const TimeOnPageChart = ({ startDate }: TimeOnPageChartProps) => {
         </CardHeader>
         <CardContent>
           {data.length === 0 ? (
-            <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+            <div className="h-[240px] flex items-center justify-center text-muted-foreground">
               Nenhum dado de tempo registrado ainda
             </div>
           ) : (
-            <div className="h-[300px]">
+            <div className="h-[240px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data} layout="vertical" margin={{ left: 0, right: 20 }}>
                   <XAxis 
