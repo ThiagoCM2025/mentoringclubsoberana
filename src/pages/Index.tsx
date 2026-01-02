@@ -17,6 +17,7 @@ import { WhatsAppButton } from "@/components/landing/WhatsAppButton";
 import { ExitIntentPopup } from "@/components/landing/ExitIntentPopup";
 import SEO, { createFAQSchema } from "@/components/SEO";
 import { SplashScreen } from "@/components/SplashScreen";
+import { ScrollTracker } from "@/components/ScrollTracker";
 
 const faqItems = [
   { question: "Qual programa é ideal para quem está começando?", answer: "Se você está começando, recomendo o Workshop Soberana IA ou o Experience Start." },
@@ -88,6 +89,7 @@ const Index = () => {
       <Footer />
       <WhatsAppButton />
       <ExitIntentPopup />
+      <ScrollTracker />
     </main>
   );
 };

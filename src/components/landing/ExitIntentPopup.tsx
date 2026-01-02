@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useEventTracking } from "@/hooks/useEventTracking";
 
 // Animation variants for staggered entrance
 const containerVariants = {
@@ -32,6 +33,7 @@ export const ExitIntentPopup = () => {
   const [hasShown, setHasShown] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "" });
+  const { trackFormStart, trackFormComplete, linkEventsToLead, trackCTAClick } = useEventTracking();
 
   useEffect(() => {
     // Check if already shown this session
@@ -63,6 +65,10 @@ export const ExitIntentPopup = () => {
     };
   }, [hasShown]);
 
+  const handleInputFocus = () => {
+    trackFormStart("exit_intent_popup");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -78,8 +84,8 @@ export const ExitIntentPopup = () => {
       const nameTrimmed = formData.name.trim();
       const ebookName = "Checklist 5 Passos para Estruturar seu Escritório";
       
-      // Insert lead (without .select() to avoid RLS SELECT restriction)
-      const { error: leadError } = await supabase
+      // Insert lead with select to get the id
+      const { data: leadData, error: leadError } = await supabase
         .from("leads")
         .insert({
           full_name: nameTrimmed,
@@ -89,7 +95,9 @@ export const ExitIntentPopup = () => {
           temperature: "warm",
           nurturing_active: true,
           nurturing_step: 0,
-        });
+        })
+        .select("id")
+        .single();
 
       if (leadError) {
         // Check if it's a duplicate email
@@ -99,6 +107,14 @@ export const ExitIntentPopup = () => {
           throw leadError;
         }
       }
+
+      // Link behavioral events to this lead
+      if (leadData?.id) {
+        await linkEventsToLead(leadData.id);
+      }
+
+      // Track form completion
+      trackFormComplete("exit_intent_popup", { source: "exit_intent_popup" });
 
       // Register ebook download (using email instead of lead_id)
       await supabase.from("ebook_downloads").insert({
@@ -267,6 +283,7 @@ export const ExitIntentPopup = () => {
                         placeholder="Seu nome"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onFocus={handleInputFocus}
                         className="bg-cream/30 border-secondary/20 focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-300 placeholder:text-muted-foreground/60 placeholder:italic h-12"
                         disabled={isLoading}
                       />

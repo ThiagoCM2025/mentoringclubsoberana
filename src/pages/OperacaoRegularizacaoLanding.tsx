@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { OptimizedImage } from "@/components/ui/optimized-image";
@@ -29,6 +29,8 @@ import {
   AccordionTrigger 
 } from "@/components/ui/accordion";
 import { Footer } from "@/components/landing/Footer";
+import { ScrollTracker } from "@/components/ScrollTracker";
+import { useEventTracking } from "@/hooks/useEventTracking";
 import { staggerContainer, staggerItem, scaleIn, fadeIn } from "@/lib/animations";
 
 import mentorSobre from "@/assets/mentor-sobre.jpg";
@@ -60,6 +62,7 @@ const OperacaoRegularizacaoLanding = () => {
   const mentorRef = useRef(null);
   const faqRef = useRef(null);
   const finalCtaRef = useRef(null);
+  const { trackCTAClick } = useEventTracking();
 
   const heroInView = useInView(heroRef, { once: true, amount: 0.2 });
   const aboutInView = useInView(aboutRef, { once: true, amount: 0.2 });
@@ -1020,6 +1023,7 @@ const OperacaoRegularizacaoLanding = () => {
       </section>
 
       <Footer />
+      <ScrollTracker />
     </>
   );
 };

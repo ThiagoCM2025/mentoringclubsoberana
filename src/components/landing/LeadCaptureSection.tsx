@@ -11,6 +11,7 @@ import { z } from "zod";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
 import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
+import { useEventTracking } from "@/hooks/useEventTracking";
 const leadSchema = z.object({
   fullName: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").max(100),
   email: z.string().email("Email inválido").max(255),
@@ -25,6 +26,7 @@ export const LeadCaptureSection = () => {
   const {
     toast
   } = useToast();
+  const { trackFormStart, trackFormComplete, linkEventsToLead } = useEventTracking();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,6 +34,10 @@ export const LeadCaptureSection = () => {
     email: "",
     phone: ""
   });
+  const handleInputFocus = () => {
+    trackFormStart("lead_capture_ebook");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validation = leadSchema.safeParse(formData);
@@ -51,6 +57,7 @@ export const LeadCaptureSection = () => {
 
       // Insert lead (without .select() to avoid RLS SELECT restriction)
       const {
+        data: leadData,
         error: leadError
       } = await supabase.from("leads").insert({
         full_name: nameTrimmed,
@@ -60,7 +67,8 @@ export const LeadCaptureSection = () => {
         status: "new",
         temperature: "warm",
         score: 10
-      });
+      }).select("id").single();
+
       if (leadError) {
         // Check for duplicate email
         if (leadError.code === "23505") {
@@ -73,6 +81,17 @@ export const LeadCaptureSection = () => {
         }
         throw leadError;
       }
+
+      // Link behavioral events to this lead
+      if (leadData?.id) {
+        await linkEventsToLead(leadData.id);
+      }
+
+      // Track form completion
+      trackFormComplete("lead_capture_ebook", { 
+        source: "landing_page_ebook",
+        has_phone: !!formData.phone 
+      });
 
       // Register ebook download (using email instead of lead_id)
       await supabase.from("ebook_downloads").insert({
@@ -220,12 +239,12 @@ export const LeadCaptureSection = () => {
                     Preencha seus dados e comece sua transformação
                   </p>
 
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                       <Input placeholder="Seu nome completo" value={formData.fullName} onChange={e => setFormData({
                     ...formData,
                     fullName: e.target.value
-                  })} className="input-elegant" required />
+                  })} onFocus={handleInputFocus} className="input-elegant" required />
                     </div>
                     <div>
                       <Input type="email" placeholder="Seu melhor email" value={formData.email} onChange={e => setFormData({

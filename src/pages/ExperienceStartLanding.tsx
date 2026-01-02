@@ -7,8 +7,9 @@ import { Footer } from "@/components/landing/Footer";
 import { SoberanaLogoMark } from "@/components/landing/SoberanaLogoMark";
 import { ExperienceExitPopup } from "@/components/landing/ExperienceExitPopup";
 import { SectionSkeleton } from "@/components/landing/SectionSkeleton";
+import { ScrollTracker } from "@/components/ScrollTracker";
 import { useUTMParams } from "@/hooks/useUTMParams";
-import { trackCTAClick } from "@/components/Analytics";
+import { useEventTracking } from "@/hooks/useEventTracking";
 import { useIsMobile, usePrefersReducedMotion } from "@/components/ui/optimized-image";
 
 // Lazy load heavy components below the fold
@@ -63,6 +64,7 @@ const ExperienceStartLanding = () => {
   const pricingRef = useRef(null);
   const isMobile = useIsMobile();
   const prefersReducedMotion = usePrefersReducedMotion();
+  const { trackCTAClick } = useEventTracking();
 
   // Simplified inView detection - less resource intensive
   const heroInView = useInView(heroRef, {
@@ -1131,6 +1133,9 @@ const ExperienceStartLanding = () => {
       
       {/* Exit Intent Popup */}
       <ExperienceExitPopup />
+      
+      {/* Scroll Tracking */}
+      <ScrollTracker />
     </div>;
 };
 export default ExperienceStartLanding;

@@ -24,7 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -36,6 +36,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { NewLeadDialog } from "@/components/admin/NewLeadDialog";
 import { LeadPipelineView } from "@/components/admin/leads/LeadPipelineView";
 import { LeadScoreDisplay } from "@/components/admin/leads/LeadScoreDisplay";
+import { LeadBehaviorTab } from "@/components/admin/leads/LeadBehaviorTab";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
@@ -49,6 +50,7 @@ interface Lead {
   status: LeadStatus | null;
   temperature: LeadTemperature | null;
   score: number | null;
+  behavior_score: number | null;
   notes: string | null;
   created_at: string;
   messages_sent: number | null;
@@ -102,6 +104,7 @@ const AdminLeads = () => {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [newLeadDialogOpen, setNewLeadDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"pipeline" | "table">("pipeline");
+  const [detailTab, setDetailTab] = useState<"info" | "behavior">("info");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
@@ -536,54 +539,76 @@ const AdminLeads = () => {
                   </div>
                 </div>
 
-                {/* Lead Engagement Score */}
-                <div className="border-t pt-4">
-                  <Label className="flex items-center gap-2 mb-3">
-                    <TrendingUp className="w-4 h-4" />
-                    Engajamento
-                  </Label>
-                  <LeadScoreDisplay leadId={selectedLead.id} score={selectedLead.score} />
-                </div>
+                {/* Detail Tabs */}
+                <Tabs value={detailTab} onValueChange={(v) => setDetailTab(v as "info" | "behavior")} className="border-t pt-4">
+                  <TabsList className="grid w-full grid-cols-2 mb-4">
+                    <TabsTrigger value="info">Informações</TabsTrigger>
+                    <TabsTrigger value="behavior">
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      Comportamento
+                    </TabsTrigger>
+                  </TabsList>
 
-                {/* Notes */}
-                <div className="border-t pt-4">
-                  <Label>Notas</Label>
-                  <Textarea
-                    placeholder="Adicione notas sobre este lead..."
-                    value={selectedLead.notes || ""}
-                    onChange={(e) => setSelectedLead({ ...selectedLead, notes: e.target.value })}
-                    onBlur={() => updateLead(selectedLead.id, { notes: selectedLead.notes })}
-                    rows={3}
-                  />
-                </div>
+                  {detailTab === "info" && (
+                    <div className="space-y-6">
+                      {/* Lead Engagement Score */}
+                      <div>
+                        <Label className="flex items-center gap-2 mb-3">
+                          <TrendingUp className="w-4 h-4" />
+                          Engajamento
+                        </Label>
+                        <LeadScoreDisplay leadId={selectedLead.id} score={selectedLead.score} />
+                      </div>
 
-                {/* Communication History */}
-                <div className="border-t pt-4">
-                  <Label className="flex items-center gap-2 mb-3">
-                    <MessageCircle className="w-4 h-4" />
-                    Histórico de Comunicações
-                  </Label>
-                  {loadingHistory ? (
-                    <p className="text-sm text-muted-foreground">Carregando...</p>
-                  ) : communicationHistory.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">Nenhuma comunicação registrada</p>
-                  ) : (
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {communicationHistory.map((comm) => (
-                        <div key={comm.id} className="flex items-start gap-2 p-2 bg-muted/30 rounded-lg text-sm">
-                          {getChannelIcon(comm.channel)}
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">{comm.subject || "Sem assunto"}</p>
-                            <p className="text-xs text-muted-foreground truncate">{comm.message}</p>
+                      {/* Notes */}
+                      <div className="border-t pt-4">
+                        <Label>Notas</Label>
+                        <Textarea
+                          placeholder="Adicione notas sobre este lead..."
+                          value={selectedLead.notes || ""}
+                          onChange={(e) => setSelectedLead({ ...selectedLead, notes: e.target.value })}
+                          onBlur={() => updateLead(selectedLead.id, { notes: selectedLead.notes })}
+                          rows={3}
+                        />
+                      </div>
+
+                      {/* Communication History */}
+                      <div className="border-t pt-4">
+                        <Label className="flex items-center gap-2 mb-3">
+                          <MessageCircle className="w-4 h-4" />
+                          Histórico de Comunicações
+                        </Label>
+                        {loadingHistory ? (
+                          <p className="text-sm text-muted-foreground">Carregando...</p>
+                        ) : communicationHistory.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">Nenhuma comunicação registrada</p>
+                        ) : (
+                          <div className="space-y-2 max-h-48 overflow-y-auto">
+                            {communicationHistory.map((comm) => (
+                              <div key={comm.id} className="flex items-start gap-2 p-2 bg-muted/30 rounded-lg text-sm">
+                                {getChannelIcon(comm.channel)}
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium truncate">{comm.subject || "Sem assunto"}</p>
+                                  <p className="text-xs text-muted-foreground truncate">{comm.message}</p>
+                                </div>
+                                <div className="text-xs text-muted-foreground whitespace-nowrap">
+                                  {format(new Date(comm.sent_at), "dd/MM HH:mm")}
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                          <div className="text-xs text-muted-foreground whitespace-nowrap">
-                            {format(new Date(comm.sent_at), "dd/MM HH:mm")}
-                          </div>
-                        </div>
-                      ))}
+                        )}
+                      </div>
                     </div>
                   )}
-                </div>
+
+                  {detailTab === "behavior" && (
+                    <LeadBehaviorTab 
+                      leadId={selectedLead.id} 
+                      behaviorScore={selectedLead.behavior_score || 0} 
+                    />
+                  )}
+                </Tabs>
 
                 {/* Footer */}
                 <div className="flex items-center justify-between pt-4 border-t">
