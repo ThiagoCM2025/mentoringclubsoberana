@@ -16,6 +16,8 @@ import {
   Activity
 } from "lucide-react";
 import { BehavioralAnalytics } from "@/components/admin/analytics/BehavioralAnalytics";
+import { TimeOnPageChart } from "@/components/admin/analytics/TimeOnPageChart";
+import { ClickHeatmap } from "@/components/admin/analytics/ClickHeatmap";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -682,6 +684,13 @@ const AdminReports = () => {
         {/* Behavioral Analytics Section */}
         <Separator className="my-8" />
         <BehavioralAnalytics startDate={getDateFromPeriod(period)} />
+
+        {/* Time on Page & Heatmap Section */}
+        <Separator className="my-8" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TimeOnPageChart startDate={getDateFromPeriod(period)} />
+          <ClickHeatmap startDate={getDateFromPeriod(period)} />
+        </div>
       </div>
     </AdminLayout>
   );

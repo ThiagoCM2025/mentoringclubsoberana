@@ -7,7 +7,9 @@ export type EventType =
   | "scroll_depth" 
   | "form_start" 
   | "form_complete" 
-  | "page_view";
+  | "page_view"
+  | "page_exit"
+  | "click_position";
 
 interface EventData {
   [key: string]: string | number | boolean | undefined;

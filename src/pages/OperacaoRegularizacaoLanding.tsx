@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/accordion";
 import { Footer } from "@/components/landing/Footer";
 import { ScrollTracker } from "@/components/ScrollTracker";
+import { TimeTracker } from "@/components/TimeTracker";
+import { ClickTracker } from "@/components/ClickTracker";
 import { useEventTracking } from "@/hooks/useEventTracking";
 import { staggerContainer, staggerItem, scaleIn, fadeIn } from "@/lib/animations";
 
@@ -1024,6 +1026,8 @@ const OperacaoRegularizacaoLanding = () => {
 
       <Footer />
       <ScrollTracker />
+      <TimeTracker />
+      <ClickTracker />
     </>
   );
 };
