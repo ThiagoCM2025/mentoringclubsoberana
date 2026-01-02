@@ -527,184 +527,227 @@ const AdminLeads = () => {
           </div>
         )}
 
-        {/* Lead Details Dialog */}
+        {/* Lead Details Dialog - Fullscreen */}
         <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setCommunicationHistory([]); }}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Detalhes do Lead</DialogTitle>
+          <DialogContent className="w-[95vw] max-w-6xl h-[90vh] overflow-hidden flex flex-col p-0">
+            <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
+              <DialogTitle className="text-lg font-semibold">Detalhes do Lead</DialogTitle>
             </DialogHeader>
             {selectedLead && (
-              <div className="space-y-6 pt-4">
-                {/* Header */}
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-2xl text-primary font-bold">
-                      {selectedLead.full_name.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold">{selectedLead.full_name}</h3>
-                    <p className="text-sm text-muted-foreground">{selectedLead.email}</p>
-                    {selectedLead.phone && <p className="text-sm text-muted-foreground">{selectedLead.phone}</p>}
-                  </div>
-                </div>
-
-                {/* Tracking Indicators */}
-                <div className="grid grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-1 text-2xl font-bold text-foreground">
-                      <Mail className="w-5 h-5 text-primary" />
-                      {selectedLead.messages_sent || 0}
+              <div className="flex-1 grid grid-cols-1 lg:grid-cols-[320px_1fr] overflow-hidden">
+                {/* Left Column - Fixed Lead Info */}
+                <div className="border-r border-border p-6 overflow-y-auto bg-muted/30">
+                  {/* Avatar & Basic Info */}
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <span className="text-2xl text-primary font-bold">
+                        {selectedLead.full_name.charAt(0).toUpperCase()}
+                      </span>
                     </div>
-                    <p className="text-xs text-muted-foreground">Mensagens</p>
-                  </div>
-                  <div className="text-center">
-                    <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-lg font-bold ${getNurturingColor(selectedLead.nurturing_step || 0)}`}>
-                      <Zap className="w-4 h-4" />
-                      {selectedLead.nurturing_step || 0}/5
+                    <div className="min-w-0">
+                      <h3 className="text-lg font-semibold truncate">{selectedLead.full_name}</h3>
+                      <p className="text-sm text-muted-foreground truncate">{selectedLead.email}</p>
+                      {selectedLead.phone && <p className="text-sm text-muted-foreground">{selectedLead.phone}</p>}
                     </div>
-                    <p className="text-xs text-muted-foreground">Nurturing</p>
                   </div>
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-1 text-sm font-medium text-foreground">
-                      <Clock className="w-4 h-4 text-muted-foreground" />
-                      {selectedLead.last_contact_at 
-                        ? formatDistanceToNow(new Date(selectedLead.last_contact_at), { addSuffix: true, locale: ptBR })
-                        : "Nunca"
-                      }
-                    </div>
-                    <p className="text-xs text-muted-foreground">Último contato</p>
-                  </div>
-                </div>
 
-                {/* Status and Temperature */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Status</Label>
-                    <Select
-                      value={selectedLead.status || "new"}
-                      onValueChange={(value) => updateLead(selectedLead.id, { status: value as LeadStatus })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(statusConfig).map(([key, { label }]) => (
-                          <SelectItem key={key} value={key}>
-                            {label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>Temperatura</Label>
-                    <Select
-                      value={selectedLead.temperature || "cold"}
-                      onValueChange={(value) => updateLead(selectedLead.id, { temperature: value as LeadTemperature })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(temperatureConfig).map(([key, { label }]) => (
-                          <SelectItem key={key} value={key}>
-                            {label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Detail Tabs */}
-                <Tabs value={detailTab} onValueChange={(v) => setDetailTab(v as "info" | "behavior")} className="border-t pt-4">
-                  <TabsList className="grid w-full grid-cols-2 mb-4">
-                    <TabsTrigger value="info">Informações</TabsTrigger>
-                    <TabsTrigger value="behavior">
-                      <TrendingUp className="w-4 h-4 mr-2" />
-                      Comportamento
-                    </TabsTrigger>
-                  </TabsList>
-
-                  {detailTab === "info" && (
-                    <div className="space-y-6">
-                      {/* Lead Engagement Score */}
-                      <div>
-                        <Label className="flex items-center gap-2 mb-3">
-                          <TrendingUp className="w-4 h-4" />
-                          Engajamento
-                        </Label>
-                        <LeadScoreDisplay leadId={selectedLead.id} score={selectedLead.score} />
+                  {/* Quick Stats */}
+                  <div className="grid grid-cols-3 gap-2 p-3 bg-card rounded-lg border border-border mb-6">
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-1 text-xl font-bold text-foreground">
+                        <Mail className="w-4 h-4 text-primary" />
+                        {selectedLead.messages_sent || 0}
                       </div>
-
-                      {/* Notes */}
-                      <div className="border-t pt-4">
-                        <Label>Notas</Label>
-                        <Textarea
-                          placeholder="Adicione notas sobre este lead..."
-                          value={selectedLead.notes || ""}
-                          onChange={(e) => setSelectedLead({ ...selectedLead, notes: e.target.value })}
-                          onBlur={() => updateLead(selectedLead.id, { notes: selectedLead.notes })}
-                          rows={3}
-                        />
+                      <p className="text-[10px] text-muted-foreground">Msgs</p>
+                    </div>
+                    <div className="text-center">
+                      <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-sm font-bold ${getNurturingColor(selectedLead.nurturing_step || 0)}`}>
+                        <Zap className="w-3 h-3" />
+                        {selectedLead.nurturing_step || 0}/5
                       </div>
+                      <p className="text-[10px] text-muted-foreground">Nurturing</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-1 text-xs font-medium text-foreground">
+                        <Clock className="w-3 h-3 text-muted-foreground" />
+                        {selectedLead.last_contact_at 
+                          ? formatDistanceToNow(new Date(selectedLead.last_contact_at), { addSuffix: false, locale: ptBR })
+                          : "--"
+                        }
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">Último</p>
+                    </div>
+                  </div>
 
-                      {/* Communication History */}
-                      <div className="border-t pt-4">
-                        <Label className="flex items-center gap-2 mb-3">
-                          <MessageCircle className="w-4 h-4" />
-                          Histórico de Comunicações
-                        </Label>
-                        {loadingHistory ? (
-                          <p className="text-sm text-muted-foreground">Carregando...</p>
-                        ) : communicationHistory.length === 0 ? (
-                          <p className="text-sm text-muted-foreground">Nenhuma comunicação registrada</p>
-                        ) : (
-                          <div className="space-y-2 max-h-48 overflow-y-auto">
-                            {communicationHistory.map((comm) => (
-                              <div key={comm.id} className="flex items-start gap-2 p-2 bg-muted/30 rounded-lg text-sm">
-                                {getChannelIcon(comm.channel)}
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-medium truncate">{comm.subject || "Sem assunto"}</p>
-                                  <p className="text-xs text-muted-foreground truncate">{comm.message}</p>
-                                </div>
-                                <div className="text-xs text-muted-foreground whitespace-nowrap">
-                                  {format(new Date(comm.sent_at), "dd/MM HH:mm")}
-                                </div>
-                              </div>
-                            ))}
+                  {/* Status & Temperature */}
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <Label className="text-xs text-muted-foreground mb-1.5 block">Status</Label>
+                      <Select
+                        value={selectedLead.status || "new"}
+                        onValueChange={(value) => updateLead(selectedLead.id, { status: value as LeadStatus })}
+                      >
+                        <SelectTrigger className="h-9">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(statusConfig).map(([key, { label }]) => (
+                            <SelectItem key={key} value={key}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground mb-1.5 block">Temperatura</Label>
+                      <Select
+                        value={selectedLead.temperature || "cold"}
+                        onValueChange={(value) => updateLead(selectedLead.id, { temperature: value as LeadTemperature })}
+                      >
+                        <SelectTrigger className="h-9">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(temperatureConfig).map(([key, { label }]) => (
+                            <SelectItem key={key} value={key}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Source Info */}
+                  <div className="border-t border-border pt-4 mb-6">
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Fonte</span>
+                        <span className="font-medium">{selectedLead.source || "Desconhecida"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Capturado</span>
+                        <span className="font-medium">{format(new Date(selectedLead.created_at), "dd/MM/yyyy")}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="border-t border-border pt-4 space-y-2">
+                    <Label className="text-xs text-muted-foreground mb-2 block">Ações Rápidas</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button 
+                        variant="outline" 
+                        className="h-9 text-sm gap-1.5"
+                        onClick={() => {
+                          window.open(`mailto:${selectedLead.email}`, "_blank");
+                        }}
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        Email
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="h-9 text-sm gap-1.5"
+                        onClick={() => {
+                          if (selectedLead.phone) {
+                            const cleanPhone = selectedLead.phone.replace(/\D/g, "");
+                            window.open(`https://wa.me/55${cleanPhone}`, "_blank");
+                          }
+                        }}
+                        disabled={!selectedLead.phone}
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        WhatsApp
+                      </Button>
+                    </div>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="w-full mt-4"
+                      onClick={() => deleteLead(selectedLead.id)}
+                    >
+                      <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                      Excluir Lead
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Right Column - Scrollable Content */}
+                <div className="flex flex-col overflow-hidden">
+                  <Tabs value={detailTab} onValueChange={(v) => setDetailTab(v as "info" | "behavior")} className="flex flex-col h-full">
+                    <TabsList className="grid w-full grid-cols-2 shrink-0 mx-6 mt-4 max-w-md">
+                      <TabsTrigger value="info">Informações</TabsTrigger>
+                      <TabsTrigger value="behavior">
+                        <TrendingUp className="w-4 h-4 mr-2" />
+                        Comportamento
+                      </TabsTrigger>
+                    </TabsList>
+
+                    <div className="flex-1 overflow-y-auto p-6">
+                      {detailTab === "info" && (
+                        <div className="space-y-6">
+                          {/* Lead Engagement Score */}
+                          <div className="bg-card rounded-lg border border-border p-4">
+                            <Label className="flex items-center gap-2 mb-3 text-sm font-medium">
+                              <TrendingUp className="w-4 h-4 text-primary" />
+                              Engajamento
+                            </Label>
+                            <LeadScoreDisplay leadId={selectedLead.id} score={selectedLead.score} />
                           </div>
-                        )}
-                      </div>
+
+                          {/* Notes */}
+                          <div className="bg-card rounded-lg border border-border p-4">
+                            <Label className="text-sm font-medium mb-3 block">Notas</Label>
+                            <Textarea
+                              placeholder="Adicione notas sobre este lead..."
+                              value={selectedLead.notes || ""}
+                              onChange={(e) => setSelectedLead({ ...selectedLead, notes: e.target.value })}
+                              onBlur={() => updateLead(selectedLead.id, { notes: selectedLead.notes })}
+                              rows={4}
+                              className="resize-none"
+                            />
+                          </div>
+
+                          {/* Communication History */}
+                          <div className="bg-card rounded-lg border border-border p-4">
+                            <Label className="flex items-center gap-2 mb-3 text-sm font-medium">
+                              <MessageCircle className="w-4 h-4 text-primary" />
+                              Histórico de Comunicações
+                            </Label>
+                            {loadingHistory ? (
+                              <p className="text-sm text-muted-foreground">Carregando...</p>
+                            ) : communicationHistory.length === 0 ? (
+                              <p className="text-sm text-muted-foreground">Nenhuma comunicação registrada</p>
+                            ) : (
+                              <div className="space-y-2 max-h-64 overflow-y-auto">
+                                {communicationHistory.map((comm) => (
+                                  <div key={comm.id} className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg text-sm">
+                                    <div className="mt-0.5">{getChannelIcon(comm.channel)}</div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="font-medium">{comm.subject || "Sem assunto"}</p>
+                                      <p className="text-muted-foreground line-clamp-2 mt-0.5">{comm.message}</p>
+                                    </div>
+                                    <div className="text-xs text-muted-foreground whitespace-nowrap shrink-0">
+                                      {format(new Date(comm.sent_at), "dd/MM HH:mm")}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {detailTab === "behavior" && (
+                        <LeadBehaviorTab 
+                          leadId={selectedLead.id} 
+                          behaviorScore={selectedLead.behavior_score || 0} 
+                        />
+                      )}
                     </div>
-                  )}
-
-                  {detailTab === "behavior" && (
-                    <LeadBehaviorTab 
-                      leadId={selectedLead.id} 
-                      behaviorScore={selectedLead.behavior_score || 0} 
-                    />
-                  )}
-                </Tabs>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-4 border-t">
-                  <div className="text-sm text-muted-foreground">
-                    Capturado em {new Date(selectedLead.created_at).toLocaleDateString("pt-BR", {
-                      day: "2-digit",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </div>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => deleteLead(selectedLead.id)}
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Excluir
-                  </Button>
+                  </Tabs>
                 </div>
               </div>
             )}
