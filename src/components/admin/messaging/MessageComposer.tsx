@@ -155,7 +155,7 @@ export function MessageComposer({
         // Open WhatsApp links for each recipient
         for (const recipient of recipients) {
           if (recipient.phone) {
-            const personalizedMessage = replaceVariables(message, recipient);
+            const personalizedMessage = replaceVariablesForWhatsApp(message, recipient);
             const phone = recipient.phone.replace(/\D/g, "");
             const fullPhone = phone.startsWith("55") ? phone : `55${phone}`;
             const waUrl = `https://wa.me/${fullPhone}?text=${encodeURIComponent(personalizedMessage)}`;
@@ -175,7 +175,7 @@ export function MessageComposer({
               recipient_phone: recipient.phone,
               channel: "whatsapp",
               template_id: selectedTemplate?.id || null,
-              message: replaceVariables(message, recipient),
+              message: replaceVariablesForWhatsApp(message, recipient),
               status: "sent",
               sent_by: user?.id,
             });
