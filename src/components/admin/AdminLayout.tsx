@@ -180,44 +180,62 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         />
 
         {/* Logo */}
-        <div className="relative p-4 flex items-center justify-between border-b border-secondary/15">
-          <div className={cn("flex items-center gap-3", !isSidebarOpen && "justify-center w-full")}>
-            <img src={isotipoGold} alt="Soberana" className="w-10 h-10 drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
+        <div className="relative p-4 border-b border-secondary/15">
+          <div className={cn("flex items-center gap-2", !isSidebarOpen && "justify-center")}>
+            {/* Logo - sempre visível */}
+            <img src={isotipoGold} alt="Soberana" className="w-10 h-10 flex-shrink-0 drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
+            
             {isSidebarOpen && (
-              <div className="flex flex-col leading-tight">
-                <span className="text-muted-foreground text-[9px] tracking-[0.15em] uppercase">
-                  Mentoring
-                </span>
-                <span className="text-muted-foreground text-[9px] tracking-[0.15em] uppercase -mt-0.5">
-                  Club
-                </span>
-                <span className="font-serif font-bold text-secondary text-sm tracking-wider mt-0.5">
-                  SOBERANA
-                </span>
-              </div>
+              <>
+                {/* Texto do logo - flexível */}
+                <div className="flex flex-col leading-tight flex-1 min-w-0">
+                  <span className="text-muted-foreground text-[9px] tracking-[0.15em] uppercase">
+                    Mentoring
+                  </span>
+                  <span className="text-muted-foreground text-[9px] tracking-[0.15em] uppercase -mt-0.5">
+                    Club
+                  </span>
+                  <span className="font-serif font-bold text-secondary text-sm tracking-wider mt-0.5">
+                    SOBERANA
+                  </span>
+                </div>
+                
+                {/* Botões - fixos à direita */}
+                <div className="flex items-center flex-shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
+                    className="text-muted-foreground hover:text-secondary hover:bg-secondary/10 h-8 w-8"
+                    title="Buscar (⌘K)"
+                  >
+                    <Search className="w-4 h-4" />
+                  </Button>
+                  <DensityToggle />
+                  <AdminNotificationBell />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    className="text-muted-foreground hover:text-secondary hover:bg-secondary/10 h-8 w-8"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                </div>
+              </>
             )}
-          </div>
-          <div className={cn("flex items-center gap-1", !isSidebarOpen && "hidden")}>
-            {/* Desktop: Search shortcut + Density Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
-              className="text-muted-foreground hover:text-secondary hover:bg-secondary/10"
-              title="Buscar (⌘K)"
-            >
-              <Search className="w-4 h-4" />
-            </Button>
-            <DensityToggle />
-            <AdminNotificationBell />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="text-muted-foreground hover:text-secondary hover:bg-secondary/10"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
+            
+            {/* Botão de expandir quando colapsado */}
+            {!isSidebarOpen && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSidebarOpen(true)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary hover:bg-secondary/10 h-8 w-8"
+              >
+                <Menu className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         </div>
 
