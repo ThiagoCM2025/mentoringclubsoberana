@@ -85,42 +85,16 @@ export const ExitIntentPopup = () => {
       const phoneTrimmed = formData.phone.trim() || null;
       const ebookName = "7 Erros que Travam seu Escritório";
       
-      // Insert lead using upsert WITHOUT .select() to avoid RLS issues for anonymous users
-      // The RLS policy allows INSERT but blocks SELECT for anonymous users
-      const { error: leadError } = await supabase
-        .from("leads")
-        .upsert({
-          full_name: nameTrimmed,
-          email: emailNormalized,
-          phone: phoneTrimmed,
-          source: "exit_intent_popup",
-          status: "new",
-          temperature: "warm",
-          nurturing_active: true,
-          nurturing_step: 0,
-        }, { 
-          onConflict: 'email',
-          ignoreDuplicates: false 
-        });
+      // Use RPC function to upsert lead and get ID (bypasses RLS for anonymous users)
+      const { data: leadId, error: leadError } = await supabase.rpc('upsert_lead_and_return_id', {
+        p_full_name: nameTrimmed,
+        p_email: emailNormalized,
+        p_phone: phoneTrimmed,
+        p_source: "exit_intent_popup"
+      });
 
-      if (leadError && leadError.code !== "23505") {
+      if (leadError) {
         console.error("Lead upsert error:", leadError);
-        // Continue anyway - lead might already exist
-      }
-
-      // Fetch lead_id after upsert (this is allowed by RLS for the specific email we just inserted)
-      // Note: If this fails, we'll still create the download without lead_id
-      let leadId: string | null = null;
-      try {
-        const { data: leadData } = await supabase
-          .from("leads")
-          .select("id")
-          .eq("email", emailNormalized)
-          .maybeSingle();
-        leadId = leadData?.id || null;
-      } catch {
-        // If fetch fails, proceed without lead_id - it will show as "Sem lead vinculado"
-        console.warn("Could not fetch lead_id, proceeding without it");
       }
 
       // Track form completion
@@ -130,7 +104,7 @@ export const ExitIntentPopup = () => {
       await supabase.from("ebook_downloads").insert({
         email: emailNormalized,
         ebook_name: ebookName,
-        lead_id: leadId,
+        lead_id: leadId || null,
       });
 
       // Send ebook email via edge function

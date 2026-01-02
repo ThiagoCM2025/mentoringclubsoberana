@@ -57,40 +57,16 @@ export const LeadCaptureSection = () => {
       const phoneTrimmed = formData.phone.trim() || null;
       const ebookName = "7 Erros que Travam seu Escritório";
 
-      // Insert lead using upsert WITHOUT .select() to avoid RLS issues for anonymous users
-      const { error: leadError } = await supabase
-        .from("leads")
-        .upsert({
-          full_name: nameTrimmed,
-          email: emailNormalized,
-          phone: phoneTrimmed,
-          source: "landing_page_ebook",
-          status: "new",
-          temperature: "warm",
-          score: 10,
-          nurturing_active: true,
-          nurturing_step: 0
-        }, { 
-          onConflict: 'email',
-          ignoreDuplicates: false 
-        });
+      // Use RPC function to upsert lead and get ID (bypasses RLS for anonymous users)
+      const { data: leadId, error: leadError } = await supabase.rpc('upsert_lead_and_return_id', {
+        p_full_name: nameTrimmed,
+        p_email: emailNormalized,
+        p_phone: phoneTrimmed,
+        p_source: "landing_page_ebook"
+      });
 
-      if (leadError && leadError.code !== "23505") {
+      if (leadError) {
         console.error("Lead upsert error:", leadError);
-        // Continue anyway - lead might already exist
-      }
-
-      // Fetch lead_id after upsert
-      let leadId: string | null = null;
-      try {
-        const { data: leadData } = await supabase
-          .from("leads")
-          .select("id")
-          .eq("email", emailNormalized)
-          .maybeSingle();
-        leadId = leadData?.id || null;
-      } catch {
-        console.warn("Could not fetch lead_id, proceeding without it");
       }
 
       // Track form completion
@@ -103,7 +79,7 @@ export const LeadCaptureSection = () => {
       await supabase.from("ebook_downloads").insert({
         email: emailNormalized,
         ebook_name: ebookName,
-        lead_id: leadId
+        lead_id: leadId || null
       });
 
       // Send ebook email via edge function

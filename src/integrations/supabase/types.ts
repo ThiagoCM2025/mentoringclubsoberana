@@ -2955,6 +2955,15 @@ export type Database = {
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       notify_weekly_content: { Args: never; Returns: undefined }
       notify_weekly_missions: { Args: never; Returns: undefined }
+      upsert_lead_and_return_id: {
+        Args: {
+          p_email: string
+          p_full_name: string
+          p_phone?: string
+          p_source?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       action_type: "calendar" | "whatsapp" | "form" | "external" | "diagnostic"
