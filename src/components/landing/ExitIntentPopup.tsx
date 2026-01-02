@@ -84,8 +84,8 @@ export const ExitIntentPopup = () => {
       const nameTrimmed = formData.name.trim();
       const ebookName = "7 Erros que Travam seu Escritório";
       
-      // Insert lead with select to get the id
-      const { data: leadData, error: leadError } = await supabase
+      // Insert lead (without SELECT to avoid RLS issues for anonymous users)
+      const { error: leadError } = await supabase
         .from("leads")
         .insert({
           full_name: nameTrimmed,
@@ -95,9 +95,7 @@ export const ExitIntentPopup = () => {
           temperature: "warm",
           nurturing_active: true,
           nurturing_step: 0,
-        })
-        .select("id")
-        .single();
+        });
 
       if (leadError) {
         // Check if it's a duplicate email
@@ -106,11 +104,6 @@ export const ExitIntentPopup = () => {
         } else {
           throw leadError;
         }
-      }
-
-      // Link behavioral events to this lead
-      if (leadData?.id) {
-        await linkEventsToLead(leadData.id);
       }
 
       // Track form completion
