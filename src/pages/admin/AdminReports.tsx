@@ -15,6 +15,8 @@ import {
   PieChart as PieChartIcon,
   Activity
 } from "lucide-react";
+import { BehavioralAnalytics } from "@/components/admin/analytics/BehavioralAnalytics";
+import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
@@ -676,6 +678,10 @@ const AdminReports = () => {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* Behavioral Analytics Section */}
+        <Separator className="my-8" />
+        <BehavioralAnalytics startDate={getDateFromPeriod(period)} />
       </div>
     </AdminLayout>
   );
