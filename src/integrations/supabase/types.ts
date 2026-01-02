@@ -14,6 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_alert_occurrences: {
+        Row: {
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          is_resolved: boolean
+          message: string
+          resolved_at: string | null
+          resolved_by: string | null
+          rule_id: string
+          severity: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          is_resolved?: boolean
+          message: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          rule_id: string
+          severity?: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          is_resolved?: boolean
+          message?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          rule_id?: string
+          severity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_alert_occurrences_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "admin_alert_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_alert_rules: {
+        Row: {
+          alert_type: string
+          conditions: Json
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          severity: string
+          threshold_unit: string | null
+          threshold_value: number | null
+          updated_at: string
+        }
+        Insert: {
+          alert_type: string
+          conditions?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          severity?: string
+          threshold_unit?: string | null
+          threshold_value?: number | null
+          updated_at?: string
+        }
+        Update: {
+          alert_type?: string
+          conditions?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          severity?: string
+          threshold_unit?: string | null
+          threshold_value?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      admin_dashboard_layouts: {
+        Row: {
+          admin_id: string
+          favorite_metrics: string[] | null
+          grid_columns: number | null
+          id: string
+          layout_config: Json
+          updated_at: string
+        }
+        Insert: {
+          admin_id: string
+          favorite_metrics?: string[] | null
+          grid_columns?: number | null
+          id?: string
+          layout_config?: Json
+          updated_at?: string
+        }
+        Update: {
+          admin_id?: string
+          favorite_metrics?: string[] | null
+          grid_columns?: number | null
+          id?: string
+          layout_config?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_insights: {
         Row: {
           created_at: string
@@ -188,6 +307,30 @@ export type Database = {
           is_pinned?: boolean | null
           student_user_id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      admin_tags: {
+        Row: {
+          color: string
+          created_at: string
+          entity_type: string
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          entity_type: string
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          entity_type?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }
@@ -1020,6 +1163,38 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      entity_tags: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entity_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "admin_tags"
             referencedColumns: ["id"]
           },
         ]
@@ -2164,6 +2339,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      saved_filters: {
+        Row: {
+          admin_id: string
+          created_at: string
+          entity_type: string
+          filter_config: Json
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          admin_id: string
+          created_at?: string
+          entity_type: string
+          filter_config?: Json
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          admin_id?: string
+          created_at?: string
+          entity_type?: string
+          filter_config?: Json
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       student_diagnostics: {
         Row: {
