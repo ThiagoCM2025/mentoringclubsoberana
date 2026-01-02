@@ -84,13 +84,13 @@ export function StatsCardSkeleton({ count = 1 }: StatsCardSkeletonProps) {
     <>
       {Array.from({ length: count }).map((_, i) => (
         <Card key={i} className="relative overflow-hidden border-0 bg-card animate-pulse">
-          <CardContent className="p-6">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-8 w-16" />
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-6 w-14" />
               </div>
-              <Skeleton className="h-12 w-12 rounded-xl" />
+              <Skeleton className="h-8 w-8 rounded-lg" />
             </div>
           </CardContent>
         </Card>
