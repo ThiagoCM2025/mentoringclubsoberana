@@ -99,6 +99,8 @@ const AdminLeads = () => {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterTemp, setFilterTemp] = useState<string>("all");
+  const [filterNurturing, setFilterNurturing] = useState<string>("all");
+  const [filterNurturingStep, setFilterNurturingStep] = useState<string>("all");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [communicationHistory, setCommunicationHistory] = useState<CommunicationHistory[]>([]);
@@ -227,7 +229,12 @@ const AdminLeads = () => {
       lead.phone?.includes(search);
     const matchesStatus = filterStatus === "all" || lead.status === filterStatus;
     const matchesTemp = filterTemp === "all" || lead.temperature === filterTemp;
-    return matchesSearch && matchesStatus && matchesTemp;
+    const matchesNurturing = filterNurturing === "all" || 
+      (filterNurturing === "active" && lead.nurturing_active) || 
+      (filterNurturing === "inactive" && !lead.nurturing_active);
+    const matchesNurturingStep = filterNurturingStep === "all" || 
+      String(lead.nurturing_step || 0) === filterNurturingStep;
+    return matchesSearch && matchesStatus && matchesTemp && matchesNurturing && matchesNurturingStep;
   });
 
   const fetchCommunicationHistory = async (leadId: string) => {
@@ -357,6 +364,30 @@ const AdminLeads = () => {
                   {label}
                 </SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+          <Select value={filterNurturing} onValueChange={setFilterNurturing}>
+            <SelectTrigger className="w-[130px] h-9 text-sm bg-card border-border text-foreground">
+              <SelectValue placeholder="Nurturing" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todo nurturing</SelectItem>
+              <SelectItem value="active">Ativos</SelectItem>
+              <SelectItem value="inactive">Inativos</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filterNurturingStep} onValueChange={setFilterNurturingStep}>
+            <SelectTrigger className="w-[110px] h-9 text-sm bg-card border-border text-foreground">
+              <SelectValue placeholder="Etapa" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas etapas</SelectItem>
+              <SelectItem value="0">Etapa 0</SelectItem>
+              <SelectItem value="1">Etapa 1</SelectItem>
+              <SelectItem value="2">Etapa 2</SelectItem>
+              <SelectItem value="3">Etapa 3</SelectItem>
+              <SelectItem value="4">Etapa 4</SelectItem>
+              <SelectItem value="5">Completo</SelectItem>
             </SelectContent>
           </Select>
         </div>

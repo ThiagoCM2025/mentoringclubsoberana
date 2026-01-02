@@ -2065,6 +2065,39 @@ export type Database = {
         }
         Relationships: []
       }
+      nurturing_executions: {
+        Row: {
+          emails_sent: number
+          error_details: string | null
+          errors_count: number
+          executed_at: string
+          execution_time_ms: number | null
+          id: string
+          leads_processed: Json | null
+          status: string
+        }
+        Insert: {
+          emails_sent?: number
+          error_details?: string | null
+          errors_count?: number
+          executed_at?: string
+          execution_time_ms?: number | null
+          id?: string
+          leads_processed?: Json | null
+          status?: string
+        }
+        Update: {
+          emails_sent?: number
+          error_details?: string | null
+          errors_count?: number
+          executed_at?: string
+          execution_time_ms?: number | null
+          id?: string
+          leads_processed?: Json | null
+          status?: string
+        }
+        Relationships: []
+      }
       nurturing_sequences: {
         Row: {
           created_at: string
