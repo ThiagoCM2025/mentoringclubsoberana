@@ -82,7 +82,7 @@ export const ExitIntentPopup = () => {
     try {
       const emailNormalized = formData.email.trim().toLowerCase();
       const nameTrimmed = formData.name.trim();
-      const ebookName = "Checklist 5 Passos para Estruturar seu Escritório";
+      const ebookName = "7 Erros que Travam seu Escritório";
       
       // Insert lead with select to get the id
       const { data: leadData, error: leadError } = await supabase
@@ -141,7 +141,7 @@ export const ExitIntentPopup = () => {
       }
 
       localStorage.setItem("leadSubmitted", "true");
-      toast.success("Sucesso! Verifique seu email para receber o checklist.");
+      toast.success("Sucesso! Verifique seu email para receber o guia.");
       setShowPopup(false);
     } catch (error) {
       console.error("Error submitting lead:", error);
@@ -268,7 +268,7 @@ export const ExitIntentPopup = () => {
                         Leve grátis nosso material exclusivo:
                       </p>
                       <p className="font-serif text-lg text-secondary font-medium italic leading-relaxed">
-                        "Checklist: 5 Passos para Estruturar seu Escritório de Advocacia"
+                        "7 Erros que Estão Travando o Crescimento do Seu Escritório"
                       </p>
                     </motion.div>
 
@@ -308,7 +308,7 @@ export const ExitIntentPopup = () => {
                           disabled={isLoading}
                         >
                           <span className="relative z-10">
-                            {isLoading ? "Enviando..." : "QUERO MEU CHECKLIST GRÁTIS"}
+                            {isLoading ? "Enviando..." : "QUERO MEU GUIA GRÁTIS"}
                           </span>
                           {/* Shimmer effect */}
                           <motion.div

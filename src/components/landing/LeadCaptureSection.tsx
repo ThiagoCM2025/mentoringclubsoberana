@@ -12,20 +12,20 @@ import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
 import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 import { useEventTracking } from "@/hooks/useEventTracking";
+
 const leadSchema = z.object({
   fullName: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").max(100),
   email: z.string().email("Email inválido").max(255),
   phone: z.string().min(10, "Telefone inválido").max(20).optional()
 });
+
 export const LeadCaptureSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, {
     once: true,
     margin: "-100px"
   });
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const { trackFormStart, trackFormComplete, linkEventsToLead } = useEventTracking();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -34,6 +34,7 @@ export const LeadCaptureSection = () => {
     email: "",
     phone: ""
   });
+
   const handleInputFocus = () => {
     trackFormStart("lead_capture_ebook");
   };
@@ -55,22 +56,22 @@ export const LeadCaptureSection = () => {
       const nameTrimmed = formData.fullName.trim();
       const ebookName = "7 Erros que Travam seu Escritório";
 
-      // Insert lead (without .select() to avoid RLS SELECT restriction)
-      const {
-        data: leadData,
-        error: leadError
-      } = await supabase.from("leads").insert({
-        full_name: nameTrimmed,
-        email: emailNormalized,
-        phone: formData.phone || null,
-        source: "landing_page_ebook",
-        status: "new",
-        temperature: "warm",
-        score: 10
-      }).select("id").single();
+      // Insert lead
+      const { data: leadData, error: leadError } = await supabase
+        .from("leads")
+        .insert({
+          full_name: nameTrimmed,
+          email: emailNormalized,
+          phone: formData.phone || null,
+          source: "landing_page_ebook",
+          status: "new",
+          temperature: "warm",
+          score: 10
+        })
+        .select("id")
+        .single();
 
       if (leadError) {
-        // Check for duplicate email
         if (leadError.code === "23505") {
           toast({
             title: "Email já cadastrado",
@@ -93,7 +94,7 @@ export const LeadCaptureSection = () => {
         has_phone: !!formData.phone 
       });
 
-      // Register ebook download (using email instead of lead_id)
+      // Register ebook download
       await supabase.from("ebook_downloads").insert({
         email: emailNormalized,
         ebook_name: ebookName
@@ -101,9 +102,7 @@ export const LeadCaptureSection = () => {
 
       // Send ebook email via edge function
       try {
-        const {
-          error: emailError
-        } = await supabase.functions.invoke("send-ebook-email", {
+        const { error: emailError } = await supabase.functions.invoke("send-ebook-email", {
           body: {
             name: nameTrimmed,
             email: emailNormalized,
@@ -115,8 +114,8 @@ export const LeadCaptureSection = () => {
         }
       } catch (emailErr) {
         console.error("Failed to send ebook email:", emailErr);
-        // Don't fail the whole submission if email fails
       }
+
       setIsSuccess(true);
       toast({
         title: "Sucesso!",
@@ -132,13 +131,18 @@ export const LeadCaptureSection = () => {
       setIsLoading(false);
     }
   };
-  return <section ref={ref} id="captura" className="section-padding bg-brand-black text-cream relative overflow-hidden">
+
+  return (
+    <section ref={ref} id="captura" className="section-padding bg-brand-black text-cream relative overflow-hidden">
       {/* Circle Pattern Background */}
-      <div className="absolute inset-0 opacity-[0.14]" style={{
-      backgroundImage: `url(${patternCirclesGold})`,
-      backgroundRepeat: 'repeat',
-      backgroundSize: '280px'
-    }} />
+      <div 
+        className="absolute inset-0 opacity-[0.14]" 
+        style={{
+          backgroundImage: `url(${patternCirclesGold})`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '280px'
+        }} 
+      />
 
       {/* Isotipo Gold - corners */}
       <div className="absolute top-16 right-12 opacity-[0.20] hidden lg:block animate-float-slow">
@@ -158,25 +162,18 @@ export const LeadCaptureSection = () => {
       <div className="container-soberana relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
-          <motion.div initial={{
-          opacity: 0,
-          x: -30
-        }} animate={isInView ? {
-          opacity: 1,
-          x: 0
-        } : {}} transition={{
-          duration: 0.6
-        }}>
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6 }}
+          >
             {/* Isotipo S decoration */}
-            <motion.div className="flex mb-4" initial={{
-            opacity: 0,
-            scale: 0.8
-          }} animate={isInView ? {
-            opacity: 1,
-            scale: 1
-          } : {}} transition={{
-            duration: 0.5
-          }}>
+            <motion.div 
+              className="flex mb-4" 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.5 }}
+            >
               <img src={isotipoSGold} alt="" className="w-10 h-10 isotipo-glow" />
             </motion.div>
             
@@ -190,40 +187,35 @@ export const LeadCaptureSection = () => {
               <span className="text-secondary">Primeiro Passo?</span>
             </h2>
 
-            <p className="text-lg text-cream/80 mb-8">Cadastre-se e receba gratuitamente nosso guia exclusivo com os 7 erros que estão travando o crescimento do seu escritório e como evitá-los.<strong className="text-cream"> 7 erros que estão travando o crescimento do seu escritório</strong> 
-              e como evitá-los.
+            <p className="text-lg text-cream/80 mb-8">
+              Cadastre-se e receba gratuitamente nosso guia exclusivo com os <strong className="text-cream">7 erros que estão travando o crescimento do seu escritório</strong> e como evitá-los.
             </p>
 
             <ul className="space-y-3">
-              {["Guia completo em PDF", "Checklist de implementação", "Acesso à comunidade gratuita", "Conteúdos exclusivos por email"].map((item, index) => <motion.li key={index} initial={{
-              opacity: 0,
-              x: -20
-            }} animate={isInView ? {
-              opacity: 1,
-              x: 0
-            } : {}} transition={{
-              duration: 0.4,
-              delay: 0.3 + index * 0.1
-            }} className="flex items-center gap-3 text-cream/90">
+              {["Guia completo com os 7 erros fatais", "Soluções práticas para cada erro", "Acesso à comunidade gratuita", "Conteúdos exclusivos por email"].map((item, index) => (
+                <motion.li 
+                  key={index} 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
+                  className="flex items-center gap-3 text-cream/90"
+                >
                   <CheckCircle className="w-5 h-5 text-secondary" />
                   {item}
-                </motion.li>)}
+                </motion.li>
+              ))}
             </ul>
           </motion.div>
 
           {/* Form */}
-          <motion.div initial={{
-          opacity: 0,
-          x: 30
-        }} animate={isInView ? {
-          opacity: 1,
-          x: 0
-        } : {}} transition={{
-          duration: 0.6,
-          delay: 0.2
-        }}>
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             <div className="bg-cream text-foreground rounded-2xl p-8 shadow-2xl">
-              {isSuccess ? <div className="text-center py-8">
+              {isSuccess ? (
+                <div className="text-center py-8">
                   <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                     <CheckCircle className="w-8 h-8 text-green-600" />
                   </div>
@@ -231,7 +223,9 @@ export const LeadCaptureSection = () => {
                   <p className="text-muted-foreground">
                     Verifique seu email para acessar o material exclusivo.
                   </p>
-                </div> : <>
+                </div>
+              ) : (
+                <>
                   <h3 className="text-2xl font-serif font-bold text-foreground mb-2">
                     Quero Ser Soberana
                   </h3>
@@ -239,31 +233,50 @@ export const LeadCaptureSection = () => {
                     Preencha seus dados e comece sua transformação
                   </p>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                  <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                      <Input placeholder="Seu nome completo" value={formData.fullName} onChange={e => setFormData({
-                    ...formData,
-                    fullName: e.target.value
-                  })} onFocus={handleInputFocus} className="input-elegant" required />
+                      <Input 
+                        placeholder="Seu nome completo" 
+                        value={formData.fullName} 
+                        onChange={e => setFormData({ ...formData, fullName: e.target.value })} 
+                        onFocus={handleInputFocus} 
+                        className="input-elegant" 
+                        required 
+                      />
                     </div>
                     <div>
-                      <Input type="email" placeholder="Seu melhor email" value={formData.email} onChange={e => setFormData({
-                    ...formData,
-                    email: e.target.value
-                  })} className="input-elegant" required />
+                      <Input 
+                        type="email" 
+                        placeholder="Seu melhor email" 
+                        value={formData.email} 
+                        onChange={e => setFormData({ ...formData, email: e.target.value })} 
+                        className="input-elegant" 
+                        required 
+                      />
                     </div>
                     <div>
-                      <Input type="tel" placeholder="WhatsApp (opcional)" value={formData.phone} onChange={e => setFormData({
-                    ...formData,
-                    phone: e.target.value
-                  })} className="input-elegant" />
+                      <Input 
+                        type="tel" 
+                        placeholder="WhatsApp (opcional)" 
+                        value={formData.phone} 
+                        onChange={e => setFormData({ ...formData, phone: e.target.value })} 
+                        className="input-elegant" 
+                      />
                     </div>
 
-                    <Button type="submit" disabled={isLoading} className="w-full cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground py-6 text-lg font-medium group">
-                      {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>
+                    <Button 
+                      type="submit" 
+                      disabled={isLoading} 
+                      className="w-full cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground py-6 text-lg font-medium group"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
                           Quero Receber o Material
                           <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </>}
+                        </>
+                      )}
                     </Button>
 
                     <p className="text-xs text-center text-muted-foreground">
@@ -273,10 +286,12 @@ export const LeadCaptureSection = () => {
                       </Link>
                     </p>
                   </form>
-                </>}
+                </>
+              )}
             </div>
           </motion.div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };

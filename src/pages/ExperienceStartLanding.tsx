@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import { Footer } from "@/components/landing/Footer";
 import { SoberanaLogoMark } from "@/components/landing/SoberanaLogoMark";
-import { ExperienceExitPopup } from "@/components/landing/ExperienceExitPopup";
+
 import { SectionSkeleton } from "@/components/landing/SectionSkeleton";
 import { ScrollTracker } from "@/components/ScrollTracker";
 import { TimeTracker } from "@/components/TimeTracker";
@@ -1132,10 +1132,7 @@ const ExperienceStartLanding = () => {
       </section>
 
       <Footer />
-      
-      {/* Exit Intent Popup */}
-      <ExperienceExitPopup />
-      
+
       {/* Scroll & Behavior Tracking */}
       <ScrollTracker />
       <TimeTracker />
