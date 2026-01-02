@@ -166,7 +166,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
       <aside
         className={cn(
           "hidden lg:flex flex-col fixed left-0 top-0 bottom-0 bg-gradient-to-b from-card to-[hsl(30,20%,98%)] border-r border-secondary/20 shadow-sm transition-all duration-300 z-50 overflow-hidden",
-          isSidebarOpen ? "w-64" : "w-20"
+          isSidebarOpen ? "w-52" : "w-16"
         )}
       >
         {/* Pattern overlay */}
@@ -180,63 +180,61 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         />
 
         {/* Logo */}
-        <div className="relative p-4 border-b border-secondary/15">
+        <div className="relative p-3 border-b border-secondary/15">
+          {/* Linha 1: Logo e texto + botão colapsar */}
           <div className={cn("flex items-center gap-2", !isSidebarOpen && "justify-center")}>
-            {/* Logo - sempre visível */}
-            <img src={isotipoGold} alt="Soberana" className="w-10 h-10 flex-shrink-0 drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
+            <img src={isotipoGold} alt="Soberana" className="w-9 h-9 flex-shrink-0 drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
             
             {isSidebarOpen && (
               <>
-                {/* Texto do logo - flexível */}
                 <div className="flex flex-col leading-tight flex-1 min-w-0">
-                  <span className="text-muted-foreground text-[9px] tracking-[0.15em] uppercase">
-                    Mentoring
+                  <span className="text-muted-foreground text-[8px] tracking-[0.15em] uppercase">
+                    Mentoring Club
                   </span>
-                  <span className="text-muted-foreground text-[9px] tracking-[0.15em] uppercase -mt-0.5">
-                    Club
-                  </span>
-                  <span className="font-serif font-bold text-secondary text-sm tracking-wider mt-0.5">
+                  <span className="font-serif font-bold text-secondary text-xs tracking-wider">
                     SOBERANA
                   </span>
                 </div>
                 
-                {/* Botões - fixos à direita */}
-                <div className="flex items-center flex-shrink-0">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
-                    className="text-muted-foreground hover:text-secondary hover:bg-secondary/10 h-8 w-8"
-                    title="Buscar (⌘K)"
-                  >
-                    <Search className="w-4 h-4" />
-                  </Button>
-                  <DensityToggle />
-                  <AdminNotificationBell />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="text-muted-foreground hover:text-secondary hover:bg-secondary/10 h-8 w-8"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </Button>
-                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="text-muted-foreground hover:text-secondary hover:bg-secondary/10 h-7 w-7 flex-shrink-0"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
               </>
             )}
             
-            {/* Botão de expandir quando colapsado */}
             {!isSidebarOpen && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSidebarOpen(true)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary hover:bg-secondary/10 h-8 w-8"
+                className="absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary hover:bg-secondary/10 h-7 w-7"
               >
                 <Menu className="w-4 h-4" />
               </Button>
             )}
           </div>
+          
+          {/* Linha 2: Botões de ação (apenas quando expandido) */}
+          {isSidebarOpen && (
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-secondary/10">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
+                className="text-muted-foreground hover:text-secondary hover:bg-secondary/10 h-7 w-7"
+                title="Buscar (⌘K)"
+              >
+                <Search className="w-4 h-4" />
+              </Button>
+              <DensityToggle />
+              <AdminNotificationBell />
+            </div>
+          )}
         </div>
 
         {/* Navigation */}
@@ -282,7 +280,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
       <main
         className={cn(
           "min-h-screen transition-all duration-300 pt-16 lg:pt-0",
-          isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
+          isSidebarOpen ? "lg:ml-52" : "lg:ml-16"
         )}
       >
         <div className="p-4 lg:p-6">
