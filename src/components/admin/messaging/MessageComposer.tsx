@@ -116,11 +116,17 @@ export function MessageComposer({
     }
   };
 
-  const replaceVariables = (text: string, recipient: Recipient) => {
+  // Substituição de variáveis APENAS para WhatsApp (local)
+  // Para email/notification, a substituição acontece na edge function
+  const replaceVariablesForWhatsApp = (text: string, recipient: Recipient) => {
     return text
-      .replace(/{nome}/g, recipient.name)
-      .replace(/{email}/g, recipient.email)
-      .replace(/{telefone}/g, recipient.phone || "");
+      .replace(/\{\{nome\}\}/g, recipient.name)
+      .replace(/\{\{email\}\}/g, recipient.email)
+      .replace(/\{\{telefone\}\}/g, recipient.phone || "")
+      // Fallback para formato antigo com 1 chave
+      .replace(/\{nome\}/g, recipient.name)
+      .replace(/\{email\}/g, recipient.email)
+      .replace(/\{telefone\}/g, recipient.phone || "");
   };
 
   async function handleSend() {
@@ -302,7 +308,7 @@ export function MessageComposer({
               className="bg-card border-border text-foreground placeholder:text-muted-foreground"
             />
             <p className="text-xs text-muted-foreground">
-              Variáveis disponíveis: <code className="text-secondary">{"{nome}"}</code>, <code className="text-secondary">{"{email}"}</code>, <code className="text-secondary">{"{telefone}"}</code>
+              Variáveis disponíveis: <code className="text-secondary">{"{{nome}}"}</code>, <code className="text-secondary">{"{{email}}"}</code>, <code className="text-secondary">{"{{telefone}}"}</code>
             </p>
           </div>
 
