@@ -34,6 +34,7 @@ import { TimeTracker } from "@/components/TimeTracker";
 import { ClickTracker } from "@/components/ClickTracker";
 import { useEventTracking } from "@/hooks/useEventTracking";
 import { staggerContainer, staggerItem, scaleIn, fadeIn } from "@/lib/animations";
+import { useUTMParams } from "@/hooks/useUTMParams";
 
 import mentorSobre from "@/assets/mentor-sobre.jpg";
 import fabianaHero from "@/assets/fabiana-operacao-regularizacao.jpg";
@@ -77,7 +78,11 @@ const OperacaoRegularizacaoLanding = () => {
 
   const whatsappNumber = "5511959103182";
   const whatsappMessage = encodeURIComponent("Olá! Tenho dúvidas sobre a Operação Regularização Imobiliária.");
-  const paymentLink = "https://sun.eduzz.com/7WXQR14G9A?utm_source=site&utm_medium=landing&utm_campaign=operacao_regularizacao";
+  
+  // UTMs dinâmicas para rastreamento de Facebook Ads
+  const { buildUrlWithUTM } = useUTMParams();
+  const paymentLinkBase = "https://sun.eduzz.com/7WXQR14G9A";
+  const paymentLink = buildUrlWithUTM(paymentLinkBase);
 
   const benefits = [
     { icon: Clock, text: "04h de conteúdo" },
