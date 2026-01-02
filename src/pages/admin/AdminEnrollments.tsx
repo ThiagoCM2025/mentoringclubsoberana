@@ -164,32 +164,32 @@ const AdminEnrollments = () => {
   };
   const filteredEnrollments = enrollments.filter(e => e.profiles?.full_name?.toLowerCase().includes(search.toLowerCase()) || e.courses?.title?.toLowerCase().includes(search.toLowerCase()));
   return <AdminLayout>
-      <div className="p-6 lg:p-8 admin-area">
+      <div className="p-3 lg:p-6 admin-area">
         <motion.div initial={{
         opacity: 0,
         y: 20
       }} animate={{
         opacity: 1,
         y: 0
-      }} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      }} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <div>
-            <h1 className="text-3xl font-serif font-bold text-foreground mb-2">
+            <h1 className="text-xl lg:text-2xl font-serif font-bold text-foreground mb-1">
               Matrículas
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Gerencie as matrículas dos alunos
             </p>
           </div>
-          <Button onClick={() => setDialogOpen(true)} className="bg-secondary hover:bg-secondary/90 text-black btn-glow-gold">
-            <Plus className="w-4 h-4 mr-2" />
+          <Button onClick={() => setDialogOpen(true)} className="h-8 text-sm gap-1.5 bg-secondary hover:bg-secondary/90 text-black btn-glow-gold">
+            <Plus className="w-3.5 h-3.5" />
             Nova Matrícula
           </Button>
         </motion.div>
 
         {/* Search */}
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder="Buscar matrículas..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10 bg-card border-border text-foreground placeholder:text-muted-foreground" />
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+          <Input placeholder="Buscar matrículas..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-9 text-sm bg-card border-border text-foreground placeholder:text-muted-foreground" />
         </div>
 
         {/* Table */}
@@ -210,9 +210,9 @@ const AdminEnrollments = () => {
                     Carregando...
                   </TableCell>
                 </TableRow> : filteredEnrollments.length === 0 ? <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
-                    <UserCheck className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">Nenhuma matrícula encontrada</p>
+                  <TableCell colSpan={5} className="text-center py-6">
+                    <UserCheck className="w-10 h-10 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">Nenhuma matrícula encontrada</p>
                   </TableCell>
                 </TableRow> : filteredEnrollments.map(enrollment => <TableRow key={enrollment.id} className="border-secondary/10">
                     <TableCell>

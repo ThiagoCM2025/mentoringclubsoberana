@@ -307,6 +307,82 @@
     @apply bg-card rounded-xl border border-border overflow-hidden;
   }
 
+  /* ============ ADMIN COMPACT DESIGN SYSTEM ============ */
+  /* Global utility classes for compact admin sizing (~20% reduction) */
+
+  /* Page container */
+  .admin-page-container {
+    @apply p-3 lg:p-6;
+  }
+
+  /* Page titles */
+  .admin-page-title {
+    @apply text-xl lg:text-2xl font-serif font-bold text-foreground;
+  }
+
+  /* Page descriptions */
+  .admin-page-description {
+    @apply text-sm text-muted-foreground;
+  }
+
+  /* Section gap */
+  .admin-section-gap {
+    @apply space-y-6;
+  }
+
+  /* Header margin */
+  .admin-header-margin {
+    @apply mb-4;
+  }
+
+  /* Compact card padding */
+  .admin-compact-card {
+    @apply p-3 rounded-lg;
+  }
+
+  /* Icons */
+  .admin-icon-sm {
+    @apply w-3.5 h-3.5;
+  }
+
+  .admin-icon-md {
+    @apply w-4 h-4;
+  }
+
+  /* Avatars */
+  .admin-avatar-sm {
+    @apply w-7 h-7;
+  }
+
+  .admin-avatar-md {
+    @apply w-8 h-8;
+  }
+
+  /* Buttons compact */
+  .admin-btn-compact {
+    @apply h-8 text-sm px-3;
+  }
+
+  /* Search input */
+  .admin-search-input {
+    @apply h-9 text-sm;
+  }
+
+  /* Select/Dropdown */
+  .admin-select {
+    @apply h-8 text-sm;
+  }
+
+  /* Badge compact */
+  .admin-badge {
+    @apply text-xs px-2 py-0.5;
+  }
+
+  /* Empty state icon */
+  .admin-empty-icon {
+    @apply w-10 h-10;
+  }
+
   /* ============ SECTION PATTERN BACKGROUNDS ============ */
   
   .section-pattern-gold {

@@ -96,37 +96,37 @@ const AdminCourses = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 lg:p-8 admin-area">
+      <div className="p-3 lg:p-6 admin-area">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4"
         >
           <div>
-            <h1 className="text-3xl font-serif font-bold text-foreground title-premium mb-2">
+            <h1 className="text-xl lg:text-2xl font-serif font-bold text-foreground title-premium mb-1">
               Cursos
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Gerencie todos os cursos da plataforma
             </p>
           </div>
           <Button
             onClick={() => navigate("/admin/courses/new")}
-            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground btn-glow-gold"
+            className="h-8 text-sm gap-1.5 bg-secondary hover:bg-secondary/90 text-secondary-foreground btn-glow-gold"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="w-3.5 h-3.5" />
             Novo Curso
           </Button>
         </motion.div>
 
         {/* Search */}
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
             placeholder="Buscar cursos..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-card border-border text-foreground placeholder:text-muted-foreground"
+            className="pl-9 h-9 text-sm bg-card border-border text-foreground placeholder:text-muted-foreground"
           />
         </div>
 
@@ -151,9 +151,9 @@ const AdminCourses = () => {
                 </TableRow>
               ) : filteredCourses.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
-                    <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">Nenhum curso encontrado</p>
+                  <TableCell colSpan={5} className="text-center py-6">
+                    <BookOpen className="w-10 h-10 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">Nenhum curso encontrado</p>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -161,8 +161,8 @@ const AdminCourses = () => {
                   <TableRow key={course.id}>
                     <TableCell>
                       <div>
-                        <p className="font-medium text-foreground">{course.title}</p>
-                        <p className="text-sm text-muted-foreground line-clamp-1">
+                        <p className="font-medium text-sm text-foreground">{course.title}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-1">
                           {course.description}
                         </p>
                       </div>
@@ -197,18 +197,18 @@ const AdminCourses = () => {
                           <DropdownMenuItem
                             onClick={() => navigate(`/admin/courses/${course.id}`)}
                           >
-                            <Pencil className="w-4 h-4 mr-2" />
+                            <Pencil className="w-3.5 h-3.5 mr-1.5" />
                             Editar
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => togglePublish(course)}>
                             {course.is_published ? (
                               <>
-                                <EyeOff className="w-4 h-4 mr-2" />
+                                <EyeOff className="w-3.5 h-3.5 mr-1.5" />
                                 Despublicar
                               </>
                             ) : (
                               <>
-                                <Eye className="w-4 h-4 mr-2" />
+                                <Eye className="w-3.5 h-3.5 mr-1.5" />
                                 Publicar
                               </>
                             )}
@@ -217,7 +217,7 @@ const AdminCourses = () => {
                             onClick={() => deleteCourse(course.id)}
                             className="text-destructive"
                           >
-                            <Trash2 className="w-4 h-4 mr-2" />
+                            <Trash2 className="w-3.5 h-3.5 mr-1.5" />
                             Excluir
                           </DropdownMenuItem>
                         </DropdownMenuContent>

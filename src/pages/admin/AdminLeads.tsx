@@ -258,58 +258,58 @@ const AdminLeads = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 lg:p-8 admin-area">
+      <div className="p-3 lg:p-6 admin-area">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-4"
         >
-          <h1 className="text-3xl font-serif font-bold text-foreground title-premium mb-2">
+          <h1 className="text-xl lg:text-2xl font-serif font-bold text-foreground title-premium mb-1">
             Leads
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Gerencie os leads capturados pela landing page
           </p>
         </motion.div>
 
 
         {/* View Mode Toggle */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "pipeline" | "table")}>
             <TabsList className="bg-muted border border-border">
               <TabsTrigger 
                 value="pipeline" 
-                className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+                className="text-sm data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
               >
-                <Columns className="w-4 h-4 mr-2" />
+                <Columns className="w-3.5 h-3.5 mr-1.5" />
                 Pipeline
               </TabsTrigger>
               <TabsTrigger 
                 value="table"
-                className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+                className="text-sm data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
               >
-                <TableIcon className="w-4 h-4 mr-2" />
+                <TableIcon className="w-3.5 h-3.5 mr-1.5" />
                 Tabela
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-xs text-muted-foreground">
             {leads.length} leads no total
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          <Button onClick={() => setNewLeadDialogOpen(true)} className="bg-secondary hover:bg-secondary/90 text-black btn-glow-gold">
-            <Plus className="w-4 h-4 mr-2" />
+        <div className="flex flex-wrap gap-2 mb-4">
+          <Button onClick={() => setNewLeadDialogOpen(true)} className="h-8 text-sm gap-1.5 bg-secondary hover:bg-secondary/90 text-black btn-glow-gold">
+            <Plus className="w-3.5 h-3.5" />
             Novo Lead
           </Button>
-          <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="bg-card border-border text-foreground hover:bg-muted">
-            <Upload className="w-4 h-4 mr-2" />
+          <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="h-8 text-sm gap-1.5 bg-card border-border text-foreground hover:bg-muted">
+            <Upload className="w-3.5 h-3.5" />
             Importar CSV
           </Button>
-          <Button onClick={handleExport} variant="outline" className="bg-card border-border text-foreground hover:bg-muted">
-            <Download className="w-4 h-4 mr-2" />
+          <Button onClick={handleExport} variant="outline" className="h-8 text-sm gap-1.5 bg-card border-border text-foreground hover:bg-muted">
+            <Download className="w-3.5 h-3.5" />
             Exportar CSV
           </Button>
           <input
@@ -322,18 +322,18 @@ const AdminLeads = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 mb-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
             <Input
               placeholder="Buscar por nome, email ou telefone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 bg-card border-border text-foreground placeholder:text-muted-foreground"
+              className="pl-9 h-9 text-sm bg-card border-border text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-[160px] bg-card border-border text-foreground">
+            <SelectTrigger className="w-[140px] h-9 text-sm bg-card border-border text-foreground">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -346,7 +346,7 @@ const AdminLeads = () => {
             </SelectContent>
           </Select>
           <Select value={filterTemp} onValueChange={setFilterTemp}>
-            <SelectTrigger className="w-[160px] bg-card border-border text-foreground">
+            <SelectTrigger className="w-[140px] h-9 text-sm bg-card border-border text-foreground">
               <SelectValue placeholder="Temperatura" />
             </SelectTrigger>
             <SelectContent>
@@ -389,9 +389,9 @@ const AdminLeads = () => {
                   </TableRow>
                 ) : filteredLeads.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
-                      <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                      <p className="text-muted-foreground">Nenhum lead encontrado</p>
+                    <TableCell colSpan={7} className="text-center py-6">
+                      <Users className="w-10 h-10 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">Nenhum lead encontrado</p>
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -401,14 +401,14 @@ const AdminLeads = () => {
                     return (
                       <TableRow key={lead.id} className="cursor-pointer hover:bg-muted/50" onClick={() => openLeadDetails(lead)}>
                         <TableCell>
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                              <span className="text-primary font-medium">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              <span className="text-primary font-medium text-sm">
                                 {lead.full_name.charAt(0).toUpperCase()}
                               </span>
                             </div>
                             <div>
-                              <p className="font-medium">{lead.full_name}</p>
+                              <p className="font-medium text-sm">{lead.full_name}</p>
                               <p className="text-xs text-muted-foreground">{lead.source || "Direto"}</p>
                             </div>
                           </div>
