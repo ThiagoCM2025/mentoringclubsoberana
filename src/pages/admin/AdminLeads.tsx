@@ -29,7 +29,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download, Columns, TableIcon, TrendingUp } from "lucide-react";
+import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download, Columns, TableIcon, TrendingUp, Play, Pause } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { Database } from "@/integrations/supabase/types";
@@ -374,6 +375,7 @@ const AdminLeads = () => {
                   <TableHead>Lead</TableHead>
                   <TableHead>Contato</TableHead>
                   <TableHead className="text-center">Nurturing</TableHead>
+                  <TableHead className="text-center">Ativo</TableHead>
                   <TableHead>Temperatura</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Data</TableHead>
@@ -383,13 +385,13 @@ const AdminLeads = () => {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
+                    <TableCell colSpan={8} className="text-center py-8">
                       Carregando...
                     </TableCell>
                   </TableRow>
                 ) : filteredLeads.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-6">
+                    <TableCell colSpan={8} className="text-center py-6">
                       <Users className="w-10 h-10 text-muted-foreground mx-auto mb-2" />
                       <p className="text-sm text-muted-foreground">Nenhum lead encontrado</p>
                     </TableCell>
@@ -416,6 +418,28 @@ const AdminLeads = () => {
                         <TableCell>
                           <p className="text-sm">{lead.email}</p>
                           <p className="text-xs text-muted-foreground">{lead.phone || "-"}</p>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex flex-col items-center gap-1">
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${getNurturingColor(lead.nurturing_step || 0)}`}>
+                              <Zap className="w-3 h-3" />
+                              {lead.nurturing_step || 0}/5
+                            </span>
+                            {lead.last_contact_at && (
+                              <span className="text-[10px] text-muted-foreground">
+                                {formatDistanceToNow(new Date(lead.last_contact_at), { addSuffix: true, locale: ptBR })}
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Switch
+                            checked={lead.nurturing_active || false}
+                            onCheckedChange={(checked) => {
+                              updateLead(lead.id, { nurturing_active: checked });
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                          />
                         </TableCell>
                         <TableCell>
                           {temp && (
