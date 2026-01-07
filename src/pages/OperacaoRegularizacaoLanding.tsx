@@ -81,7 +81,7 @@ const OperacaoRegularizacaoLanding = () => {
   
   // UTMs dinâmicas para rastreamento de Facebook Ads
   const { buildUrlWithUTM } = useUTMParams();
-  const paymentLinkBase = "https://sun.eduzz.com/7WXQR14G9A";
+  const paymentLinkBase = "https://chk.eduzz.com/G92E6KNXWE";
   const paymentLink = buildUrlWithUTM(paymentLinkBase);
 
   const benefits = [
@@ -230,7 +230,7 @@ const OperacaoRegularizacaoLanding = () => {
               "priceCurrency": "BRL",
               "availability": "https://schema.org/LimitedAvailability",
               "validFrom": "2024-12-01T00:00:00-03:00",
-              "url": "https://sun.eduzz.com/7WXQR14G9A"
+              "url": "https://chk.eduzz.com/G92E6KNXWE"
             }
           })}
         </script>
