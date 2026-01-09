@@ -62,6 +62,7 @@ export const AnimatedRoutes = () => {
         <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
         <Route path="/experience-start" element={<PageTransition><ExperienceStartLanding /></PageTransition>} />
         <Route path="/operacao-regularizacao" element={<PageTransition><OperacaoRegularizacaoLanding /></PageTransition>} />
+        <Route path="/operacao-regularizacao/*" element={<PageTransition><OperacaoRegularizacaoLanding /></PageTransition>} />
         <Route path="/simulador" element={<PageTransition><SimuladorFinanceiro /></PageTransition>} />
         <Route path="/privacidade" element={<PageTransition><Privacidade /></PageTransition>} />
         <Route path="/termos" element={<PageTransition><Termos /></PageTransition>} />

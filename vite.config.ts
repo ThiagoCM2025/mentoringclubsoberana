@@ -49,6 +49,10 @@ export default defineConfig(({ mode }) => ({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB limit
         // Exclude PDFs and static assets from Service Worker navigation handling
         navigateFallbackDenylist: [/\.pdf$/, /^\/assets\//],
+        // Force immediate activation of new service worker
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
