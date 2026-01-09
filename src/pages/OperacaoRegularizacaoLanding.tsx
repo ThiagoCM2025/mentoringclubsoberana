@@ -76,7 +76,7 @@ const OperacaoRegularizacaoLanding = () => {
   const faqInView = useInView(faqRef, { once: true, amount: 0.2 });
   const finalCtaInView = useInView(finalCtaRef, { once: true, amount: 0.3 });
 
-  const whatsappNumber = "5511959103182";
+  const whatsappNumber = "5511993563468";
   const whatsappMessage = encodeURIComponent("Olá! Tenho dúvidas sobre a Operação Regularização Imobiliária.");
   
   // UTMs dinâmicas para rastreamento de Facebook Ads

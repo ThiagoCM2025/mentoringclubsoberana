@@ -301,7 +301,7 @@ const Auth = () => {
             <p className="text-center text-xs text-muted-foreground/60 mt-2">
               Problemas com acesso?{" "}
               <a 
-                href="https://wa.me/5511959103182?text=Olá! Preciso de ajuda com meu acesso à área do aluno"
+                href="https://wa.me/5511993563468?text=Olá! Preciso de ajuda com meu acesso à área do aluno"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-secondary hover:underline"

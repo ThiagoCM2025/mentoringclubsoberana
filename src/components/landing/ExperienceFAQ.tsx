@@ -143,7 +143,7 @@ export const ExperienceFAQ = () => {
           <p className="text-muted-foreground">
             Ainda tem dúvidas?{" "}
             <a
-              href="https://wa.me/5511959103182?text=Olá! Tenho uma dúvida sobre o Experience Start"
+              href="https://wa.me/5511993563468?text=Olá! Tenho uma dúvida sobre o Experience Start"
               target="_blank"
               rel="noopener noreferrer"
               className="text-secondary hover:underline font-medium"
