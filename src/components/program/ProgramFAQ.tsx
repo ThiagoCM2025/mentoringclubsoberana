@@ -90,7 +90,7 @@ export const ProgramFAQ = ({ program }: ProgramFAQProps) => {
         >
           <p className="text-muted-foreground mb-2">Ainda tem dúvidas?</p>
           <a
-            href="https://wa.me/5511959103182?text=Olá! Tenho dúvidas sobre o programa"
+            href="https://wa.me/5511993563468?text=Olá! Tenho dúvidas sobre o programa"
             target="_blank"
             rel="noopener noreferrer"
             className="text-secondary hover:text-secondary/80 font-semibold underline underline-offset-4 transition-colors"

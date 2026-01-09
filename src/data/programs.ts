@@ -211,7 +211,7 @@ export const programs: Record<string, Program> = {
     ctaLink: "https://form.typeform.com/to/WcPbnyhP",
     ctaText: "Quero Estruturar Meu Negócio",
     secondaryCta: {
-      link: "https://wa.me/5511959103182?text=Olá! Quero saber mais sobre o Programa de Aceleração",
+      link: "https://wa.me/5511993563468?text=Olá! Quero saber mais sobre o Programa de Aceleração",
       text: "Falar com a Equipe"
     },
     icon: Rocket,
@@ -281,7 +281,7 @@ export const programs: Record<string, Program> = {
     ctaLink: "https://form.typeform.com/to/WcPbnyhP",
     ctaText: "Aplicar para a Mentoria 360°",
     secondaryCta: {
-      link: "https://wa.me/5511959103182?text=Olá! Quero aplicar para a Mentoria Soberana 360°",
+      link: "https://wa.me/5511993563468?text=Olá! Quero aplicar para a Mentoria Soberana 360°",
       text: "Conversar com a Fabiana"
     },
     icon: Star,
@@ -349,7 +349,7 @@ export const programs: Record<string, Program> = {
     ctaLink: "https://form.typeform.com/to/WcPbnyhP",
     ctaText: "Consultar Condições de Admissão",
     secondaryCta: {
-      link: "https://wa.me/5511959103182?text=Olá! Quero saber sobre o Mastermind Soberana Elite",
+      link: "https://wa.me/5511993563468?text=Olá! Quero saber sobre o Mastermind Soberana Elite",
       text: "Falar com a Fabiana"
     },
     icon: Crown,
