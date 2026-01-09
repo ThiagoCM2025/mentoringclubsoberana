@@ -9,6 +9,7 @@ import { AnimatedRoutes } from "@/components/AnimatedRoutes";
 import { Analytics } from "@/components/Analytics";
 import { CookieBanner } from "@/components/CookieBanner";
 import ScrollToTop from "@/components/ScrollToTop";
+import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
             <Analytics />
             <AnimatedRoutes />
             <CookieBanner />
+            <PWAUpdatePrompt />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
