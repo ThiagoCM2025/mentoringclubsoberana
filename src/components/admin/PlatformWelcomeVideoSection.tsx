@@ -147,7 +147,19 @@ export function PlatformWelcomeVideoSection() {
       if (error) throw error;
       if (data?.thumbnailUrl) {
         setCustomThumbnail(data.thumbnailUrl);
-        toast.success("Thumbnail gerada com IA!");
+        
+        // Auto-save thumbnail to database
+        const { error: saveError } = await supabase
+          .from("platform_settings")
+          .update({ value: data.thumbnailUrl })
+          .eq("key", "welcome_video_thumbnail");
+        
+        if (saveError) {
+          console.error("Error auto-saving thumbnail:", saveError);
+          toast.success("Thumbnail gerada! Clique em 'Salvar' para persistir.");
+        } else {
+          toast.success("Thumbnail gerada e salva automaticamente!");
+        }
       }
     } catch (error: any) {
       console.error("Error generating thumbnail:", error);
