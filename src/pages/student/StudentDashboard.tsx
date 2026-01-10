@@ -63,6 +63,8 @@ import PushNotificationPrompt from "@/components/student/PushNotificationPrompt"
 import { useAchievementNotification } from "@/hooks/useAchievementNotification";
 import { useRealtimeAchievements } from "@/hooks/useRealtimeAchievements";
 import { BadgeCelebrationModal } from "@/components/student/BadgeCelebrationModal";
+import { WelcomeVideoModal } from "@/components/student/WelcomeVideoModal";
+import { Play } from "lucide-react";
 
 
 interface Course {
@@ -106,6 +108,8 @@ const StudentDashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [previewCourseId, setPreviewCourseId] = useState<string | null>(null);
   const [dailyChallengesCount, setDailyChallengesCount] = useState(0);
+  const [welcomeVideoUrl, setWelcomeVideoUrl] = useState<string | null>(null);
+  const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
 
   // Achievement notification - monitors and sends push when close to new badge/level
   useAchievementNotification();
@@ -120,8 +124,21 @@ const StudentDashboard = () => {
     if (user) {
       fetchData();
       fetchDailyChallengesCount();
+      fetchWelcomeVideo();
     }
   }, [user]);
+
+  const fetchWelcomeVideo = async () => {
+    const { data } = await supabase
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "welcome_video_url")
+      .single();
+    
+    if (data?.value) {
+      setWelcomeVideoUrl(data.value);
+    }
+  };
 
   const fetchDailyChallengesCount = async () => {
     const { count } = await supabase
@@ -635,7 +652,7 @@ const StudentDashboard = () => {
               }
             }}
           >
-            {/* Card 1 - Plataforma */}
+            {/* Card 1 - Plataforma / Vídeo de Boas-Vindas */}
             <motion.div
               variants={{
                 hidden: { opacity: 0, y: 30, scale: 0.95 },
@@ -647,15 +664,38 @@ const StudentDashboard = () => {
                 }
               }}
               whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.2 } }}
-              className="relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all hover:shadow-lg"
+              onClick={() => welcomeVideoUrl && setShowWelcomeVideo(true)}
+              className={`relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all hover:shadow-lg ${welcomeVideoUrl ? 'cursor-pointer' : ''}`}
             >
               <div className="aspect-[4/3] relative">
-                <img 
-                  src={heroVariations} 
-                  alt="Plataforma"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                {welcomeVideoUrl ? (
+                  <>
+                    <img 
+                      src={`https://img.youtube.com/vi/${welcomeVideoUrl.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([^#&?]*)/)?.[1] || ''}/maxresdefault.jpg`}
+                      alt="Vídeo de Boas-Vindas"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = heroVariations;
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                      <motion.div 
+                        className="w-16 h-16 rounded-full bg-secondary/90 flex items-center justify-center"
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <Play className="w-8 h-8 text-black fill-black ml-1" />
+                      </motion.div>
+                    </div>
+                  </>
+                ) : (
+                  <img 
+                    src={heroVariations} 
+                    alt="Plataforma"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none" />
                 <motion.div 
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
@@ -1139,6 +1179,13 @@ const StudentDashboard = () => {
         badge={newBadge}
         isOpen={showCelebration}
         onClose={closeCelebration}
+      />
+
+      {/* Welcome Video Modal */}
+      <WelcomeVideoModal
+        open={showWelcomeVideo}
+        onOpenChange={setShowWelcomeVideo}
+        videoUrl={welcomeVideoUrl}
       />
     </div>
   );
