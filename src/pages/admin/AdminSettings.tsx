@@ -21,6 +21,7 @@ import {
   FileText,
 } from "lucide-react";
 import { NotificationTemplatesTab } from "@/components/admin/NotificationTemplatesTab";
+import { PlatformWelcomeVideoSection } from "@/components/admin/PlatformWelcomeVideoSection";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -371,12 +372,14 @@ export default function AdminSettings() {
             <NotificationTemplatesTab />
           </TabsContent>
 
-          <TabsContent value="general">
+          <TabsContent value="general" className="space-y-4">
+            <PlatformWelcomeVideoSection />
+            
             <Card className="admin-card">
               <CardHeader>
-                <CardTitle className="text-foreground">Configurações Gerais</CardTitle>
+                <CardTitle className="text-foreground">Outras Configurações</CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  Configurações gerais da plataforma (em breve)
+                  Mais configurações serão adicionadas em breve
                 </CardDescription>
               </CardHeader>
               <CardContent>
