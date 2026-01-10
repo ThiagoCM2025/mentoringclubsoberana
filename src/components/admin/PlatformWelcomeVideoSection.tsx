@@ -19,6 +19,7 @@ export function PlatformWelcomeVideoSection() {
   const [generatingThumb, setGeneratingThumb] = useState(false);
   const [detectingDuration, setDetectingDuration] = useState(false);
   const [thumbnailError, setThumbnailError] = useState(false);
+  const [thumbnailRefreshKey, setThumbnailRefreshKey] = useState(Date.now());
 
   // Convert total seconds to minutes and seconds
   const setDurationFromTotalSeconds = (totalSeconds: number) => {
@@ -179,7 +180,15 @@ export function PlatformWelcomeVideoSection() {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     const videoId = match && match[2].length === 11 ? match[2] : null;
-    return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
+    // Cache-buster para forçar atualização da thumbnail
+    return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg?t=${thumbnailRefreshKey}` : null;
+  };
+
+  const refreshYouTubeThumbnail = () => {
+    setThumbnailRefreshKey(Date.now());
+    setThumbnailError(false);
+    setShowPreview(false);
+    toast.info("Thumbnail do YouTube atualizada!");
   };
 
   const getYouTubeEmbedUrl = (url: string) => {
@@ -303,6 +312,18 @@ export function PlatformWelcomeVideoSection() {
                 )}
                 Gerar Thumb IA
               </Button>
+              {!customThumbnail && videoUrl && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={refreshYouTubeThumbnail}
+                  className="gap-2"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Atualizar Thumb YouTube
+                </Button>
+              )}
             </div>
 
             {customThumbnail && (
