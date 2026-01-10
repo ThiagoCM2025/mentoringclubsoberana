@@ -4,14 +4,17 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Youtube, Video, ExternalLink, AlertCircle, Loader2, Play, X } from "lucide-react";
+import { Youtube, Video, ExternalLink, AlertCircle, Loader2, Play, X, Sparkles, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface WelcomeVideoSectionProps {
   value: string;
   duration: number | null;
+  customThumbnail?: string | null;
+  courseTitle?: string;
   onChange: (url: string) => void;
   onDurationChange: (minutes: number | null) => void;
+  onThumbnailChange?: (url: string | null) => void;
 }
 
 type VideoType = "youtube" | "vimeo" | "direct" | "unknown";
@@ -25,13 +28,17 @@ interface VideoInfo {
 const WelcomeVideoSection = ({ 
   value, 
   duration,
+  customThumbnail,
+  courseTitle,
   onChange, 
-  onDurationChange 
+  onDurationChange,
+  onThumbnailChange
 }: WelcomeVideoSectionProps) => {
   const { toast } = useToast();
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [fetchingDuration, setFetchingDuration] = useState(false);
+  const [generatingThumb, setGeneratingThumb] = useState(false);
 
   useEffect(() => {
     if (value) {
@@ -67,6 +74,52 @@ const WelcomeVideoSection = ({
       console.error("Error fetching YouTube duration:", error);
     } finally {
       setFetchingDuration(false);
+    }
+  };
+
+  const generateAIThumbnail = async () => {
+    if (!value || !onThumbnailChange) return;
+
+    setGeneratingThumb(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-video-thumbnail", {
+        body: { 
+          videoTitle: courseTitle || "Vídeo de Boas-Vindas",
+          style: "professional, welcoming, empowering, premium education"
+        }
+      });
+
+      if (error) throw error;
+      if (data?.thumbnailUrl) {
+        onThumbnailChange(data.thumbnailUrl);
+        toast({
+          title: "Thumbnail gerada!",
+          description: "Thumbnail personalizada criada com IA",
+        });
+      }
+    } catch (error: any) {
+      console.error("Error generating thumbnail:", error);
+      if (error.message?.includes("429")) {
+        toast({
+          title: "Limite atingido",
+          description: "Tente novamente em alguns minutos",
+          variant: "destructive"
+        });
+      } else if (error.message?.includes("402")) {
+        toast({
+          title: "Créditos insuficientes",
+          description: "Adicione créditos ao workspace",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Não foi possível gerar thumbnail",
+          variant: "destructive"
+        });
+      }
+    } finally {
+      setGeneratingThumb(false);
     }
   };
 
@@ -125,10 +178,12 @@ const WelcomeVideoSection = ({
   };
 
   const typeInfo = videoInfo ? getTypeLabel(videoInfo.type) : null;
+  const displayThumbnail = customThumbnail || videoInfo?.thumbnailUrl;
 
   const clearVideo = () => {
     onChange("");
     onDurationChange(null);
+    if (onThumbnailChange) onThumbnailChange(null);
     setVideoInfo(null);
     setShowPreview(false);
   };
@@ -203,6 +258,47 @@ const WelcomeVideoSection = ({
               </div>
             )}
           </div>
+
+          {/* AI Thumbnail Generation */}
+          {value && onThumbnailChange && (
+            <div className="space-y-2">
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={generateAIThumbnail}
+                  disabled={generatingThumb}
+                  className="gap-2"
+                >
+                  {generatingThumb ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-4 h-4" />
+                  )}
+                  Gerar Thumb IA
+                </Button>
+                {customThumbnail && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onThumbnailChange(null)}
+                    className="gap-2"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Usar YouTube
+                  </Button>
+                )}
+              </div>
+              {customThumbnail && (
+                <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  Thumb IA Ativa
+                </Badge>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right: Preview */}
@@ -226,13 +322,13 @@ const WelcomeVideoSection = ({
                     />
                   ) : null}
                 </div>
-              ) : videoInfo.thumbnailUrl ? (
+              ) : displayThumbnail ? (
                 <div 
                   className="relative rounded-xl overflow-hidden border border-border cursor-pointer group"
                   onClick={() => setShowPreview(true)}
                 >
                   <img 
-                    src={videoInfo.thumbnailUrl} 
+                    src={displayThumbnail} 
                     alt="Video thumbnail" 
                     className="w-full aspect-video object-cover"
                   />
@@ -241,6 +337,14 @@ const WelcomeVideoSection = ({
                       <Play className="w-8 h-8 text-secondary-foreground ml-1" />
                     </div>
                   </div>
+                  {customThumbnail && (
+                    <div className="absolute top-2 left-2">
+                      <Badge className="bg-purple-500/90 text-white">
+                        <Sparkles className="w-3 h-3 mr-1" />
+                        IA
+                      </Badge>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div 

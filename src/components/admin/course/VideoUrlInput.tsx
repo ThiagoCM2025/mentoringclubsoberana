@@ -2,12 +2,18 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Youtube, Video, ExternalLink, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { Youtube, Video, ExternalLink, AlertCircle, Sparkles, Loader2, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 interface VideoUrlInputProps {
   value: string;
   onChange: (url: string) => void;
   onDurationDetected?: (minutes: number) => void;
+  lessonTitle?: string;
+  customThumbnail?: string | null;
+  onThumbnailChange?: (url: string | null) => void;
 }
 
 type VideoType = "youtube" | "vimeo" | "direct" | "unknown";
@@ -18,9 +24,17 @@ interface VideoInfo {
   thumbnailUrl: string | null;
 }
 
-const VideoUrlInput = ({ value, onChange, onDurationDetected }: VideoUrlInputProps) => {
+const VideoUrlInput = ({ 
+  value, 
+  onChange, 
+  onDurationDetected,
+  lessonTitle,
+  customThumbnail,
+  onThumbnailChange
+}: VideoUrlInputProps) => {
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [generatingThumb, setGeneratingThumb] = useState(false);
 
   useEffect(() => {
     if (value) {
@@ -72,6 +86,37 @@ const VideoUrlInput = ({ value, onChange, onDurationDetected }: VideoUrlInputPro
     };
   };
 
+  const generateAIThumbnail = async () => {
+    if (!value || !onThumbnailChange) return;
+
+    setGeneratingThumb(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-video-thumbnail", {
+        body: { 
+          videoTitle: lessonTitle || "Aula",
+          style: "professional, educational, premium, empowering"
+        }
+      });
+
+      if (error) throw error;
+      if (data?.thumbnailUrl) {
+        onThumbnailChange(data.thumbnailUrl);
+        toast.success("Thumbnail gerada com IA!");
+      }
+    } catch (error: any) {
+      console.error("Error generating thumbnail:", error);
+      if (error.message?.includes("429")) {
+        toast.error("Limite atingido. Tente novamente em alguns minutos.");
+      } else if (error.message?.includes("402")) {
+        toast.error("Créditos insuficientes.");
+      } else {
+        toast.error("Erro ao gerar thumbnail");
+      }
+    } finally {
+      setGeneratingThumb(false);
+    }
+  };
+
   const getTypeLabel = (type: VideoType) => {
     switch (type) {
       case "youtube":
@@ -86,6 +131,7 @@ const VideoUrlInput = ({ value, onChange, onDurationDetected }: VideoUrlInputPro
   };
 
   const typeInfo = videoInfo ? getTypeLabel(videoInfo.type) : null;
+  const displayThumbnail = customThumbnail || videoInfo?.thumbnailUrl;
 
   return (
     <div className="space-y-3">
@@ -111,6 +157,45 @@ const VideoUrlInput = ({ value, onChange, onDurationDetected }: VideoUrlInputPro
       <p className="text-xs text-muted-foreground">
         Suportado: YouTube (não listado), Vimeo, ou URL direta (.mp4, .webm)
       </p>
+
+      {/* AI Thumbnail Generation */}
+      {value && onThumbnailChange && (
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={generateAIThumbnail}
+            disabled={generatingThumb}
+            className="gap-2"
+          >
+            {generatingThumb ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Sparkles className="w-4 h-4" />
+            )}
+            Gerar Thumb IA
+          </Button>
+          {customThumbnail && (
+            <>
+              <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                <Sparkles className="w-3 h-3 mr-1" />
+                IA
+              </Badge>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => onThumbnailChange(null)}
+                className="h-7 px-2 text-xs"
+              >
+                <RefreshCw className="w-3 h-3 mr-1" />
+                YouTube
+              </Button>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Preview */}
       {videoInfo && videoInfo.embedUrl && (
@@ -144,20 +229,27 @@ const VideoUrlInput = ({ value, onChange, onDurationDetected }: VideoUrlInputPro
         </div>
       )}
 
-      {/* Thumbnail preview for YouTube */}
-      {videoInfo?.thumbnailUrl && !showPreview && (
+      {/* Thumbnail preview */}
+      {displayThumbnail && !showPreview && (
         <div 
           className="relative w-32 h-20 rounded-lg overflow-hidden border border-border cursor-pointer group"
           onClick={() => setShowPreview(true)}
         >
           <img 
-            src={videoInfo.thumbnailUrl} 
+            src={displayThumbnail} 
             alt="Video thumbnail" 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <Video className="w-6 h-6 text-white" />
           </div>
+          {customThumbnail && (
+            <div className="absolute top-1 left-1">
+              <Badge className="bg-purple-500/90 text-white text-[10px] px-1 py-0">
+                IA
+              </Badge>
+            </div>
+          )}
         </div>
       )}
     </div>
