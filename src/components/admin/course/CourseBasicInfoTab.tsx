@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Image, X, FileText, Settings, Sparkles, Package, AlertCircle, CheckCircle2 } from "lucide-react";
 import { programsList, Program } from "@/data/programs";
 import { cn } from "@/lib/utils";
+import WelcomeVideoSection from "./WelcomeVideoSection";
 
 const courseSchema = z.object({
   title: z.string().min(1, "Título é obrigatório").max(200, "Título muito longo (máx. 200 caracteres)"),
@@ -20,6 +21,8 @@ const courseSchema = z.object({
   price: z.number().min(0, "Preço não pode ser negativo").optional().nullable(),
   is_published: z.boolean(),
   is_subscription: z.boolean(),
+  welcome_video_url: z.string().optional().nullable(),
+  welcome_video_duration: z.number().optional().nullable(),
 });
 
 type CourseFormData = z.infer<typeof courseSchema>;
@@ -32,6 +35,8 @@ interface Course {
   price: number | null;
   is_published: boolean;
   is_subscription: boolean;
+  welcome_video_url: string | null;
+  welcome_video_duration: number | null;
 }
 
 interface CourseBasicInfoTabProps {
@@ -67,6 +72,8 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
       price: course.price ?? undefined,
       is_published: course.is_published || false,
       is_subscription: course.is_subscription || false,
+      welcome_video_url: course.welcome_video_url || "",
+      welcome_video_duration: course.welcome_video_duration ?? undefined,
     },
     mode: "onBlur",
   });
@@ -84,8 +91,10 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
       price: watchedValues.price ?? null,
       is_published: watchedValues.is_published,
       is_subscription: watchedValues.is_subscription,
+      welcome_video_url: watchedValues.welcome_video_url || null,
+      welcome_video_duration: watchedValues.welcome_video_duration ?? null,
     });
-  }, [watchedValues.title, watchedValues.description, watchedValues.thumbnail_url, watchedValues.price, watchedValues.is_published, watchedValues.is_subscription]);
+  }, [watchedValues.title, watchedValues.description, watchedValues.thumbnail_url, watchedValues.price, watchedValues.is_published, watchedValues.is_subscription, watchedValues.welcome_video_url, watchedValues.welcome_video_duration]);
 
   // Update form when course prop changes (e.g., from program selection)
   useEffect(() => {
@@ -95,7 +104,9 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
     setValue("price", course.price ?? undefined);
     setValue("is_published", course.is_published || false);
     setValue("is_subscription", course.is_subscription || false);
-  }, [course.title, course.description, course.thumbnail_url, course.price, course.is_published, course.is_subscription, setValue]);
+    setValue("welcome_video_url", course.welcome_video_url || "");
+    setValue("welcome_video_duration", course.welcome_video_duration ?? undefined);
+  }, [course.title, course.description, course.thumbnail_url, course.price, course.is_published, course.is_subscription, course.welcome_video_url, course.welcome_video_duration, setValue]);
 
   const handleBlur = (fieldName: string) => {
     setTouchedFields(prev => new Set(prev).add(fieldName));
@@ -441,6 +452,14 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
           </div>
         </div>
       </section>
+
+      {/* Section: Welcome Video */}
+      <WelcomeVideoSection
+        value={watchedValues.welcome_video_url || ""}
+        duration={watchedValues.welcome_video_duration ?? null}
+        onChange={(url) => setValue("welcome_video_url", url)}
+        onDurationChange={(mins) => setValue("welcome_video_duration", mins ?? undefined)}
+      />
 
       {/* Section: Settings */}
       <section className="bg-card rounded-xl p-6 border border-border">

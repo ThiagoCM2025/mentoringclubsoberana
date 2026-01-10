@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.email-webhooks]
 verify_jwt = false
+
+[functions.youtube-video-info]
+verify_jwt = false

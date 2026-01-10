@@ -982,6 +982,8 @@ export type Database = {
           thumbnail_url: string | null
           title: string
           updated_at: string
+          welcome_video_duration: number | null
+          welcome_video_url: string | null
         }
         Insert: {
           calendar_link?: string | null
@@ -998,6 +1000,8 @@ export type Database = {
           thumbnail_url?: string | null
           title: string
           updated_at?: string
+          welcome_video_duration?: number | null
+          welcome_video_url?: string | null
         }
         Update: {
           calendar_link?: string | null
@@ -1014,6 +1018,8 @@ export type Database = {
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
+          welcome_video_duration?: number | null
+          welcome_video_url?: string | null
         }
         Relationships: []
       }
@@ -1552,6 +1558,41 @@ export type Database = {
         }
         Relationships: []
       }
+      lesson_chapters: {
+        Row: {
+          created_at: string | null
+          id: string
+          lesson_id: string | null
+          order_index: number | null
+          timestamp_seconds: number
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          lesson_id?: string | null
+          order_index?: number | null
+          timestamp_seconds: number
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          lesson_id?: string | null
+          order_index?: number | null
+          timestamp_seconds?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_chapters_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lesson_materials: {
         Row: {
           created_at: string
@@ -1664,6 +1705,44 @@ export type Database = {
             foreignKeyName: "lesson_quizzes_lesson_id_fkey"
             columns: ["lesson_id"]
             isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_transcripts: {
+        Row: {
+          generated_at: string | null
+          id: string
+          language: string | null
+          lesson_id: string | null
+          status: string | null
+          transcript: string | null
+          word_count: number | null
+        }
+        Insert: {
+          generated_at?: string | null
+          id?: string
+          language?: string | null
+          lesson_id?: string | null
+          status?: string | null
+          transcript?: string | null
+          word_count?: number | null
+        }
+        Update: {
+          generated_at?: string | null
+          id?: string
+          language?: string | null
+          lesson_id?: string | null
+          status?: string | null
+          transcript?: string | null
+          word_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_transcripts_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: true
             referencedRelation: "lessons"
             referencedColumns: ["id"]
           },
@@ -2789,6 +2868,101 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      video_analytics: {
+        Row: {
+          completion_percentage: number | null
+          created_at: string | null
+          drop_off_point: number | null
+          id: string
+          lesson_id: string | null
+          pause_events: number | null
+          play_events: number | null
+          seek_events: number | null
+          session_id: string | null
+          total_duration_seconds: number | null
+          updated_at: string | null
+          user_id: string
+          watched_seconds: number | null
+        }
+        Insert: {
+          completion_percentage?: number | null
+          created_at?: string | null
+          drop_off_point?: number | null
+          id?: string
+          lesson_id?: string | null
+          pause_events?: number | null
+          play_events?: number | null
+          seek_events?: number | null
+          session_id?: string | null
+          total_duration_seconds?: number | null
+          updated_at?: string | null
+          user_id: string
+          watched_seconds?: number | null
+        }
+        Update: {
+          completion_percentage?: number | null
+          created_at?: string | null
+          drop_off_point?: number | null
+          id?: string
+          lesson_id?: string | null
+          pause_events?: number | null
+          play_events?: number | null
+          seek_events?: number | null
+          session_id?: string | null
+          total_duration_seconds?: number | null
+          updated_at?: string | null
+          user_id?: string
+          watched_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_analytics_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_library: {
+        Row: {
+          created_at: string | null
+          duration_minutes: number | null
+          id: string
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+          video_type: string | null
+          video_url: string
+          views_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+          video_type?: string | null
+          video_url: string
+          views_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+          video_type?: string | null
+          video_url?: string
+          views_count?: number | null
         }
         Relationships: []
       }

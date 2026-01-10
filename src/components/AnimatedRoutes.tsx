@@ -40,6 +40,7 @@ import AdminBlog from "@/pages/admin/AdminBlog";
 import BlogEditor from "@/pages/admin/BlogEditor";
 import AdminMissions from "@/pages/admin/AdminMissions";
 import AdminMissionReviews from "@/pages/admin/AdminMissionReviews";
+import AdminVideos from "@/pages/admin/AdminVideos";
 import ExperienceStartLanding from "@/pages/ExperienceStartLanding";
 import OperacaoRegularizacaoLanding from "@/pages/OperacaoRegularizacaoLanding";
 import SimuladorFinanceiro from "@/pages/SimuladorFinanceiro";
@@ -297,6 +298,14 @@ export const AnimatedRoutes = () => {
           element={
             <ProtectedRoute requireAdmin>
               <PageTransition><AdminMissionReviews /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/videos"
+          element={
+            <ProtectedRoute requireAdmin>
+              <PageTransition><AdminVideos /></PageTransition>
             </ProtectedRoute>
           }
         />
