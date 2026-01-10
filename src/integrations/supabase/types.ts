@@ -1754,6 +1754,7 @@ export type Database = {
           action_type: Database["public"]["Enums"]["action_type"] | null
           action_url: string | null
           created_at: string
+          custom_thumbnail_url: string | null
           description: string | null
           duration_minutes: number | null
           id: string
@@ -1770,6 +1771,7 @@ export type Database = {
           action_type?: Database["public"]["Enums"]["action_type"] | null
           action_url?: string | null
           created_at?: string
+          custom_thumbnail_url?: string | null
           description?: string | null
           duration_minutes?: number | null
           id?: string
@@ -1786,6 +1788,7 @@ export type Database = {
           action_type?: Database["public"]["Enums"]["action_type"] | null
           action_url?: string | null
           created_at?: string
+          custom_thumbnail_url?: string | null
           description?: string | null
           duration_minutes?: number | null
           id?: string

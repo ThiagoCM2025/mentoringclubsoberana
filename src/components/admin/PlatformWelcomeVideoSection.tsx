@@ -6,14 +6,16 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Video, Loader2, Save, Play, ExternalLink } from "lucide-react";
+import { Video, Loader2, Save, Play, Sparkles, RefreshCw } from "lucide-react";
 
 export function PlatformWelcomeVideoSection() {
   const [videoUrl, setVideoUrl] = useState("");
   const [duration, setDuration] = useState<number | null>(null);
+  const [customThumbnail, setCustomThumbnail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [generatingThumb, setGeneratingThumb] = useState(false);
 
   useEffect(() => {
     fetchSettings();
@@ -24,15 +26,17 @@ export function PlatformWelcomeVideoSection() {
       const { data, error } = await supabase
         .from("platform_settings")
         .select("key, value")
-        .in("key", ["welcome_video_url", "welcome_video_duration"]);
+        .in("key", ["welcome_video_url", "welcome_video_duration", "welcome_video_thumbnail"]);
 
       if (error) throw error;
 
       const urlSetting = data?.find(s => s.key === "welcome_video_url");
       const durationSetting = data?.find(s => s.key === "welcome_video_duration");
+      const thumbSetting = data?.find(s => s.key === "welcome_video_thumbnail");
 
       if (urlSetting?.value) setVideoUrl(urlSetting.value);
       if (durationSetting?.value) setDuration(parseInt(durationSetting.value));
+      if (thumbSetting?.value) setCustomThumbnail(thumbSetting.value);
     } catch (error) {
       console.error("Error fetching settings:", error);
     } finally {
@@ -59,6 +63,14 @@ export function PlatformWelcomeVideoSection() {
 
       if (durationError) throw durationError;
 
+      // Update custom thumbnail
+      const { error: thumbError } = await supabase
+        .from("platform_settings")
+        .update({ value: customThumbnail || null })
+        .eq("key", "welcome_video_thumbnail");
+
+      if (thumbError) throw thumbError;
+
       toast.success("Vídeo de boas-vindas atualizado!");
     } catch (error) {
       console.error("Error saving settings:", error);
@@ -73,17 +85,48 @@ export function PlatformWelcomeVideoSection() {
 
     try {
       const { data, error } = await supabase.functions.invoke("youtube-video-info", {
-        body: { url: videoUrl }
+        body: { videoUrl: videoUrl }
       });
 
       if (error) throw error;
-      if (data?.duration) {
-        setDuration(data.duration);
-        toast.success(`Duração detectada: ${data.duration} minutos`);
+      if (data?.durationMinutes) {
+        setDuration(data.durationMinutes);
+        toast.success(`Duração detectada: ${data.durationMinutes} minutos`);
       }
     } catch (error) {
       console.error("Error detecting duration:", error);
       toast.error("Não foi possível detectar a duração");
+    }
+  }
+
+  async function generateAIThumbnail() {
+    if (!videoUrl) return;
+
+    setGeneratingThumb(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-video-thumbnail", {
+        body: { 
+          videoTitle: "Vídeo de Boas-Vindas - Soberana Academy",
+          style: "professional, welcoming, empowering, premium education"
+        }
+      });
+
+      if (error) throw error;
+      if (data?.thumbnailUrl) {
+        setCustomThumbnail(data.thumbnailUrl);
+        toast.success("Thumbnail gerada com IA!");
+      }
+    } catch (error: any) {
+      console.error("Error generating thumbnail:", error);
+      if (error.message?.includes("429")) {
+        toast.error("Limite de requisições atingido. Tente novamente em alguns minutos.");
+      } else if (error.message?.includes("402")) {
+        toast.error("Créditos insuficientes. Adicione créditos ao workspace.");
+      } else {
+        toast.error("Erro ao gerar thumbnail com IA");
+      }
+    } finally {
+      setGeneratingThumb(false);
     }
   }
 
@@ -101,7 +144,8 @@ export function PlatformWelcomeVideoSection() {
     return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
   };
 
-  const thumbnail = videoUrl ? getYouTubeThumbnail(videoUrl) : null;
+  const youtubeThumbnail = videoUrl ? getYouTubeThumbnail(videoUrl) : null;
+  const displayThumbnail = customThumbnail || youtubeThumbnail;
   const embedUrl = videoUrl ? getYouTubeEmbedUrl(videoUrl) : null;
 
   if (loading) {
@@ -149,7 +193,7 @@ export function PlatformWelcomeVideoSection() {
               </div>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
                 variant="outline"
@@ -159,12 +203,46 @@ export function PlatformWelcomeVideoSection() {
               >
                 Detectar Duração
               </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={generateAIThumbnail}
+                disabled={!videoUrl || generatingThumb}
+                className="gap-2"
+              >
+                {generatingThumb ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4" />
+                )}
+                Gerar Thumb IA
+              </Button>
               {duration && (
                 <Badge variant="outline" className="text-secondary border-secondary/30">
                   {duration} min
                 </Badge>
               )}
             </div>
+
+            {customThumbnail && (
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  Thumb IA Ativa
+                </Badge>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCustomThumbnail(null)}
+                  className="h-6 px-2 text-xs"
+                >
+                  <RefreshCw className="w-3 h-3 mr-1" />
+                  Usar YouTube
+                </Button>
+              </div>
+            )}
 
             <Button
               onClick={handleSave}
@@ -183,7 +261,7 @@ export function PlatformWelcomeVideoSection() {
           {/* Preview Side */}
           <div className="space-y-2">
             <Label className="text-sm text-foreground">Preview</Label>
-            {videoUrl && thumbnail ? (
+            {videoUrl && displayThumbnail ? (
               <div className="relative rounded-lg overflow-hidden border border-border">
                 {showPreview && embedUrl ? (
                   <div className="aspect-video">
@@ -200,7 +278,7 @@ export function PlatformWelcomeVideoSection() {
                     onClick={() => setShowPreview(true)}
                   >
                     <img 
-                      src={thumbnail} 
+                      src={displayThumbnail} 
                       alt="Video thumbnail" 
                       className="w-full h-full object-cover"
                     />
@@ -209,6 +287,14 @@ export function PlatformWelcomeVideoSection() {
                         <Play className="w-8 h-8 text-black fill-black ml-1" />
                       </div>
                     </div>
+                    {customThumbnail && (
+                      <div className="absolute top-2 left-2">
+                        <Badge className="bg-purple-500/90 text-white">
+                          <Sparkles className="w-3 h-3 mr-1" />
+                          IA
+                        </Badge>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

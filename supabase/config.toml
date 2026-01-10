@@ -44,3 +44,9 @@ verify_jwt = false
 
 [functions.youtube-video-info]
 verify_jwt = false
+
+[functions.generate-video-thumbnail]
+verify_jwt = true
+
+[functions.youtube-video-info]
+verify_jwt = false
