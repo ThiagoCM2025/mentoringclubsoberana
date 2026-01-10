@@ -85,6 +85,7 @@ const StudentDashboard = () => {
   const [previewCourseId, setPreviewCourseId] = useState<string | null>(null);
   const [dailyChallengesCount, setDailyChallengesCount] = useState(0);
   const [welcomeVideoUrl, setWelcomeVideoUrl] = useState<string | null>(null);
+  const [welcomeVideoThumbnail, setWelcomeVideoThumbnail] = useState<string | null>(null);
   const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
 
   // Achievement notification - monitors and sends push when close to new badge/level
@@ -106,12 +107,39 @@ const StudentDashboard = () => {
     }
   }, [user]);
   const fetchWelcomeVideo = async () => {
-    const {
-      data
-    } = await supabase.from("platform_settings").select("value").eq("key", "welcome_video_url").single();
-    if (data?.value) {
-      setWelcomeVideoUrl(data.value);
+    const { data } = await supabase
+      .from("platform_settings")
+      .select("key, value")
+      .in("key", ["welcome_video_url", "welcome_video_thumbnail"]);
+    
+    if (data) {
+      const urlSetting = data.find(s => s.key === "welcome_video_url");
+      const thumbSetting = data.find(s => s.key === "welcome_video_thumbnail");
+      
+      if (urlSetting?.value) setWelcomeVideoUrl(urlSetting.value);
+      if (thumbSetting?.value) setWelcomeVideoThumbnail(thumbSetting.value);
     }
+  };
+
+  // Helper: Get welcome video thumbnail with custom thumbnail priority + cache-buster fallback
+  const getWelcomeVideoThumbnail = (): string | null => {
+    // Priority 1: Custom/AI thumbnail from database
+    if (welcomeVideoThumbnail) {
+      return welcomeVideoThumbnail;
+    }
+    
+    // Priority 2: YouTube thumbnail with cache-buster
+    if (welcomeVideoUrl) {
+      const videoId = welcomeVideoUrl.match(
+        /(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([^#&?]*)/
+      )?.[1];
+      
+      if (videoId) {
+        return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg?t=${Date.now()}`;
+      }
+    }
+    
+    return null;
   };
   const fetchDailyChallengesCount = async () => {
     const {
@@ -578,9 +606,14 @@ const StudentDashboard = () => {
           }} onClick={() => welcomeVideoUrl && setShowWelcomeVideo(true)} className={`relative group bg-zinc-900 rounded-xl border border-secondary/20 overflow-hidden hover:border-secondary/50 transition-all hover:shadow-lg ${welcomeVideoUrl ? 'cursor-pointer' : ''}`}>
               <div className="aspect-[4/3] relative">
                 {welcomeVideoUrl ? <>
-                    <img src={`https://img.youtube.com/vi/${welcomeVideoUrl.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([^#&?]*)/)?.[1] || ''}/maxresdefault.jpg`} alt="Vídeo de Boas-Vindas" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onError={e => {
-                  (e.target as HTMLImageElement).src = heroVariations;
-                }} />
+                    <img 
+                      src={getWelcomeVideoThumbnail() || heroVariations} 
+                      alt="Vídeo de Boas-Vindas" 
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                      onError={e => {
+                        (e.target as HTMLImageElement).src = heroVariations;
+                      }} 
+                    />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
                       <motion.div className="w-16 h-16 rounded-full bg-secondary/90 flex items-center justify-center" whileHover={{
                     scale: 1.1
