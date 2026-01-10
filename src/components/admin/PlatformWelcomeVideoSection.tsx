@@ -16,10 +16,18 @@ export function PlatformWelcomeVideoSection() {
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [generatingThumb, setGeneratingThumb] = useState(false);
+  const [detectingDuration, setDetectingDuration] = useState(false);
+  const [thumbnailError, setThumbnailError] = useState(false);
 
   useEffect(() => {
     fetchSettings();
   }, []);
+
+  // Reset thumbnail error when URL changes
+  useEffect(() => {
+    setThumbnailError(false);
+    setShowPreview(false);
+  }, [videoUrl, customThumbnail]);
 
   async function fetchSettings() {
     try {
@@ -83,6 +91,7 @@ export function PlatformWelcomeVideoSection() {
   async function detectDuration() {
     if (!videoUrl) return;
 
+    setDetectingDuration(true);
     try {
       const { data, error } = await supabase.functions.invoke("youtube-video-info", {
         body: { videoUrl: videoUrl }
@@ -92,10 +101,14 @@ export function PlatformWelcomeVideoSection() {
       if (data?.durationMinutes) {
         setDuration(data.durationMinutes);
         toast.success(`Duração detectada: ${data.durationMinutes} minutos`);
+      } else {
+        toast.info("Não foi possível detectar automaticamente. Insira manualmente abaixo.");
       }
     } catch (error) {
       console.error("Error detecting duration:", error);
-      toast.error("Não foi possível detectar a duração");
+      toast.error("Erro na detecção. Insira a duração manualmente.");
+    } finally {
+      setDetectingDuration(false);
     }
   }
 
@@ -193,16 +206,39 @@ export function PlatformWelcomeVideoSection() {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="welcome-video-duration" className="text-sm text-foreground">
+                Duração (minutos)
+              </Label>
+              <div className="flex gap-2 items-center">
+                <Input
+                  id="welcome-video-duration"
+                  type="number"
+                  placeholder="Ex: 5"
+                  value={duration || ""}
+                  onChange={(e) => setDuration(e.target.value ? parseInt(e.target.value) : null)}
+                  className="w-24"
+                  min={1}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={detectDuration}
+                  disabled={!videoUrl || detectingDuration}
+                  className="gap-2"
+                >
+                  {detectingDuration ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-4 h-4" />
+                  )}
+                  Auto-detectar
+                </Button>
+              </div>
+            </div>
+
             <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={detectDuration}
-                disabled={!videoUrl}
-              >
-                Detectar Duração
-              </Button>
               <Button
                 type="button"
                 variant="outline"
@@ -218,11 +254,6 @@ export function PlatformWelcomeVideoSection() {
                 )}
                 Gerar Thumb IA
               </Button>
-              {duration && (
-                <Badge variant="outline" className="text-secondary border-secondary/30">
-                  {duration} min
-                </Badge>
-              )}
             </div>
 
             {customThumbnail && (
@@ -261,7 +292,7 @@ export function PlatformWelcomeVideoSection() {
           {/* Preview Side */}
           <div className="space-y-2">
             <Label className="text-sm text-foreground">Preview</Label>
-            {videoUrl && displayThumbnail ? (
+            {videoUrl && displayThumbnail && !thumbnailError ? (
               <div className="relative rounded-lg overflow-hidden border border-border">
                 {showPreview && embedUrl ? (
                   <div className="aspect-video">
@@ -281,6 +312,7 @@ export function PlatformWelcomeVideoSection() {
                       src={displayThumbnail} 
                       alt="Video thumbnail" 
                       className="w-full h-full object-cover"
+                      onError={() => setThumbnailError(true)}
                     />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
                       <div className="w-16 h-16 rounded-full bg-secondary/90 flex items-center justify-center">

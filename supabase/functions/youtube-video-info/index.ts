@@ -13,7 +13,6 @@ interface YouTubeVideoInfo {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -28,7 +27,6 @@ serve(async (req) => {
       );
     }
 
-    // Extract video ID from various YouTube URL formats
     const videoId = extractYouTubeVideoId(videoUrl);
     
     if (!videoId) {
@@ -40,7 +38,7 @@ serve(async (req) => {
 
     console.log(`Fetching info for YouTube video: ${videoId}`);
 
-    // Try to get video info using oEmbed API (no API key required)
+    // Get basic info from oEmbed API
     const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
     const oembedResponse = await fetch(oembedUrl);
     
@@ -53,38 +51,49 @@ serve(async (req) => {
 
     const oembedData = await oembedResponse.json();
     
-    // Try to get duration by fetching the video page
+    // Get best available thumbnail with fallback
+    const thumbnailUrl = await getBestThumbnail(videoId);
+    console.log(`Best thumbnail found: ${thumbnailUrl}`);
+    
+    // Try to get duration from Invidious API
     let durationMinutes: number | null = null;
     
-    try {
-      const videoPageUrl = `https://www.youtube.com/watch?v=${videoId}`;
-      const pageResponse = await fetch(videoPageUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Accept-Language': 'en-US,en;q=0.9',
-        }
-      });
-      
-      if (pageResponse.ok) {
-        const html = await pageResponse.text();
+    const invidiousInstances = [
+      'https://vid.puffyan.us',
+      'https://invidious.snopyta.org',
+      'https://yewtu.be',
+      'https://invidious.kavin.rocks'
+    ];
+    
+    for (const instance of invidiousInstances) {
+      try {
+        const invidiousUrl = `${instance}/api/v1/videos/${videoId}?fields=lengthSeconds`;
+        console.log(`Trying Invidious: ${invidiousUrl}`);
         
-        // Try to extract duration from the page's JSON data
-        const durationMatch = html.match(/"lengthSeconds":"(\d+)"/);
-        if (durationMatch) {
-          const seconds = parseInt(durationMatch[1]);
-          durationMinutes = Math.ceil(seconds / 60);
-          console.log(`Extracted duration: ${durationMinutes} minutes (${seconds} seconds)`);
+        const invidiousResponse = await fetch(invidiousUrl, {
+          headers: { 'Accept': 'application/json' },
+          signal: AbortSignal.timeout(5000)
+        });
+        
+        if (invidiousResponse.ok) {
+          const data = await invidiousResponse.json();
+          if (data.lengthSeconds) {
+            durationMinutes = Math.ceil(data.lengthSeconds / 60);
+            console.log(`Duration from Invidious: ${durationMinutes} minutes`);
+            break;
+          }
         }
+      } catch (error) {
+        console.log(`Invidious instance ${instance} failed:`, error);
+        continue;
       }
-    } catch (error) {
-      console.log('Could not extract duration from page:', error);
     }
 
     const result: YouTubeVideoInfo = {
       title: oembedData.title,
       author: oembedData.author_name,
-      thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-      durationMinutes: durationMinutes,
+      thumbnailUrl,
+      durationMinutes,
     };
 
     console.log('Video info:', result);
@@ -103,6 +112,31 @@ serve(async (req) => {
     );
   }
 });
+
+async function getBestThumbnail(videoId: string): Promise<string> {
+  const thumbnailOptions = [
+    `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+  ];
+
+  for (const url of thumbnailOptions) {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      // Check if image exists and is not the default placeholder (120 bytes)
+      const contentLength = response.headers.get('content-length');
+      if (response.ok && contentLength && parseInt(contentLength) > 1000) {
+        return url;
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  // Return the most reliable fallback
+  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+}
 
 function extractYouTubeVideoId(url: string): string | null {
   const patterns = [
