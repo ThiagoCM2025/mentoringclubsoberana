@@ -10,7 +10,8 @@ import { Video, Loader2, Save, Play, Sparkles, RefreshCw } from "lucide-react";
 
 export function PlatformWelcomeVideoSection() {
   const [videoUrl, setVideoUrl] = useState("");
-  const [duration, setDuration] = useState<number | null>(null);
+  const [durationMinutes, setDurationMinutes] = useState<number>(0);
+  const [durationSeconds, setDurationSeconds] = useState<number>(0);
   const [customThumbnail, setCustomThumbnail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -18,6 +19,17 @@ export function PlatformWelcomeVideoSection() {
   const [generatingThumb, setGeneratingThumb] = useState(false);
   const [detectingDuration, setDetectingDuration] = useState(false);
   const [thumbnailError, setThumbnailError] = useState(false);
+
+  // Convert total seconds to minutes and seconds
+  const setDurationFromTotalSeconds = (totalSeconds: number) => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    setDurationMinutes(minutes);
+    setDurationSeconds(seconds);
+  };
+
+  // Get total seconds from minutes and seconds
+  const getTotalSeconds = () => durationMinutes * 60 + durationSeconds;
 
   useEffect(() => {
     fetchSettings();
@@ -43,7 +55,10 @@ export function PlatformWelcomeVideoSection() {
       const thumbSetting = data?.find(s => s.key === "welcome_video_thumbnail");
 
       if (urlSetting?.value) setVideoUrl(urlSetting.value);
-      if (durationSetting?.value) setDuration(parseInt(durationSetting.value));
+      if (durationSetting?.value) {
+        const totalSeconds = parseInt(durationSetting.value);
+        setDurationFromTotalSeconds(totalSeconds);
+      }
       if (thumbSetting?.value) setCustomThumbnail(thumbSetting.value);
     } catch (error) {
       console.error("Error fetching settings:", error);
@@ -63,10 +78,11 @@ export function PlatformWelcomeVideoSection() {
 
       if (urlError) throw urlError;
 
-      // Update duration
+      // Update duration (stored as total seconds)
+      const totalSeconds = getTotalSeconds();
       const { error: durationError } = await supabase
         .from("platform_settings")
-        .update({ value: duration?.toString() || null })
+        .update({ value: totalSeconds > 0 ? totalSeconds.toString() : null })
         .eq("key", "welcome_video_duration");
 
       if (durationError) throw durationError;
@@ -99,8 +115,12 @@ export function PlatformWelcomeVideoSection() {
 
       if (error) throw error;
       if (data?.durationMinutes) {
-        setDuration(data.durationMinutes);
-        toast.success(`Duração detectada: ${data.durationMinutes} minutos`);
+        // Convert minutes to total seconds (API returns minutes, we store seconds)
+        const totalSeconds = data.durationMinutes * 60;
+        setDurationFromTotalSeconds(totalSeconds);
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        toast.success(`Duração detectada: ${mins}min ${secs > 0 ? secs + 's' : ''}`);
       } else {
         toast.info("Não foi possível detectar automaticamente. Insira manualmente abaixo.");
       }
@@ -207,19 +227,36 @@ export function PlatformWelcomeVideoSection() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="welcome-video-duration" className="text-sm text-foreground">
-                Duração (minutos)
+              <Label className="text-sm text-foreground">
+                Duração
               </Label>
-              <div className="flex gap-2 items-center">
-                <Input
-                  id="welcome-video-duration"
-                  type="number"
-                  placeholder="Ex: 5"
-                  value={duration || ""}
-                  onChange={(e) => setDuration(e.target.value ? parseInt(e.target.value) : null)}
-                  className="w-24"
-                  min={1}
-                />
+              <div className="flex gap-2 items-center flex-wrap">
+                <div className="flex items-center gap-1">
+                  <Input
+                    id="welcome-video-duration-min"
+                    type="number"
+                    placeholder="0"
+                    value={durationMinutes || ""}
+                    onChange={(e) => setDurationMinutes(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-16 text-center"
+                    min={0}
+                  />
+                  <span className="text-muted-foreground text-sm">min</span>
+                </div>
+                <span className="text-muted-foreground font-bold">:</span>
+                <div className="flex items-center gap-1">
+                  <Input
+                    id="welcome-video-duration-sec"
+                    type="number"
+                    placeholder="0"
+                    value={durationSeconds || ""}
+                    onChange={(e) => setDurationSeconds(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
+                    className="w-16 text-center"
+                    min={0}
+                    max={59}
+                  />
+                  <span className="text-muted-foreground text-sm">seg</span>
+                </div>
                 <Button
                   type="button"
                   variant="outline"
