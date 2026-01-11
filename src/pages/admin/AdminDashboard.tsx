@@ -72,6 +72,7 @@ import { Link } from "react-router-dom";
 import { Tooltip as UITooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import type { Database } from "@/integrations/supabase/types";
 import { cn } from "@/lib/utils";
+import { getBrazilNow, getBrazilDaysAgo, getBrazilMonthsAgo, getBrazilYearsAgo } from "@/lib/dateUtils";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 
@@ -165,22 +166,18 @@ const PERIOD_OPTIONS = [
 ];
 
 const getDateFromPeriod = (period: PeriodFilter): Date => {
-  const date = new Date();
   switch (period) {
     case '7d':
-      date.setDate(date.getDate() - 7);
-      break;
+      return getBrazilDaysAgo(7);
     case '30d':
-      date.setDate(date.getDate() - 30);
-      break;
+      return getBrazilDaysAgo(30);
     case '6m':
-      date.setMonth(date.getMonth() - 6);
-      break;
+      return getBrazilMonthsAgo(6);
     case '1y':
-      date.setFullYear(date.getFullYear() - 1);
-      break;
+      return getBrazilYearsAgo(1);
+    default:
+      return getBrazilNow();
   }
-  return date;
 };
 
 // Animated counter hook
@@ -497,16 +494,14 @@ const AdminDashboard = () => {
       .select("*", { count: "exact", head: true });
 
     // Recent enrollments (last 7 days)
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const sevenDaysAgo = getBrazilDaysAgo(7);
     const { count: recentCount } = await supabase
       .from("enrollments")
       .select("*", { count: "exact", head: true })
       .gte("enrolled_at", sevenDaysAgo.toISOString());
 
     // Previous 7 days for growth calculation
-    const fourteenDaysAgo = new Date();
-    fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+    const fourteenDaysAgo = getBrazilDaysAgo(14);
     const { count: previousCount } = await supabase
       .from("enrollments")
       .select("*", { count: "exact", head: true })
@@ -683,8 +678,7 @@ const AdminDashboard = () => {
     if (communityPeriod === '7d' || communityPeriod === '30d') {
       const days = communityPeriod === '7d' ? 7 : 30;
       for (let i = days - 1; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
+        const date = getBrazilDaysAgo(i);
         const key = `${date.getDate()}/${date.getMonth() + 1}`;
         groupedData[key] = { posts: 0, comments: 0, likes: 0 };
       }
@@ -709,8 +703,7 @@ const AdminDashboard = () => {
     } else {
       const monthsCount = communityPeriod === '6m' ? 6 : 12;
       for (let i = monthsCount - 1; i >= 0; i--) {
-        const date = new Date();
-        date.setMonth(date.getMonth() - i);
+        const date = getBrazilMonthsAgo(i);
         const key = months[date.getMonth()];
         groupedData[key] = { posts: 0, comments: 0, likes: 0 };
       }

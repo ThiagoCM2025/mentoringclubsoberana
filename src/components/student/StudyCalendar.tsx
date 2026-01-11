@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { getBrazilNow, getBrazilToday, BRAZIL_TIMEZONE } from "@/lib/dateUtils";
 
 interface StudyDay {
   date: string;
@@ -15,7 +16,7 @@ interface StudyDay {
 
 export function StudyCalendar() {
   const { user } = useAuth();
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(getBrazilNow);
   const [studyDays, setStudyDays] = useState<Map<string, StudyDay>>(new Map());
   const [loading, setLoading] = useState(true);
 
@@ -107,8 +108,8 @@ export function StudyCalendar() {
   const daysStudied = studyDays.size;
 
   const days = getDaysInMonth();
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Usar data de hoje no horário de Brasília
+  const today = getBrazilToday();
 
   return (
     <div className="bg-zinc-900/95 rounded-2xl border border-secondary/20 p-4">

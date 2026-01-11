@@ -7,6 +7,17 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+/**
+ * Obter data/hora atual no horário de Brasília (GMT-3)
+ */
+function getBrazilNow(): Date {
+  const now = new Date();
+  const brazilOffset = -3 * 60;
+  const utcOffset = now.getTimezoneOffset();
+  const diff = brazilOffset + utcOffset;
+  return new Date(now.getTime() + diff * 60 * 1000);
+}
+
 interface Lead {
   id: string;
   full_name: string;
@@ -211,8 +222,8 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log(`Found ${leads?.length || 0} leads with active nurturing`);
-
-    const now = new Date();
+    // Usar horário de Brasília
+    const now = getBrazilNow();
 
     for (const lead of leads || []) {
       const nextStep = (lead.nurturing_step || 0) + 1;

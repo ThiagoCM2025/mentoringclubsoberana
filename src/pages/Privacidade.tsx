@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import SEO from "@/components/SEO";
 import { SoberanaLogoMark } from "@/components/landing/SoberanaLogoMark";
+import { formatBrazilDate, getBrazilNow, getBrazilYear } from "@/lib/dateUtils";
 
 const Privacidade = () => {
   return (
@@ -34,7 +35,7 @@ const Privacidade = () => {
             
             <div className="prose prose-lg max-w-none text-muted-foreground">
               <p className="text-sm text-muted-foreground mb-8">
-                Última atualização: {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                Última atualização: {formatBrazilDate(getBrazilNow(), { day: '2-digit', month: 'long', year: 'numeric' })}
               </p>
 
               <section className="mb-8">
@@ -136,7 +137,7 @@ const Privacidade = () => {
         {/* Footer */}
         <footer className="bg-foreground text-background py-6">
           <div className="container-soberana px-4 text-center text-sm text-background/60">
-            © {new Date().getFullYear()} Soberana Mentoring Club. Todos os direitos reservados.
+            © {getBrazilYear()} Soberana Mentoring Club. Todos os direitos reservados.
           </div>
         </footer>
       </div>
