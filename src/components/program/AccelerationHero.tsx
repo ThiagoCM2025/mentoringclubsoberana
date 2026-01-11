@@ -6,7 +6,7 @@ import { Program } from "@/data/programs";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 
 // Brand assets
-import fabianaHero from "@/assets/hero-fabiana.jpeg";
+import fabianaHero from "@/assets/hero-fabiana-aceleracao.jpeg";
 import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import patternGeometricGold from "@/assets/brand/pattern-geometric-gold.png";
