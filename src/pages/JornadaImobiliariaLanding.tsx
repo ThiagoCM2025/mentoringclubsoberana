@@ -145,7 +145,7 @@ const JornadaImobiliariaLanding = () => {
         <div className="container-soberana relative z-10 py-8 px-4 sm:py-10 sm:px-6 lg:py-24 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
             
-            {/* Fabiana Image - Mobile/Tablet only */}
+            {/* Fabiana Image - Mobile/Tablet only - Enhanced Integration */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }} 
               animate={{ opacity: 1, scale: 1 }} 
@@ -153,25 +153,75 @@ const JornadaImobiliariaLanding = () => {
               className="lg:hidden flex justify-center mb-6"
             >
               <div className="relative">
-                {/* Golden glow behind - larger for bigger image */}
-                <div className="absolute -inset-3 bg-gradient-to-br from-secondary/40 via-secondary/20 to-secondary/40 rounded-2xl blur-lg" />
-                
-                {/* Image with golden frame - LARGER on mobile/tablet */}
+                {/* Mirror/Reflection effect - blurred copy behind for depth */}
                 <img 
                   src={heroImage} 
-                  alt="Fabiana Duarte"
-                  className="relative w-[75vw] max-w-[260px] h-auto aspect-[3/4] 
-                             sm:w-[65vw] sm:max-w-[300px] 
-                             md:w-[55vw] md:max-w-[360px]
-                             object-cover object-top rounded-2xl border-2 border-secondary/40 
-                             shadow-[0_0_40px_rgba(166,144,97,0.3)]"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-[85vw] max-w-[300px] h-auto aspect-[3/4] 
+                             sm:w-[75vw] sm:max-w-[340px] 
+                             md:w-[65vw] md:max-w-[400px]
+                             object-cover object-top rounded-2xl opacity-25 
+                             transform scale-[1.08]"
+                  style={{ filter: 'blur(12px) brightness(0.5)' }}
                 />
                 
-                {/* Decorative corner elements - slightly larger */}
-                <div className="absolute -top-1.5 -left-1.5 w-5 h-5 border-t-2 border-l-2 border-secondary/60 rounded-tl-lg" />
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 border-t-2 border-r-2 border-secondary/60 rounded-tr-lg" />
-                <div className="absolute -bottom-1.5 -left-1.5 w-5 h-5 border-b-2 border-l-2 border-secondary/60 rounded-bl-lg" />
-                <div className="absolute -bottom-1.5 -right-1.5 w-5 h-5 border-b-2 border-r-2 border-secondary/60 rounded-br-lg" />
+                {/* Enhanced golden glow behind - pulsing */}
+                <motion.div 
+                  className="absolute -inset-5 bg-gradient-to-br from-secondary/50 via-secondary/30 to-secondary/50 rounded-3xl blur-xl"
+                  animate={{ opacity: [0.5, 0.8, 0.5] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                />
+                
+                {/* Secondary glow layer for more depth */}
+                <div className="absolute -inset-3 bg-gradient-radial from-secondary/40 to-transparent rounded-2xl blur-md" />
+                
+                {/* Main image with premium frame */}
+                <img 
+                  src={heroImage} 
+                  alt="Fabiana Duarte - Mentora em Direito Imobiliário"
+                  className="relative w-[85vw] max-w-[300px] h-auto aspect-[3/4] 
+                             sm:w-[75vw] sm:max-w-[340px] 
+                             md:w-[65vw] md:max-w-[400px]
+                             object-cover object-top rounded-2xl border-2 border-secondary/50 
+                             shadow-[0_0_60px_rgba(166,144,97,0.4)]"
+                />
+                
+                {/* Floating particles around frame */}
+                {[...Array(8)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1.5 h-1.5 bg-secondary/70 rounded-full"
+                    style={{
+                      left: i % 2 === 0 ? `${-8 - (i % 3) * 4}px` : 'auto',
+                      right: i % 2 !== 0 ? `${-8 - (i % 3) * 4}px` : 'auto',
+                      top: `${10 + i * 11}%`,
+                    }}
+                    animate={{ 
+                      y: [-6, 6, -6], 
+                      opacity: [0.3, 0.9, 0.3],
+                      scale: [0.7, 1.3, 0.7]
+                    }}
+                    transition={{ 
+                      duration: 2.5 + i * 0.4, 
+                      repeat: Infinity, 
+                      ease: "easeInOut",
+                      delay: i * 0.2
+                    }}
+                  />
+                ))}
+                
+                {/* Enhanced corner decorations */}
+                <div className="absolute -top-2.5 -left-2.5 w-7 h-7 border-t-2 border-l-2 border-secondary/70 rounded-tl-lg" />
+                <div className="absolute -top-2.5 -right-2.5 w-7 h-7 border-t-2 border-r-2 border-secondary/70 rounded-tr-lg" />
+                <div className="absolute -bottom-2.5 -left-2.5 w-7 h-7 border-b-2 border-l-2 border-secondary/70 rounded-bl-lg" />
+                <div className="absolute -bottom-2.5 -right-2.5 w-7 h-7 border-b-2 border-r-2 border-secondary/70 rounded-br-lg" />
+                
+                {/* Corner accent dots */}
+                <div className="absolute -top-1 -left-1 w-2 h-2 bg-secondary/60 rounded-full" />
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-secondary/60 rounded-full" />
+                <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-secondary/60 rounded-full" />
+                <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-secondary/60 rounded-full" />
               </div>
             </motion.div>
 
