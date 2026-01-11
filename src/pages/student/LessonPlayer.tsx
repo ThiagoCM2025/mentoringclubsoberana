@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LessonSidebar from "@/components/student/LessonSidebar";
 import FavoriteButton from "@/components/student/FavoriteButton";
 import VideoPlayer from "@/components/student/VideoPlayer";
+import SchedulingContent from "@/components/student/SchedulingContent";
 import { useConfetti } from "@/hooks/useConfetti";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -36,6 +37,9 @@ interface Lesson {
   duration_minutes: number | null;
   module_id: string;
   order_index: number;
+  lesson_type?: string | null;
+  action_url?: string | null;
+  action_button_text?: string | null;
 }
 
 interface Material {
@@ -424,7 +428,7 @@ const LessonPlayer = () => {
       <div className="flex">
         {/* Main Content */}
         <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? "lg:mr-80" : ""}`}>
-          {/* Video Player - Optimized for YouTube/Vimeo embeds */}
+          {/* Content Area - Video or Scheduling */}
           <div 
             className="bg-black relative w-full flex items-center justify-center"
             style={{ 
@@ -433,12 +437,27 @@ const LessonPlayer = () => {
               minHeight: '400px' 
             }}
           >
-            <VideoPlayer
-              url={lesson?.video_url || null}
-              onTimeUpdate={handleTimeUpdate}
-              onEnded={handleVideoEnded}
-              initialTime={progressSeconds}
-            />
+            {/* Detect content type based on lesson_type or URL patterns */}
+            {lesson?.lesson_type === 'scheduling' || 
+             lesson?.video_url?.includes('calendar.google.com') ||
+             lesson?.video_url?.includes('calendly.com') ||
+             lesson?.action_url?.includes('calendar') ? (
+              <SchedulingContent
+                url={lesson.action_url || lesson.video_url || ""}
+                title={lesson.title}
+                description={lesson.description}
+                buttonText={lesson.action_button_text}
+                isCompleted={isCompleted}
+                onComplete={markAsComplete}
+              />
+            ) : (
+              <VideoPlayer
+                url={lesson?.video_url || null}
+                onTimeUpdate={handleTimeUpdate}
+                onEnded={handleVideoEnded}
+                initialTime={progressSeconds}
+              />
+            )}
           </div>
 
           {/* Navigation Controls & Completion Checkbox */}

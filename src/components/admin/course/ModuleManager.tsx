@@ -17,6 +17,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import VideoUrlInput from "./VideoUrlInput";
 import {
@@ -30,7 +37,9 @@ import {
   ChevronDown,
   Copy,
   Video,
-  Youtube
+  Youtube,
+  Calendar,
+  FileEdit
 } from "lucide-react";
 
 interface Lesson {
@@ -41,6 +50,9 @@ interface Lesson {
   duration_minutes: number | null;
   order_index: number;
   is_free: boolean;
+  lesson_type?: string | null;
+  action_url?: string | null;
+  action_button_text?: string | null;
 }
 
 interface Module {
@@ -69,13 +81,22 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
   const [editingLesson, setEditingLesson] = useState<Partial<Lesson> | null>(null);
   const [lessonModuleId, setLessonModuleId] = useState<string | null>(null);
 
-  const getVideoTypeIcon = (url: string | null) => {
+  const getVideoTypeIcon = (url: string | null, lessonType?: string | null) => {
+    if (lessonType === 'scheduling') {
+      return <Calendar className="w-4 h-4 text-secondary" />;
+    }
+    if (lessonType === 'text') {
+      return <FileEdit className="w-4 h-4 text-purple-500" />;
+    }
     if (!url) return null;
     if (url.includes("youtube") || url.includes("youtu.be")) {
       return <Youtube className="w-4 h-4 text-red-500" />;
     }
     if (url.includes("vimeo")) {
       return <Video className="w-4 h-4 text-blue-500" />;
+    }
+    if (url.includes("calendar.google.com") || url.includes("calendly.com")) {
+      return <Calendar className="w-4 h-4 text-secondary" />;
     }
     return <Video className="w-4 h-4 text-green-500" />;
   };
@@ -176,15 +197,21 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
     if (!editingLesson?.title || !lessonModuleId) return;
 
     try {
+      // Cast lesson_type properly for the database
+      const lessonType = (editingLesson.lesson_type || 'video') as 'video' | 'text' | 'action' | 'diagnostic' | 'scheduling' | 'upload';
+      
       if (editingLesson.id) {
         await supabase
           .from("lessons")
           .update({
             title: editingLesson.title,
             description: editingLesson.description,
-            video_url: editingLesson.video_url,
+            video_url: lessonType === 'scheduling' ? null : editingLesson.video_url,
             duration_minutes: editingLesson.duration_minutes,
             is_free: editingLesson.is_free,
+            lesson_type: lessonType,
+            action_url: editingLesson.action_url,
+            action_button_text: editingLesson.action_button_text,
           })
           .eq("id", editingLesson.id);
       } else {
@@ -193,9 +220,12 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
           module_id: lessonModuleId,
           title: editingLesson.title,
           description: editingLesson.description,
-          video_url: editingLesson.video_url,
+          video_url: lessonType === 'scheduling' ? null : editingLesson.video_url,
           duration_minutes: editingLesson.duration_minutes,
           is_free: editingLesson.is_free || false,
+          lesson_type: lessonType,
+          action_url: editingLesson.action_url,
+          action_button_text: editingLesson.action_button_text,
           order_index: module?.lessons.length || 0,
         });
       }
@@ -306,7 +336,7 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
                     size="sm"
                     onClick={() => {
                       setLessonModuleId(module.id);
-                      setEditingLesson({ title: "", description: "", video_url: "", is_free: false });
+                      setEditingLesson({ title: "", description: "", video_url: "", is_free: false, lesson_type: "video" });
                       setLessonDialogOpen(true);
                     }}
                   >
@@ -378,11 +408,7 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
                         <GripVertical className="w-4 h-4 text-muted-foreground/50" />
                         
                         <div className="flex items-center gap-2">
-                          {lesson.video_url ? (
-                            getVideoTypeIcon(lesson.video_url)
-                          ) : (
-                            <PlayCircle className="w-4 h-4 text-muted-foreground" />
-                          )}
+                          {getVideoTypeIcon(lesson.video_url, lesson.lesson_type)}
                         </div>
                         
                         <div className="flex-1 min-w-0">
@@ -390,10 +416,16 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
                             {moduleIndex + 1}.{lessonIndex + 1} - {lesson.title}
                           </p>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            {lesson.duration_minutes && (
+                            {lesson.lesson_type === 'scheduling' && (
+                              <span className="text-secondary">Agendamento</span>
+                            )}
+                            {lesson.lesson_type === 'text' && (
+                              <span className="text-purple-500">Texto</span>
+                            )}
+                            {lesson.duration_minutes && lesson.lesson_type !== 'scheduling' && (
                               <span>{lesson.duration_minutes} min</span>
                             )}
-                            {!lesson.video_url && (
+                            {!lesson.video_url && lesson.lesson_type !== 'scheduling' && lesson.lesson_type !== 'text' && (
                               <span className="text-yellow-600">Sem vídeo</span>
                             )}
                           </div>
@@ -501,6 +533,47 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4 max-h-[70vh] overflow-y-auto">
+            {/* Lesson Type Selector */}
+            <div>
+              <Label>Tipo de Conteúdo</Label>
+              <Select
+                value={editingLesson?.lesson_type || "video"}
+                onValueChange={(value) => setEditingLesson({ ...editingLesson, lesson_type: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="video">
+                    <span className="flex items-center gap-2">
+                      <Video className="w-4 h-4 text-green-500" />
+                      Vídeo
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="scheduling">
+                    <span className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-secondary" />
+                      Agendamento
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="text">
+                    <span className="flex items-center gap-2">
+                      <FileEdit className="w-4 h-4 text-purple-500" />
+                      Texto/Leitura
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                {editingLesson?.lesson_type === 'scheduling' 
+                  ? "Exibe botão para agendar encontro via link externo"
+                  : editingLesson?.lesson_type === 'text'
+                  ? "Conteúdo em texto, sem vídeo"
+                  : "Aula com vídeo do YouTube, Vimeo ou URL direta"
+                }
+              </p>
+            </div>
+
             <div>
               <Label>Título *</Label>
               <Input
@@ -518,25 +591,60 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
               />
             </div>
             
-            <VideoUrlInput
-              value={editingLesson?.video_url || ""}
-              onChange={(url) => setEditingLesson({ ...editingLesson, video_url: url })}
-            />
+            {/* Conditional: Video URL for video type */}
+            {(!editingLesson?.lesson_type || editingLesson?.lesson_type === 'video') && (
+              <VideoUrlInput
+                value={editingLesson?.video_url || ""}
+                onChange={(url) => setEditingLesson({ ...editingLesson, video_url: url })}
+              />
+            )}
+
+            {/* Conditional: Action URL for scheduling type */}
+            {editingLesson?.lesson_type === 'scheduling' && (
+              <div className="space-y-3 p-4 rounded-lg bg-secondary/5 border border-secondary/20">
+                <div>
+                  <Label className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-secondary" />
+                    Link do Calendário *
+                  </Label>
+                  <Input
+                    value={editingLesson?.action_url || ""}
+                    onChange={(e) => setEditingLesson({ ...editingLesson, action_url: e.target.value })}
+                    placeholder="https://calendar.google.com/... ou https://calendly.com/..."
+                    className="mt-1"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Google Calendar, Calendly, Cal.com, ou qualquer link de agendamento
+                  </p>
+                </div>
+                <div>
+                  <Label>Texto do Botão</Label>
+                  <Input
+                    value={editingLesson?.action_button_text || ""}
+                    onChange={(e) => setEditingLesson({ ...editingLesson, action_button_text: e.target.value })}
+                    placeholder="Agendar Agora"
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Duração (minutos)</Label>
-                <Input
-                  type="number"
-                  value={editingLesson?.duration_minutes || ""}
-                  onChange={(e) => setEditingLesson({ 
-                    ...editingLesson, 
-                    duration_minutes: e.target.value ? parseInt(e.target.value) : null 
-                  })}
-                  placeholder="0"
-                />
-              </div>
-              <div className="flex items-center gap-2 pt-6">
+              {editingLesson?.lesson_type !== 'scheduling' && (
+                <div>
+                  <Label>Duração (minutos)</Label>
+                  <Input
+                    type="number"
+                    value={editingLesson?.duration_minutes || ""}
+                    onChange={(e) => setEditingLesson({ 
+                      ...editingLesson, 
+                      duration_minutes: e.target.value ? parseInt(e.target.value) : null 
+                    })}
+                    placeholder="0"
+                  />
+                </div>
+              )}
+              <div className={`flex items-center gap-2 ${editingLesson?.lesson_type !== 'scheduling' ? 'pt-6' : ''}`}>
                 <Switch
                   checked={editingLesson?.is_free || false}
                   onCheckedChange={(checked) => setEditingLesson({ ...editingLesson, is_free: checked })}

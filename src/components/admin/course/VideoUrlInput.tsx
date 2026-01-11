@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Youtube, Video, ExternalLink, AlertCircle, Sparkles, Loader2, RefreshCw } from "lucide-react";
+import { Youtube, Video, ExternalLink, AlertCircle, Sparkles, Loader2, RefreshCw, Calendar, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 interface VideoUrlInputProps {
@@ -16,7 +16,7 @@ interface VideoUrlInputProps {
   onThumbnailChange?: (url: string | null) => void;
 }
 
-type VideoType = "youtube" | "vimeo" | "direct" | "unknown";
+type VideoType = "youtube" | "vimeo" | "direct" | "calendar" | "unknown";
 
 interface VideoInfo {
   type: VideoType;
@@ -46,6 +46,18 @@ const VideoUrlInput = ({
   }, [value]);
 
   const detectVideoType = (url: string): VideoInfo => {
+    // Calendar detection (Google Calendar, Calendly, Cal.com, etc.)
+    if (url.includes("calendar.google.com") || 
+        url.includes("calendly.com") || 
+        url.includes("cal.com") ||
+        url.includes("acuityscheduling.com")) {
+      return {
+        type: "calendar",
+        embedUrl: null,
+        thumbnailUrl: null
+      };
+    }
+
     // YouTube detection
     const youtubeRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const youtubeMatch = url.match(youtubeRegex);
@@ -125,6 +137,8 @@ const VideoUrlInput = ({
         return { label: "Vimeo", icon: Video, color: "bg-blue-500/10 text-blue-500" };
       case "direct":
         return { label: "URL Direta", icon: ExternalLink, color: "bg-green-500/10 text-green-500" };
+      case "calendar":
+        return { label: "Calendário", icon: Calendar, color: "bg-secondary/10 text-secondary" };
       default:
         return { label: "Desconhecido", icon: AlertCircle, color: "bg-yellow-500/10 text-yellow-500" };
     }
@@ -157,6 +171,19 @@ const VideoUrlInput = ({
       <p className="text-xs text-muted-foreground">
         Suportado: YouTube (não listado), Vimeo, ou URL direta (.mp4, .webm)
       </p>
+
+      {/* Warning for calendar links */}
+      {videoInfo?.type === 'calendar' && (
+        <div className="flex items-start gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+          <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 shrink-0" />
+          <div className="text-sm">
+            <p className="font-medium text-yellow-600">Link de Calendário Detectado</p>
+            <p className="text-muted-foreground text-xs mt-1">
+              Para links de agendamento, altere o "Tipo de Conteúdo" para "Agendamento" acima e cole o link no campo apropriado.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* AI Thumbnail Generation */}
       {value && onThumbnailChange && (
