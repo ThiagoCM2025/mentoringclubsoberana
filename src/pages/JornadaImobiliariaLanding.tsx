@@ -61,32 +61,36 @@ const JornadaImobiliariaLanding = () => {
 
       {/* Hero Section */}
       <section ref={heroRef} className="relative min-h-screen flex items-center bg-brand-black overflow-hidden">
-        {/* Background Image - More visible */}
+        {/* Background Image - Responsive positioning */}
         <div className="absolute inset-0 z-0">
-          <img src={heroImage} alt="" className="w-full h-full object-cover object-top opacity-70" />
-          {/* Lighter gradient to show more of Fabiana */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/90" />
+          <img 
+            src={heroImage} 
+            alt="Fabiana Duarte" 
+            className="w-full h-full object-cover object-[center_25%] sm:object-[center_20%] md:object-top opacity-80 md:opacity-70" 
+          />
+          {/* Lighter gradient on mobile to show more of Fabiana */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/80 md:from-black/30 md:via-black/20 md:to-black/90" />
         </div>
 
-        {/* Golden vignette effect around edges */}
+        {/* Golden vignette effect around edges - smaller on mobile */}
         <div className="absolute inset-0 z-[1] pointer-events-none" 
           style={{ 
-            boxShadow: 'inset 0 0 200px 40px rgba(166, 144, 97, 0.15), inset 0 0 100px 20px rgba(166, 144, 97, 0.1)' 
+            boxShadow: 'inset 0 0 100px 20px rgba(166, 144, 97, 0.1), inset 0 0 50px 10px rgba(166, 144, 97, 0.08)' 
           }} 
         />
 
         {/* Central spotlight on Fabiana */}
         <div className="absolute inset-0 z-[1] pointer-events-none"
           style={{
-            background: 'radial-gradient(ellipse 80% 60% at 50% 40%, transparent 0%, rgba(0,0,0,0.5) 100%)'
+            background: 'radial-gradient(ellipse 80% 60% at 50% 35%, transparent 0%, rgba(0,0,0,0.4) 100%)'
           }}
         />
 
         {/* Pattern overlay */}
-        <div className="absolute inset-0 z-[2] opacity-[0.06]" style={{ backgroundImage: `url('/assets/brand/pattern-circles-gold.png')`, backgroundSize: '150px' }} />
+        <div className="absolute inset-0 z-[2] opacity-[0.04] md:opacity-[0.06]" style={{ backgroundImage: `url('/assets/brand/pattern-circles-gold.png')`, backgroundSize: '100px md:150px' }} />
 
-        {/* Animated golden particles */}
-        <div className="absolute inset-0 z-[3] overflow-hidden pointer-events-none">
+        {/* Animated golden particles - hidden on mobile for performance */}
+        <div className="absolute inset-0 z-[3] overflow-hidden pointer-events-none hidden md:block">
           {[...Array(8)].map((_, i) => (
             <motion.div
               key={i}
@@ -109,11 +113,11 @@ const JornadaImobiliariaLanding = () => {
           ))}
         </div>
 
-        {/* Floating isotipo with animation */}
+        {/* Floating isotipo with animation - desktop only */}
         <motion.img
           src={isotipoGold}
           alt=""
-          className="absolute right-8 top-1/4 w-32 md:w-56 z-[4] hidden md:block"
+          className="absolute right-8 top-1/4 w-32 md:w-56 z-[4] hidden lg:block"
           style={{ filter: 'drop-shadow(0 0 30px rgba(166, 144, 97, 0.3))' }}
           initial={{ opacity: 0, y: 20 }}
           animate={heroInView ? { 
@@ -126,20 +130,20 @@ const JornadaImobiliariaLanding = () => {
           }}
         />
 
-        {/* Golden glow behind content */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] z-[4] pointer-events-none"
+        {/* Golden glow behind content - smaller on mobile */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[200px] md:w-[600px] md:h-[400px] z-[4] pointer-events-none"
           style={{
-            background: 'radial-gradient(ellipse, rgba(166, 144, 97, 0.08) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse, rgba(166, 144, 97, 0.06) 0%, transparent 70%)',
           }}
         />
 
         {/* Content */}
-        <div className="container-soberana relative z-10 py-20 md:py-32">
+        <div className="container-soberana relative z-10 py-16 px-4 sm:px-6 md:py-32 md:px-8">
           <div className="max-w-3xl mx-auto text-center">
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <Badge className="bg-secondary/20 text-secondary border-secondary/30 mb-6 backdrop-blur-sm">
-                <Sparkles className="w-3 h-3 mr-1" />
-                SÉRIE GRATUITA | 5 ENCONTROS PRÁTICOS
+              <Badge className="bg-secondary/20 text-secondary border-secondary/30 mb-4 md:mb-6 backdrop-blur-sm text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1">
+                <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />
+                SÉRIE GRATUITA | 5 ENCONTROS
               </Badge>
             </motion.div>
 
@@ -147,41 +151,50 @@ const JornadaImobiliariaLanding = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-serif text-3xl md:text-5xl lg:text-6xl text-cream mb-6 leading-tight drop-shadow-lg"
+              className="font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-cream mb-4 md:mb-6 leading-tight drop-shadow-lg px-2"
             >
               Advogada, construa sua base de{" "}
-              <span className="text-shimmer-gold">crescimento para 2026</span>
+              <span className="text-shimmer-gold block sm:inline">crescimento para 2026</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg md:text-xl text-cream/90 mb-8 max-w-2xl mx-auto drop-shadow-md"
+              className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-md px-2 leading-relaxed"
             >
-              Participe da Série de Lives: <strong className="text-cream">Janeiro Extraordinário no Imobiliário</strong>. Garanta seu acesso aos materiais de apoio e às gravações antes que saiam do ar.
+              Participe da Série de Lives: <strong className="text-cream">Janeiro Extraordinário no Imobiliário</strong>. Garanta seu acesso aos materiais de apoio e às gravações.
             </motion.p>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-wrap justify-center gap-4 mb-8 text-cream/80 text-sm"
+              className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-6 md:mb-8 text-cream/80 text-xs sm:text-sm px-2"
             >
-              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-full border border-secondary/20">
-                <Calendar className="w-4 h-4 text-secondary" />
-                <span>12 a 26 de Janeiro</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-black/30 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-secondary/20">
+                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-secondary flex-shrink-0" />
+                <span className="whitespace-nowrap">12 a 26 de Janeiro</span>
               </div>
-              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-full border border-secondary/20">
-                <Clock className="w-4 h-4 text-secondary" />
-                <span>Lives às 20h</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-black/30 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-secondary/20">
+                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-secondary flex-shrink-0" />
+                <span className="whitespace-nowrap">Lives às 20h</span>
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}>
-              <Button onClick={scrollToForm} size="lg" className="cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold px-8 py-6 text-base md:text-lg shadow-[0_0_40px_rgba(166,144,97,0.3)]">
-                QUERO GARANTIR MINHA VAGA GRATUITAMENTE
-                <ArrowRight className="w-5 h-5 ml-2" />
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="px-4"
+            >
+              <Button 
+                onClick={scrollToForm} 
+                size="lg" 
+                className="w-full sm:w-auto cta-premium bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base md:text-lg shadow-[0_0_40px_rgba(166,144,97,0.3)]"
+              >
+                QUERO MINHA VAGA GRATUITA
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
               </Button>
             </motion.div>
           </div>
