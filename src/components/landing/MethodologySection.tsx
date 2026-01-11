@@ -13,49 +13,49 @@ import isotipoFramedGold from "@/assets/brand/isotipo-s-framed-gold-v2.png";
 const pillars = [
   {
     number: 1,
-    title: "MENTALIDADE",
-    subtitle: "De Advogada a CEO",
-    description: "O primeiro passo para o faturamento de elite é a mudança de postura. Você deixará de ser a 'tarefeira' do seu escritório para assumir o comando estratégico. Vamos desbloquear a mentalidade de escala e a segurança necessária para gerir um negócio que fatura como empresa e cobra honorários de alto padrão.",
+    title: "BASE TÉCNICA ESSENCIAL",
+    subtitle: "Preparação para entrar no jogo",
+    description: "Fundamentos práticos e visão do Direito Imobiliário. Você aprenderá o essencial para atuar com segurança e domínio técnico desde o início.",
     highlights: [],
     icon: Brain,
   },
   {
     number: 2,
-    title: "POSICIONAMENTO",
-    subtitle: "Conteúdo Magnético",
-    description: "Saia da vala comum da 'advogada técnica apenas'. Você vai aprender a traduzir sua competência em conteúdos que conectam e geram autoridade imediata. O objetivo é construir uma audiência qualificada que entenda o seu valor e deseje a sua solução antes mesmo da primeira reunião.",
+    title: "POSICIONAMENTO E AUTORIDADE",
+    subtitle: "Autoimagem, nicho e diferencial",
+    description: "Desenvolva a mentalidade para se destacar e ser reconhecida como referência no mercado imobiliário. Construa sua marca pessoal com propósito.",
     highlights: [],
     icon: Users,
   },
   {
     number: 3,
-    title: "ATRAÇÃO",
-    subtitle: "Tráfego Pago Estratégico",
-    description: "Pare de depender apenas de indicações ou da sorte. Introduziremos você ao mundo dos anúncios estratégicos para colocar o seu escritório no radar de quem busca soluções imobiliárias. Criaremos um fluxo constante e previsível de novas oportunidades chegando no seu WhatsApp.",
+    title: "PROSPECÇÃO E CAPTAÇÃO",
+    subtitle: "Como atrair clientes certos",
+    description: "Aprenda a construir rede, usar o digital e aplicar estratégias práticas para atrair clientes qualificados de forma consistente.",
     highlights: [],
     icon: Target,
   },
   {
     number: 4,
-    title: "VENDAS",
-    subtitle: "Engenharia de Precificação",
-    description: "Dominar o processo comercial é o que garante o lucro. Você terá acesso aos meus scripts de fechamento e à minha Planilha de Precificação Lucrativa. Vou te ensinar a cobrar pelo valor gerado, garantindo margens reais e segurança para atingir a meta de +R$ 50k/mês.",
+    title: "COMUNICAÇÃO E VENDAS",
+    subtitle: "Vendas com segurança",
+    description: "Negociação, copywriting, oratória, reuniões, contorno de objeções e cobrança de honorários com confiança e profissionalismo.",
     highlights: [],
     icon: TrendingUp,
   },
   {
     number: 5,
-    title: "INTELIGÊNCIA ESTRATÉGICA",
-    subtitle: "No Imobiliário",
-    description: "Você já tem a técnica, eu te dou a estratégia de mercado. Vamos focar em como selecionar e estruturar as demandas mais rentáveis do imobiliário. O foco aqui é inteligência de negócio: como trabalhar nos casos certos para maximizar seu ganho por hora.",
+    title: "GESTÃO E OPERAÇÃO LUCRATIVA",
+    subtitle: "Processos e finanças",
+    description: "Delegação, organização, seleção estratégica de causas e estruturação financeira para máxima lucratividade do seu escritório.",
     highlights: [],
     icon: Building2,
   },
   {
     number: 6,
-    title: "GESTÃO, IA E PERFORMANCE",
-    subtitle: "O Cérebro Digital",
-    description: "Instale o 'cérebro digital' no seu negócio. Usaremos sistemas (Auralex) e fluxos inteligentes para que o operacional rode com precisão cirúrgica. Ao otimizar processos repetitivos com inteligência, você recupera tempo para focar no que realmente importa: o crescimento e a sua liberdade.",
+    title: "ESCALABILIDADE E RECORRÊNCIA",
+    subtitle: "Recorrência financeira",
+    description: "Modelos de negócio, serviços recorrentes, uso de tecnologia e construção de autonomia para escalar seus resultados.",
     highlights: [],
     icon: Zap,
   },
@@ -432,7 +432,7 @@ const MethodologySection = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="font-playfair text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-cream mb-4 max-w-4xl mx-auto leading-tight"
           >
-            Os 6 Pilares do Método Soberana:{" "}
+            Pilares do Método Soberana:{" "}
             <span className="text-shimmer-gold">O Caminho para os +50k/mês</span>
           </motion.h2>
           

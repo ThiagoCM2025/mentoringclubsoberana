@@ -18,8 +18,8 @@ const faqs = [
     answer: "Não. O Experience Start é ideal para advogadas que querem migrar para o Direito Imobiliário ou que já atuam na área e desejam escalar seus resultados. Você aprenderá técnicas aplicáveis desde a transição até o domínio completo do nicho."
   },
   {
-    question: "O que são os 5 Pilares do Método Soberana?",
-    answer: "Os 5 pilares são: Mentalidade (de operacional a CEO), Vendas e Lucratividade (prospecção, precificação e conversão), Audiência (posicionamento de autoridade), Técnica Imobiliária (domínio do mercado) e Gestão e IA (automação e escala). Juntos, formam o caminho para faturar +R$ 50k/mês."
+    question: "O que são os 6 Pilares do Método Soberana?",
+    answer: "Os 6 pilares são: Base Técnica Essencial (fundamentos do imobiliário), Posicionamento e Autoridade (diferencial e reconhecimento), Prospecção e Captação de Clientes (atrair os clientes certos), Comunicação e Vendas com Segurança (negociação e cobrança), Gestão e Operação Lucrativa (processos e finanças) e Escalabilidade e Recorrência Financeira (autonomia e escala). Juntos, formam o caminho para faturar +R$ 50k/mês."
   },
   {
     question: "Como a Inteligência Artificial será abordada no evento?",

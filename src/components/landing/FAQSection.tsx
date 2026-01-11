@@ -17,9 +17,9 @@ const faqs = [
       "Não! A metodologia foi criada justamente para advogadas que desejam entrar ou se especializar no Direito Imobiliário. Você aprenderá do zero: desde a técnica consultiva e extrajudicial até a estruturação do negócio para faturar +50k/mês.",
   },
   {
-    question: "Como funciona a metodologia dos 5 Pilares?",
+    question: "Como funciona a metodologia dos 6 Pilares?",
     answer:
-      "Os 5 Pilares — Mentalidade, Vendas e Lucratividade, Audiência, Técnica Imobiliária e Gestão com IA — formam um sistema integrado. Cada pilar trabalha uma área essencial para você sair da operação, estruturar um negócio lucrativo e se posicionar como referência no mercado imobiliário.",
+      "Os 6 Pilares — Base Técnica Essencial, Posicionamento e Autoridade, Prospecção e Captação, Comunicação e Vendas, Gestão e Operação Lucrativa, e Escalabilidade e Recorrência — formam um sistema integrado. Cada pilar trabalha uma área essencial para você sair da operação, estruturar um negócio lucrativo e se posicionar como referência no mercado imobiliário.",
   },
   {
     question: "Em quanto tempo posso alcançar os +50k/mês?",
