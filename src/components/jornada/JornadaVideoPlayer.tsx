@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Play, Lock, Calendar, Clock } from "lucide-react";
+import { Play, Lock, Calendar, Clock, Loader2, FileText, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LiveSession {
   day: number;
@@ -9,19 +11,58 @@ interface LiveSession {
   title: string;
   isUnlocked: boolean;
   youtubeId?: string;
+  materialsUrl?: string;
 }
 
-const liveSessions: LiveSession[] = [
-  { day: 12, month: "JAN", title: "Rotina e Processos", isUnlocked: true, youtubeId: "" },
-  { day: 15, month: "JAN", title: "Captação Estratégica", isUnlocked: false },
-  { day: 19, month: "JAN", title: "Inteligência Artificial", isUnlocked: false },
-  { day: 22, month: "JAN", title: "Precificação de Elite", isUnlocked: false },
-  { day: 26, month: "JAN", title: "Conversão de Vendas", isUnlocked: false },
+// Fallback para quando o banco não responder
+const fallbackSessions: LiveSession[] = [
+  { day: 12, month: "JAN", title: "Como organizar sua rotina e processos para escalar no Direito Imobiliário sem surtar", isUnlocked: true },
+  { day: 15, month: "JAN", title: "Passo a passo para fechar contratos com clientes qualificados no imobiliário", isUnlocked: false },
+  { day: 19, month: "JAN", title: "Como usar inteligência artificial para ganhar tempo no escritório jurídico", isUnlocked: false },
+  { day: 22, month: "JAN", title: "Passo a passo para criar uma tabela de precificação eficiente", isUnlocked: false },
+  { day: 26, month: "JAN", title: "Como converter consultas em contratos de alto valor", isUnlocked: false },
 ];
 
 export const JornadaVideoPlayer = () => {
   const [activeSession, setActiveSession] = useState(0);
-  const currentSession = liveSessions[activeSession];
+  const [sessions, setSessions] = useState<LiveSession[]>(fallbackSessions);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchSessions = async () => {
+      const { data, error } = await supabase
+        .from("jornada_sessions")
+        .select("*")
+        .eq("jornada_slug", "imobiliaria-2026")
+        .order("order_index");
+
+      if (!error && data && data.length > 0) {
+        setSessions(data.map(s => ({
+          day: s.session_day,
+          month: s.session_month,
+          title: s.title,
+          isUnlocked: s.is_unlocked,
+          youtubeId: s.youtube_id || "",
+          materialsUrl: s.materials_url || undefined,
+        })));
+      }
+      setLoading(false);
+    };
+    
+    fetchSessions();
+  }, []);
+
+  const currentSession = sessions[activeSession];
+
+  if (loading) {
+    return (
+      <section className="relative py-16 md:py-24 bg-brand-black overflow-hidden">
+        <div className="container-soberana flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-secondary" />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative py-16 md:py-24 bg-brand-black overflow-hidden">
@@ -86,7 +127,7 @@ export const JornadaVideoPlayer = () => {
                     <div className="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center mb-4 border border-zinc-700">
                       <Lock className="w-10 h-10 text-zinc-500" />
                     </div>
-                    <p className="text-cream/80 font-medium text-lg mb-2">{currentSession.title}</p>
+                    <p className="text-cream/80 font-medium text-lg mb-2 text-center px-4">{currentSession.title}</p>
                     <p className="text-cream/50 text-sm flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
                       Disponível em {currentSession.day} de Janeiro
@@ -112,6 +153,18 @@ export const JornadaVideoPlayer = () => {
                 )}
               </Badge>
             </div>
+
+            {/* Material download button */}
+            {currentSession.isUnlocked && currentSession.materialsUrl && (
+              <div className="absolute top-4 right-4 z-10">
+                <a href={currentSession.materialsUrl} target="_blank" rel="noopener noreferrer">
+                  <Button size="sm" variant="secondary" className="gap-2">
+                    <Download className="w-4 h-4" />
+                    Material
+                  </Button>
+                </a>
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -123,7 +176,7 @@ export const JornadaVideoPlayer = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="flex flex-wrap justify-center gap-3 md:gap-4"
         >
-          {liveSessions.map((session, index) => (
+          {sessions.map((session, index) => (
             <button
               key={index}
               onClick={() => setActiveSession(index)}
@@ -145,6 +198,9 @@ export const JornadaVideoPlayer = () => {
               </span>
               {!session.isUnlocked && (
                 <Lock className="w-3 h-3 text-zinc-500 absolute top-2 right-2" />
+              )}
+              {session.materialsUrl && session.isUnlocked && (
+                <FileText className="w-3 h-3 text-secondary absolute top-2 right-2" />
               )}
               {activeSession === index && (
                 <motion.div

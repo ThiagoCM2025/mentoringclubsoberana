@@ -1264,6 +1264,54 @@ export type Database = {
           },
         ]
       }
+      jornada_sessions: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_unlocked: boolean | null
+          jornada_slug: string
+          materials_url: string | null
+          order_index: number
+          session_day: number
+          session_month: string
+          title: string
+          unlock_date: string | null
+          updated_at: string | null
+          youtube_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_unlocked?: boolean | null
+          jornada_slug?: string
+          materials_url?: string | null
+          order_index?: number
+          session_day: number
+          session_month?: string
+          title: string
+          unlock_date?: string | null
+          updated_at?: string | null
+          youtube_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_unlocked?: boolean | null
+          jornada_slug?: string
+          materials_url?: string | null
+          order_index?: number
+          session_day?: number
+          session_month?: string
+          title?: string
+          unlock_date?: string | null
+          updated_at?: string | null
+          youtube_id?: string | null
+        }
+        Relationships: []
+      }
       lead_conversions: {
         Row: {
           converted_at: string
