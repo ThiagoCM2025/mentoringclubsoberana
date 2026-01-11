@@ -52,6 +52,7 @@ import {
   StatsCardSkeleton,
   EngagementTableSkeleton,
 } from "@/components/admin/skeletons/AdminSkeletons";
+import { getBrazilNow, formatBrazilDate, BRAZIL_TIMEZONE } from "@/lib/dateUtils";
 
 type PeriodFilter = '7d' | '30d' | '6m' | '1y';
 
@@ -77,7 +78,7 @@ interface StudentEngagement {
 }
 
 const getDateFromPeriod = (period: PeriodFilter): Date => {
-  const date = new Date();
+  const date = getBrazilNow();
   switch (period) {
     case '7d': return subDays(date, 7);
     case '30d': return subDays(date, 30);
@@ -129,7 +130,9 @@ export default function AdminEngagement() {
     const totalMinutes = gamification?.reduce((sum, g) => sum + (g.total_study_minutes || 0), 0) || 0;
     const maxStreak = gamification?.reduce((max, g) => Math.max(max, g.streak_days || 0), 0) || 0;
     
-    const today = new Date().toISOString().split('T')[0];
+    // Usar a data de hoje no horário de Brasília
+    const today = formatBrazilDate(getBrazilNow(), { year: 'numeric', month: '2-digit', day: '2-digit' })
+      .split('/').reverse().join('-'); // Converter DD/MM/YYYY para YYYY-MM-DD
     const activeToday = gamification?.filter(g => g.last_activity_date === today).length || 0;
 
     // Completion rate

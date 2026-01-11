@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { getBrazilNow, getDaysDifference } from "@/lib/dateUtils";
 
 interface ProgramProgress {
   courseId: string;
@@ -30,9 +31,8 @@ export const useProgramProgress = () => {
 
   const calculateCurrentWeek = (enrolledAt: string): number => {
     const enrolled = new Date(enrolledAt);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - enrolled.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const now = getBrazilNow();
+    const diffDays = getDaysDifference(enrolled, now);
     return Math.max(1, Math.min(12, Math.floor(diffDays / 7) + 1));
   };
 

@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format, formatDistanceToNow, addHours } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { getBrazilNow } from "@/lib/dateUtils";
 import { 
   Zap, 
   Mail, 
@@ -153,7 +154,7 @@ export const NurturingManager = () => {
 
       // Stuck leads (active but no contact in 3+ days)
       // NEW: Exclude new leads (step 0, no contact) - they're awaiting first email, not stuck
-      const now = new Date();
+      const now = getBrazilNow();
       const stuck = active
         .filter(l => {
           const isNewLead = (l.nurturing_step || 0) === 0 && !l.last_contact_at;

@@ -61,6 +61,7 @@ import {
   PieChartSkeleton,
   TableSkeleton,
 } from "@/components/admin/skeletons/AdminSkeletons";
+import { getBrazilNow } from "@/lib/dateUtils";
 
 type PeriodFilter = '7d' | '30d' | '6m' | '1y';
 
@@ -88,7 +89,7 @@ const LEAD_STATUS_LABELS: Record<string, string> = {
 };
 
 const getDateFromPeriod = (period: PeriodFilter): Date => {
-  const date = new Date();
+  const date = getBrazilNow();
   switch (period) {
     case '7d': return subDays(date, 7);
     case '30d': return subDays(date, 30);

@@ -35,6 +35,7 @@ import {
 } from "recharts";
 import { format, subDays, startOfWeek, eachDayOfInterval } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { getBrazilNow } from "@/lib/dateUtils";
 
 const COLORS = ['hsl(38, 30%, 51%)', 'hsl(350, 100%, 27%)', 'hsl(43, 100%, 83%)', 'hsl(160, 60%, 45%)', 'hsl(220, 70%, 50%)'];
 
@@ -179,8 +180,8 @@ const StudentAnalytics = () => {
           setCoursesInProgress(inProgress);
           setCourseProgress(courseProgressData);
 
-          // Calculate weekly study data
-          const today = new Date();
+          // Calculate weekly study data - usar data de Brasília
+          const today = getBrazilNow();
           const weekStart = startOfWeek(today, { weekStartsOn: 0 });
           const days = eachDayOfInterval({ start: weekStart, end: today });
 
