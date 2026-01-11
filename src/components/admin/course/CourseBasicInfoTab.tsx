@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Image, X, FileText, Settings, Sparkles, Package, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Image, X, FileText, Settings, Sparkles, Package, AlertCircle, CheckCircle2, ArrowUp, Minus, ArrowDown } from "lucide-react";
 import { programsList, Program } from "@/data/programs";
 import { cn } from "@/lib/utils";
 import WelcomeVideoSection from "./WelcomeVideoSection";
@@ -378,25 +378,57 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
             </Label>
             <div className="space-y-3">
               {watchedValues.thumbnail_url ? (
-                <div className="relative group">
-                  <img
-                    src={watchedValues.thumbnail_url}
-                    alt="Thumbnail"
-                    className={cn(
-                      "w-full aspect-video object-cover rounded-xl border-2",
-                      thumbnailUrlState.hasError ? "border-destructive" : "border-border"
-                    )}
-                  />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={removeThumbnail}
-                      className="gap-2"
-                    >
-                      <X className="w-4 h-4" />
-                      Remover
-                    </Button>
+                <div className="space-y-3">
+                  <div className="relative group">
+                    <img
+                      src={watchedValues.thumbnail_url}
+                      alt="Thumbnail"
+                      className={cn(
+                        "w-full aspect-video object-cover rounded-xl border-2",
+                        thumbnailUrlState.hasError ? "border-destructive" : "border-border"
+                      )}
+                      style={{ 
+                        objectPosition: watchedValues.thumbnail_position || 'center' 
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={removeThumbnail}
+                        className="gap-2"
+                      >
+                        <X className="w-4 h-4" />
+                        Remover
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Position Selector */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Posição:</span>
+                    <div className="flex gap-1 bg-muted rounded-lg p-1">
+                      {[
+                        { value: "top", icon: ArrowUp, label: "Topo" },
+                        { value: "center", icon: Minus, label: "Centro" },
+                        { value: "bottom", icon: ArrowDown, label: "Base" },
+                      ].map((pos) => (
+                        <button
+                          key={pos.value}
+                          type="button"
+                          onClick={() => setValue("thumbnail_position", pos.value as "top" | "center" | "bottom")}
+                          className={cn(
+                            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                            watchedValues.thumbnail_position === pos.value
+                              ? "bg-secondary text-secondary-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10"
+                          )}
+                        >
+                          <pos.icon className="w-3.5 h-3.5" />
+                          {pos.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               ) : (
