@@ -979,6 +979,7 @@ export type Database = {
           price: number | null
           program_type: Database["public"]["Enums"]["program_type"] | null
           requires_diagnostic: boolean | null
+          thumbnail_position: string | null
           thumbnail_url: string | null
           title: string
           updated_at: string
@@ -997,6 +998,7 @@ export type Database = {
           price?: number | null
           program_type?: Database["public"]["Enums"]["program_type"] | null
           requires_diagnostic?: boolean | null
+          thumbnail_position?: string | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string
@@ -1015,6 +1017,7 @@ export type Database = {
           price?: number | null
           program_type?: Database["public"]["Enums"]["program_type"] | null
           requires_diagnostic?: boolean | null
+          thumbnail_position?: string | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string

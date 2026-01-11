@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Image, X, FileText, Settings, Sparkles, Package, AlertCircle, CheckCircle2, ArrowUp, Minus, ArrowDown } from "lucide-react";
+import { Image, X, FileText, Settings, Sparkles, Package, AlertCircle, CheckCircle2, Crosshair, RotateCcw } from "lucide-react";
 import { programsList, Program } from "@/data/programs";
 import { cn } from "@/lib/utils";
 import WelcomeVideoSection from "./WelcomeVideoSection";
@@ -18,7 +18,7 @@ const courseSchema = z.object({
   title: z.string().min(1, "Título é obrigatório").max(200, "Título muito longo (máx. 200 caracteres)"),
   description: z.string().optional().nullable(),
   thumbnail_url: z.string().url("URL inválida").optional().or(z.literal("")).nullable(),
-  thumbnail_position: z.enum(["top", "center", "bottom"]).optional().nullable(),
+  thumbnail_position: z.string().optional().nullable(),
   price: z.number().min(0, "Preço não pode ser negativo").optional().nullable(),
   is_published: z.boolean(),
   is_subscription: z.boolean(),
@@ -71,7 +71,7 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
       title: course.title || "",
       description: course.description || "",
       thumbnail_url: course.thumbnail_url || "",
-      thumbnail_position: (course.thumbnail_position as "top" | "center" | "bottom") || "center",
+      thumbnail_position: course.thumbnail_position || "50% 50%",
       price: course.price ?? undefined,
       is_published: course.is_published || false,
       is_subscription: course.is_subscription || false,
@@ -91,7 +91,7 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
       title: watchedValues.title,
       description: watchedValues.description || null,
       thumbnail_url: watchedValues.thumbnail_url || null,
-      thumbnail_position: watchedValues.thumbnail_position || "center",
+      thumbnail_position: watchedValues.thumbnail_position || "50% 50%",
       price: watchedValues.price ?? null,
       is_published: watchedValues.is_published,
       is_subscription: watchedValues.is_subscription,
@@ -378,56 +378,106 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
             </Label>
             <div className="space-y-3">
               {watchedValues.thumbnail_url ? (
-                <div className="space-y-3">
-                  <div className="relative group">
-                    <img
-                      src={watchedValues.thumbnail_url}
-                      alt="Thumbnail"
-                      className={cn(
-                        "w-full aspect-video object-cover rounded-xl border-2",
-                        thumbnailUrlState.hasError ? "border-destructive" : "border-border"
-                      )}
-                      style={{ 
-                        objectPosition: watchedValues.thumbnail_position || 'center' 
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={removeThumbnail}
-                        className="gap-2"
-                      >
-                        <X className="w-4 h-4" />
-                        Remover
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {/* Position Selector */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">Posição:</span>
-                    <div className="flex gap-1 bg-muted rounded-lg p-1">
-                      {[
-                        { value: "top", icon: ArrowUp, label: "Topo" },
-                        { value: "center", icon: Minus, label: "Centro" },
-                        { value: "bottom", icon: ArrowDown, label: "Base" },
-                      ].map((pos) => (
-                        <button
-                          key={pos.value}
-                          type="button"
-                          onClick={() => setValue("thumbnail_position", pos.value as "top" | "center" | "bottom")}
-                          className={cn(
-                            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
-                            watchedValues.thumbnail_position === pos.value
-                              ? "bg-secondary text-secondary-foreground shadow-sm"
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10"
-                          )}
+                <div className="space-y-4">
+                  {/* Focal Point Selector */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {/* Full Image with Click-to-Select Focal Point */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+                          <Crosshair className="w-3.5 h-3.5" />
+                          Clique para definir o ponto focal
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setValue("thumbnail_position", "50% 50%")}
+                          className="h-6 px-2 text-xs gap-1 text-muted-foreground hover:text-foreground"
                         >
-                          <pos.icon className="w-3.5 h-3.5" />
-                          {pos.label}
-                        </button>
-                      ))}
+                          <RotateCcw className="w-3 h-3" />
+                          Resetar
+                        </Button>
+                      </div>
+                      <div 
+                        className="relative cursor-crosshair rounded-xl overflow-hidden border-2 border-border hover:border-secondary/50 transition-colors"
+                        onClick={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+                          const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+                          setValue("thumbnail_position", `${x}% ${y}%`);
+                        }}
+                      >
+                        <img
+                          src={watchedValues.thumbnail_url}
+                          alt="Clique para definir ponto focal"
+                          className="w-full h-auto"
+                          draggable={false}
+                        />
+                        {/* Focal Point Marker */}
+                        {watchedValues.thumbnail_position && (
+                          <div 
+                            className="absolute w-6 h-6 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                            style={{
+                              left: watchedValues.thumbnail_position.split(' ')[0] || '50%',
+                              top: watchedValues.thumbnail_position.split(' ')[1] || '50%',
+                            }}
+                          >
+                            <div className="absolute inset-0 rounded-full bg-secondary/30 animate-ping" />
+                            <div className="absolute inset-0 rounded-full border-2 border-secondary bg-secondary/20" />
+                            <div className="absolute inset-[6px] rounded-full bg-secondary" />
+                          </div>
+                        )}
+                        {/* Crosshair Guides */}
+                        {watchedValues.thumbnail_position && (
+                          <>
+                            <div 
+                              className="absolute top-0 bottom-0 w-px bg-secondary/40 pointer-events-none"
+                              style={{ left: watchedValues.thumbnail_position.split(' ')[0] || '50%' }}
+                            />
+                            <div 
+                              className="absolute left-0 right-0 h-px bg-secondary/40 pointer-events-none"
+                              style={{ top: watchedValues.thumbnail_position.split(' ')[1] || '50%' }}
+                            />
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Preview in 16:9 aspect ratio */}
+                    <div className="space-y-2">
+                      <span className="text-xs text-muted-foreground">
+                        Preview (como vai aparecer)
+                      </span>
+                      <div className="relative group">
+                        <img
+                          src={watchedValues.thumbnail_url}
+                          alt="Preview"
+                          className={cn(
+                            "w-full aspect-video object-cover rounded-xl border-2",
+                            thumbnailUrlState.hasError ? "border-destructive" : "border-border"
+                          )}
+                          style={{ 
+                            objectPosition: watchedValues.thumbnail_position || '50% 50%' 
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={removeThumbnail}
+                            className="gap-2"
+                          >
+                            <X className="w-4 h-4" />
+                            Remover
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg py-2">
+                        <span>Ponto focal:</span>
+                        <code className="bg-background px-2 py-0.5 rounded font-mono text-foreground">
+                          {watchedValues.thumbnail_position || '50% 50%'}
+                        </code>
+                      </div>
                     </div>
                   </div>
                 </div>
