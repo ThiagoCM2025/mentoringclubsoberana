@@ -1,10 +1,17 @@
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 
-export const WhatsAppButton = () => {
+interface WhatsAppButtonProps {
+  message?: string;
+}
+
+export const WhatsAppButton = ({ message }: WhatsAppButtonProps) => {
+  const defaultMessage = "Olá! Vim pelo site Soberana e gostaria de mais informações";
+  const encodedMessage = encodeURIComponent(message || defaultMessage);
+
   return (
     <motion.a
-      href="https://wa.me/5511993563468?text=Olá! Vim pelo site Soberana e gostaria de mais informações"
+      href={`https://wa.me/5511993563468?text=${encodedMessage}`}
       target="_blank"
       rel="noopener noreferrer"
       initial={{ scale: 0, opacity: 0 }}

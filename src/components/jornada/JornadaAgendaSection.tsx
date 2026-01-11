@@ -4,15 +4,15 @@ import { Calendar, Settings, Users, Brain, DollarSign, Target } from "lucide-rea
 const agendaItems = [
   {
     day: 12,
-    weekday: "Domingo",
+    weekday: "Segunda",
     title: "Rotina e Processos",
-    description: "Como organizar seu escritório para escalar no Direito Imobiliário sem surtar.",
+    description: "Como organizar sua rotina e processos para escalar no Direito Imobiliário sem surtar.",
     icon: Settings,
     color: "from-blue-500 to-blue-600",
   },
   {
     day: 15,
-    weekday: "Quarta",
+    weekday: "Quinta",
     title: "Captação Estratégica",
     description: "Passo a passo para fechar contratos com clientes qualificados (sem depender de indicações).",
     icon: Users,
@@ -20,7 +20,7 @@ const agendaItems = [
   },
   {
     day: 19,
-    weekday: "Domingo",
+    weekday: "Segunda",
     title: "Inteligência Artificial",
     description: "Como usar a IA para ganhar tempo real no seu escritório jurídico.",
     icon: Brain,
@@ -28,7 +28,7 @@ const agendaItems = [
   },
   {
     day: 22,
-    weekday: "Quarta",
+    weekday: "Quinta",
     title: "Precificação de Elite",
     description: "O passo a passo para criar uma tabela de precificação eficiente e lucrativa.",
     icon: DollarSign,
@@ -36,7 +36,7 @@ const agendaItems = [
   },
   {
     day: 26,
-    weekday: "Domingo",
+    weekday: "Segunda",
     title: "Conversão de Vendas",
     description: "Como transformar meras consultas em contratos de alto valor.",
     icon: Target,
@@ -90,9 +90,12 @@ export const JornadaAgendaSection = () => {
           <h2 className="font-serif text-3xl md:text-5xl text-foreground mb-4">
             A Agenda da <span className="text-primary">Jornada</span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-3">
             5 encontros estratégicos para transformar sua advocacia imobiliária
           </p>
+          <div className="inline-flex items-center gap-2 bg-secondary/20 text-secondary-foreground px-4 py-2 rounded-full">
+            <span className="text-sm font-semibold">🕗 Todas às 20h00</span>
+          </div>
         </motion.div>
 
         <motion.div
