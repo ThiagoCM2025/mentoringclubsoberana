@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, Settings, Layers, FileText, Eye, AlertCircle, Trash2, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Save, Settings, Layers, FileText, Eye, AlertCircle, Trash2, AlertTriangle, Target } from "lucide-react";
 import { Program } from "@/data/programs";
 
 // Tab Components
@@ -17,6 +17,7 @@ import CourseBasicInfoTab from "@/components/admin/course/CourseBasicInfoTab";
 import ModuleManager from "@/components/admin/course/ModuleManager";
 import CourseMaterialsTab from "@/components/admin/course/CourseMaterialsTab";
 import CoursePreviewTab from "@/components/admin/course/CoursePreviewTab";
+import CourseMissionsTab from "@/components/admin/course/CourseMissionsTab";
 
 interface Course {
   id: string;
@@ -322,6 +323,26 @@ const CourseEditor = () => {
                   <TooltipTrigger asChild>
                     <span>
                       <TabsTrigger 
+                        value="missions" 
+                        className="gap-2 text-foreground data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isNew}
+                      >
+                        <Target className="w-4 h-4" />
+                        Missões
+                      </TabsTrigger>
+                    </span>
+                  </TooltipTrigger>
+                  {isNew && (
+                    <TooltipContent side="bottom">
+                      <p>Salve o curso primeiro para gerenciar missões</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+                
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <TabsTrigger 
                         value="preview" 
                         className="gap-2 text-foreground data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={isNew}
@@ -377,6 +398,18 @@ const CourseEditor = () => {
               <TabsContent value="materials" className="mt-0">
                 <div className="card-elegant p-6">
                   <CourseMaterialsTab modules={modules} />
+                </div>
+              </TabsContent>
+
+              {/* Tab: Missions */}
+              <TabsContent value="missions" className="mt-0">
+                <div className="card-elegant p-6">
+                  {courseId && courseId !== "new" && (
+                    <CourseMissionsTab
+                      courseId={courseId}
+                      modules={modules}
+                    />
+                  )}
                 </div>
               </TabsContent>
 
