@@ -43,6 +43,7 @@ import AdminMissionReviews from "@/pages/admin/AdminMissionReviews";
 import AdminVideos from "@/pages/admin/AdminVideos";
 import ExperienceStartLanding from "@/pages/ExperienceStartLanding";
 import OperacaoRegularizacaoLanding from "@/pages/OperacaoRegularizacaoLanding";
+import JornadaImobiliariaLanding from "@/pages/JornadaImobiliariaLanding";
 import SimuladorFinanceiro from "@/pages/SimuladorFinanceiro";
 import Privacidade from "@/pages/Privacidade";
 import Termos from "@/pages/Termos";
@@ -64,6 +65,7 @@ export const AnimatedRoutes = () => {
         <Route path="/experience-start" element={<PageTransition><ExperienceStartLanding /></PageTransition>} />
         <Route path="/operacao-regularizacao" element={<PageTransition><OperacaoRegularizacaoLanding /></PageTransition>} />
         <Route path="/operacao-regularizacao/*" element={<PageTransition><OperacaoRegularizacaoLanding /></PageTransition>} />
+        <Route path="/jornada-imobiliaria-2026" element={<PageTransition><JornadaImobiliariaLanding /></PageTransition>} />
         <Route path="/simulador" element={<PageTransition><SimuladorFinanceiro /></PageTransition>} />
         <Route path="/privacidade" element={<PageTransition><Privacidade /></PageTransition>} />
         <Route path="/termos" element={<PageTransition><Termos /></PageTransition>} />
