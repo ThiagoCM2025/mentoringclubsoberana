@@ -1,34 +1,88 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Program } from "@/data/programs";
 import { PremiumBackground } from "@/components/ui/premium-background";
 import { staggerContainer, staggerItem } from "@/lib/animations";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { 
+  Brain, 
+  Target, 
+  Megaphone, 
+  MessageSquare, 
+  TrendingUp, 
+  Cog,
+  Sparkles 
+} from "lucide-react";
 
 interface ProgramModulesTimelineProps {
   program: Program;
 }
 
-// Icons for each pillar
-const PILLAR_EMOJIS = ["🧠", "🎯", "📣", "💰", "💎", "⚙️"];
+// Define the 6 pillars of the methodology with icons
+const methodologyPillars = [
+  {
+    number: 1,
+    icon: Brain,
+    title: "BASE TÉCNICA",
+    subtitle: "Fundamentos Práticos",
+    description: "Domine os fundamentos técnicos que sustentam um escritório lucrativo e profissional.",
+    color: "gold" as const,
+  },
+  {
+    number: 2,
+    icon: Target,
+    title: "POSICIONAMENTO",
+    subtitle: "Autoridade e Nicho",
+    description: "Construa sua marca pessoal e posicione-se como referência no seu nicho de atuação.",
+    color: "gold" as const,
+  },
+  {
+    number: 3,
+    icon: Megaphone,
+    title: "PROSPECÇÃO",
+    subtitle: "Captação de Clientes",
+    description: "Atraia os clientes certos com estratégias éticas e eficientes de marketing jurídico.",
+    color: "gold" as const,
+  },
+  {
+    number: 4,
+    icon: MessageSquare,
+    title: "COMUNICAÇÃO",
+    subtitle: "Vendas com Segurança",
+    description: "Negocie honorários com confiança e converta consultas em contratos fechados.",
+    color: "marsala" as const,
+  },
+  {
+    number: 5,
+    icon: TrendingUp,
+    title: "GESTÃO",
+    subtitle: "Operação Lucrativa",
+    description: "Organize processos, finanças e equipe para um escritório que funciona sem você.",
+    color: "marsala" as const,
+  },
+  {
+    number: 6,
+    icon: Cog,
+    title: "ESCALABILIDADE",
+    subtitle: "Recorrência Financeira",
+    description: "Use tecnologia e automação para criar autonomia e multiplicar resultados.",
+    color: "marsala" as const,
+  },
+];
 
 export const ProgramModulesTimeline = ({ program }: ProgramModulesTimelineProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [expandedModule, setExpandedModule] = useState<number | null>(null);
-
-  if (!program.modules || program.modules.length === 0) return null;
 
   return (
     <PremiumBackground
       variant="dark"
       pattern="circles-gold"
-      patternOpacity={0.03}
+      patternOpacity={0.04}
       showIsotipos
       isotipoVariant="gold"
       showVignette
       sectionClassName="section-padding bg-gradient-to-b from-foreground via-foreground to-primary/20"
+      data-section="methodology"
     >
       <div ref={ref} className="container-soberana">
         <motion.div
@@ -39,171 +93,121 @@ export const ProgramModulesTimeline = ({ program }: ProgramModulesTimelineProps)
         >
           {/* Header */}
           <motion.div variants={staggerItem} className="text-center space-y-4">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-secondary/10 text-secondary text-sm font-medium border border-secondary/20">
-              Metodologia Soberana
-            </span>
+            <div className="inline-flex items-center gap-2 mb-2">
+              <div className="h-px w-8 bg-gradient-to-r from-transparent to-secondary" />
+              <Sparkles className="w-5 h-5 text-secondary" />
+              <div className="h-px w-8 bg-gradient-to-l from-transparent to-secondary" />
+            </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-background">
-              O Passo a Passo da{" "}
+              Metodologia{" "}
               <span className="bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent">
-                Transformação
+                Soberana
               </span>
             </h2>
             <p className="text-background/60 max-w-2xl mx-auto text-lg">
-              6 pilares fundamentais para você construir um escritório estruturado e lucrativo
+              O passo a passo da transformação do seu escritório em 12 semanas
             </p>
           </motion.div>
 
-          {/* Timeline Visual - Desktop */}
-          <motion.div variants={staggerItem} className="hidden lg:block">
-            <div className="relative">
-              {/* Connection Line */}
-              <div className="absolute top-12 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-secondary/50 to-transparent" />
+          {/* Cards Grid - Premium Design */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {methodologyPillars.map((pillar, index) => {
+              const IconComponent = pillar.icon;
+              const isGold = pillar.color === "gold";
               
-              {/* Timeline Points */}
-              <div className="grid grid-cols-6 gap-4">
-                {program.modules.map((module, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                    transition={{ delay: 0.2 + index * 0.1 }}
-                    className="flex flex-col items-center"
-                  >
-                    {/* Number Circle */}
-                    <motion.div
-                      className={cn(
-                        "relative w-24 h-24 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300",
-                        expandedModule === index
-                          ? "bg-gradient-to-br from-secondary to-accent scale-110"
-                          : "bg-gradient-to-br from-primary to-secondary hover:scale-105"
-                      )}
-                      onClick={() => setExpandedModule(expandedModule === index ? null : index)}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {/* Glow */}
-                      <div className="absolute inset-0 rounded-full bg-secondary/30 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              return (
+                <motion.div
+                  key={index}
+                  variants={staggerItem}
+                  className="group relative"
+                >
+                  {/* Card Container */}
+                  <div className="relative h-full rounded-2xl overflow-hidden">
+                    {/* Border Gradient */}
+                    <div className={`absolute inset-0 rounded-2xl p-[1px] transition-all duration-500 ${
+                      isGold 
+                        ? "bg-gradient-to-br from-secondary/50 via-secondary/10 to-secondary/40 group-hover:from-secondary/70 group-hover:via-secondary/30 group-hover:to-secondary/60" 
+                        : "bg-gradient-to-br from-primary/50 via-primary/10 to-primary/40 group-hover:from-primary/70 group-hover:via-primary/30 group-hover:to-primary/60"
+                    }`}>
+                      <div className="absolute inset-[1px] rounded-2xl bg-foreground" />
+                    </div>
+                    
+                    {/* Card Content */}
+                    <div className="relative h-full rounded-2xl backdrop-blur-sm bg-background/[0.02] p-6 
+                      group-hover:bg-background/[0.05] transition-all duration-500
+                      hover:shadow-[0_0_50px_rgba(166,144,97,0.15)]">
+                      
+                      {/* Shimmer Effect */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden rounded-2xl">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-secondary/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                      </div>
+                      
+                      {/* Glow Effect on Hover */}
+                      <div className={`absolute -inset-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl rounded-3xl ${
+                        isGold ? "bg-secondary/10" : "bg-primary/10"
+                      }`} />
                       
                       {/* Content */}
-                      <div className="relative z-10 text-center">
-                        <span className="text-3xl">{PILLAR_EMOJIS[index] || "📌"}</span>
-                        <p className="text-background font-bold text-sm mt-1">{index + 1}</p>
+                      <div className="relative z-10">
+                        {/* Number Badge & Icon Row */}
+                        <div className="flex items-center justify-between mb-5">
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-transform duration-300 group-hover:scale-110 ${
+                            isGold 
+                              ? "bg-gradient-to-br from-secondary to-secondary-dark text-foreground shadow-lg shadow-secondary/40" 
+                              : "bg-gradient-to-br from-primary to-primary-dark text-background shadow-lg shadow-primary/40"
+                          }`}>
+                            {pillar.number}
+                          </div>
+                          
+                          {/* Icon */}
+                          <div className={`w-14 h-14 rounded-xl flex items-center justify-center border transition-all duration-300 group-hover:scale-110 ${
+                            isGold 
+                              ? "bg-secondary/10 border-secondary/40 group-hover:bg-secondary/20 group-hover:border-secondary/60" 
+                              : "bg-primary/10 border-primary/40 group-hover:bg-primary/20 group-hover:border-primary/60"
+                          }`}>
+                            <IconComponent className={`w-7 h-7 ${isGold ? "text-secondary" : "text-primary-light"}`} />
+                          </div>
+                        </div>
+                        
+                        {/* Title */}
+                        <h3 className="font-serif text-xl font-bold text-background mb-1">
+                          {pillar.title}
+                        </h3>
+                        
+                        {/* Subtitle */}
+                        <p className={`text-sm font-medium mb-3 ${isGold ? "text-secondary" : "text-primary-light"}`}>
+                          {pillar.subtitle}
+                        </p>
+                        
+                        {/* Description */}
+                        <p className="text-background/60 text-sm leading-relaxed">
+                          {pillar.description}
+                        </p>
+                        
+                        {/* Decorative Line */}
+                        <div className={`mt-5 h-0.5 rounded-full transition-all duration-500 ${
+                          isGold 
+                            ? "bg-gradient-to-r from-secondary/60 to-transparent w-12 group-hover:w-24" 
+                            : "bg-gradient-to-r from-primary/60 to-transparent w-12 group-hover:w-24"
+                        }`} />
                       </div>
-
-                      {/* Ring */}
-                      <div className="absolute inset-0 rounded-full border-2 border-secondary/30" />
-                    </motion.div>
-
-                    {/* Module Title */}
-                    <p className="mt-4 text-center text-background font-medium text-sm max-w-[120px] leading-tight">
-                      {module.title.replace(/^Pilar \d+: /, "")}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Expanded Card - Desktop */}
-          {expandedModule !== null && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="hidden lg:block"
-            >
-              <div className="relative max-w-2xl mx-auto">
-                <div className="backdrop-blur-xl bg-background/5 border border-secondary/30 rounded-2xl p-8 shadow-2xl shadow-secondary/10">
-                  <div className="flex items-start gap-6">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center text-3xl shrink-0">
-                      {PILLAR_EMOJIS[expandedModule]}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-background mb-2">
-                        {program.modules[expandedModule].title}
-                      </h3>
-                      <p className="text-background/70 leading-relaxed">
-                        {program.modules[expandedModule].description}
-                      </p>
                     </div>
                   </div>
-                  
-                  {/* Close button */}
-                  <button
-                    onClick={() => setExpandedModule(null)}
-                    className="absolute top-4 right-4 w-8 h-8 rounded-full bg-background/10 flex items-center justify-center text-background/60 hover:text-background hover:bg-background/20 transition-colors"
-                  >
-                    ×
-                  </button>
-                </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* Impact Phrase */}
+          {program.impactPhrase && (
+            <motion.div variants={staggerItem} className="text-center pt-8">
+              <div className="inline-block px-8 py-4 rounded-2xl bg-gradient-to-r from-secondary/10 via-background/5 to-primary/10 border border-secondary/20 backdrop-blur-sm">
+                <p className="text-xl md:text-2xl font-serif text-background/80 italic">
+                  "{program.impactPhrase}"
+                </p>
               </div>
             </motion.div>
           )}
-
-          {/* Mobile/Tablet - Accordion Style */}
-          <motion.div variants={staggerItem} className="lg:hidden space-y-4">
-            {program.modules.map((module, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                transition={{ delay: 0.1 + index * 0.1 }}
-                className="group"
-              >
-                <button
-                  onClick={() => setExpandedModule(expandedModule === index ? null : index)}
-                  className={cn(
-                    "w-full backdrop-blur-md bg-background/5 border rounded-xl p-4 flex items-center gap-4 transition-all",
-                    expandedModule === index
-                      ? "border-secondary/50 bg-secondary/10"
-                      : "border-secondary/20 hover:border-secondary/40"
-                  )}
-                >
-                  {/* Icon */}
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shrink-0">
-                    <span className="text-2xl">{PILLAR_EMOJIS[index]}</span>
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 text-left">
-                    <p className="text-secondary text-xs font-medium uppercase tracking-wide">
-                      Pilar {index + 1}
-                    </p>
-                    <p className="text-background font-semibold">
-                      {module.title.replace(/^Pilar \d+: /, "")}
-                    </p>
-                  </div>
-
-                  {/* Expand Icon */}
-                  {expandedModule === index ? (
-                    <ChevronUp className="w-5 h-5 text-secondary" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-background/50" />
-                  )}
-                </button>
-
-                {/* Expanded Content */}
-                {expandedModule === index && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    className="mt-2 px-4 py-4 bg-secondary/5 border border-secondary/20 rounded-xl"
-                  >
-                    <p className="text-background/70 leading-relaxed">
-                      {module.description}
-                    </p>
-                  </motion.div>
-                )}
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Impact Phrase */}
-          <motion.div variants={staggerItem} className="text-center pt-8">
-            <p className="text-xl md:text-2xl font-serif text-secondary italic">
-              "{program.impactPhrase}"
-            </p>
-          </motion.div>
         </motion.div>
       </div>
     </PremiumBackground>

@@ -93,22 +93,22 @@ export const AccelerationHero = ({ program }: AccelerationHeroProps) => {
           animate="visible"
           className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center"
         >
-          {/* Left - Photo with Premium Frame */}
+          {/* Left - Photo with Premium Frame - INCREASED SIZE */}
           <motion.div 
             variants={staggerItem}
             className="relative flex justify-center lg:justify-start"
           >
             {/* Premium Golden Frame Container */}
             <div className="relative">
-              {/* Glow Effect */}
-              <div className="absolute -inset-4 bg-gradient-to-br from-secondary/40 via-secondary/20 to-secondary/40 rounded-3xl blur-xl opacity-60" />
+              {/* Glow Effect - BIGGER */}
+              <div className="absolute -inset-6 bg-gradient-to-br from-secondary/40 via-secondary/20 to-secondary/40 rounded-3xl blur-2xl opacity-60" />
               
               {/* Outer Golden Frame */}
               <div className="relative p-2 bg-gradient-to-br from-secondary via-secondary/80 to-secondary rounded-2xl shadow-2xl shadow-secondary/30">
                 {/* Inner Frame with Pattern */}
                 <div className="relative p-1 bg-gradient-to-br from-secondary/90 via-foreground to-secondary/90 rounded-xl">
-                  {/* Photo Container */}
-                  <div className="relative w-[280px] sm:w-[320px] md:w-[380px] aspect-[3/4] rounded-lg overflow-hidden">
+                  {/* Photo Container - BIGGER */}
+                  <div className="relative w-[320px] sm:w-[380px] md:w-[450px] lg:w-[480px] aspect-[3/4] rounded-lg overflow-hidden">
                     <img
                       src={fabianaHero}
                       alt="Fabiana Duarte - Mentora"
@@ -121,20 +121,20 @@ export const AccelerationHero = ({ program }: AccelerationHeroProps) => {
                 </div>
 
                 {/* Decorative Corner Elements */}
-                <div className="absolute -top-3 -left-3 w-8 h-8 border-t-4 border-l-4 border-secondary rounded-tl-lg" />
-                <div className="absolute -top-3 -right-3 w-8 h-8 border-t-4 border-r-4 border-secondary rounded-tr-lg" />
-                <div className="absolute -bottom-3 -left-3 w-8 h-8 border-b-4 border-l-4 border-secondary rounded-bl-lg" />
-                <div className="absolute -bottom-3 -right-3 w-8 h-8 border-b-4 border-r-4 border-secondary rounded-br-lg" />
+                <div className="absolute -top-3 -left-3 w-10 h-10 border-t-4 border-l-4 border-secondary rounded-tl-lg" />
+                <div className="absolute -top-3 -right-3 w-10 h-10 border-t-4 border-r-4 border-secondary rounded-tr-lg" />
+                <div className="absolute -bottom-3 -left-3 w-10 h-10 border-b-4 border-l-4 border-secondary rounded-bl-lg" />
+                <div className="absolute -bottom-3 -right-3 w-10 h-10 border-b-4 border-r-4 border-secondary rounded-br-lg" />
               </div>
 
               {/* Floating particles */}
               {[...Array(5)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="absolute w-1.5 h-1.5 rounded-full bg-secondary"
+                  className="absolute w-2 h-2 rounded-full bg-secondary"
                   style={{
                     top: `${20 + i * 15}%`,
-                    left: i % 2 === 0 ? "-20px" : "calc(100% + 10px)",
+                    left: i % 2 === 0 ? "-25px" : "calc(100% + 15px)",
                   }}
                   animate={{
                     y: [0, -10, 0],
@@ -253,8 +253,8 @@ export const AccelerationHero = ({ program }: AccelerationHeroProps) => {
         </motion.div>
       </div>
 
-      {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+      {/* Bottom fade - DARK FADE instead of light */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-foreground to-transparent" />
     </section>
   );
 };
