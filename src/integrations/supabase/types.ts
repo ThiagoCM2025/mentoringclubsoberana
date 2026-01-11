@@ -970,6 +970,8 @@ export type Database = {
         Row: {
           calendar_link: string | null
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           description: string | null
           duration_weeks: number | null
           id: string
@@ -989,6 +991,8 @@ export type Database = {
         Insert: {
           calendar_link?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           duration_weeks?: number | null
           id?: string
@@ -1008,6 +1012,8 @@ export type Database = {
         Update: {
           calendar_link?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           duration_weeks?: number | null
           id?: string
