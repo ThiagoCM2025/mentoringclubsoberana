@@ -10,6 +10,11 @@ import { ProgramTestimonials } from "@/components/program/ProgramTestimonials";
 import { ProgramCTA } from "@/components/program/ProgramCTA";
 import { ProgramFAQ } from "@/components/program/ProgramFAQ";
 
+// Premium Components for Acceleration Program
+import { AccelerationHero } from "@/components/program/AccelerationHero";
+import { ProgramModulesTimeline } from "@/components/program/ProgramModulesTimeline";
+import { ProgramContentPreview } from "@/components/program/ProgramContentPreview";
+
 const ProgramDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   
@@ -18,6 +23,9 @@ const ProgramDetail = () => {
   if (!program) {
     return <Navigate to="/" replace />;
   }
+
+  // Check if this is the Acceleration program for premium layout
+  const isAccelerationProgram = slug === "aceleracao";
 
   return (
     <>
@@ -29,11 +37,27 @@ const ProgramDetail = () => {
       <div className="min-h-screen bg-background">
         <Navbar />
         <main>
-          <ProgramHero program={program} />
-          <ProgramFeatures program={program} />
-          <ProgramTestimonials program={program} />
-          <ProgramFAQ program={program} />
-          <ProgramCTA program={program} />
+          {isAccelerationProgram ? (
+            <>
+              {/* Premium Acceleration Layout */}
+              <AccelerationHero program={program} />
+              <ProgramFeatures program={program} />
+              <ProgramModulesTimeline program={program} />
+              <ProgramContentPreview programSlug={slug} />
+              <ProgramTestimonials program={program} />
+              <ProgramFAQ program={program} />
+              <ProgramCTA program={program} />
+            </>
+          ) : (
+            <>
+              {/* Standard Program Layout */}
+              <ProgramHero program={program} />
+              <ProgramFeatures program={program} />
+              <ProgramTestimonials program={program} />
+              <ProgramFAQ program={program} />
+              <ProgramCTA program={program} />
+            </>
+          )}
         </main>
         <Footer />
         <WhatsAppButton />
