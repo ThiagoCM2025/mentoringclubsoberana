@@ -3,7 +3,7 @@ import { AlertCircle, Target, TrendingUp } from "lucide-react";
 
 export const JornadaProblemSection = () => {
   return (
-    <section className="relative py-16 md:py-24 bg-zinc-900 overflow-hidden">
+    <section className="relative py-10 md:py-16 bg-zinc-900 overflow-hidden">
       {/* Background pattern */}
       <div 
         className="absolute inset-0 opacity-[0.03]"
@@ -23,7 +23,7 @@ export const JornadaProblemSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="text-center mb-6 md:mb-8"
           >
             <div className="inline-flex items-center gap-2 bg-primary/20 text-primary-foreground border border-primary/30 px-4 py-2 rounded-full mb-6">
               <AlertCircle className="w-4 h-4" />
