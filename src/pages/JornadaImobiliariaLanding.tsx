@@ -60,7 +60,7 @@ const JornadaImobiliariaLanding = () => {
       <WhatsAppButton message="Olá! Quero saber mais sobre a Jornada Imobiliária 2026" />
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center bg-brand-black overflow-hidden">
+      <section ref={heroRef} className="relative min-h-[85vh] md:min-h-screen flex items-center bg-brand-black overflow-hidden">
         {/* Background Image - Responsive positioning */}
         <div className="absolute inset-0 z-0">
           <img 
@@ -138,7 +138,7 @@ const JornadaImobiliariaLanding = () => {
         />
 
         {/* Content */}
-        <div className="container-soberana relative z-10 py-16 px-4 sm:px-6 md:py-32 md:px-8">
+        <div className="container-soberana relative z-10 py-12 px-4 sm:px-6 md:py-24 md:px-8">
           <div className="max-w-3xl mx-auto text-center">
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <Badge className="bg-secondary/20 text-secondary border-secondary/30 mb-4 md:mb-6 backdrop-blur-sm text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1">
