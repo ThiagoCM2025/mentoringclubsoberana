@@ -71,11 +71,13 @@ export function PlatformWelcomeVideoSection() {
   async function handleSave() {
     setSaving(true);
     try {
-      // Update video URL
+      // Usar upsert para garantir que as configurações sejam salvas mesmo se não existirem
       const { error: urlError } = await supabase
         .from("platform_settings")
-        .update({ value: videoUrl || null })
-        .eq("key", "welcome_video_url");
+        .upsert(
+          { key: "welcome_video_url", value: videoUrl || null },
+          { onConflict: "key" }
+        );
 
       if (urlError) throw urlError;
 
@@ -83,19 +85,25 @@ export function PlatformWelcomeVideoSection() {
       const totalSeconds = getTotalSeconds();
       const { error: durationError } = await supabase
         .from("platform_settings")
-        .update({ value: totalSeconds > 0 ? totalSeconds.toString() : null })
-        .eq("key", "welcome_video_duration");
+        .upsert(
+          { key: "welcome_video_duration", value: totalSeconds > 0 ? totalSeconds.toString() : null },
+          { onConflict: "key" }
+        );
 
       if (durationError) throw durationError;
 
       // Update custom thumbnail
       const { error: thumbError } = await supabase
         .from("platform_settings")
-        .update({ value: customThumbnail || null })
-        .eq("key", "welcome_video_thumbnail");
+        .upsert(
+          { key: "welcome_video_thumbnail", value: customThumbnail || null },
+          { onConflict: "key" }
+        );
 
       if (thumbError) throw thumbError;
 
+      // Re-fetch para garantir sincronização
+      await fetchSettings();
       toast.success("Vídeo de boas-vindas atualizado!");
     } catch (error) {
       console.error("Error saving settings:", error);
@@ -149,11 +157,13 @@ export function PlatformWelcomeVideoSection() {
       if (data?.thumbnailUrl) {
         setCustomThumbnail(data.thumbnailUrl);
         
-        // Auto-save thumbnail to database
+        // Auto-save thumbnail to database usando upsert
         const { error: saveError } = await supabase
           .from("platform_settings")
-          .update({ value: data.thumbnailUrl })
-          .eq("key", "welcome_video_thumbnail");
+          .upsert(
+            { key: "welcome_video_thumbnail", value: data.thumbnailUrl },
+            { onConflict: "key" }
+          );
         
         if (saveError) {
           console.error("Error auto-saving thumbnail:", saveError);
@@ -180,8 +190,8 @@ export function PlatformWelcomeVideoSection() {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     const videoId = match && match[2].length === 11 ? match[2] : null;
-    // Cache-buster para forçar atualização da thumbnail
-    return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg?t=${thumbnailRefreshKey}` : null;
+    // Usar hqdefault como fallback (mais confiável que maxresdefault)
+    return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg?t=${thumbnailRefreshKey}` : null;
   };
 
   const [refreshingYouTube, setRefreshingYouTube] = useState(false);
@@ -189,27 +199,32 @@ export function PlatformWelcomeVideoSection() {
   const refreshYouTubeThumbnail = async () => {
     if (!videoUrl) return;
 
-    // Extract video ID
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = videoUrl.match(regExp);
-    const videoId = match && match[2].length === 11 ? match[2] : null;
-
-    if (!videoId) {
-      toast.error("URL do YouTube inválida");
-      return;
-    }
-
     setRefreshingYouTube(true);
     try {
-      const newThumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg?t=${Date.now()}`;
-      
-      // Save to database
-      const { error } = await supabase
-        .from("platform_settings")
-        .update({ value: newThumbnailUrl })
-        .eq("key", "welcome_video_thumbnail");
+      // Usar a edge function que já busca a melhor thumbnail disponível
+      const { data, error: fetchError } = await supabase.functions.invoke("youtube-video-info", {
+        body: { videoUrl }
+      });
 
-      if (error) throw error;
+      if (fetchError) throw fetchError;
+
+      if (!data?.thumbnailUrl) {
+        toast.error("Não foi possível obter a thumbnail do YouTube");
+        return;
+      }
+
+      // Adicionar cache-buster para forçar atualização
+      const newThumbnailUrl = `${data.thumbnailUrl}?t=${Date.now()}`;
+      
+      // Salvar no banco usando upsert para garantir persistência
+      const { error: saveError } = await supabase
+        .from("platform_settings")
+        .upsert(
+          { key: "welcome_video_thumbnail", value: newThumbnailUrl },
+          { onConflict: "key" }
+        );
+
+      if (saveError) throw saveError;
 
       setCustomThumbnail(newThumbnailUrl);
       setThumbnailRefreshKey(Date.now());
@@ -218,7 +233,7 @@ export function PlatformWelcomeVideoSection() {
       toast.success("Thumbnail do YouTube atualizada e salva!");
     } catch (error) {
       console.error("Error refreshing YouTube thumbnail:", error);
-      toast.error("Erro ao atualizar thumbnail");
+      toast.error("Erro ao atualizar thumbnail do YouTube");
     } finally {
       setRefreshingYouTube(false);
     }
