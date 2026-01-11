@@ -2192,6 +2192,7 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          source_filter: string | null
           step_number: number
           updated_at: string
         }
@@ -2203,6 +2204,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name: string
+          source_filter?: string | null
           step_number: number
           updated_at?: string
         }
@@ -2214,6 +2216,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          source_filter?: string | null
           step_number?: number
           updated_at?: string
         }
