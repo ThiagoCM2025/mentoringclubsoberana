@@ -1764,6 +1764,8 @@ export type Database = {
           action_url: string | null
           created_at: string
           custom_thumbnail_url: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           description: string | null
           duration_minutes: number | null
           id: string
@@ -1781,6 +1783,8 @@ export type Database = {
           action_url?: string | null
           created_at?: string
           custom_thumbnail_url?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           duration_minutes?: number | null
           id?: string
@@ -1798,6 +1802,8 @@ export type Database = {
           action_url?: string | null
           created_at?: string
           custom_thumbnail_url?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           duration_minutes?: number | null
           id?: string
@@ -2044,6 +2050,8 @@ export type Database = {
         Row: {
           course_id: string
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           description: string | null
           id: string
           is_dynamic: boolean | null
@@ -2056,6 +2064,8 @@ export type Database = {
         Insert: {
           course_id: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           id?: string
           is_dynamic?: boolean | null
@@ -2068,6 +2078,8 @@ export type Database = {
         Update: {
           course_id?: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           id?: string
           is_dynamic?: boolean | null

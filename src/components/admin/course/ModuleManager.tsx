@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -30,7 +32,6 @@ import {
   Plus,
   Trash2,
   Pencil,
-  PlayCircle,
   GripVertical,
   FileText,
   ChevronUp,
@@ -39,7 +40,9 @@ import {
   Video,
   Youtube,
   Calendar,
-  FileEdit
+  FileEdit,
+  RotateCcw,
+  AlertTriangle
 } from "lucide-react";
 
 interface Lesson {
@@ -53,6 +56,8 @@ interface Lesson {
   lesson_type?: string | null;
   action_url?: string | null;
   action_button_text?: string | null;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
 }
 
 interface Module {
@@ -61,15 +66,19 @@ interface Module {
   description: string | null;
   order_index: number;
   lessons: Lesson[];
+  deleted_at?: string | null;
+  deleted_by?: string | null;
 }
 
 interface ModuleManagerProps {
   courseId: string;
   modules: Module[];
   onRefresh: () => void;
+  showDeleted?: boolean;
+  onToggleShowDeleted?: (show: boolean) => void;
 }
 
-const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => {
+const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onToggleShowDeleted }: ModuleManagerProps) => {
   const { toast } = useToast();
   
   // Module dialog
@@ -80,6 +89,12 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
   const [lessonDialogOpen, setLessonDialogOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState<Partial<Lesson> | null>(null);
   const [lessonModuleId, setLessonModuleId] = useState<string | null>(null);
+
+  // Calculate counts
+  const activeModules = modules.filter(m => !m.deleted_at);
+  const deletedModules = modules.filter(m => m.deleted_at);
+  const activeLessons = modules.reduce((acc, m) => acc + m.lessons.filter(l => !l.deleted_at).length, 0);
+  const deletedLessons = modules.reduce((acc, m) => acc + m.lessons.filter(l => l.deleted_at).length, 0);
 
   const getVideoTypeIcon = (url: string | null, lessonType?: string | null) => {
     if (lessonType === 'scheduling') {
@@ -131,12 +146,70 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
     }
   };
 
-  const deleteModule = async (moduleId: string) => {
-    if (!confirm("Excluir este módulo e todas as suas aulas?")) return;
+  const moveModuleToBin = async (moduleId: string) => {
+    if (!confirm("Mover este módulo e suas aulas para a lixeira?")) return;
 
-    await supabase.from("modules").delete().eq("id", moduleId);
-    onRefresh();
-    toast({ title: "Módulo excluído" });
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const now = new Date().toISOString();
+
+      // Soft delete module
+      await supabase
+        .from("modules")
+        .update({ deleted_at: now, deleted_by: user?.id })
+        .eq("id", moduleId);
+
+      // Soft delete all lessons
+      await supabase
+        .from("lessons")
+        .update({ deleted_at: now, deleted_by: user?.id })
+        .eq("module_id", moduleId);
+
+      toast({ 
+        title: "Módulo movido para lixeira",
+        description: "Você pode restaurá-lo a qualquer momento."
+      });
+      onRefresh();
+    } catch (error) {
+      toast({ title: "Erro ao mover para lixeira", variant: "destructive" });
+    }
+  };
+
+  const restoreModule = async (moduleId: string) => {
+    try {
+      // Restore module
+      await supabase
+        .from("modules")
+        .update({ deleted_at: null, deleted_by: null })
+        .eq("id", moduleId);
+
+      // Restore all lessons
+      await supabase
+        .from("lessons")
+        .update({ deleted_at: null, deleted_by: null })
+        .eq("module_id", moduleId);
+
+      toast({ title: "Módulo restaurado com sucesso!" });
+      onRefresh();
+    } catch (error) {
+      toast({ title: "Erro ao restaurar", variant: "destructive" });
+    }
+  };
+
+  const permanentlyDeleteModule = async (moduleId: string) => {
+    if (!confirm("ATENÇÃO: Esta ação é irreversível! Excluir permanentemente este módulo e todas as suas aulas?")) return;
+
+    try {
+      // Delete lessons first (foreign key)
+      await supabase.from("lessons").delete().eq("module_id", moduleId);
+      // Delete module
+      await supabase.from("modules").delete().eq("id", moduleId);
+
+      toast({ title: "Módulo excluído permanentemente" });
+      onRefresh();
+    } catch (error) {
+      toast({ title: "Erro ao excluir", variant: "destructive" });
+    }
   };
 
   const duplicateModule = async (module: Module) => {
@@ -155,8 +228,8 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
 
       if (error || !newModule) throw error;
 
-      // Duplicate lessons
-      for (const lesson of module.lessons) {
+      // Duplicate lessons (only active ones)
+      for (const lesson of module.lessons.filter(l => !l.deleted_at)) {
         await supabase.from("lessons").insert({
           module_id: newModule.id,
           title: lesson.title,
@@ -176,13 +249,14 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
   };
 
   const moveModule = async (moduleId: string, direction: "up" | "down") => {
-    const currentIndex = modules.findIndex(m => m.id === moduleId);
+    const activeModulesList = modules.filter(m => !m.deleted_at);
+    const currentIndex = activeModulesList.findIndex(m => m.id === moduleId);
     if (currentIndex === -1) return;
 
     const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-    if (newIndex < 0 || newIndex >= modules.length) return;
+    if (newIndex < 0 || newIndex >= activeModulesList.length) return;
 
-    const otherModule = modules[newIndex];
+    const otherModule = activeModulesList[newIndex];
     
     await Promise.all([
       supabase.from("modules").update({ order_index: newIndex }).eq("id", moduleId),
@@ -216,6 +290,7 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
           .eq("id", editingLesson.id);
       } else {
         const module = modules.find(m => m.id === lessonModuleId);
+        const activeLessonsCount = module?.lessons.filter(l => !l.deleted_at).length || 0;
         await supabase.from("lessons").insert({
           module_id: lessonModuleId,
           title: editingLesson.title,
@@ -226,7 +301,7 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
           lesson_type: lessonType,
           action_url: editingLesson.action_url,
           action_button_text: editingLesson.action_button_text,
-          order_index: module?.lessons.length || 0,
+          order_index: activeLessonsCount,
         });
       }
       setLessonDialogOpen(false);
@@ -239,25 +314,68 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
     }
   };
 
-  const deleteLesson = async (lessonId: string) => {
-    if (!confirm("Excluir esta aula?")) return;
+  const moveLessonToBin = async (lessonId: string) => {
+    if (!confirm("Mover esta aula para a lixeira?")) return;
 
-    await supabase.from("lessons").delete().eq("id", lessonId);
-    onRefresh();
-    toast({ title: "Aula excluída" });
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      await supabase
+        .from("lessons")
+        .update({ 
+          deleted_at: new Date().toISOString(),
+          deleted_by: user?.id 
+        })
+        .eq("id", lessonId);
+
+      toast({ 
+        title: "Aula movida para lixeira",
+        description: "Você pode restaurá-la a qualquer momento."
+      });
+      onRefresh();
+    } catch (error) {
+      toast({ title: "Erro ao mover para lixeira", variant: "destructive" });
+    }
+  };
+
+  const restoreLesson = async (lessonId: string) => {
+    try {
+      await supabase
+        .from("lessons")
+        .update({ deleted_at: null, deleted_by: null })
+        .eq("id", lessonId);
+
+      toast({ title: "Aula restaurada com sucesso!" });
+      onRefresh();
+    } catch (error) {
+      toast({ title: "Erro ao restaurar", variant: "destructive" });
+    }
+  };
+
+  const permanentlyDeleteLesson = async (lessonId: string) => {
+    if (!confirm("ATENÇÃO: Esta ação é irreversível! Excluir permanentemente?")) return;
+
+    try {
+      await supabase.from("lessons").delete().eq("id", lessonId);
+      toast({ title: "Aula excluída permanentemente" });
+      onRefresh();
+    } catch (error) {
+      toast({ title: "Erro ao excluir", variant: "destructive" });
+    }
   };
 
   const moveLesson = async (lesson: Lesson, moduleId: string, direction: "up" | "down") => {
     const module = modules.find(m => m.id === moduleId);
     if (!module) return;
 
-    const currentIndex = module.lessons.findIndex(l => l.id === lesson.id);
+    const activeLessonsList = module.lessons.filter(l => !l.deleted_at);
+    const currentIndex = activeLessonsList.findIndex(l => l.id === lesson.id);
     if (currentIndex === -1) return;
 
     const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-    if (newIndex < 0 || newIndex >= module.lessons.length) return;
+    if (newIndex < 0 || newIndex >= activeLessonsList.length) return;
 
-    const otherLesson = module.lessons[newIndex];
+    const otherLesson = activeLessonsList[newIndex];
     
     await Promise.all([
       supabase.from("lessons").update({ order_index: newIndex }).eq("id", lesson.id),
@@ -269,221 +387,336 @@ const ModuleManager = ({ courseId, modules, onRefresh }: ModuleManagerProps) => 
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h3 className="font-semibold">Módulos e Aulas</h3>
           <p className="text-sm text-muted-foreground">
-            {modules.length} módulo(s), {modules.reduce((acc, m) => acc + m.lessons.length, 0)} aula(s) total
+            {activeModules.length} módulo(s), {activeLessons} aula(s) ativas
+            {(deletedModules.length > 0 || deletedLessons > 0) && (
+              <span className="text-destructive ml-2">
+                • {deletedModules.length} módulo(s), {deletedLessons} aula(s) na lixeira
+              </span>
+            )}
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setEditingModule({ title: "", description: "" });
-            setModuleDialogOpen(true);
-          }}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Novo Módulo
-        </Button>
-      </div>
-
-      {modules.length === 0 ? (
-        <div className="text-center py-12 border-2 border-dashed rounded-xl">
-          <FileText className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
-          <p className="text-muted-foreground">Nenhum módulo ainda</p>
+        <div className="flex items-center gap-4">
+          {onToggleShowDeleted && (deletedModules.length > 0 || deletedLessons > 0) && (
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={showDeleted}
+                onCheckedChange={onToggleShowDeleted}
+                id="show-deleted-content"
+              />
+              <Label htmlFor="show-deleted-content" className="text-sm text-muted-foreground flex items-center gap-1 cursor-pointer">
+                <Trash2 className="w-3.5 h-3.5" />
+                Mostrar lixeira
+              </Label>
+            </div>
+          )}
           <Button
             variant="outline"
             size="sm"
-            className="mt-4"
             onClick={() => {
               setEditingModule({ title: "", description: "" });
               setModuleDialogOpen(true);
             }}
           >
             <Plus className="w-4 h-4 mr-2" />
-            Criar primeiro módulo
+            Novo Módulo
           </Button>
+        </div>
+      </div>
+
+      {modules.length === 0 ? (
+        <div className="text-center py-12 border-2 border-dashed rounded-xl">
+          <FileText className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
+          <p className="text-muted-foreground">
+            {showDeleted ? "Nenhum item na lixeira" : "Nenhum módulo ainda"}
+          </p>
+          {!showDeleted && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-4"
+              onClick={() => {
+                setEditingModule({ title: "", description: "" });
+                setModuleDialogOpen(true);
+              }}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Criar primeiro módulo
+            </Button>
+          )}
         </div>
       ) : (
         <Accordion type="multiple" className="space-y-3">
-          {modules.map((module, moduleIndex) => (
-            <AccordionItem
-              key={module.id}
-              value={module.id}
-              className="border rounded-xl overflow-hidden"
-            >
-              <AccordionTrigger className="px-4 hover:no-underline hover:bg-muted/50">
-                <div className="flex items-center gap-3 text-left flex-1">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
-                    {moduleIndex + 1}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{module.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {module.lessons.length} aula(s)
-                    </p>
-                  </div>
-                </div>
-              </AccordionTrigger>
-              
-              <AccordionContent className="px-4 pb-4">
-                {/* Module actions */}
-                <div className="flex flex-wrap gap-2 mb-4 pt-2 border-t">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setLessonModuleId(module.id);
-                      setEditingLesson({ title: "", description: "", video_url: "", is_free: false, lesson_type: "video" });
-                      setLessonDialogOpen(true);
-                    }}
-                  >
-                    <Plus className="w-3 h-3 mr-1" />
-                    Nova Aula
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setEditingModule(module);
-                      setModuleDialogOpen(true);
-                    }}
-                  >
-                    <Pencil className="w-3 h-3 mr-1" />
-                    Editar
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => duplicateModule(module)}
-                  >
-                    <Copy className="w-3 h-3 mr-1" />
-                    Duplicar
-                  </Button>
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      disabled={moduleIndex === 0}
-                      onClick={() => moveModule(module.id, "up")}
-                    >
-                      <ChevronUp className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      disabled={moduleIndex === modules.length - 1}
-                      onClick={() => moveModule(module.id, "down")}
-                    >
-                      <ChevronDown className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteModule(module.id)}
-                    className="text-destructive hover:text-destructive ml-auto"
-                  >
-                    <Trash2 className="w-3 h-3 mr-1" />
-                    Excluir
-                  </Button>
-                </div>
-
-                {/* Lessons list */}
-                {module.lessons.length === 0 ? (
-                  <p className="text-sm text-muted-foreground py-4 text-center">
-                    Nenhuma aula neste módulo
-                  </p>
-                ) : (
-                  <div className="space-y-2">
-                    {module.lessons.map((lesson, lessonIndex) => (
-                      <div
-                        key={lesson.id}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 group"
-                      >
-                        <GripVertical className="w-4 h-4 text-muted-foreground/50" />
-                        
-                        <div className="flex items-center gap-2">
-                          {getVideoTypeIcon(lesson.video_url, lesson.lesson_type)}
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">
-                            {moduleIndex + 1}.{lessonIndex + 1} - {lesson.title}
-                          </p>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            {lesson.lesson_type === 'scheduling' && (
-                              <span className="text-secondary">Agendamento</span>
-                            )}
-                            {lesson.lesson_type === 'text' && (
-                              <span className="text-purple-500">Texto</span>
-                            )}
-                            {lesson.duration_minutes && lesson.lesson_type !== 'scheduling' && (
-                              <span>{lesson.duration_minutes} min</span>
-                            )}
-                            {!lesson.video_url && lesson.lesson_type !== 'scheduling' && lesson.lesson_type !== 'text' && (
-                              <span className="text-yellow-600">Sem vídeo</span>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {lesson.is_free && (
-                          <span className="text-xs px-2 py-0.5 bg-secondary/10 text-secondary rounded shrink-0">
-                            Grátis
+          {modules.map((module, moduleIndex) => {
+            const isModuleDeleted = !!module.deleted_at;
+            const activeLessonsInModule = module.lessons.filter(l => !l.deleted_at);
+            const deletedLessonsInModule = module.lessons.filter(l => l.deleted_at);
+            
+            return (
+              <AccordionItem
+                key={module.id}
+                value={module.id}
+                className={cn(
+                  "border rounded-xl overflow-hidden",
+                  isModuleDeleted && "opacity-70 border-destructive/30 bg-destructive/5"
+                )}
+              >
+                <AccordionTrigger className="px-4 hover:no-underline hover:bg-muted/50">
+                  <div className="flex items-center gap-3 text-left flex-1">
+                    <div className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0",
+                      isModuleDeleted ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
+                    )}>
+                      {moduleIndex + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium truncate">{module.title}</p>
+                        {isModuleDeleted && (
+                          <Badge variant="destructive" className="text-xs">
+                            <Trash2 className="w-3 h-3 mr-1" />
+                            Lixeira
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {activeLessonsInModule.length} aula(s)
+                        {deletedLessonsInModule.length > 0 && (
+                          <span className="text-destructive ml-1">
+                            • {deletedLessonsInModule.length} na lixeira
                           </span>
                         )}
-                        
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      </p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                
+                <AccordionContent className="px-4 pb-4">
+                  {/* Module actions */}
+                  <div className="flex flex-wrap gap-2 mb-4 pt-2 border-t">
+                    {isModuleDeleted ? (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => restoreModule(module.id)}
+                          className="text-green-600 border-green-200 hover:bg-green-50"
+                        >
+                          <RotateCcw className="w-3 h-3 mr-1" />
+                          Restaurar
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive ml-auto"
+                          onClick={() => permanentlyDeleteModule(module.id)}
+                        >
+                          <AlertTriangle className="w-3 h-3 mr-1" />
+                          Excluir Definitivamente
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setLessonModuleId(module.id);
+                            setEditingLesson({ title: "", description: "", video_url: "", is_free: false, lesson_type: "video" });
+                            setLessonDialogOpen(true);
+                          }}
+                        >
+                          <Plus className="w-3 h-3 mr-1" />
+                          Nova Aula
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setEditingModule(module);
+                            setModuleDialogOpen(true);
+                          }}
+                        >
+                          <Pencil className="w-3 h-3 mr-1" />
+                          Editar
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => duplicateModule(module)}
+                        >
+                          <Copy className="w-3 h-3 mr-1" />
+                          Duplicar
+                        </Button>
+                        <div className="flex gap-1">
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7"
-                            disabled={lessonIndex === 0}
-                            onClick={() => moveLesson(lesson, module.id, "up")}
+                            className="h-8 w-8"
+                            disabled={moduleIndex === 0 || modules.slice(0, moduleIndex).every(m => m.deleted_at)}
+                            onClick={() => moveModule(module.id, "up")}
                           >
-                            <ChevronUp className="w-3 h-3" />
+                            <ChevronUp className="w-4 h-4" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7"
-                            disabled={lessonIndex === module.lessons.length - 1}
-                            onClick={() => moveLesson(lesson, module.id, "down")}
+                            className="h-8 w-8"
+                            disabled={moduleIndex === modules.length - 1 || modules.slice(moduleIndex + 1).every(m => m.deleted_at)}
+                            onClick={() => moveModule(module.id, "down")}
                           >
-                            <ChevronDown className="w-3 h-3" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7"
-                            onClick={() => {
-                              setLessonModuleId(module.id);
-                              setEditingLesson(lesson);
-                              setLessonDialogOpen(true);
-                            }}
-                          >
-                            <Pencil className="w-3 h-3" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-destructive"
-                            onClick={() => deleteLesson(lesson.id)}
-                          >
-                            <Trash2 className="w-3 h-3" />
+                            <ChevronDown className="w-4 h-4" />
                           </Button>
                         </div>
-                      </div>
-                    ))}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveModuleToBin(module.id)}
+                          className="text-destructive hover:text-destructive ml-auto"
+                        >
+                          <Trash2 className="w-3 h-3 mr-1" />
+                          Excluir
+                        </Button>
+                      </>
+                    )}
                   </div>
-                )}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
+
+                  {/* Lessons list */}
+                  {module.lessons.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-4 text-center">
+                      {isModuleDeleted ? "Este módulo não possui aulas" : "Nenhuma aula neste módulo"}
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {module.lessons.map((lesson, lessonIndex) => {
+                        const isLessonDeleted = !!lesson.deleted_at;
+                        const activeLessonIndex = activeLessonsInModule.findIndex(l => l.id === lesson.id);
+                        
+                        return (
+                          <div
+                            key={lesson.id}
+                            className={cn(
+                              "flex items-center gap-3 p-3 rounded-lg group",
+                              isLessonDeleted 
+                                ? "bg-destructive/5 border border-destructive/20 opacity-70" 
+                                : "bg-muted/50"
+                            )}
+                          >
+                            <GripVertical className="w-4 h-4 text-muted-foreground/50" />
+                            
+                            <div className="flex items-center gap-2">
+                              {getVideoTypeIcon(lesson.video_url, lesson.lesson_type)}
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p className="text-sm font-medium truncate">
+                                  {!isLessonDeleted && `${moduleIndex + 1}.${activeLessonIndex + 1} - `}{lesson.title}
+                                </p>
+                                {isLessonDeleted && (
+                                  <span className="text-xs px-2 py-0.5 bg-destructive/10 text-destructive rounded flex items-center gap-1 shrink-0">
+                                    <Trash2 className="w-3 h-3" />
+                                    Lixeira
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                {lesson.lesson_type === 'scheduling' && (
+                                  <span className="text-secondary">Agendamento</span>
+                                )}
+                                {lesson.lesson_type === 'text' && (
+                                  <span className="text-purple-500">Texto</span>
+                                )}
+                                {lesson.duration_minutes && lesson.lesson_type !== 'scheduling' && (
+                                  <span>{lesson.duration_minutes} min</span>
+                                )}
+                                {!lesson.video_url && lesson.lesson_type !== 'scheduling' && lesson.lesson_type !== 'text' && (
+                                  <span className="text-yellow-600">Sem vídeo</span>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {lesson.is_free && !isLessonDeleted && (
+                              <span className="text-xs px-2 py-0.5 bg-secondary/10 text-secondary rounded shrink-0">
+                                Grátis
+                              </span>
+                            )}
+                            
+                            {isLessonDeleted ? (
+                              <div className="flex gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-green-600 hover:text-green-700"
+                                  onClick={() => restoreLesson(lesson.id)}
+                                  title="Restaurar"
+                                >
+                                  <RotateCcw className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-destructive hover:text-destructive"
+                                  onClick={() => permanentlyDeleteLesson(lesson.id)}
+                                  title="Excluir definitivamente"
+                                >
+                                  <AlertTriangle className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  disabled={activeLessonIndex === 0}
+                                  onClick={() => moveLesson(lesson, module.id, "up")}
+                                >
+                                  <ChevronUp className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  disabled={activeLessonIndex === activeLessonsInModule.length - 1}
+                                  onClick={() => moveLesson(lesson, module.id, "down")}
+                                >
+                                  <ChevronDown className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => {
+                                    setLessonModuleId(module.id);
+                                    setEditingLesson(lesson);
+                                    setLessonDialogOpen(true);
+                                  }}
+                                >
+                                  <Pencil className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-destructive"
+                                  onClick={() => moveLessonToBin(lesson.id)}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+            );
+          })}
         </Accordion>
       )}
 
