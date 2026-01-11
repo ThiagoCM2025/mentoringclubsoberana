@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import VideoUrlInput from "./VideoUrlInput";
+import LessonMaterialsSection from "./LessonMaterialsSection";
 import {
   Plus,
   Trash2,
@@ -44,6 +45,16 @@ import {
   RotateCcw,
   AlertTriangle
 } from "lucide-react";
+
+interface PendingFile {
+  file: File;
+  title: string;
+}
+
+interface PendingLink {
+  title: string;
+  url: string;
+}
 
 interface Lesson {
   id: string;
@@ -89,6 +100,10 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
   const [lessonDialogOpen, setLessonDialogOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState<Partial<Lesson> | null>(null);
   const [lessonModuleId, setLessonModuleId] = useState<string | null>(null);
+  
+  // Materials for new lessons (pending until lesson is saved)
+  const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
+  const [pendingLinks, setPendingLinks] = useState<PendingLink[]>([]);
 
   // Calculate counts
   const activeModules = modules.filter(m => !m.deleted_at);
@@ -274,7 +289,10 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
       // Cast lesson_type properly for the database
       const lessonType = (editingLesson.lesson_type || 'video') as 'video' | 'text' | 'action' | 'diagnostic' | 'scheduling' | 'upload';
       
-      if (editingLesson.id) {
+      let lessonId = editingLesson.id;
+      
+      if (lessonId) {
+        // Update existing lesson
         await supabase
           .from("lessons")
           .update({
@@ -287,11 +305,12 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
             action_url: editingLesson.action_url,
             action_button_text: editingLesson.action_button_text,
           })
-          .eq("id", editingLesson.id);
+          .eq("id", lessonId);
       } else {
+        // Create new lesson
         const module = modules.find(m => m.id === lessonModuleId);
         const activeLessonsCount = module?.lessons.filter(l => !l.deleted_at).length || 0;
-        await supabase.from("lessons").insert({
+        const { data: newLesson, error } = await supabase.from("lessons").insert({
           module_id: lessonModuleId,
           title: editingLesson.title,
           description: editingLesson.description,
@@ -302,14 +321,67 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
           action_url: editingLesson.action_url,
           action_button_text: editingLesson.action_button_text,
           order_index: activeLessonsCount,
-        });
+        }).select().single();
+
+        if (error) throw error;
+        lessonId = newLesson.id;
       }
+
+      // Save pending files for new lessons
+      if (lessonId && pendingFiles.length > 0) {
+        for (const { file, title } of pendingFiles) {
+          const ext = file.name.split(".").pop();
+          const filePath = `${lessonId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from("course-materials")
+            .upload(filePath, file);
+
+          if (uploadError) {
+            console.error("Upload error:", uploadError);
+            continue;
+          }
+
+          const { data: publicUrl } = supabase.storage
+            .from("course-materials")
+            .getPublicUrl(filePath);
+
+          await supabase.from("lesson_materials").insert({
+            lesson_id: lessonId,
+            title,
+            file_url: publicUrl.publicUrl,
+            file_type: file.type,
+          });
+        }
+      }
+
+      // Save pending links for new lessons
+      if (lessonId && pendingLinks.length > 0) {
+        for (const { title, url } of pendingLinks) {
+          await supabase.from("lesson_materials").insert({
+            lesson_id: lessonId,
+            title,
+            file_url: url,
+            file_type: "external_link",
+          });
+        }
+      }
+
+      // Reset states
       setLessonDialogOpen(false);
       setEditingLesson(null);
       setLessonModuleId(null);
+      setPendingFiles([]);
+      setPendingLinks([]);
       onRefresh();
-      toast({ title: "Aula salva!" });
+      
+      const materialsCount = pendingFiles.length + pendingLinks.length;
+      toast({ 
+        title: "Aula salva!",
+        description: materialsCount > 0 ? `${materialsCount} material(is) adicionado(s)` : undefined
+      });
     } catch (error) {
+      console.error("Save lesson error:", error);
       toast({ title: "Erro ao salvar aula", variant: "destructive" });
     }
   };
@@ -526,6 +598,8 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
                           onClick={() => {
                             setLessonModuleId(module.id);
                             setEditingLesson({ title: "", description: "", video_url: "", is_free: false, lesson_type: "video" });
+                            setPendingFiles([]);
+                            setPendingLinks([]);
                             setLessonDialogOpen(true);
                           }}
                         >
@@ -693,6 +767,8 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
                                   onClick={() => {
                                     setLessonModuleId(module.id);
                                     setEditingLesson(lesson);
+                                    setPendingFiles([]);
+                                    setPendingLinks([]);
                                     setLessonDialogOpen(true);
                                   }}
                                 >
@@ -885,6 +961,15 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
                 <Label>Aula Gratuita (preview)</Label>
               </div>
             </div>
+
+            {/* Materials Section */}
+            <LessonMaterialsSection
+              lessonId={editingLesson?.id}
+              pendingFiles={pendingFiles}
+              setPendingFiles={setPendingFiles}
+              pendingLinks={pendingLinks}
+              setPendingLinks={setPendingLinks}
+            />
             
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={() => setLessonDialogOpen(false)}>
