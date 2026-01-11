@@ -19,9 +19,11 @@ import {
   Trash2,
   Save,
   FileText,
+  Video,
 } from "lucide-react";
 import { NotificationTemplatesTab } from "@/components/admin/NotificationTemplatesTab";
 import { PlatformWelcomeVideoSection } from "@/components/admin/PlatformWelcomeVideoSection";
+import { JornadaSessionsManager } from "@/components/admin/JornadaSessionsManager";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -219,6 +221,10 @@ export default function AdminSettings() {
               <Users className="w-3.5 h-3.5" />
               Administradores
             </TabsTrigger>
+            <TabsTrigger value="jornadas" className="flex items-center gap-1.5 text-sm data-[state=active]:bg-secondary data-[state=active]:text-black">
+              <Video className="w-3.5 h-3.5" />
+              Jornadas
+            </TabsTrigger>
             <TabsTrigger value="templates" className="flex items-center gap-1.5 text-sm data-[state=active]:bg-secondary data-[state=active]:text-black">
               <FileText className="w-3.5 h-3.5" />
               Templates
@@ -364,6 +370,23 @@ export default function AdminSettings() {
                     ))}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="jornadas">
+            <Card className="admin-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <Video className="w-5 h-5 text-secondary" />
+                  Gerenciar Jornadas
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Configure os vídeos e materiais das sessões das jornadas ao vivo
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <JornadaSessionsManager />
               </CardContent>
             </Card>
           </TabsContent>
