@@ -50,3 +50,6 @@ verify_jwt = true
 
 [functions.send-jornada-reminder]
 verify_jwt = true
+
+[functions.generate-mission]
+verify_jwt = true
