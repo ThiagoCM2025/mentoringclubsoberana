@@ -5,9 +5,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, Settings, Layers, FileText, Eye, AlertCircle } from "lucide-react";
+import { ArrowLeft, Save, Settings, Layers, FileText, Eye, AlertCircle, Trash2, AlertTriangle } from "lucide-react";
 import { Program } from "@/data/programs";
 
 // Tab Components
@@ -35,6 +37,8 @@ interface Lesson {
   duration_minutes: number | null;
   order_index: number;
   is_free: boolean;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
 }
 
 interface Module {
@@ -43,6 +47,8 @@ interface Module {
   description: string | null;
   order_index: number;
   lessons: Lesson[];
+  deleted_at?: string | null;
+  deleted_by?: string | null;
 }
 
 const CourseEditor = () => {
@@ -65,12 +71,13 @@ const CourseEditor = () => {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("basic");
   const [pendingModules, setPendingModules] = useState<{ title: string; description: string }[]>([]);
+  const [showDeletedContent, setShowDeletedContent] = useState(false);
 
   useEffect(() => {
     if (!isNew && courseId) {
       fetchCourse();
     }
-  }, [courseId]);
+  }, [courseId, showDeletedContent]);
 
   const fetchCourse = async () => {
     if (!courseId) return;
@@ -90,6 +97,8 @@ const CourseEditor = () => {
         title,
         description,
         order_index,
+        deleted_at,
+        deleted_by,
         lessons (
           id,
           title,
@@ -97,18 +106,25 @@ const CourseEditor = () => {
           video_url,
           duration_minutes,
           order_index,
-          is_free
+          is_free,
+          deleted_at,
+          deleted_by
         )
       `)
       .eq("course_id", courseId)
       .order("order_index");
 
     if (modulesData) {
-      const sorted = modulesData.map(m => ({
-        ...m,
-        lessons: (m.lessons || []).sort((a: Lesson, b: Lesson) => a.order_index - b.order_index)
-      }));
-      setModules(sorted as Module[]);
+      // Filter based on showDeletedContent
+      const filteredModules = modulesData
+        .filter(m => showDeletedContent || !m.deleted_at)
+        .map(m => ({
+          ...m,
+          lessons: ((m.lessons || []) as Lesson[])
+            .filter(l => showDeletedContent || !l.deleted_at)
+            .sort((a, b) => a.order_index - b.order_index)
+        }));
+      setModules(filteredModules as Module[]);
     }
 
     setLoading(false);
@@ -337,11 +353,21 @@ const CourseEditor = () => {
               {/* Tab: Modules & Lessons */}
               <TabsContent value="modules" className="mt-0">
                 <div className="card-elegant p-6">
+                  {showDeletedContent && (
+                    <div className="mb-4 p-3 bg-destructive/10 border border-destructive/30 rounded-lg flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-destructive" />
+                      <span className="text-sm text-destructive font-medium">
+                        Visualizando itens na lixeira
+                      </span>
+                    </div>
+                  )}
                   {courseId && courseId !== "new" && (
                     <ModuleManager
                       courseId={courseId}
                       modules={modules}
                       onRefresh={fetchCourse}
+                      showDeleted={showDeletedContent}
+                      onToggleShowDeleted={setShowDeletedContent}
                     />
                   )}
                 </div>
