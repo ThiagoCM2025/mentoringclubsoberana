@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
@@ -21,7 +21,9 @@ import {
   X, 
   CheckCircle2,
   Upload,
-  FileText
+  FileText,
+  Image as ImageIcon,
+  Loader2
 } from "lucide-react";
 import { WeeklyMission } from "./WeeklyMissionCard";
 
@@ -43,6 +45,12 @@ export const MissionDeliveryModal = ({
   const [links, setLinks] = useState<string[]>([""]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  
+  // Image upload state
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAddLink = () => {
     if (links.length < 5) {
@@ -60,6 +68,68 @@ export const MissionDeliveryModal = ({
     setLinks(newLinks);
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Apenas imagens são permitidas (JPG, PNG, GIF, etc.)");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Imagem muito grande. Máximo 5MB");
+      return;
+    }
+
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+      setImagePreview(null);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const uploadImage = async (): Promise<string | null> => {
+    if (!imageFile || !user) return null;
+
+    setUploadingImage(true);
+    try {
+      const fileExt = imageFile.name.split('.').pop();
+      const fileName = `${user.id}/${mission?.id}-${Date.now()}.${fileExt}`;
+
+      const { data, error } = await supabase.storage
+        .from('mission-proofs')
+        .upload(fileName, imageFile);
+
+      if (error) {
+        console.error("Upload error:", error);
+        throw error;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('mission-proofs')
+        .getPublicUrl(fileName);
+
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Erro ao enviar imagem");
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!mission || !user) return;
 
@@ -71,6 +141,17 @@ export const MissionDeliveryModal = ({
     setSubmitting(true);
 
     try {
+      // Upload image if selected
+      let imageUrl: string | null = null;
+      if (imageFile) {
+        imageUrl = await uploadImage();
+        if (imageFile && !imageUrl) {
+          // Upload failed, don't proceed
+          setSubmitting(false);
+          return;
+        }
+      }
+
       const filteredLinks = links.filter(l => l.trim() !== "");
 
       const { error } = await supabase
@@ -80,6 +161,7 @@ export const MissionDeliveryModal = ({
           mission_id: mission.id,
           proof_content: content.trim(),
           proof_links: filteredLinks.length > 0 ? filteredLinks : null,
+          proof_file_url: imageUrl,
           status: 'submitted',
           submitted_at: new Date().toISOString()
         }, {
@@ -92,9 +174,7 @@ export const MissionDeliveryModal = ({
       
       // Reset after animation
       setTimeout(() => {
-        setContent("");
-        setLinks([""]);
-        setSubmitted(false);
+        resetForm();
         onOpenChange(false);
         onSuccess();
         toast.success("Missão entregue com sucesso! Aguarde a aprovação.");
@@ -107,11 +187,16 @@ export const MissionDeliveryModal = ({
     }
   };
 
+  const resetForm = () => {
+    setContent("");
+    setLinks([""]);
+    setSubmitted(false);
+    handleRemoveImage();
+  };
+
   const handleClose = () => {
-    if (!submitting) {
-      setContent("");
-      setLinks([""]);
-      setSubmitted(false);
+    if (!submitting && !uploadingImage) {
+      resetForm();
       onOpenChange(false);
     }
   };
@@ -167,7 +252,7 @@ export const MissionDeliveryModal = ({
                   </div>
                 </div>
                 <DialogDescription className="text-cream/60">
-                  Descreva o que você fez para completar esta missão e adicione links de prova (prints, posts, etc.)
+                  Descreva o que você fez para completar esta missão e adicione provas (imagem ou links)
                 </DialogDescription>
               </DialogHeader>
 
@@ -185,6 +270,59 @@ export const MissionDeliveryModal = ({
                     onChange={(e) => setContent(e.target.value)}
                     className="min-h-[120px] bg-zinc-800 border-secondary/20 text-cream placeholder:text-cream/40"
                   />
+                </div>
+
+                {/* Image Upload */}
+                <div className="space-y-2">
+                  <Label className="text-cream flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-secondary" />
+                    Imagem de prova (opcional)
+                  </Label>
+                  
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                    id="mission-image-upload"
+                  />
+                  
+                  {imagePreview ? (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="relative group"
+                    >
+                      <img 
+                        src={imagePreview} 
+                        alt="Preview" 
+                        className="w-full h-40 object-cover rounded-lg border border-secondary/20"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        onClick={handleRemoveImage}
+                        className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </motion.div>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full h-24 border-dashed border-secondary/30 bg-zinc-800/50 hover:bg-zinc-800 hover:border-secondary/50 text-cream/60"
+                    >
+                      <div className="flex flex-col items-center gap-2">
+                        <Upload className="w-6 h-6 text-secondary" />
+                        <span className="text-sm">Clique para enviar uma imagem</span>
+                        <span className="text-xs text-cream/40">PNG, JPG até 5MB</span>
+                      </div>
+                    </Button>
+                  )}
                 </div>
 
                 {/* Links */}
@@ -243,17 +381,13 @@ export const MissionDeliveryModal = ({
                 {/* Submit button */}
                 <Button
                   onClick={handleSubmit}
-                  disabled={submitting || !content.trim()}
+                  disabled={submitting || uploadingImage || !content.trim()}
                   className="w-full bg-secondary hover:bg-secondary/90 text-black font-semibold"
                 >
-                  {submitting ? (
+                  {submitting || uploadingImage ? (
                     <>
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full mr-2"
-                      />
-                      Enviando...
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {uploadingImage ? "Enviando imagem..." : "Enviando..."}
                     </>
                   ) : (
                     <>
