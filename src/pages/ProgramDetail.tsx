@@ -43,7 +43,6 @@ const ProgramDetail = () => {
               <AccelerationHero program={program} />
               <ProgramFeatures program={program} />
               <ProgramModulesTimeline program={program} />
-              <ProgramContentPreview programSlug={slug} />
               <ProgramTestimonials program={program} />
               <ProgramFAQ program={program} />
               <ProgramCTA program={program} />
