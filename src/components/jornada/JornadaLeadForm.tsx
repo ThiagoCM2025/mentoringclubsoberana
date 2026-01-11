@@ -58,20 +58,20 @@ export const JornadaLeadForm = ({ variant = "section", ctaText = "QUERO ME INSCR
       // Track form completion
       trackFormComplete("jornada_imobiliaria_2026", { source: "jornada_imobiliaria_2026" });
 
-      // Register ebook download
+      // Register ebook download - O Mapa da Advocacia Imobiliária 2026
       await supabase.from("ebook_downloads").insert({
         email: emailNormalized,
-        ebook_name: "Material Jornada Imobiliária 2026",
+        ebook_name: "Mapa Advocacia Imobiliária 2026",
         lead_id: leadId || null,
       });
 
-      // Send confirmation email
+      // Send confirmation email with Jornada materials
       try {
         await supabase.functions.invoke("send-ebook-email", {
           body: {
             name: nameTrimmed,
             email: emailNormalized,
-            ebook_name: "Material Jornada Imobiliária 2026",
+            ebook_name: "Mapa Advocacia Imobiliária 2026",
           },
         });
       } catch (emailErr) {
