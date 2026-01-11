@@ -184,11 +184,44 @@ export function PlatformWelcomeVideoSection() {
     return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg?t=${thumbnailRefreshKey}` : null;
   };
 
-  const refreshYouTubeThumbnail = () => {
-    setThumbnailRefreshKey(Date.now());
-    setThumbnailError(false);
-    setShowPreview(false);
-    toast.info("Thumbnail do YouTube atualizada!");
+  const [refreshingYouTube, setRefreshingYouTube] = useState(false);
+
+  const refreshYouTubeThumbnail = async () => {
+    if (!videoUrl) return;
+
+    // Extract video ID
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = videoUrl.match(regExp);
+    const videoId = match && match[2].length === 11 ? match[2] : null;
+
+    if (!videoId) {
+      toast.error("URL do YouTube inválida");
+      return;
+    }
+
+    setRefreshingYouTube(true);
+    try {
+      const newThumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg?t=${Date.now()}`;
+      
+      // Save to database
+      const { error } = await supabase
+        .from("platform_settings")
+        .update({ value: newThumbnailUrl })
+        .eq("key", "welcome_video_thumbnail");
+
+      if (error) throw error;
+
+      setCustomThumbnail(newThumbnailUrl);
+      setThumbnailRefreshKey(Date.now());
+      setThumbnailError(false);
+      setShowPreview(false);
+      toast.success("Thumbnail do YouTube atualizada e salva!");
+    } catch (error) {
+      console.error("Error refreshing YouTube thumbnail:", error);
+      toast.error("Erro ao atualizar thumbnail");
+    } finally {
+      setRefreshingYouTube(false);
+    }
   };
 
   const getYouTubeEmbedUrl = (url: string) => {
@@ -312,15 +345,20 @@ export function PlatformWelcomeVideoSection() {
                 )}
                 Gerar Thumb IA
               </Button>
-              {!customThumbnail && videoUrl && (
+              {videoUrl && (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={refreshYouTubeThumbnail}
+                  disabled={refreshingYouTube}
                   className="gap-2"
                 >
-                  <RefreshCw className="w-4 h-4" />
+                  {refreshingYouTube ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-4 h-4" />
+                  )}
                   Atualizar Thumb YouTube
                 </Button>
               )}
@@ -328,19 +366,32 @@ export function PlatformWelcomeVideoSection() {
 
             {customThumbnail && (
               <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  Thumb IA Ativa
-                </Badge>
+                {customThumbnail.includes('supabase') ? (
+                  <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    Thumb IA Ativa
+                  </Badge>
+                ) : (
+                  <Badge variant="secondary" className="bg-red-500/20 text-red-400 border-red-500/30">
+                    Thumb YouTube Salva
+                  </Badge>
+                )}
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => setCustomThumbnail(null)}
+                  onClick={async () => {
+                    setCustomThumbnail(null);
+                    await supabase
+                      .from("platform_settings")
+                      .update({ value: null })
+                      .eq("key", "welcome_video_thumbnail");
+                    toast.info("Thumbnail removida");
+                  }}
                   className="h-6 px-2 text-xs"
                 >
                   <RefreshCw className="w-3 h-3 mr-1" />
-                  Usar YouTube
+                  Limpar
                 </Button>
               </div>
             )}
