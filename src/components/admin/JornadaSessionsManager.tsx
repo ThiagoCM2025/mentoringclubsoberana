@@ -6,8 +6,19 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Save, Video, Calendar, FileText, ExternalLink, Play, Lock } from "lucide-react";
+import { Loader2, Save, Video, Calendar, FileText, ExternalLink, Play, Lock, Mail, Send, Users } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface JornadaSession {
   id: string;
@@ -26,9 +37,13 @@ export const JornadaSessionsManager = () => {
   const [sessions, setSessions] = useState<JornadaSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
+  const [sendingReminders, setSendingReminders] = useState(false);
+  const [leadsCount, setLeadsCount] = useState(0);
+  const [pendingReminders, setPendingReminders] = useState<Record<string, number>>({});
 
   useEffect(() => {
     fetchSessions();
+    fetchLeadsCount();
   }, []);
 
   const fetchSessions = async () => {
@@ -44,8 +59,45 @@ export const JornadaSessionsManager = () => {
       console.error(error);
     } else {
       setSessions(data || []);
+      // Fetch pending reminders for each unlocked session
+      if (data) {
+        fetchPendingReminders(data);
+      }
     }
     setLoading(false);
+  };
+
+  const fetchLeadsCount = async () => {
+    const { count } = await supabase
+      .from("jornada_access")
+      .select("*", { count: "exact", head: true })
+      .eq("jornada_slug", "jornada-imobiliaria-2026");
+    
+    setLeadsCount(count || 0);
+  };
+
+  const fetchPendingReminders = async (sessionsList: JornadaSession[]) => {
+    const pending: Record<string, number> = {};
+    
+    for (const session of sessionsList) {
+      if (session.is_unlocked) {
+        // Get total leads
+        const { count: totalLeads } = await supabase
+          .from("jornada_access")
+          .select("*", { count: "exact", head: true })
+          .eq("jornada_slug", "jornada-imobiliaria-2026");
+        
+        // Get already sent
+        const { count: alreadySent } = await supabase
+          .from("jornada_reminders")
+          .select("*", { count: "exact", head: true })
+          .eq("session_id", session.id);
+        
+        pending[session.id] = (totalLeads || 0) - (alreadySent || 0);
+      }
+    }
+    
+    setPendingReminders(pending);
   };
 
   const extractYouTubeId = (input: string): string => {
@@ -101,9 +153,33 @@ export const JornadaSessionsManager = () => {
       console.error(error);
     } else {
       toast.success(`Sessão do dia ${session.session_day} salva!`);
+      // Refresh pending reminders after save
+      fetchPendingReminders(sessions);
     }
     
     setSaving(null);
+  };
+
+  const handleSendReminders = async (sessionId?: string) => {
+    setSendingReminders(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke("send-jornada-reminder", {
+        body: sessionId ? { session_id: sessionId } : {},
+      });
+      
+      if (error) throw error;
+      
+      toast.success(`✉️ ${data.totalSent} lembretes enviados com sucesso!`);
+      
+      // Refresh pending reminders
+      fetchPendingReminders(sessions);
+    } catch (error: any) {
+      console.error("Error sending reminders:", error);
+      toast.error("Erro ao enviar lembretes");
+    } finally {
+      setSendingReminders(false);
+    }
   };
 
   const getYouTubeThumbnail = (youtubeId: string | null) => {
@@ -121,7 +197,7 @@ export const JornadaSessionsManager = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h3 className="text-lg font-semibold text-foreground">
             Jornada Imobiliária 2026
@@ -130,9 +206,15 @@ export const JornadaSessionsManager = () => {
             Configure os vídeos e materiais de cada sessão da jornada
           </p>
         </div>
-        <Badge variant="outline" className="text-secondary border-secondary">
-          {sessions.filter(s => s.is_unlocked).length} de {sessions.length} liberadas
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Badge variant="outline" className="text-muted-foreground">
+            <Users className="w-3 h-3 mr-1" />
+            {leadsCount} leads cadastrados
+          </Badge>
+          <Badge variant="outline" className="text-secondary border-secondary">
+            {sessions.filter(s => s.is_unlocked).length} de {sessions.length} liberadas
+          </Badge>
+        </div>
       </div>
 
       <div className="grid gap-4">
@@ -251,7 +333,48 @@ export const JornadaSessionsManager = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2">
+                {session.is_unlocked && pendingReminders[session.id] > 0 && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-secondary/30 text-secondary hover:bg-secondary/10"
+                        disabled={sendingReminders}
+                      >
+                        {sendingReminders ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Mail className="w-4 h-4 mr-2" />
+                        )}
+                        Enviar Lembretes
+                        <Badge className="ml-2 bg-secondary/20 text-secondary text-xs">
+                          {pendingReminders[session.id]}
+                        </Badge>
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Enviar Lembretes</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Você irá enviar lembretes por email para <strong>{pendingReminders[session.id]} leads</strong> que 
+                          ainda não foram notificados sobre a aula "{session.title}".
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction 
+                          onClick={() => handleSendReminders(session.id)}
+                          className="bg-secondary hover:bg-secondary/90"
+                        >
+                          <Send className="w-4 h-4 mr-2" />
+                          Enviar Agora
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
                 <Button
                   onClick={() => handleSaveSession(session)}
                   disabled={saving === session.id}
