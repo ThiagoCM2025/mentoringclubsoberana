@@ -75,7 +75,7 @@ export const programs: Record<string, Program> = {
       "Biblioteca de Prompts de Ouro: Comandos prontos para análise de riscos, elaboração de pareceres e petições imobiliárias em segundos",
       "Máquina de Conteúdo Imobiliário: Estratégias para usar a IA para atrair investidores e clientes que pagam bem, sem precisar ser escrava do Instagram"
     ],
-    ctaLink: "https://soberanamentoria.curseduca.pro/c/ia-para-advogadas-1754318820421",
+    ctaLink: "https://wa.me/5511993563468?text=Olá! Quero saber mais sobre o Workshop Soberana IA",
     ctaText: "Saiba Mais Sobre o Workshop",
     icon: Bot,
     tier: "entry",
@@ -208,12 +208,8 @@ export const programs: Record<string, Program> = {
       "Comunidade exclusiva de alunas",
       "Materiais de apoio e templates"
     ],
-    ctaLink: "https://form.typeform.com/to/WcPbnyhP",
+    ctaLink: "https://wa.me/5511993563468?text=Olá! Quero saber mais sobre o Programa de Aceleração Soberana",
     ctaText: "Quero Estruturar Meu Negócio",
-    secondaryCta: {
-      link: "https://wa.me/5511993563468?text=Olá! Quero saber mais sobre o Programa de Aceleração",
-      text: "Falar com a Equipe"
-    },
     icon: Rocket,
     tier: "mid",
     modules: [
@@ -278,12 +274,8 @@ export const programs: Record<string, Program> = {
       "Comunidade exclusiva de mentoradas",
       "Suporte prioritário via WhatsApp"
     ],
-    ctaLink: "https://form.typeform.com/to/WcPbnyhP",
+    ctaLink: "https://wa.me/5511993563468?text=Olá! Quero aplicar para a Mentoria Soberana 360°",
     ctaText: "Aplicar para a Mentoria 360°",
-    secondaryCta: {
-      link: "https://wa.me/5511993563468?text=Olá! Quero aplicar para a Mentoria Soberana 360°",
-      text: "Conversar com a Fabiana"
-    },
     icon: Star,
     tier: "mid",
     featured: true,
@@ -346,12 +338,8 @@ export const programs: Record<string, Program> = {
       "O Retiro Soberano: experiência presencial VIP de imersão e networking de alto padrão",
       "Suporte Prioritário: acesso direto à mentora para decisões críticas"
     ],
-    ctaLink: "https://form.typeform.com/to/WcPbnyhP",
+    ctaLink: "https://wa.me/5511993563468?text=Olá! Quero saber sobre o Mastermind Soberana Elite",
     ctaText: "Consultar Condições de Admissão",
-    secondaryCta: {
-      link: "https://wa.me/5511993563468?text=Olá! Quero saber sobre o Mastermind Soberana Elite",
-      text: "Falar com a Fabiana"
-    },
     icon: Crown,
     tier: "elite",
     featured: true,
