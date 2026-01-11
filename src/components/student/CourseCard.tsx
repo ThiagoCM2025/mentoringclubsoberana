@@ -10,6 +10,7 @@ interface CourseCardProps {
   title: string;
   description: string | null;
   thumbnail: string | null;
+  thumbnailPosition?: string | null;
   progress?: number;
   totalLessons?: number;
   completedLessons?: number;
@@ -24,6 +25,7 @@ const CourseCard = ({
   title,
   description,
   thumbnail,
+  thumbnailPosition = "50% 50%",
   progress = 0,
   totalLessons = 0,
   completedLessons = 0,
@@ -65,6 +67,7 @@ const CourseCard = ({
             src={resolveImageUrl(thumbnail)!}
             alt={title}
             className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${isLocked ? 'grayscale opacity-50' : ''}`}
+            style={{ objectPosition: thumbnailPosition || "50% 50%" }}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">

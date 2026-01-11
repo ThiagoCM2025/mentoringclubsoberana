@@ -9,6 +9,7 @@ interface ContinueWatchingItem {
   lessonTitle: string;
   courseTitle: string;
   thumbnail: string | null;
+  thumbnailPosition?: string | null;
   progress: number;
   duration: number | null;
 }
@@ -44,6 +45,7 @@ const ContinueWatching = ({ items }: ContinueWatchingProps) => {
                   src={resolveImageUrl(item.thumbnail)!}
                   alt={item.lessonTitle}
                   className="w-full h-full object-cover"
+                  style={{ objectPosition: item.thumbnailPosition || "50% 50%" }}
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">

@@ -31,6 +31,7 @@ interface Course {
   title: string;
   description: string;
   thumbnail_url: string | null;
+  thumbnail_position: string | null;
   program_type: string | null;
 }
 
@@ -77,7 +78,7 @@ const CourseDetail = () => {
 
     const { data: courseData } = await supabase
       .from("courses")
-      .select("id, title, description, thumbnail_url, program_type")
+      .select("id, title, description, thumbnail_url, thumbnail_position, program_type")
       .eq("id", courseId)
       .single();
 
@@ -279,6 +280,7 @@ const CourseDetail = () => {
                     src={course.thumbnail_url}
                     alt={course.title}
                     className="w-full h-full object-cover"
+                    style={{ objectPosition: course.thumbnail_position || "50% 50%" }}
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
