@@ -1264,6 +1264,47 @@ export type Database = {
           },
         ]
       }
+      jornada_access: {
+        Row: {
+          access_token: string | null
+          created_at: string | null
+          email: string
+          granted_at: string | null
+          id: string
+          jornada_slug: string
+          last_accessed_at: string | null
+          lead_id: string | null
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string | null
+          email: string
+          granted_at?: string | null
+          id?: string
+          jornada_slug?: string
+          last_accessed_at?: string | null
+          lead_id?: string | null
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string | null
+          email?: string
+          granted_at?: string | null
+          id?: string
+          jornada_slug?: string
+          last_accessed_at?: string | null
+          lead_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jornada_access_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jornada_sessions: {
         Row: {
           created_at: string | null

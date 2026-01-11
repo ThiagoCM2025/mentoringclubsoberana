@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, Sparkles, Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { JornadaProblemSection } from "@/components/jornada/JornadaProblemSectio
 import { ScrollTracker } from "@/components/ScrollTracker";
 import { TimeTracker } from "@/components/TimeTracker";
 import { ClickTracker } from "@/components/ClickTracker";
+import { useJornadaAccess } from "@/hooks/useJornadaAccess";
 
 import heroImage from "@/assets/jornada/hero-fabiana.jpeg";
 import isotipoGold from "@/assets/jornada/isotipo-gold.png";
@@ -22,10 +23,11 @@ import isotipoGold from "@/assets/jornada/isotipo-gold.png";
 const JornadaImobiliariaLanding = () => {
   const heroRef = useRef(null);
   const heroInView = useInView(heroRef, { once: true });
+  const { hasAccess, isChecking, grantAccess } = useJornadaAccess("jornada-imobiliaria-2026");
 
-  const scrollToForm = () => {
+  const scrollToForm = useCallback(() => {
     document.getElementById("inscricao")?.scrollIntoView({ behavior: "smooth" });
-  };
+  }, []);
 
   const eventSchema = {
     "@context": "https://schema.org",
@@ -232,9 +234,13 @@ const JornadaImobiliariaLanding = () => {
 
       <JornadaProblemSection />
       <JornadaAgendaSection />
-      <JornadaVideoPlayer />
+      <JornadaVideoPlayer 
+        hasAccess={hasAccess} 
+        isCheckingAccess={isChecking}
+        onRequestAccess={scrollToForm} 
+      />
       <JornadaBenefitsSection />
-      <JornadaLeadForm />
+      <JornadaLeadForm onAccessGranted={grantAccess} />
       <Footer />
     </div>
   );
