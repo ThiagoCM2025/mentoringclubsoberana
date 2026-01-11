@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Calendar, Settings, Users, Brain, DollarSign, Target } from "lucide-react";
+import { Calendar, Settings, Users, Brain, DollarSign, Target, Sparkles, Radio } from "lucide-react";
 
 const agendaItems = [
   {
@@ -8,7 +8,6 @@ const agendaItems = [
     title: "Rotina e Processos",
     description: "Como organizar sua rotina e processos para escalar no Direito Imobiliário sem surtar.",
     icon: Settings,
-    color: "from-blue-500 to-blue-600",
   },
   {
     day: 15,
@@ -16,7 +15,6 @@ const agendaItems = [
     title: "Captação Estratégica",
     description: "Passo a passo para fechar contratos com clientes qualificados (sem depender de indicações).",
     icon: Users,
-    color: "from-green-500 to-green-600",
   },
   {
     day: 19,
@@ -24,7 +22,6 @@ const agendaItems = [
     title: "Inteligência Artificial",
     description: "Como usar a IA para ganhar tempo real no seu escritório jurídico.",
     icon: Brain,
-    color: "from-purple-500 to-purple-600",
   },
   {
     day: 22,
@@ -32,7 +29,6 @@ const agendaItems = [
     title: "Precificação de Elite",
     description: "O passo a passo para criar uma tabela de precificação eficiente e lucrativa.",
     icon: DollarSign,
-    color: "from-secondary to-gold-light",
   },
   {
     day: 26,
@@ -40,7 +36,6 @@ const agendaItems = [
     title: "Conversão de Vendas",
     description: "Como transformar meras consultas em contratos de alto valor.",
     icon: Target,
-    color: "from-red-500 to-red-600",
   },
 ];
 
@@ -49,29 +44,58 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.12,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
   visible: {
     opacity: 1,
     y: 0,
+    scale: 1,
     transition: { type: "spring" as const, damping: 25, stiffness: 200 },
   },
 };
 
 export const JornadaAgendaSection = () => {
   return (
-    <section className="relative py-16 md:py-24 bg-cream overflow-hidden">
-      {/* Background pattern */}
+    <section className="relative py-20 md:py-28 overflow-hidden">
+      {/* Dark gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-brand-black via-zinc-900 to-brand-black" />
+      
+      {/* Golden geometric pattern */}
+      <div 
+        className="absolute inset-0 opacity-[0.08]"
+        style={{
+          backgroundImage: `url('/assets/brand/pattern-geometric-circles-gold.png')`,
+          backgroundSize: '300px',
+        }}
+      />
+
+      {/* Secondary pattern layer */}
       <div 
         className="absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage: `url('/assets/brand/pattern-circles-gold.png')`,
-          backgroundSize: '200px',
+          backgroundSize: '150px',
+        }}
+      />
+
+      {/* Central radial glow */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(166, 144, 97, 0.08) 0%, transparent 70%)',
+        }}
+      />
+
+      {/* Vignette effect */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          boxShadow: 'inset 0 0 150px 50px rgba(0, 0, 0, 0.5)',
         }}
       />
       
@@ -81,20 +105,27 @@ export const JornadaAgendaSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="text-center mb-14"
         >
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-full mb-4">
+          <motion.div 
+            className="inline-flex items-center gap-2 bg-secondary/10 text-secondary border border-secondary/30 px-5 py-2.5 rounded-full mb-5 backdrop-blur-sm"
+            whileHover={{ scale: 1.02 }}
+          >
             <Calendar className="w-4 h-4" />
-            <span className="text-sm font-medium">JANEIRO 2026</span>
-          </div>
-          <h2 className="font-serif text-3xl md:text-5xl text-foreground mb-4">
-            A Agenda da <span className="text-primary">Jornada</span>
+            <span className="text-sm font-semibold tracking-wide">JANEIRO 2026</span>
+          </motion.div>
+          
+          <h2 className="font-serif text-3xl md:text-5xl text-cream mb-4">
+            A Agenda da <span className="text-shimmer-gold">Jornada</span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-3">
+          
+          <p className="text-cream/70 max-w-2xl mx-auto mb-4">
             5 encontros estratégicos para transformar sua advocacia imobiliária
           </p>
-          <div className="inline-flex items-center gap-2 bg-secondary/20 text-secondary-foreground px-4 py-2 rounded-full">
-            <span className="text-sm font-semibold">🕗 Todas às 20h00</span>
+          
+          <div className="inline-flex items-center gap-2 bg-secondary/15 text-cream px-5 py-2.5 rounded-full border border-secondary/25 backdrop-blur-sm">
+            <Radio className="w-4 h-4 text-secondary animate-pulse" />
+            <span className="text-sm font-semibold">Todas às 20h00 • Ao vivo</span>
           </div>
         </motion.div>
 
@@ -103,53 +134,122 @@ export const JornadaAgendaSection = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
-          className="grid gap-4 md:gap-6 max-w-4xl mx-auto"
+          className="grid gap-4 md:gap-5 max-w-4xl mx-auto"
         >
           {agendaItems.map((item, index) => {
             const IconComponent = item.icon;
+            const isFirst = index === 0;
+            
             return (
               <motion.div
                 key={index}
                 variants={itemVariants}
                 className="group relative"
               >
-                <div className="relative flex items-stretch gap-4 md:gap-6 p-4 md:p-6 rounded-xl bg-white border border-border/50 shadow-sm hover:shadow-lg hover:border-secondary/30 transition-all duration-300">
+                {/* Card with glassmorphism */}
+                <div className={`
+                  relative flex items-stretch gap-4 md:gap-6 p-5 md:p-6 rounded-2xl 
+                  backdrop-blur-xl bg-white/[0.03] 
+                  border border-secondary/20 
+                  shadow-[0_4px_30px_rgba(0,0,0,0.3)]
+                  hover:bg-white/[0.06] hover:border-secondary/40
+                  hover:shadow-[0_8px_40px_rgba(166,144,97,0.15)]
+                  transition-all duration-500
+                  ${isFirst ? 'ring-1 ring-secondary/30' : ''}
+                `}>
+                  
+                  {/* Shimmer border effect on hover */}
+                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none overflow-hidden">
+                    <div className="absolute inset-0 rounded-2xl" style={{
+                      background: 'linear-gradient(90deg, transparent, rgba(166, 144, 97, 0.1), transparent)',
+                      animation: 'shimmer 2s infinite',
+                    }} />
+                  </div>
+
                   {/* Day badge */}
                   <div className="flex-shrink-0 flex flex-col items-center justify-center w-16 md:w-20">
-                    <div className={`w-14 h-14 md:w-16 md:h-16 rounded-xl bg-gradient-to-br ${item.color} flex flex-col items-center justify-center text-white shadow-lg`}>
+                    <motion.div 
+                      className={`
+                        w-14 h-14 md:w-16 md:h-16 rounded-xl 
+                        bg-gradient-to-br from-secondary via-secondary to-gold-light
+                        flex flex-col items-center justify-center text-brand-black 
+                        shadow-[0_4px_20px_rgba(166,144,97,0.4)]
+                        ${isFirst ? 'animate-pulse' : ''}
+                      `}
+                      whileHover={{ scale: 1.05 }}
+                    >
                       <span className="text-xl md:text-2xl font-bold leading-none">{item.day}</span>
-                      <span className="text-[10px] md:text-xs uppercase opacity-90">JAN</span>
-                    </div>
-                    <span className="text-[10px] text-muted-foreground mt-2 uppercase tracking-wider">
+                      <span className="text-[10px] md:text-xs uppercase opacity-80 font-semibold">JAN</span>
+                    </motion.div>
+                    <span className="text-[10px] text-cream/60 mt-2 uppercase tracking-wider font-medium">
                       {item.weekday}
                     </span>
                   </div>
 
                   {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start gap-3">
-                      <div className={`hidden md:flex w-10 h-10 rounded-lg bg-gradient-to-br ${item.color} items-center justify-center text-white opacity-80`}>
+                  <div className="flex-1 min-w-0 flex items-center">
+                    <div className="flex items-start gap-4 w-full">
+                      {/* Icon */}
+                      <div className="hidden md:flex w-11 h-11 rounded-xl bg-secondary/10 items-center justify-center text-secondary border border-secondary/20 group-hover:bg-secondary/20 group-hover:border-secondary/40 transition-all duration-300">
                         <IconComponent className="w-5 h-5" />
                       </div>
+                      
+                      {/* Text */}
                       <div className="flex-1">
-                        <h3 className="font-serif text-lg md:text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                        <h3 className="font-serif text-lg md:text-xl font-semibold text-cream mb-1 group-hover:text-secondary transition-colors duration-300">
                           {item.title}
                         </h3>
-                        <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                        <p className="text-sm md:text-base text-cream/60 leading-relaxed group-hover:text-cream/70 transition-colors duration-300">
                           {item.description}
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Hover accent */}
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-gradient-to-b from-secondary to-gold-light rounded-r-full group-hover:h-1/2 transition-all duration-300" />
+                  {/* First item special indicator */}
+                  {isFirst && (
+                    <div className="absolute -top-2 -right-2 flex items-center gap-1 bg-secondary text-brand-black px-2.5 py-1 rounded-full text-[10px] font-bold shadow-lg">
+                      <Sparkles className="w-3 h-3" />
+                      PRÓXIMO
+                    </div>
+                  )}
+
+                  {/* Hover glow accent */}
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-gradient-to-b from-secondary to-gold-light rounded-r-full group-hover:h-2/3 transition-all duration-500 shadow-[0_0_15px_rgba(166,144,97,0.5)]" />
                 </div>
+
+                {/* Timeline connector */}
+                {index < agendaItems.length - 1 && (
+                  <div className="absolute left-[2.25rem] md:left-[2.75rem] top-full w-px h-4 md:h-5 bg-gradient-to-b from-secondary/40 to-transparent" />
+                )}
               </motion.div>
             );
           })}
         </motion.div>
+
+        {/* Bottom decoration */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.8 }}
+          className="flex justify-center mt-12"
+        >
+          <div className="flex items-center gap-3 text-cream/40 text-sm">
+            <div className="w-12 h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent" />
+            <span className="uppercase tracking-widest text-xs">Sua transformação começa aqui</span>
+            <div className="w-12 h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent" />
+          </div>
+        </motion.div>
       </div>
+
+      {/* Shimmer animation styles */}
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
     </section>
   );
 };
