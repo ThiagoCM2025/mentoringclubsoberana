@@ -10,9 +10,10 @@ import { useEventTracking } from "@/hooks/useEventTracking";
 interface JornadaLeadFormProps {
   variant?: "hero" | "section";
   ctaText?: string;
+  onAccessGranted?: (email: string) => void;
 }
 
-export const JornadaLeadForm = ({ variant = "section", ctaText = "QUERO ME INSCREVER AGORA" }: JornadaLeadFormProps) => {
+export const JornadaLeadForm = ({ variant = "section", ctaText = "QUERO ME INSCREVER AGORA", onAccessGranted }: JornadaLeadFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
@@ -78,6 +79,12 @@ export const JornadaLeadForm = ({ variant = "section", ctaText = "QUERO ME INSCR
       }
 
       localStorage.setItem("jornadaLeadSubmitted", "true");
+      
+      // Grant access to videos immediately
+      if (onAccessGranted) {
+        await onAccessGranted(emailNormalized);
+      }
+      
       setIsSuccess(true);
       toast.success("Inscrição confirmada! Verifique seu email.");
     } catch (error) {

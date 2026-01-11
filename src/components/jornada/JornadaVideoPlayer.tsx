@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Play, Lock, Calendar, Clock, Loader2, FileText, Download } from "lucide-react";
+import { Play, Lock, Calendar, Clock, Loader2, FileText, Download, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +14,12 @@ interface LiveSession {
   materialsUrl?: string;
 }
 
+interface JornadaVideoPlayerProps {
+  hasAccess: boolean;
+  isCheckingAccess: boolean;
+  onRequestAccess: () => void;
+}
+
 // Fallback para quando o banco não responder
 const fallbackSessions: LiveSession[] = [
   { day: 12, month: "JAN", title: "Como organizar sua rotina e processos para escalar no Direito Imobiliário sem surtar", isUnlocked: true },
@@ -23,7 +29,7 @@ const fallbackSessions: LiveSession[] = [
   { day: 26, month: "JAN", title: "Como converter consultas em contratos de alto valor", isUnlocked: false },
 ];
 
-export const JornadaVideoPlayer = () => {
+export const JornadaVideoPlayer = ({ hasAccess, isCheckingAccess, onRequestAccess }: JornadaVideoPlayerProps) => {
   const [activeSession, setActiveSession] = useState(0);
   const [sessions, setSessions] = useState<LiveSession[]>(fallbackSessions);
   const [loading, setLoading] = useState(true);
@@ -54,7 +60,7 @@ export const JornadaVideoPlayer = () => {
 
   const currentSession = sessions[activeSession];
 
-  if (loading) {
+  if (loading || isCheckingAccess) {
     return (
       <section className="relative py-16 md:py-24 bg-brand-black overflow-hidden">
         <div className="container-soberana flex items-center justify-center">
@@ -104,7 +110,41 @@ export const JornadaVideoPlayer = () => {
           className="mb-8"
         >
           <div className="relative aspect-video max-w-4xl mx-auto rounded-xl overflow-hidden border-2 border-secondary/30 bg-zinc-900">
-            {currentSession.isUnlocked && currentSession.youtubeId ? (
+            {/* Access Gate Overlay - Shows when user hasn't registered */}
+            {!hasAccess && (
+              <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4 }}
+                  className="text-center p-6 max-w-md"
+                >
+                  <div className="w-20 h-20 mx-auto rounded-full bg-secondary/20 flex items-center justify-center mb-4 border border-secondary/30">
+                    <Lock className="w-10 h-10 text-secondary" />
+                  </div>
+                  <h3 className="font-serif text-2xl md:text-3xl text-cream mb-3">
+                    Conteúdo <span className="text-secondary">Exclusivo</span>
+                  </h3>
+                  <p className="text-cream/70 mb-6 text-sm md:text-base">
+                    Inscreva-se gratuitamente para assistir às lives gravadas e baixar os materiais de apoio.
+                  </p>
+                  <Button 
+                    onClick={onRequestAccess}
+                    size="lg"
+                    className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold px-8 py-6 text-base shadow-[0_0_30px_rgba(166,144,97,0.3)]"
+                  >
+                    <Sparkles className="w-5 h-5 mr-2" />
+                    QUERO ME INSCREVER
+                  </Button>
+                  <p className="text-cream/40 text-xs mt-4">
+                    🔒 100% gratuito • Acesso imediato
+                  </p>
+                </motion.div>
+              </div>
+            )}
+
+            {/* Video Content - Only visible when user has access */}
+            {hasAccess && currentSession.isUnlocked && currentSession.youtubeId ? (
               <iframe
                 src={`https://www.youtube.com/embed/${currentSession.youtubeId}?rel=0`}
                 title={currentSession.title}
@@ -112,7 +152,7 @@ export const JornadaVideoPlayer = () => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-            ) : (
+            ) : hasAccess ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
                 {currentSession.isUnlocked ? (
                   <>
@@ -135,27 +175,36 @@ export const JornadaVideoPlayer = () => {
                   </>
                 )}
               </div>
+            ) : (
+              // Blurred preview for non-registered users
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 blur-sm opacity-50">
+                <div className="w-20 h-20 rounded-full bg-secondary/20 flex items-center justify-center mb-4 border border-secondary/30">
+                  <Play className="w-10 h-10 text-secondary ml-1" />
+                </div>
+              </div>
             )}
             
-            {/* Current session indicator */}
-            <div className="absolute top-4 left-4 z-10">
-              <Badge className={`${currentSession.isUnlocked ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-zinc-700/80 text-zinc-400 border-zinc-600'}`}>
-                {currentSession.isUnlocked ? (
-                  <>
-                    <Clock className="w-3 h-3 mr-1" />
-                    Disponível Agora
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-3 h-3 mr-1" />
-                    Bloqueado
-                  </>
-                )}
-              </Badge>
-            </div>
+            {/* Current session indicator - Only when has access */}
+            {hasAccess && (
+              <div className="absolute top-4 left-4 z-10">
+                <Badge className={`${currentSession.isUnlocked ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-zinc-700/80 text-zinc-400 border-zinc-600'}`}>
+                  {currentSession.isUnlocked ? (
+                    <>
+                      <Clock className="w-3 h-3 mr-1" />
+                      Disponível Agora
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-3 h-3 mr-1" />
+                      Bloqueado
+                    </>
+                  )}
+                </Badge>
+              </div>
+            )}
 
-            {/* Material download button */}
-            {currentSession.isUnlocked && currentSession.materialsUrl && (
+            {/* Material download button - Only when has access */}
+            {hasAccess && currentSession.isUnlocked && currentSession.materialsUrl && (
               <div className="absolute top-4 right-4 z-10">
                 <a href={currentSession.materialsUrl} target="_blank" rel="noopener noreferrer">
                   <Button size="sm" variant="secondary" className="gap-2">
@@ -179,30 +228,32 @@ export const JornadaVideoPlayer = () => {
           {sessions.map((session, index) => (
             <button
               key={index}
-              onClick={() => setActiveSession(index)}
+              onClick={() => hasAccess ? setActiveSession(index) : onRequestAccess()}
               className={`
                 relative flex flex-col items-center p-3 md:p-4 rounded-xl border-2 transition-all duration-300 min-w-[80px] md:min-w-[100px]
-                ${activeSession === index 
-                  ? 'border-secondary bg-secondary/10 shadow-[0_0_20px_-5px_hsl(var(--secondary)/0.4)]' 
-                  : session.isUnlocked 
-                    ? 'border-cream/20 bg-cream/5 hover:border-secondary/50' 
-                    : 'border-zinc-700 bg-zinc-800/50 opacity-60'
+                ${!hasAccess 
+                  ? 'border-zinc-700 bg-zinc-800/50 opacity-60 cursor-pointer hover:opacity-80' 
+                  : activeSession === index 
+                    ? 'border-secondary bg-secondary/10 shadow-[0_0_20px_-5px_hsl(var(--secondary)/0.4)]' 
+                    : session.isUnlocked 
+                      ? 'border-cream/20 bg-cream/5 hover:border-secondary/50' 
+                      : 'border-zinc-700 bg-zinc-800/50 opacity-60'
                 }
               `}
             >
-              <span className={`text-xl md:text-2xl font-bold ${activeSession === index ? 'text-secondary' : 'text-cream'}`}>
+              <span className={`text-xl md:text-2xl font-bold ${!hasAccess ? 'text-zinc-500' : activeSession === index ? 'text-secondary' : 'text-cream'}`}>
                 {session.day}
               </span>
               <span className="text-[10px] md:text-xs text-cream/60 uppercase tracking-wider">
                 {session.month}
               </span>
-              {!session.isUnlocked && (
+              {(!hasAccess || !session.isUnlocked) && (
                 <Lock className="w-3 h-3 text-zinc-500 absolute top-2 right-2" />
               )}
-              {session.materialsUrl && session.isUnlocked && (
+              {hasAccess && session.materialsUrl && session.isUnlocked && (
                 <FileText className="w-3 h-3 text-secondary absolute top-2 right-2" />
               )}
-              {activeSession === index && (
+              {hasAccess && activeSession === index && (
                 <motion.div
                   layoutId="activeIndicator"
                   className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-secondary rounded-full"
@@ -219,7 +270,13 @@ export const JornadaVideoPlayer = () => {
           animate={{ opacity: 1 }}
           className="text-center mt-6 text-cream font-medium"
         >
-          <span className="text-secondary">Dia {currentSession.day}:</span> {currentSession.title}
+          {hasAccess ? (
+            <>
+              <span className="text-secondary">Dia {currentSession.day}:</span> {currentSession.title}
+            </>
+          ) : (
+            <span className="text-cream/60">Inscreva-se para desbloquear as aulas</span>
+          )}
         </motion.p>
       </div>
     </section>
