@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import { Footer } from "@/components/landing/Footer";
 import { SoberanaLogoMark } from "@/components/landing/SoberanaLogoMark";
-
 import { SectionSkeleton } from "@/components/landing/SectionSkeleton";
 import { ScrollTracker } from "@/components/ScrollTracker";
 import { TimeTracker } from "@/components/TimeTracker";
@@ -66,7 +65,9 @@ const ExperienceStartLanding = () => {
   const pricingRef = useRef(null);
   const isMobile = useIsMobile();
   const prefersReducedMotion = usePrefersReducedMotion();
-  const { trackCTAClick } = useEventTracking();
+  const {
+    trackCTAClick
+  } = useEventTracking();
 
   // Simplified inView detection - less resource intensive
   const heroInView = useInView(heroRef, {
@@ -141,8 +142,8 @@ const ExperienceStartLanding = () => {
     "@type": "Event",
     "name": "Soberana Experience Start",
     "description": "Oficina presencial para advogadas reorganizarem sua advocacia e destravarem o crescimento em 2026.",
-              "startDate": "2026-02-21T09:00:00-03:00",
-              "endDate": "2026-02-21T17:00:00-03:00",
+    "startDate": "2026-02-21T09:00:00-03:00",
+    "endDate": "2026-02-21T17:00:00-03:00",
     "eventStatus": "https://schema.org/EventScheduled",
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
     "location": {
@@ -470,7 +471,7 @@ const ExperienceStartLanding = () => {
                 duration: animationDuration,
                 delay: isMobile ? 0.2 : 0.5
               }} className="text-sm sm:text-base md:text-xl text-cream/90 mb-6 leading-relaxed max-w-3xl mx-auto">
-                Um encontro presencial criado para <strong className="text-cream">reorganizar a sua advocacia</strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2026.
+                Um encontro presencial criado para <strong className="text-cream">reorganizar a sua advocacia imobiliária </strong> e destravar o seu crescimento e estruturar o caminho para aumentar o seu faturamento em 2026.
               </motion.p>
 
               {/* Quote highlight */}
@@ -626,17 +627,17 @@ const ExperienceStartLanding = () => {
         {/* Corner accent patterns */}
         {!isMobile && <>
           <div className="absolute top-0 right-0 w-64 h-64 opacity-[0.06] hidden lg:block" style={{
-            backgroundImage: `url(${patternGeometricGold})`,
-            backgroundSize: '200px',
-            backgroundPosition: 'top right',
-            maskImage: 'radial-gradient(ellipse at top right, black 30%, transparent 70%)'
-          }} />
+          backgroundImage: `url(${patternGeometricGold})`,
+          backgroundSize: '200px',
+          backgroundPosition: 'top right',
+          maskImage: 'radial-gradient(ellipse at top right, black 30%, transparent 70%)'
+        }} />
           <div className="absolute bottom-0 left-0 w-64 h-64 opacity-[0.06] hidden lg:block" style={{
-            backgroundImage: `url(${patternGeometricGold})`,
-            backgroundSize: '200px',
-            backgroundPosition: 'bottom left',
-            maskImage: 'radial-gradient(ellipse at bottom left, black 30%, transparent 70%)'
-          }} />
+          backgroundImage: `url(${patternGeometricGold})`,
+          backgroundSize: '200px',
+          backgroundPosition: 'bottom left',
+          maskImage: 'radial-gradient(ellipse at bottom left, black 30%, transparent 70%)'
+        }} />
         </>}
         
         {/* Decorative isotipo - desktop only, lazy loaded */}
