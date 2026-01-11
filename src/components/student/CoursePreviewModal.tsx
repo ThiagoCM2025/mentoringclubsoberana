@@ -50,6 +50,7 @@ const CoursePreviewModal = ({ courseId, isOpen, onClose }: CoursePreviewModalPro
     title: string;
     description: string | null;
     thumbnail_url: string | null;
+    thumbnail_position: string | null;
     price: number | null;
   } | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
@@ -68,7 +69,7 @@ const CoursePreviewModal = ({ courseId, isOpen, onClose }: CoursePreviewModalPro
 
     const { data: courseData } = await supabase
       .from("courses")
-      .select("id, title, description, thumbnail_url, price")
+      .select("id, title, description, thumbnail_url, thumbnail_position, price")
       .eq("id", courseId)
       .maybeSingle();
 
@@ -147,6 +148,7 @@ const CoursePreviewModal = ({ courseId, isOpen, onClose }: CoursePreviewModalPro
                     src={resolveImageUrl(course.thumbnail_url)!}
                     alt={course.title}
                     className="w-full h-full object-cover"
+                    style={{ objectPosition: course.thumbnail_position || "50% 50%" }}
                   />
                 </div>
               )}
