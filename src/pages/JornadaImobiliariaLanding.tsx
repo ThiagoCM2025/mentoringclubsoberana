@@ -60,17 +60,19 @@ const JornadaImobiliariaLanding = () => {
       <WhatsAppButton message="Olá! Quero saber mais sobre a Jornada Imobiliária 2026" />
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative min-h-[85vh] md:min-h-screen flex items-center bg-brand-black overflow-hidden">
-        {/* Background Image - Responsive positioning */}
-        <div className="absolute inset-0 z-0">
+      <section ref={heroRef} className="relative min-h-[auto] lg:min-h-screen flex items-center bg-brand-black overflow-hidden">
+        {/* Background Image - Desktop only */}
+        <div className="absolute inset-0 z-0 hidden lg:block">
           <img 
             src={heroImage} 
             alt="Fabiana Duarte" 
-            className="w-full h-full object-cover object-[center_25%] sm:object-[center_20%] md:object-top opacity-80 md:opacity-70" 
+            className="w-full h-full object-cover object-top opacity-70" 
           />
-          {/* Lighter gradient on mobile to show more of Fabiana */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/80 md:from-black/30 md:via-black/20 md:to-black/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/90" />
         </div>
+
+        {/* Mobile/Tablet background - solid gradient */}
+        <div className="absolute inset-0 z-0 lg:hidden bg-gradient-to-b from-zinc-900 via-brand-black to-brand-black" />
 
         {/* Golden vignette effect around edges - smaller on mobile */}
         <div className="absolute inset-0 z-[1] pointer-events-none" 
@@ -79,8 +81,8 @@ const JornadaImobiliariaLanding = () => {
           }} 
         />
 
-        {/* Central spotlight on Fabiana */}
-        <div className="absolute inset-0 z-[1] pointer-events-none"
+        {/* Central spotlight on Fabiana - desktop only */}
+        <div className="absolute inset-0 z-[1] pointer-events-none hidden lg:block"
           style={{
             background: 'radial-gradient(ellipse 80% 60% at 50% 35%, transparent 0%, rgba(0,0,0,0.4) 100%)'
           }}
@@ -138,9 +140,36 @@ const JornadaImobiliariaLanding = () => {
         />
 
         {/* Content */}
-        <div className="container-soberana relative z-10 py-12 px-4 sm:px-6 md:py-24 md:px-8">
+        <div className="container-soberana relative z-10 py-8 px-4 sm:py-10 sm:px-6 lg:py-24 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            
+            {/* Fabiana Image - Mobile/Tablet only */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }} 
+              animate={{ opacity: 1, scale: 1 }} 
+              transition={{ duration: 0.6 }}
+              className="lg:hidden flex justify-center mb-6"
+            >
+              <div className="relative">
+                {/* Golden glow behind */}
+                <div className="absolute -inset-2 bg-gradient-to-br from-secondary/40 via-secondary/20 to-secondary/40 rounded-2xl blur-md" />
+                
+                {/* Image with golden frame */}
+                <img 
+                  src={heroImage} 
+                  alt="Fabiana Duarte"
+                  className="relative w-40 h-52 sm:w-56 sm:h-72 object-cover object-top rounded-2xl border-2 border-secondary/40 shadow-[0_0_30px_rgba(166,144,97,0.25)]"
+                />
+                
+                {/* Decorative corner elements */}
+                <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-secondary/60 rounded-tl-lg" />
+                <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-secondary/60 rounded-tr-lg" />
+                <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-secondary/60 rounded-bl-lg" />
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-secondary/60 rounded-br-lg" />
+              </div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
               <Badge className="bg-secondary/20 text-secondary border-secondary/30 mb-4 md:mb-6 backdrop-blur-sm text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1">
                 <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />
                 SÉRIE GRATUITA | 5 ENCONTROS
