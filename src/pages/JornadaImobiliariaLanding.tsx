@@ -153,21 +153,25 @@ const JornadaImobiliariaLanding = () => {
               className="lg:hidden flex justify-center mb-6"
             >
               <div className="relative">
-                {/* Golden glow behind */}
-                <div className="absolute -inset-2 bg-gradient-to-br from-secondary/40 via-secondary/20 to-secondary/40 rounded-2xl blur-md" />
+                {/* Golden glow behind - larger for bigger image */}
+                <div className="absolute -inset-3 bg-gradient-to-br from-secondary/40 via-secondary/20 to-secondary/40 rounded-2xl blur-lg" />
                 
-                {/* Image with golden frame */}
+                {/* Image with golden frame - LARGER on mobile/tablet */}
                 <img 
                   src={heroImage} 
                   alt="Fabiana Duarte"
-                  className="relative w-40 h-52 sm:w-56 sm:h-72 object-cover object-top rounded-2xl border-2 border-secondary/40 shadow-[0_0_30px_rgba(166,144,97,0.25)]"
+                  className="relative w-[75vw] max-w-[260px] h-auto aspect-[3/4] 
+                             sm:w-[65vw] sm:max-w-[300px] 
+                             md:w-[55vw] md:max-w-[360px]
+                             object-cover object-top rounded-2xl border-2 border-secondary/40 
+                             shadow-[0_0_40px_rgba(166,144,97,0.3)]"
                 />
                 
-                {/* Decorative corner elements */}
-                <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-secondary/60 rounded-tl-lg" />
-                <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-secondary/60 rounded-tr-lg" />
-                <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-secondary/60 rounded-bl-lg" />
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-secondary/60 rounded-br-lg" />
+                {/* Decorative corner elements - slightly larger */}
+                <div className="absolute -top-1.5 -left-1.5 w-5 h-5 border-t-2 border-l-2 border-secondary/60 rounded-tl-lg" />
+                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 border-t-2 border-r-2 border-secondary/60 rounded-tr-lg" />
+                <div className="absolute -bottom-1.5 -left-1.5 w-5 h-5 border-b-2 border-l-2 border-secondary/60 rounded-bl-lg" />
+                <div className="absolute -bottom-1.5 -right-1.5 w-5 h-5 border-b-2 border-r-2 border-secondary/60 rounded-br-lg" />
               </div>
             </motion.div>
 

@@ -1305,6 +1305,95 @@ export type Database = {
           },
         ]
       }
+      jornada_notification_queue: {
+        Row: {
+          created_at: string | null
+          id: string
+          jornada_slug: string
+          materials_url: string | null
+          processed: boolean | null
+          processed_at: string | null
+          session_day: number
+          session_id: string | null
+          session_title: string
+          youtube_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          jornada_slug: string
+          materials_url?: string | null
+          processed?: boolean | null
+          processed_at?: string | null
+          session_day: number
+          session_id?: string | null
+          session_title: string
+          youtube_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          jornada_slug?: string
+          materials_url?: string | null
+          processed?: boolean | null
+          processed_at?: string | null
+          session_day?: number
+          session_id?: string | null
+          session_title?: string
+          youtube_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jornada_notification_queue_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "jornada_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jornada_reminders: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          jornada_access_id: string | null
+          sent_at: string | null
+          session_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          jornada_access_id?: string | null
+          sent_at?: string | null
+          session_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          jornada_access_id?: string | null
+          sent_at?: string | null
+          session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jornada_reminders_jornada_access_id_fkey"
+            columns: ["jornada_access_id"]
+            isOneToOne: false
+            referencedRelation: "jornada_access"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jornada_reminders_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "jornada_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jornada_sessions: {
         Row: {
           created_at: string | null
