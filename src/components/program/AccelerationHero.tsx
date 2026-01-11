@@ -86,29 +86,29 @@ export const AccelerationHero = ({ program }: AccelerationHeroProps) => {
       <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-foreground/80 pointer-events-none" />
 
       {/* Content */}
-      <div className="container-soberana relative z-10 py-20">
+      <div className="container-soberana relative z-10 py-12 lg:py-20">
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center"
+          className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center"
         >
-          {/* Left - Photo with Premium Frame - INCREASED SIZE */}
+          {/* Left - Photo with Premium Frame - Order 2 on mobile */}
           <motion.div 
             variants={staggerItem}
-            className="relative flex justify-center lg:justify-start"
+            className="relative flex justify-center order-2 lg:order-1"
           >
             {/* Premium Golden Frame Container */}
             <div className="relative">
               {/* Glow Effect - BIGGER */}
-              <div className="absolute -inset-6 bg-gradient-to-br from-secondary/40 via-secondary/20 to-secondary/40 rounded-3xl blur-2xl opacity-60" />
+              <div className="absolute -inset-4 sm:-inset-6 bg-gradient-to-br from-secondary/40 via-secondary/20 to-secondary/40 rounded-3xl blur-2xl opacity-60" />
               
               {/* Outer Golden Frame */}
-              <div className="relative p-2 bg-gradient-to-br from-secondary via-secondary/80 to-secondary rounded-2xl shadow-2xl shadow-secondary/30">
+              <div className="relative p-1.5 sm:p-2 bg-gradient-to-br from-secondary via-secondary/80 to-secondary rounded-2xl shadow-2xl shadow-secondary/30">
                 {/* Inner Frame with Pattern */}
-                <div className="relative p-1 bg-gradient-to-br from-secondary/90 via-foreground to-secondary/90 rounded-xl">
-                  {/* Photo Container - BIGGER */}
-                  <div className="relative w-[320px] sm:w-[380px] md:w-[450px] lg:w-[480px] aspect-[3/4] rounded-lg overflow-hidden">
+                <div className="relative p-0.5 sm:p-1 bg-gradient-to-br from-secondary/90 via-foreground to-secondary/90 rounded-xl">
+                  {/* Photo Container - Responsive sizes */}
+                  <div className="relative w-[240px] sm:w-[300px] md:w-[380px] lg:w-[420px] xl:w-[480px] aspect-[3/4] rounded-lg overflow-hidden">
                     <img
                       src={fabianaHero}
                       alt="Fabiana Duarte - Mentora"
@@ -121,17 +121,17 @@ export const AccelerationHero = ({ program }: AccelerationHeroProps) => {
                 </div>
 
                 {/* Decorative Corner Elements */}
-                <div className="absolute -top-3 -left-3 w-10 h-10 border-t-4 border-l-4 border-secondary rounded-tl-lg" />
-                <div className="absolute -top-3 -right-3 w-10 h-10 border-t-4 border-r-4 border-secondary rounded-tr-lg" />
-                <div className="absolute -bottom-3 -left-3 w-10 h-10 border-b-4 border-l-4 border-secondary rounded-bl-lg" />
-                <div className="absolute -bottom-3 -right-3 w-10 h-10 border-b-4 border-r-4 border-secondary rounded-br-lg" />
+                <div className="absolute -top-2 -left-2 sm:-top-3 sm:-left-3 w-7 h-7 sm:w-10 sm:h-10 border-t-3 sm:border-t-4 border-l-3 sm:border-l-4 border-secondary rounded-tl-lg" />
+                <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 w-7 h-7 sm:w-10 sm:h-10 border-t-3 sm:border-t-4 border-r-3 sm:border-r-4 border-secondary rounded-tr-lg" />
+                <div className="absolute -bottom-2 -left-2 sm:-bottom-3 sm:-left-3 w-7 h-7 sm:w-10 sm:h-10 border-b-3 sm:border-b-4 border-l-3 sm:border-l-4 border-secondary rounded-bl-lg" />
+                <div className="absolute -bottom-2 -right-2 sm:-bottom-3 sm:-right-3 w-7 h-7 sm:w-10 sm:h-10 border-b-3 sm:border-b-4 border-r-3 sm:border-r-4 border-secondary rounded-br-lg" />
               </div>
 
-              {/* Floating particles */}
+              {/* Floating particles - hide on mobile */}
               {[...Array(5)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="absolute w-2 h-2 rounded-full bg-secondary"
+                  className="absolute w-2 h-2 rounded-full bg-secondary hidden sm:block"
                   style={{
                     top: `${20 + i * 15}%`,
                     left: i % 2 === 0 ? "-25px" : "calc(100% + 15px)",
@@ -150,32 +150,32 @@ export const AccelerationHero = ({ program }: AccelerationHeroProps) => {
             </div>
           </motion.div>
 
-          {/* Right - Content */}
+          {/* Right - Content - Order 1 on mobile (appears first) */}
           <motion.div 
             variants={staggerContainer}
-            className="text-center lg:text-left space-y-6"
+            className="text-center lg:text-left space-y-4 sm:space-y-6 order-1 lg:order-2"
           >
             {/* Badge */}
-            <motion.div variants={staggerItem} className="flex items-center justify-center lg:justify-start gap-3">
-              <div className="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center border border-secondary/30 backdrop-blur-sm">
-                <Icon className="w-6 h-6 text-secondary" />
+            <motion.div variants={staggerItem} className="flex items-center justify-center lg:justify-start gap-2 sm:gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-secondary/20 flex items-center justify-center border border-secondary/30 backdrop-blur-sm">
+                <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
               </div>
-              <span className="text-secondary font-medium tracking-widest uppercase text-sm flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
+              <span className="text-secondary font-medium tracking-widest uppercase text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2">
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
                 MENTORIA
               </span>
             </motion.div>
 
             {/* Title */}
             <motion.div variants={staggerItem}>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-background leading-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-bold text-background leading-tight">
                 Estruture sua advocacia{" "}
                 <span className="relative inline-block">
                   <span className="bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent">
                     em 90 dias
                   </span>
                   <motion.span
-                    className="absolute -bottom-2 left-0 right-0 h-0.5 bg-gradient-to-r from-secondary via-accent to-secondary"
+                    className="absolute -bottom-1 sm:-bottom-2 left-0 right-0 h-0.5 bg-gradient-to-r from-secondary via-accent to-secondary"
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
                     transition={{ duration: 0.8, delay: 0.5 }}
@@ -187,7 +187,7 @@ export const AccelerationHero = ({ program }: AccelerationHeroProps) => {
             {/* Subtitle */}
             <motion.p
               variants={staggerItem}
-              className="text-2xl md:text-3xl font-serif text-secondary"
+              className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-serif text-secondary"
             >
               {program.subtitle}
             </motion.p>
@@ -195,52 +195,52 @@ export const AccelerationHero = ({ program }: AccelerationHeroProps) => {
             {/* Description */}
             <motion.p
               variants={staggerItem}
-              className="text-lg text-background/70 max-w-xl mx-auto lg:mx-0 leading-relaxed"
+              className="text-sm sm:text-base lg:text-lg text-background/70 max-w-xl mx-auto lg:mx-0 leading-relaxed"
             >
               {program.fullDescription}
             </motion.p>
 
             {/* Info Cards - Glassmorphism */}
-            <motion.div variants={staggerItem} className="flex flex-wrap justify-center lg:justify-start gap-4 py-4">
-              <div className="backdrop-blur-md bg-background/5 border border-secondary/20 rounded-xl px-5 py-3 shadow-lg">
-                <div className="flex items-center gap-3">
-                  <Clock className="w-5 h-5 text-secondary" />
+            <motion.div variants={staggerItem} className="flex flex-wrap justify-center lg:justify-start gap-3 py-2 sm:py-4">
+              <div className="backdrop-blur-md bg-background/5 border border-secondary/20 rounded-lg sm:rounded-xl px-3 sm:px-5 py-2 sm:py-3 shadow-lg">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
                   <div className="text-left">
-                    <p className="text-background/50 text-xs uppercase tracking-wide">Formato</p>
-                    <p className="text-background font-semibold">{program.format}</p>
+                    <p className="text-background/50 text-[10px] sm:text-xs uppercase tracking-wide">Formato</p>
+                    <p className="text-background font-semibold text-sm sm:text-base">{program.format}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="backdrop-blur-md bg-background/5 border border-secondary/20 rounded-xl px-5 py-3 shadow-lg">
-                <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-secondary" />
+              <div className="backdrop-blur-md bg-background/5 border border-secondary/20 rounded-lg sm:rounded-xl px-3 sm:px-5 py-2 sm:py-3 shadow-lg">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
                   <div className="text-left">
-                    <p className="text-background/50 text-xs uppercase tracking-wide">Duração</p>
-                    <p className="text-background font-semibold">{program.duration}</p>
+                    <p className="text-background/50 text-[10px] sm:text-xs uppercase tracking-wide">Duração</p>
+                    <p className="text-background font-semibold text-sm sm:text-base">{program.duration}</p>
                   </div>
                 </div>
               </div>
             </motion.div>
 
             {/* CTA Buttons */}
-            <motion.div variants={staggerItem} className="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
+            <motion.div variants={staggerItem} className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-3 pt-2 sm:pt-4">
               <Button
                 size="lg"
                 variant="cta"
-                className="text-lg px-8 py-6 shadow-xl shadow-secondary/20 hover:shadow-2xl hover:shadow-secondary/30 transition-all"
+                className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 shadow-xl shadow-secondary/20 hover:shadow-2xl hover:shadow-secondary/30 transition-all"
                 asChild
               >
                 <a href={program.ctaLink} target="_blank" rel="noopener noreferrer">
                   {program.ctaText}
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
                 </a>
               </Button>
               {program.secondaryCta && (
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-secondary/40 text-secondary hover:bg-secondary/10 text-lg px-8 py-6 backdrop-blur-sm"
+                  className="w-full sm:w-auto border-secondary/40 text-secondary hover:bg-secondary/10 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 backdrop-blur-sm"
                   asChild
                 >
                   <a href={program.secondaryCta.link} target="_blank" rel="noopener noreferrer">

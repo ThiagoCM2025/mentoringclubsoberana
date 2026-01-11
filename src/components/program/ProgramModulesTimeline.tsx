@@ -98,19 +98,19 @@ export const ProgramModulesTimeline = ({ program }: ProgramModulesTimelineProps)
               <Sparkles className="w-5 h-5 text-secondary" />
               <div className="h-px w-8 bg-gradient-to-l from-transparent to-secondary" />
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-background">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-background">
               Metodologia{" "}
               <span className="bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent">
                 Soberana
               </span>
             </h2>
-            <p className="text-background/60 max-w-2xl mx-auto text-lg">
+            <p className="text-background/60 max-w-2xl mx-auto text-sm sm:text-base lg:text-lg">
               O passo a passo da transformação do seu escritório em 12 semanas
             </p>
           </motion.div>
 
           {/* Cards Grid - Premium Design */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {methodologyPillars.map((pillar, index) => {
               const IconComponent = pillar.icon;
               const isGold = pillar.color === "gold";
@@ -133,7 +133,7 @@ export const ProgramModulesTimeline = ({ program }: ProgramModulesTimelineProps)
                     </div>
                     
                     {/* Card Content */}
-                    <div className="relative h-full rounded-2xl backdrop-blur-sm bg-background/[0.02] p-6 
+                    <div className="relative h-full rounded-2xl backdrop-blur-sm bg-background/[0.02] p-4 sm:p-6 
                       group-hover:bg-background/[0.05] transition-all duration-500
                       hover:shadow-[0_0_50px_rgba(166,144,97,0.15)]">
                       
@@ -150,8 +150,8 @@ export const ProgramModulesTimeline = ({ program }: ProgramModulesTimelineProps)
                       {/* Content */}
                       <div className="relative z-10">
                         {/* Number Badge & Icon Row */}
-                        <div className="flex items-center justify-between mb-5">
-                          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-transform duration-300 group-hover:scale-110 ${
+                        <div className="flex items-center justify-between mb-3 sm:mb-5">
+                          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-sm sm:text-lg font-bold transition-transform duration-300 group-hover:scale-110 ${
                             isGold 
                               ? "bg-gradient-to-br from-secondary to-secondary-dark text-foreground shadow-lg shadow-secondary/40" 
                               : "bg-gradient-to-br from-primary to-primary-dark text-background shadow-lg shadow-primary/40"
@@ -160,32 +160,32 @@ export const ProgramModulesTimeline = ({ program }: ProgramModulesTimelineProps)
                           </div>
                           
                           {/* Icon */}
-                          <div className={`w-14 h-14 rounded-xl flex items-center justify-center border transition-all duration-300 group-hover:scale-110 ${
+                          <div className={`w-11 h-11 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center border transition-all duration-300 group-hover:scale-110 ${
                             isGold 
                               ? "bg-secondary/10 border-secondary/40 group-hover:bg-secondary/20 group-hover:border-secondary/60" 
                               : "bg-primary/10 border-primary/40 group-hover:bg-primary/20 group-hover:border-primary/60"
                           }`}>
-                            <IconComponent className={`w-7 h-7 ${isGold ? "text-secondary" : "text-primary-light"}`} />
+                            <IconComponent className={`w-5 h-5 sm:w-7 sm:h-7 ${isGold ? "text-secondary" : "text-primary-light"}`} />
                           </div>
                         </div>
                         
                         {/* Title */}
-                        <h3 className="font-serif text-xl font-bold text-background mb-1">
+                        <h3 className="font-serif text-lg sm:text-xl font-bold text-background mb-0.5 sm:mb-1">
                           {pillar.title}
                         </h3>
                         
                         {/* Subtitle */}
-                        <p className={`text-sm font-medium mb-3 ${isGold ? "text-secondary" : "text-primary-light"}`}>
+                        <p className={`text-xs sm:text-sm font-medium mb-2 sm:mb-3 ${isGold ? "text-secondary" : "text-primary-light"}`}>
                           {pillar.subtitle}
                         </p>
                         
                         {/* Description */}
-                        <p className="text-background/60 text-sm leading-relaxed">
+                        <p className="text-background/60 text-xs sm:text-sm leading-relaxed">
                           {pillar.description}
                         </p>
                         
                         {/* Decorative Line */}
-                        <div className={`mt-5 h-0.5 rounded-full transition-all duration-500 ${
+                        <div className={`mt-3 sm:mt-5 h-0.5 rounded-full transition-all duration-500 ${
                           isGold 
                             ? "bg-gradient-to-r from-secondary/60 to-transparent w-12 group-hover:w-24" 
                             : "bg-gradient-to-r from-primary/60 to-transparent w-12 group-hover:w-24"
