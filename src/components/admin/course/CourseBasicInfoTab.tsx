@@ -18,6 +18,7 @@ const courseSchema = z.object({
   title: z.string().min(1, "Título é obrigatório").max(200, "Título muito longo (máx. 200 caracteres)"),
   description: z.string().optional().nullable(),
   thumbnail_url: z.string().url("URL inválida").optional().or(z.literal("")).nullable(),
+  thumbnail_position: z.enum(["top", "center", "bottom"]).optional().nullable(),
   price: z.number().min(0, "Preço não pode ser negativo").optional().nullable(),
   is_published: z.boolean(),
   is_subscription: z.boolean(),
@@ -32,6 +33,7 @@ interface Course {
   title: string;
   description: string | null;
   thumbnail_url: string | null;
+  thumbnail_position: string | null;
   price: number | null;
   is_published: boolean;
   is_subscription: boolean;
@@ -69,6 +71,7 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
       title: course.title || "",
       description: course.description || "",
       thumbnail_url: course.thumbnail_url || "",
+      thumbnail_position: (course.thumbnail_position as "top" | "center" | "bottom") || "center",
       price: course.price ?? undefined,
       is_published: course.is_published || false,
       is_subscription: course.is_subscription || false,
@@ -88,25 +91,27 @@ const CourseBasicInfoTab = ({ course, onChange, onProgramSelected }: CourseBasic
       title: watchedValues.title,
       description: watchedValues.description || null,
       thumbnail_url: watchedValues.thumbnail_url || null,
+      thumbnail_position: watchedValues.thumbnail_position || "center",
       price: watchedValues.price ?? null,
       is_published: watchedValues.is_published,
       is_subscription: watchedValues.is_subscription,
       welcome_video_url: watchedValues.welcome_video_url || null,
       welcome_video_duration: watchedValues.welcome_video_duration ?? null,
     });
-  }, [watchedValues.title, watchedValues.description, watchedValues.thumbnail_url, watchedValues.price, watchedValues.is_published, watchedValues.is_subscription, watchedValues.welcome_video_url, watchedValues.welcome_video_duration]);
+  }, [watchedValues.title, watchedValues.description, watchedValues.thumbnail_url, watchedValues.thumbnail_position, watchedValues.price, watchedValues.is_published, watchedValues.is_subscription, watchedValues.welcome_video_url, watchedValues.welcome_video_duration]);
 
   // Update form when course prop changes (e.g., from program selection)
   useEffect(() => {
     setValue("title", course.title || "");
     setValue("description", course.description || "");
     setValue("thumbnail_url", course.thumbnail_url || "");
+    setValue("thumbnail_position", (course.thumbnail_position as "top" | "center" | "bottom") || "center");
     setValue("price", course.price ?? undefined);
     setValue("is_published", course.is_published || false);
     setValue("is_subscription", course.is_subscription || false);
     setValue("welcome_video_url", course.welcome_video_url || "");
     setValue("welcome_video_duration", course.welcome_video_duration ?? undefined);
-  }, [course.title, course.description, course.thumbnail_url, course.price, course.is_published, course.is_subscription, course.welcome_video_url, course.welcome_video_duration, setValue]);
+  }, [course.title, course.description, course.thumbnail_url, course.thumbnail_position, course.price, course.is_published, course.is_subscription, course.welcome_video_url, course.welcome_video_duration, setValue]);
 
   const handleBlur = (fieldName: string) => {
     setTouchedFields(prev => new Set(prev).add(fieldName));
