@@ -40,52 +40,52 @@ export const ProgramCTA = ({ program }: ProgramCTAProps) => {
           {/* Icon */}
           <motion.div
             variants={scaleIn}
-            className="w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto mb-8 border border-secondary/30 shadow-lg shadow-secondary/20"
+            className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto mb-6 sm:mb-8 border border-secondary/30 shadow-lg shadow-secondary/20"
           >
-            <Icon className="w-10 h-10 text-secondary" />
+            <Icon className="w-7 h-7 sm:w-10 sm:h-10 text-secondary" />
           </motion.div>
 
           {/* Title */}
           <motion.h2
             variants={staggerItem}
-            className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-6"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-4 sm:mb-6"
           >
             Pronta para Transformar sua <span className="text-secondary">Advocacia</span>?
           </motion.h2>
 
           {/* Impact Phrase */}
-          <motion.p variants={staggerItem} className="text-xl text-white/80 mb-8">
+          <motion.p variants={staggerItem} className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
             {program.impactPhrase}
           </motion.p>
 
           {/* Price (if available) */}
           {program.price && (
-            <motion.div variants={staggerItem} className="mb-8">
-              <p className="text-white/60 text-sm mb-1">Investimento</p>
-              <p className="text-4xl font-bold text-secondary">{program.price}</p>
+            <motion.div variants={staggerItem} className="mb-6 sm:mb-8">
+              <p className="text-white/60 text-xs sm:text-sm mb-1">Investimento</p>
+              <p className="text-3xl sm:text-4xl font-bold text-secondary">{program.price}</p>
             </motion.div>
           )}
 
           {/* CTA Buttons */}
           <motion.div
             variants={staggerItem}
-            className="flex flex-col sm:flex-row justify-center gap-4"
+            className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4"
           >
             <Button
-              size="lg"
+              size="lg" 
               variant="cta"
-              className="text-lg px-10 py-7 shadow-xl shadow-secondary/30"
+              className="w-full sm:w-auto text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-7 shadow-xl shadow-secondary/30"
               asChild
             >
               <a href={program.ctaLink} target="_blank" rel="noopener noreferrer">
                 {program.ctaText}
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
               </a>
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="border-white/30 text-white hover:bg-white/10 text-lg px-10 py-7"
+              className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-7"
               asChild
             >
               <a
@@ -93,14 +93,14 @@ export const ProgramCTA = ({ program }: ProgramCTAProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <MessageCircle className="mr-2 w-5 h-5" />
+                <MessageCircle className="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
                 Tirar Dúvidas
               </a>
             </Button>
           </motion.div>
 
           {/* Trust Text */}
-          <motion.p variants={staggerItem} className="mt-8 text-white/50 text-sm">
+          <motion.p variants={staggerItem} className="mt-6 sm:mt-8 text-white/50 text-xs sm:text-sm">
             Ao se inscrever, você terá suporte completo da equipe Soberana
           </motion.p>
         </motion.div>
