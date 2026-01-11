@@ -420,7 +420,13 @@ const CourseMissionsTab = ({ courseId, modules }: CourseMissionsTabProps) => {
       {/* Mission Dialog */}
       <MissionDialog
         open={dialogOpen}
-        onOpenChange={handleDialogClose}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleDialogClose();
+          } else {
+            setDialogOpen(true);
+          }
+        }}
         courseId={courseId}
         mission={editingMission}
         lessons={allLessons}
