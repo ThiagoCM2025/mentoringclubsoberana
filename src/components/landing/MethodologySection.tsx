@@ -7,6 +7,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { staggerContainer, staggerItemScale } from "@/lib/animations";
 import patternGold from "@/assets/brand/pattern-circles-gold.png";
 import patternConnectedGold from "@/assets/brand/pattern-circles-connected-gold.png";
+import patternGeometric from "@/assets/brand/pattern-geometric-circles-gold.png";
 import isotipoGold from "@/assets/brand/isotipo-s-gold.png";
 import isotipoFramedGold from "@/assets/brand/isotipo-s-framed-gold-v2.png";
 
@@ -271,38 +272,59 @@ const DesktopPillarCard = ({ pillar }: { pillar: typeof pillars[0] }) => {
   return (
     <motion.div
       variants={staggerItemScale}
-      className="group relative overflow-hidden rounded-2xl border border-gold/20 bg-gradient-to-br from-black via-black/95 to-marsala-dark/10 hover:border-gold/50 transition-all duration-500 hover:shadow-[0_0_50px_rgba(166,144,97,0.25),0_0_20px_rgba(166,144,97,0.15)]"
+      className="group relative overflow-hidden rounded-2xl transition-all duration-600"
     >
-      {/* Glow Effect */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <div className="absolute inset-0 bg-gradient-to-br from-gold/10 via-gold/5 to-marsala/10" />
-        <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gold/30" />
+      {/* Animated Border Gradient */}
+      <div className="absolute inset-0 rounded-2xl p-[1px] bg-gradient-to-br from-gold/20 via-transparent to-marsala/20 group-hover:from-gold/50 group-hover:via-gold/20 group-hover:to-marsala/30 transition-all duration-600">
+        <div className="absolute inset-[1px] rounded-2xl bg-black/90 backdrop-blur-sm" />
       </div>
+      
+      {/* Glassmorphism Background */}
+      <div className="absolute inset-[1px] rounded-2xl bg-gradient-to-br from-white/[0.03] via-transparent to-white/[0.02] backdrop-blur-[2px]" />
+      
+      {/* Inner Glow on Hover */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-600 rounded-2xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-gold/[0.08] via-gold/[0.04] to-marsala/[0.06]" />
+        <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gold/30" />
+        {/* Shimmer Effect */}
+        <div 
+          className="absolute inset-0 opacity-30"
+          style={{
+            background: 'linear-gradient(105deg, transparent 40%, rgba(166, 144, 97, 0.15) 50%, transparent 60%)',
+          }}
+        />
+      </div>
+      
+      {/* Card Shadow on Hover */}
+      <div className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-600 blur-xl bg-gold/10 -z-10" />
 
       <div className="relative p-5 lg:p-6 xl:p-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-5">
           {/* Number */}
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center text-black font-bold text-xl shadow-lg shadow-gold/20 group-hover:shadow-gold/40 group-hover:shadow-xl transition-shadow duration-500">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center text-black font-bold text-xl shadow-lg shadow-gold/20 group-hover:shadow-[0_0_25px_rgba(166,144,97,0.5)] group-hover:scale-105 transition-all duration-500">
             {pillar.number}
           </div>
           
           {/* Icon */}
-          <div className="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center group-hover:bg-gold/20 group-hover:border-gold/40 group-hover:shadow-[0_0_15px_rgba(166,144,97,0.3)] transition-all duration-500">
-            <Icon className="w-6 h-6 text-gold" />
+          <div className="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center group-hover:bg-gold/20 group-hover:border-gold/40 group-hover:shadow-[0_0_20px_rgba(166,144,97,0.35)] transition-all duration-500">
+            <Icon className="w-6 h-6 text-gold group-hover:text-gold-light transition-colors duration-500" />
           </div>
         </div>
 
         {/* Title & Subtitle */}
-        <h3 className="font-playfair text-lg lg:text-xl xl:text-2xl font-bold text-cream mb-2 group-hover:text-gold-light transition-colors">
+        <h3 className="font-playfair text-lg lg:text-xl xl:text-2xl font-bold text-cream mb-2 group-hover:text-gold-light transition-colors duration-500">
           {pillar.title}
         </h3>
-        <p className="text-gold font-medium text-sm mb-4">
+        <p className="text-gold font-medium text-sm mb-4 group-hover:text-gold-light/90 transition-colors duration-500">
           {pillar.subtitle}
         </p>
 
+        {/* Decorative Line */}
+        <div className="w-12 h-px bg-gradient-to-r from-gold/40 to-transparent mb-4 group-hover:w-20 transition-all duration-500" />
+
         {/* Description */}
-        <p className="text-cream/70 text-sm leading-relaxed mb-5">
+        <p className="text-cream/70 text-sm leading-relaxed mb-5 group-hover:text-cream/80 transition-colors duration-500">
           {pillar.description}
         </p>
 
@@ -337,16 +359,30 @@ const MethodologySection = () => {
     <section
       id="metodologia"
       ref={sectionRef}
-      className="relative py-14 md:py-20 lg:py-24 xl:py-32 bg-black overflow-hidden scroll-mt-24"
+      className="relative py-14 md:py-20 lg:py-24 xl:py-32 overflow-hidden scroll-mt-24"
+      style={{
+        background: 'linear-gradient(180deg, #000000 0%, #0a0506 30%, #0d0709 50%, #0a0506 70%, #000000 100%)',
+      }}
     >
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Top Border Gradient */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/40 to-transparent" />
+        {/* Top Border Gradient - More Elegant */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
         
-        {/* Pattern Overlay - Original circles */}
+        {/* New Geometric Pattern - Primary */}
         <div 
-          className="absolute inset-0 opacity-[0.06]"
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: `url(${patternGeometric})`,
+            backgroundSize: '500px',
+            backgroundRepeat: 'repeat',
+            backgroundPosition: 'center',
+          }}
+        />
+        
+        {/* Pattern Overlay - Original circles - lighter */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage: `url(${patternGold})`,
             backgroundSize: '400px',
@@ -354,9 +390,9 @@ const MethodologySection = () => {
           }}
         />
         
-        {/* Pattern Overlay - Connected circles */}
+        {/* Pattern Overlay - Connected circles - lighter */}
         <div 
-          className="absolute inset-0 opacity-[0.08]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage: `url(${patternConnectedGold})`,
             backgroundSize: '600px',
@@ -365,15 +401,39 @@ const MethodologySection = () => {
           }}
         />
         
+        {/* Central Golden Spotlight */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse 80% 50% at 50% 40%, rgba(166, 144, 97, 0.08) 0%, transparent 60%)',
+          }}
+        />
+        
+        {/* Secondary Warm Glow - Marsala tint */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse 70% 60% at 30% 80%, rgba(139, 0, 39, 0.06) 0%, transparent 50%)',
+          }}
+        />
+        
+        {/* Tertiary Accent Glow */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse 60% 50% at 80% 20%, rgba(166, 144, 97, 0.05) 0%, transparent 50%)',
+          }}
+        />
+        
         {/* Gradient Overlays */}
         <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-gradient-radial from-gold/10 via-transparent to-transparent" />
         <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-gradient-radial from-marsala/8 via-transparent to-transparent" />
         
-        {/* Radial Vignette */}
+        {/* Radial Vignette - Softer */}
         <div 
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%)',
+            background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5) 100%)',
           }}
         />
         
@@ -410,8 +470,12 @@ const MethodologySection = () => {
           className="absolute bottom-1/3 right-6 w-10 md:w-14 opacity-[0.10] -rotate-6 hidden lg:block"
         />
         
-        {/* Bottom Border Gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/40 to-transparent" />
+        {/* Decorative Horizontal Lines */}
+        <div className="absolute top-1/4 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/10 to-transparent" />
+        <div className="absolute top-3/4 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/10 to-transparent" />
+        
+        {/* Bottom Border Gradient - More Elegant */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
