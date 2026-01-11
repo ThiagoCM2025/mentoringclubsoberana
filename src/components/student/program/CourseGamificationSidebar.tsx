@@ -11,7 +11,8 @@ import {
   Crown,
   ChevronRight,
   Users,
-  Sparkles
+  Sparkles,
+  Calendar
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProgramLeaderboard } from "./ProgramLeaderboard";
@@ -82,10 +83,73 @@ export const CourseGamificationSidebar = ({
         </TabsList>
 
         <TabsContent value="progress" className="mt-4 space-y-6">
+      {/* Live Meetings Calendar */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-zinc-900/80 rounded-2xl p-5 border border-secondary/20"
+      >
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center">
+            <Calendar className="w-5 h-5 text-secondary" />
+          </div>
+          <div>
+            <span className="font-medium text-cream">Encontros Ao Vivo</span>
+            <p className="text-xs text-cream/50">Mentoria em grupo</p>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          {[
+            { date: new Date(2026, 0, 30, 18, 30), label: "30 de Janeiro" },
+            { date: new Date(2026, 1, 12, 18, 30), label: "12 de Fevereiro" },
+            { date: new Date(2026, 1, 26, 18, 30), label: "26 de Fevereiro" },
+            { date: new Date(2026, 2, 12, 18, 30), label: "12 de Março" },
+            { date: new Date(2026, 2, 26, 18, 30), label: "26 de Março" },
+            { date: new Date(2026, 3, 9, 18, 30), label: "09 de Abril" },
+          ].map((meeting, index, arr) => {
+            const now = new Date();
+            const isPast = meeting.date < now;
+            const isNext = !isPast && (index === 0 || arr[index - 1].date < now);
+            
+            return (
+              <div 
+                key={index}
+                className={cn(
+                  "flex items-center justify-between p-2.5 rounded-lg transition-all",
+                  isPast && "bg-zinc-800/30 opacity-50",
+                  isNext && "bg-secondary/10 border border-secondary/30",
+                  !isPast && !isNext && "bg-zinc-800/50"
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "w-2 h-2 rounded-full",
+                    isPast ? "bg-green-500" : isNext ? "bg-secondary animate-pulse" : "bg-zinc-600"
+                  )} />
+                  <span className={cn(
+                    "text-sm",
+                    isPast ? "text-cream/50 line-through" : "text-cream"
+                  )}>
+                    {meeting.label}
+                  </span>
+                </div>
+                <span className="text-xs text-cream/60">18:30</span>
+              </div>
+            );
+          })}
+        </div>
+        
+        <p className="text-xs text-cream/40 mt-3 text-center">
+          Horário de Brasília
+        </p>
+      </motion.div>
+
       {/* Current Title */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
         className="bg-gradient-to-br from-secondary/20 to-secondary/5 rounded-2xl p-5 border border-secondary/30"
       >
         <div className="flex items-center gap-3 mb-3">
