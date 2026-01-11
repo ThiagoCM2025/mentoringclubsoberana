@@ -21,6 +21,7 @@ interface Course {
   title: string;
   description: string | null;
   thumbnail_url: string | null;
+  thumbnail_position: string | null;
   price: number | null;
   is_published: boolean;
   is_subscription: boolean;
@@ -54,6 +55,7 @@ const CourseEditor = () => {
     title: "",
     description: "",
     thumbnail_url: "",
+    thumbnail_position: "center",
     price: null,
     is_published: false,
     is_subscription: false,
@@ -136,6 +138,7 @@ const CourseEditor = () => {
             title: course.title,
             description: course.description,
             thumbnail_url: course.thumbnail_url,
+            thumbnail_position: course.thumbnail_position || "center",
             price: course.price,
             is_published: course.is_published,
             is_subscription: course.is_subscription,
@@ -184,6 +187,7 @@ const CourseEditor = () => {
             title: course.title,
             description: course.description,
             thumbnail_url: course.thumbnail_url,
+            thumbnail_position: course.thumbnail_position || "center",
             price: course.price,
             is_published: course.is_published,
             is_subscription: course.is_subscription,
