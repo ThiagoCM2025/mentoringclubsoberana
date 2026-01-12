@@ -1,25 +1,46 @@
+import { useEffect, useState } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 
 export const PWAUpdatePrompt = () => {
+  const [countdown, setCountdown] = useState(3);
+  
   const {
     needRefresh: [needRefresh],
     updateServiceWorker,
   } = useRegisterSW({
     onRegisteredSW(swUrl, r) {
       console.log('SW Registered:', swUrl);
-      // Check for updates every 5 minutes
+      // Check for updates every 1 minute (more aggressive)
       if (r) {
         setInterval(() => {
           r.update();
-        }, 5 * 60 * 1000);
+        }, 60 * 1000);
       }
     },
     onRegisterError(error) {
       console.error('SW registration error:', error);
     },
   });
+
+  // Auto-update after 3 seconds when new version detected
+  useEffect(() => {
+    if (!needRefresh) return;
+    
+    const countdownInterval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(countdownInterval);
+          updateServiceWorker(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(countdownInterval);
+  }, [needRefresh, updateServiceWorker]);
 
   if (!needRefresh) return null;
 
@@ -29,14 +50,16 @@ export const PWAUpdatePrompt = () => {
         <RefreshCw className="h-5 w-5 text-primary animate-spin" />
         <div className="flex-1">
           <p className="text-sm font-medium">Atualização disponível</p>
-          <p className="text-xs text-muted-foreground">Clique para carregar a versão mais recente</p>
+          <p className="text-xs text-muted-foreground">
+            Atualizando automaticamente em {countdown}s...
+          </p>
         </div>
         <Button
           size="sm"
           onClick={() => updateServiceWorker(true)}
           className="shrink-0"
         >
-          Atualizar
+          Atualizar Agora
         </Button>
       </div>
     </div>
