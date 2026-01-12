@@ -63,9 +63,11 @@ export const AnimatedRoutes = () => {
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
         <Route path="/experience-start" element={<PageTransition><ExperienceStartLanding /></PageTransition>} />
+        <Route path="/experience-start/*" element={<PageTransition><ExperienceStartLanding /></PageTransition>} />
         <Route path="/operacao-regularizacao" element={<PageTransition><OperacaoRegularizacaoLanding /></PageTransition>} />
         <Route path="/operacao-regularizacao/*" element={<PageTransition><OperacaoRegularizacaoLanding /></PageTransition>} />
         <Route path="/jornada-imobiliaria-2026" element={<PageTransition><JornadaImobiliariaLanding /></PageTransition>} />
+        <Route path="/jornada-imobiliaria-2026/*" element={<PageTransition><JornadaImobiliariaLanding /></PageTransition>} />
         <Route path="/simulador" element={<PageTransition><SimuladorFinanceiro /></PageTransition>} />
         <Route path="/privacidade" element={<PageTransition><Privacidade /></PageTransition>} />
         <Route path="/termos" element={<PageTransition><Termos /></PageTransition>} />
