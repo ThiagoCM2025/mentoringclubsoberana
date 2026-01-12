@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download, Columns, TableIcon, TrendingUp, FileText, History, Loader2 } from "lucide-react";
+import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download, Columns, TableIcon, TrendingUp, FileText, History, Loader2, Send, Play, Pause } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -29,6 +29,8 @@ import { LeadBehaviorTab } from "@/components/admin/leads/LeadBehaviorTab";
 import { LeadNurturingTab } from "@/components/admin/leads/LeadNurturingTab";
 import { LeadTemplatesTab } from "@/components/admin/leads/LeadTemplatesTab";
 import { LeadHistoryTab } from "@/components/admin/leads/LeadHistoryTab";
+import { useNurturingSequences } from "@/hooks/useNurturingSequences";
+import { cn } from "@/lib/utils";
 import * as XLSX from "xlsx";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
@@ -86,6 +88,7 @@ const getNurturingColor = (step: number) => {
 
 const AdminLeads = () => {
   const { toast } = useToast();
+  const { getCampaignInfo, getSequenceInfo, calculateNextSend } = useNurturingSequences();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -553,6 +556,10 @@ const AdminLeads = () => {
                   filteredLeads.map((lead) => {
                     const temp = lead.temperature ? temperatureConfig[lead.temperature] : null;
                     const status = lead.status ? statusConfig[lead.status] : null;
+                    const campaign = getCampaignInfo(lead.source);
+                    const sequenceInfo = getSequenceInfo(lead.source, lead.nurturing_step || 0);
+                    const nextSend = calculateNextSend(lead.source, lead.nurturing_step || 0, lead.last_contact_at);
+                    
                     return (
                       <TableRow key={lead.id} className="cursor-pointer hover:bg-muted/50" onClick={() => openLeadDetails(lead)}>
                         <TableCell>
@@ -572,16 +579,28 @@ const AdminLeads = () => {
                           <p className="text-sm">{lead.email}</p>
                           <p className="text-xs text-muted-foreground">{lead.phone || "-"}</p>
                         </TableCell>
-                        <TableCell className="text-center">
-                          <div className="flex flex-col items-center gap-1">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${getNurturingColor(lead.nurturing_step || 0)}`}>
-                              <Zap className="w-3 h-3" />
-                              {lead.nurturing_step || 0}/5
+                        <TableCell>
+                          <div className="flex flex-col gap-1">
+                            <span className={cn("text-[10px] font-semibold px-1.5 py-0.5 rounded w-fit", campaign.color)}>
+                              {campaign.icon} {campaign.name}
                             </span>
-                            {lead.last_contact_at && (
-                              <span className="text-[10px] text-muted-foreground">
-                                {formatDistanceToNow(new Date(lead.last_contact_at), { addSuffix: true, locale: ptBR })}
+                            <span className="text-xs text-foreground">
+                              Step {lead.nurturing_step || 0}/{sequenceInfo.maxStep}
+                              {(lead.nurturing_step || 0) > 0 && (
+                                <span className="text-muted-foreground"> • {sequenceInfo.currentName}</span>
+                              )}
+                            </span>
+                            {lead.nurturing_active && nextSend && (
+                              <span className={cn(
+                                "text-[10px] flex items-center gap-1",
+                                nextSend.isUrgent ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground"
+                              )}>
+                                <Send className="w-2.5 h-2.5" />
+                                {nextSend.text}
                               </span>
+                            )}
+                            {sequenceInfo.isComplete && (
+                              <span className="text-[10px] text-green-600 dark:text-green-400">✓ Completa</span>
                             )}
                           </div>
                         </TableCell>
@@ -661,7 +680,7 @@ const AdminLeads = () => {
                   </div>
 
                   {/* Quick Stats */}
-                  <div className="grid grid-cols-3 gap-2 p-3 bg-card rounded-lg border border-border mb-6">
+                  <div className="grid grid-cols-3 gap-2 p-3 bg-card rounded-lg border border-border mb-4">
                     <div className="text-center">
                       <div className="flex items-center justify-center gap-1 text-xl font-bold text-foreground">
                         <Mail className="w-4 h-4 text-primary" />
@@ -670,9 +689,9 @@ const AdminLeads = () => {
                       <p className="text-[10px] text-muted-foreground">Msgs</p>
                     </div>
                     <div className="text-center">
-                      <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-sm font-bold ${getNurturingColor(selectedLead.nurturing_step || 0)}`}>
+                      <div className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-sm font-bold", getNurturingColor(selectedLead.nurturing_step || 0))}>
                         <Zap className="w-3 h-3" />
-                        {selectedLead.nurturing_step || 0}/5
+                        {selectedLead.nurturing_step || 0}/{getSequenceInfo(selectedLead.source, selectedLead.nurturing_step || 0).maxStep}
                       </div>
                       <p className="text-[10px] text-muted-foreground">Nurturing</p>
                     </div>
@@ -687,6 +706,76 @@ const AdminLeads = () => {
                       <p className="text-[10px] text-muted-foreground">Último</p>
                     </div>
                   </div>
+
+                  {/* Nurturing Status Card */}
+                  {(() => {
+                    const campaign = getCampaignInfo(selectedLead.source);
+                    const sequenceInfo = getSequenceInfo(selectedLead.source, selectedLead.nurturing_step || 0);
+                    const nextSend = calculateNextSend(selectedLead.source, selectedLead.nurturing_step || 0, selectedLead.last_contact_at);
+                    
+                    return (
+                      <div className="p-4 bg-card rounded-lg border border-border mb-6">
+                        <Label className="flex items-center gap-2 mb-3 text-sm font-medium">
+                          <Send className="w-4 h-4 text-primary" />
+                          Status de Nutrição
+                        </Label>
+                        
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Campanha</span>
+                            <span className={cn("text-xs font-semibold px-2 py-1 rounded", campaign.color)}>
+                              {campaign.icon} {campaign.name}
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Step atual</span>
+                            <span className="text-sm font-medium">
+                              {selectedLead.nurturing_step || 0} de {sequenceInfo.maxStep}
+                              {(selectedLead.nurturing_step || 0) > 0 && ` (${sequenceInfo.currentName})`}
+                            </span>
+                          </div>
+                          
+                          {selectedLead.last_contact_at && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-muted-foreground">Último e-mail</span>
+                              <span className="text-sm">
+                                {format(new Date(selectedLead.last_contact_at), "dd/MM 'às' HH:mm")}
+                              </span>
+                            </div>
+                          )}
+                          
+                          {selectedLead.nurturing_active && nextSend && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-muted-foreground">Próximo envio</span>
+                              <span className={cn("text-sm font-medium", nextSend.isUrgent ? "text-amber-600" : "")}>
+                                {nextSend.text} {nextSend.nextStepName && `(${nextSend.nextStepName})`}
+                              </span>
+                            </div>
+                          )}
+                          
+                          {sequenceInfo.isComplete && (
+                            <div className="text-center py-2 bg-green-50 dark:bg-green-900/20 rounded text-green-600 dark:text-green-400 text-sm font-medium">
+                              ✓ Sequência completa
+                            </div>
+                          )}
+                          
+                          <Button
+                            variant={selectedLead.nurturing_active ? "outline" : "default"}
+                            size="sm"
+                            className="w-full mt-2"
+                            onClick={() => updateLead(selectedLead.id, { nurturing_active: !selectedLead.nurturing_active })}
+                          >
+                            {selectedLead.nurturing_active ? (
+                              <><Pause className="w-3.5 h-3.5 mr-1.5" /> Pausar Nurturing</>
+                            ) : (
+                              <><Play className="w-3.5 h-3.5 mr-1.5" /> Ativar Nurturing</>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Status & Temperature */}
                   <div className="space-y-4 mb-6">

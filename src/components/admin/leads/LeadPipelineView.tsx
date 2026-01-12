@@ -20,6 +20,8 @@ interface Lead {
   messages_sent: number | null;
   created_at: string;
   last_contact_at: string | null;
+  nurturing_active?: boolean | null;
+  nurturing_step?: number | null;
 }
 
 interface LeadPipelineViewProps {
@@ -128,6 +130,7 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               isDragOver={dragOverColumn === column.status}
+              onNurturingToggle={onRefresh}
             />
           </div>
         ))}

@@ -1,10 +1,13 @@
-import { Flame, Thermometer, ThermometerSnowflake, MessageCircle, Clock, Mail, Send, Eye, Zap, ZapOff } from "lucide-react";
-import { formatDistanceToNow, differenceInHours } from "date-fns";
+import { Flame, Thermometer, ThermometerSnowflake, MessageCircle, Clock, Mail, Send, Eye, Zap, ZapOff, Play, Pause } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Database } from "@/integrations/supabase/types";
+import { useNurturingSequences } from "@/hooks/useNurturingSequences";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
 
@@ -26,6 +29,7 @@ interface LeadCardProps {
   lead: Lead;
   onClick: () => void;
   onDragStart: (e: React.DragEvent, leadId: string) => void;
+  onNurturingToggle?: () => void;
 }
 
 const temperatureConfig = {
@@ -34,46 +38,21 @@ const temperatureConfig = {
   hot: { label: "Quente", icon: Flame, color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
 };
 
-const stepColors = [
-  "bg-gray-100 text-gray-600",      // 0 - not started
-  "bg-blue-100 text-blue-700",       // 1
-  "bg-cyan-100 text-cyan-700",       // 2
-  "bg-emerald-100 text-emerald-700", // 3
-  "bg-amber-100 text-amber-700",     // 4
-  "bg-green-100 text-green-700",     // 5 - completed
-];
-
-export function LeadCard({ lead, onClick, onDragStart }: LeadCardProps) {
+export function LeadCard({ lead, onClick, onDragStart, onNurturingToggle }: LeadCardProps) {
+  const { toast } = useToast();
+  const { getCampaignInfo, getSequenceInfo, calculateNextSend } = useNurturingSequences();
+  
   const temp = lead.temperature ? temperatureConfig[lead.temperature] : null;
   const daysSinceCreation = Math.floor((Date.now() - new Date(lead.created_at).getTime()) / (1000 * 60 * 60 * 24));
   const isDelayed = !lead.last_contact_at && daysSinceCreation > 2;
   
   const nurturingStep = lead.nurturing_step ?? 0;
   const isNurturingActive = lead.nurturing_active ?? false;
-  const totalSteps = 5;
   
-  // Calculate next send time (assuming 24h delay between steps)
-  const getNextSendInfo = () => {
-    if (!isNurturingActive || nurturingStep >= totalSteps) return null;
-    
-    if (!lead.last_contact_at) {
-      return { text: "Enviando em breve", urgent: true };
-    }
-    
-    const lastContact = new Date(lead.last_contact_at);
-    const hoursElapsed = differenceInHours(new Date(), lastContact);
-    const hoursRemaining = 24 - hoursElapsed;
-    
-    if (hoursRemaining <= 0) {
-      return { text: "Enviando em breve", urgent: true };
-    } else if (hoursRemaining <= 6) {
-      return { text: `Em ${hoursRemaining}h`, urgent: true };
-    } else {
-      return { text: `Em ${hoursRemaining}h`, urgent: false };
-    }
-  };
-  
-  const nextSend = getNextSendInfo();
+  // Get campaign and sequence info
+  const campaign = getCampaignInfo(lead.source);
+  const sequenceInfo = getSequenceInfo(lead.source, nurturingStep);
+  const nextSend = calculateNextSend(lead.source, nurturingStep, lead.last_contact_at);
 
   const handleWhatsAppClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -86,6 +65,23 @@ export function LeadCard({ lead, onClick, onDragStart }: LeadCardProps) {
   const handleEmailClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     window.open(`mailto:${lead.email}`, "_blank");
+  };
+
+  const handleToggleNurturing = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newStatus = !isNurturingActive;
+    
+    const { error } = await supabase
+      .from("leads")
+      .update({ nurturing_active: newStatus })
+      .eq("id", lead.id);
+
+    if (error) {
+      toast({ title: "Erro ao atualizar", variant: "destructive" });
+    } else {
+      toast({ title: newStatus ? "Nurturing ativado" : "Nurturing pausado" });
+      onNurturingToggle?.();
+    }
   };
 
   return (
@@ -119,54 +115,84 @@ export function LeadCard({ lead, onClick, onDragStart }: LeadCardProps) {
           )}
         </div>
 
-        {/* Nurturing Status */}
-        <div className="flex items-center gap-2 mb-2 p-2 bg-muted/50 rounded-md">
-          <div className="flex items-center gap-1.5 flex-1">
-            {isNurturingActive ? (
-              <Zap className="w-3.5 h-3.5 text-amber-500" />
-            ) : (
-              <ZapOff className="w-3.5 h-3.5 text-muted-foreground" />
-            )}
-            <span className={cn(
-              "text-[11px] font-medium px-1.5 py-0.5 rounded",
-              stepColors[Math.min(nurturingStep, 5)]
-            )}>
-              {nurturingStep}/{totalSteps}
+        {/* Nurturing Status - Enhanced */}
+        <div className="mb-2 p-2 bg-muted/50 rounded-md space-y-1.5">
+          {/* Campaign Name */}
+          <div className="flex items-center justify-between">
+            <span className={cn("text-[10px] font-semibold px-1.5 py-0.5 rounded", campaign.color)}>
+              {campaign.icon} {campaign.name}
             </span>
-            <span className="text-[10px] text-muted-foreground">
-              {isNurturingActive ? "Ativo" : "Pausado"}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-5 w-5"
+                  onClick={handleToggleNurturing}
+                >
+                  {isNurturingActive ? (
+                    <Pause className="w-3 h-3 text-amber-500" />
+                  ) : (
+                    <Play className="w-3 h-3 text-green-500" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isNurturingActive ? "Pausar nurturing" : "Ativar nurturing"}
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          
+          {/* Step Info */}
+          <div className="flex items-center gap-2">
+            {isNurturingActive ? (
+              <Zap className="w-3 h-3 text-amber-500 flex-shrink-0" />
+            ) : (
+              <ZapOff className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+            )}
+            <span className="text-[11px] text-foreground">
+              Step {nurturingStep}/{sequenceInfo.maxStep}
+              {nurturingStep > 0 && (
+                <span className="text-muted-foreground"> • {sequenceInfo.currentName}</span>
+              )}
             </span>
           </div>
           
-          {nextSend && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className={cn(
-                  "text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1",
-                  nextSend.urgent 
-                    ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" 
-                    : "bg-muted text-muted-foreground"
-                )}>
-                  <Send className="w-2.5 h-2.5" />
-                  {nextSend.text}
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Próximo e-mail de nurturing</p>
-              </TooltipContent>
-            </Tooltip>
+          {/* Next Send */}
+          {isNurturingActive && nextSend && (
+            <div className="flex items-center gap-1.5">
+              <Send className="w-2.5 h-2.5 text-muted-foreground flex-shrink-0" />
+              <span className={cn(
+                "text-[10px]",
+                nextSend.isUrgent 
+                  ? "text-amber-600 dark:text-amber-400 font-medium" 
+                  : "text-muted-foreground"
+              )}>
+                Próximo: {nextSend.text}
+                {nextSend.nextStepName && (
+                  <span className="text-muted-foreground"> ({nextSend.nextStepName})</span>
+                )}
+              </span>
+            </div>
+          )}
+          
+          {/* Completed badge */}
+          {sequenceInfo.isComplete && (
+            <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">
+              ✓ Sequência completa
+            </span>
           )}
         </div>
 
         {/* Badges */}
-        <div className="flex flex-wrap gap-1.5 mb-2">
-          {isDelayed && (
+        {isDelayed && (
+          <div className="flex flex-wrap gap-1.5 mb-2">
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
               <Clock className="w-3 h-3" />
               Atrasado
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Quick Actions */}
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity mb-2">

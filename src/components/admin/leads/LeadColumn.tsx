@@ -16,6 +16,8 @@ interface Lead {
   messages_sent: number | null;
   created_at: string;
   last_contact_at: string | null;
+  nurturing_active?: boolean | null;
+  nurturing_step?: number | null;
 }
 
 interface ColumnConfig {
@@ -33,6 +35,7 @@ interface LeadColumnProps {
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, status: LeadStatus) => void;
   isDragOver: boolean;
+  onNurturingToggle?: () => void;
 }
 
 export function LeadColumn({
@@ -43,6 +46,7 @@ export function LeadColumn({
   onDragOver,
   onDrop,
   isDragOver,
+  onNurturingToggle,
 }: LeadColumnProps) {
   return (
     <div
@@ -80,6 +84,7 @@ export function LeadColumn({
               lead={lead}
               onClick={() => onLeadClick(lead)}
               onDragStart={onDragStart}
+              onNurturingToggle={onNurturingToggle}
             />
           ))
         )}
