@@ -446,6 +446,28 @@ const AdminLeads = () => {
             <Download className="w-3.5 h-3.5" />
             Exportar CSV
           </Button>
+          <Button 
+            onClick={async () => {
+              toast({ title: "Disparando nutrição...", description: "Aguarde o processamento" });
+              try {
+                const response = await supabase.functions.invoke('send-nurturing-email');
+                if (response.error) throw response.error;
+                toast({ 
+                  title: "Nutrição disparada!", 
+                  description: `${response.data?.emailsSent || 0} e-mails enviados`
+                });
+                fetchLeads();
+              } catch (err) {
+                console.error("Erro ao disparar nutrição:", err);
+                toast({ title: "Erro ao disparar nutrição", variant: "destructive" });
+              }
+            }}
+            variant="outline" 
+            className="h-8 text-sm gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600"
+          >
+            <Send className="w-3.5 h-3.5" />
+            Disparar Nutrição
+          </Button>
           <input
             type="file"
             ref={fileInputRef}
