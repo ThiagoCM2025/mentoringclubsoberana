@@ -8,6 +8,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { useNurturingSequences } from "@/hooks/useNurturingSequences";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { CampaignSelector } from "./CampaignSelector";
 
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
 
@@ -117,11 +118,15 @@ export function LeadCard({ lead, onClick, onDragStart, onNurturingToggle }: Lead
 
         {/* Nurturing Status - Enhanced */}
         <div className="mb-2 p-2 bg-muted/50 rounded-md space-y-1.5">
-          {/* Campaign Name */}
+          {/* Campaign Selector */}
           <div className="flex items-center justify-between">
-            <span className={cn("text-[10px] font-semibold px-1.5 py-0.5 rounded", campaign.color)}>
-              {campaign.icon} {campaign.name}
-            </span>
+            <CampaignSelector
+              leadId={lead.id}
+              currentSource={lead.source}
+              currentStep={nurturingStep}
+              onCampaignChange={onNurturingToggle || (() => {})}
+              variant="badge"
+            />
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
