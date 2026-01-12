@@ -47,18 +47,36 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp}"],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB limit
-        // Ensure all navigation requests fallback to index.html for SPA routing
         navigateFallback: '/index.html',
         navigateFallbackAllowlist: [/^(?!\/(api|_)).*$/],
-        // Exclude PDFs and static assets from Service Worker navigation handling
         navigateFallbackDenylist: [/\.pdf$/, /^\/assets\//],
-        // Force immediate activation of new service worker
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
-        // Cache versioning to force invalidation on major updates
-        cacheId: 'soberana-v2',
+        cacheId: 'soberana-v3',
         runtimeCaching: [
+          {
+            urlPattern: /\/$/,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "html-cache",
+              expiration: {
+                maxAgeSeconds: 60 * 60,
+              },
+              networkTimeoutSeconds: 3,
+            },
+          },
+          {
+            urlPattern: /\.(js|css)$/,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "static-resources",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24,
+              },
+            },
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "CacheFirst",

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,11 +14,57 @@ import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
 
 const queryClient = new QueryClient();
 
+// Version for cache busting - increment on each significant deploy
+const APP_VERSION = '2026.01.12.1';
+
+const CacheManager = () => {
+  useEffect(() => {
+    const storedVersion = localStorage.getItem('soberana_app_version');
+    
+    if (storedVersion && storedVersion !== APP_VERSION) {
+      console.log('Nova versão detectada, limpando cache antigo...');
+      
+      // Clear all caches
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => {
+            console.log('Deletando cache:', name);
+            caches.delete(name);
+          });
+        });
+      }
+      
+      // Unregister old service workers
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          registrations.forEach(reg => {
+            console.log('Unregistering SW:', reg.scope);
+            reg.unregister();
+          });
+        });
+      }
+      
+      // Update stored version
+      localStorage.setItem('soberana_app_version', APP_VERSION);
+      
+      // Force reload after cleanup
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    } else if (!storedVersion) {
+      localStorage.setItem('soberana_app_version', APP_VERSION);
+    }
+  }, []);
+
+  return null;
+};
+
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
+          <CacheManager />
           <Toaster />
           <Sonner />
           <BrowserRouter>
