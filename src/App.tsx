@@ -15,7 +15,7 @@ import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
 const queryClient = new QueryClient();
 
 // Version for cache busting - increment on each significant deploy
-const APP_VERSION = '2026.01.12.1';
+const APP_VERSION = '2026.01.12.2';
 
 const CacheManager = () => {
   useEffect(() => {
