@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download, Columns, TableIcon, TrendingUp, FileText, History } from "lucide-react";
+import { Search, Users, Flame, Thermometer, ThermometerSnowflake, Eye, Trash2, Mail, Zap, Clock, MessageCircle, Plus, Upload, Download, Columns, TableIcon, TrendingUp, FileText, History, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -29,6 +29,7 @@ import { LeadBehaviorTab } from "@/components/admin/leads/LeadBehaviorTab";
 import { LeadNurturingTab } from "@/components/admin/leads/LeadNurturingTab";
 import { LeadTemplatesTab } from "@/components/admin/leads/LeadTemplatesTab";
 import { LeadHistoryTab } from "@/components/admin/leads/LeadHistoryTab";
+import * as XLSX from "xlsx";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
@@ -100,6 +101,7 @@ const AdminLeads = () => {
   const [viewMode, setViewMode] = useState<"pipeline" | "table">("pipeline");
   const [detailTab, setDetailTab] = useState<"info" | "behavior">("info");
   const [mainTab, setMainTab] = useState<"crm" | "automacao" | "templates" | "historico">("crm");
+  const [importing, setImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
@@ -130,41 +132,139 @@ const AdminLeads = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const text = e.target?.result as string;
-      const lines = text.split("\n").slice(1);
-      let imported = 0;
-      let errors = 0;
+    setImporting(true);
+    const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
 
-      for (const line of lines) {
-        if (!line.trim()) continue;
-        const parts = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
-        const cleanParts = parts.map(p => p.replace(/^"|"$/g, "").trim());
+    try {
+      if (isExcel) {
+        // Process Excel file
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data);
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as string[][];
         
-        const [full_name, email, phone, source] = cleanParts;
-        
-        if (full_name && email) {
-          const { error } = await supabase.from("leads").insert({
-            full_name,
-            email,
-            phone: phone || null,
-            source: source || "importação",
-            status: "new" as LeadStatus,
-            temperature: "cold" as LeadTemperature,
-          });
-          if (error) errors++;
-          else imported++;
+        if (rows.length < 2) {
+          toast({ title: "Planilha vazia", variant: "destructive" });
+          setImporting(false);
+          return;
         }
-      }
 
-      toast({
-        title: "Importação concluída",
-        description: `${imported} leads importados, ${errors} erros`,
-      });
-      fetchLeads();
-    };
-    reader.readAsText(file);
+        // Detect columns by header name
+        const headers = rows[0].map(h => String(h || "").toLowerCase());
+        const nameCol = headers.findIndex(h => h.includes("nome"));
+        const emailCol = headers.findIndex(h => h.includes("mail") || h.includes("e-mail"));
+        const phoneCol = headers.findIndex(h => h.includes("whatsapp") || h.includes("telefone") || h.includes("celular"));
+        
+        if (nameCol === -1 || emailCol === -1) {
+          toast({ 
+            title: "Colunas não encontradas", 
+            description: "A planilha precisa ter colunas com 'nome' e 'email' no cabeçalho",
+            variant: "destructive" 
+          });
+          setImporting(false);
+          return;
+        }
+
+        let imported = 0;
+        let duplicates = 0;
+        let errors = 0;
+        let noEmail = 0;
+
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+          if (!row || row.length === 0) continue;
+
+          const full_name = String(row[nameCol] || "").trim();
+          const email = String(row[emailCol] || "").trim().toLowerCase();
+          let phone = phoneCol !== -1 ? String(row[phoneCol] || "").replace(/['"]/g, "").trim() : null;
+          
+          // Normalize phone: keep only numbers
+          if (phone) {
+            phone = phone.replace(/\D/g, "");
+            if (phone.length < 10) phone = null;
+          }
+
+          // Skip if no email
+          if (!email || !email.includes("@")) {
+            if (full_name) noEmail++;
+            continue;
+          }
+
+          if (full_name) {
+            // Use upsert RPC to avoid duplicates
+            const { data, error } = await supabase.rpc('upsert_lead_and_return_id', {
+              p_full_name: full_name,
+              p_email: email,
+              p_phone: phone,
+              p_source: 'importação_excel'
+            });
+            
+            if (error) {
+              console.error("Import error:", error);
+              errors++;
+            } else {
+              imported++;
+            }
+          }
+        }
+
+        const messages = [];
+        if (imported > 0) messages.push(`${imported} importados`);
+        if (noEmail > 0) messages.push(`${noEmail} sem e-mail`);
+        if (errors > 0) messages.push(`${errors} erros`);
+
+        toast({
+          title: "Importação concluída",
+          description: messages.join(", ") || "Nenhum lead processado",
+        });
+        fetchLeads();
+      } else {
+        // Process CSV file (original logic)
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const text = e.target?.result as string;
+          const lines = text.split("\n").slice(1);
+          let imported = 0;
+          let errors = 0;
+
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            const parts = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
+            const cleanParts = parts.map(p => p.replace(/^"|"$/g, "").trim());
+            
+            const [full_name, email, phone, source] = cleanParts;
+            
+            if (full_name && email) {
+              const { error } = await supabase.from("leads").insert({
+                full_name,
+                email,
+                phone: phone || null,
+                source: source || "importação",
+                status: "new" as LeadStatus,
+                temperature: "cold" as LeadTemperature,
+              });
+              if (error) errors++;
+              else imported++;
+            }
+          }
+
+          toast({
+            title: "Importação concluída",
+            description: `${imported} leads importados, ${errors} erros`,
+          });
+          fetchLeads();
+          setImporting(false);
+        };
+        reader.readAsText(file);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return; // Exit early, callback handles setImporting
+      }
+    } catch (error) {
+      console.error("Import error:", error);
+      toast({ title: "Erro na importação", variant: "destructive" });
+    }
+
+    setImporting(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -325,9 +425,18 @@ const AdminLeads = () => {
             <Plus className="w-3.5 h-3.5" />
             Novo Lead
           </Button>
-          <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="h-8 text-sm gap-1.5 bg-card border-border text-foreground hover:bg-muted">
-            <Upload className="w-3.5 h-3.5" />
-            Importar CSV
+          <Button 
+            onClick={() => fileInputRef.current?.click()} 
+            variant="outline" 
+            className="h-8 text-sm gap-1.5 bg-card border-border text-foreground hover:bg-muted"
+            disabled={importing}
+          >
+            {importing ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Upload className="w-3.5 h-3.5" />
+            )}
+            {importing ? "Importando..." : "Importar"}
           </Button>
           <Button onClick={handleExport} variant="outline" className="h-8 text-sm gap-1.5 bg-card border-border text-foreground hover:bg-muted">
             <Download className="w-3.5 h-3.5" />
@@ -336,7 +445,7 @@ const AdminLeads = () => {
           <input
             type="file"
             ref={fileInputRef}
-            accept=".csv"
+            accept=".csv,.xlsx,.xls"
             onChange={handleImport}
             className="hidden"
           />
