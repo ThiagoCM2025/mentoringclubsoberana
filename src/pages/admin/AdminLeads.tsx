@@ -179,7 +179,7 @@ const AdminLeads = () => {
           if (!row || row.length === 0) continue;
 
           const full_name = String(row[nameCol] || "").trim();
-          const email = String(row[emailCol] || "").trim().toLowerCase();
+          const rawEmail = String(row[emailCol] || "").trim().toLowerCase();
           let phone = phoneCol !== -1 ? String(row[phoneCol] || "").replace(/['"]/g, "").trim() : null;
           
           // Normalize phone: keep only numbers
@@ -188,11 +188,20 @@ const AdminLeads = () => {
             if (phone.length < 10) phone = null;
           }
 
-          // Skip if no email
-          if (!email || !email.includes("@")) {
-            if (full_name) noEmail++;
+          // Validate email format with regex
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          const looksLikePhone = /^[\+\(\)\d\s\-]+$/.test(rawEmail);
+          
+          // Skip if no valid email or if it looks like a phone number
+          if (!rawEmail || !emailRegex.test(rawEmail) || looksLikePhone) {
+            if (full_name) {
+              noEmail++;
+              console.log(`Lead "${full_name}": e-mail inválido ou telefone detectado: "${rawEmail}"`);
+            }
             continue;
           }
+          
+          const email = rawEmail;
 
           if (full_name) {
             // Use upsert RPC to avoid duplicates
@@ -214,7 +223,7 @@ const AdminLeads = () => {
 
         const messages = [];
         if (imported > 0) messages.push(`${imported} importados`);
-        if (noEmail > 0) messages.push(`${noEmail} sem e-mail`);
+        if (noEmail > 0) messages.push(`${noEmail} ignorados (e-mail inválido)`);
         if (errors > 0) messages.push(`${errors} erros`);
 
         toast({
