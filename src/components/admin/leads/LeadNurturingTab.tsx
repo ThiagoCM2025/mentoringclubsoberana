@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format, formatDistanceToNow, addHours } from "date-fns";
@@ -23,7 +24,9 @@ import {
   Users,
   TrendingUp,
   Calendar,
-  Send
+  Send,
+  Target,
+  Layers
 } from "lucide-react";
 
 interface NurturingSequence {
@@ -34,6 +37,7 @@ interface NurturingSequence {
   email_subject: string;
   email_body: string;
   is_active: boolean;
+  source_filter: string | null;
 }
 
 interface NurturingExecution {
@@ -67,6 +71,32 @@ interface UpcomingSend {
   estimated_send: Date;
 }
 
+interface CampaignGroup {
+  source_filter: string | null;
+  label: string;
+  description: string;
+  sequences: NurturingSequence[];
+  leadCount: number;
+}
+
+const CAMPAIGN_CONFIG: Record<string, { label: string; description: string; icon: string }> = {
+  'default': { 
+    label: 'Sequência Padrão', 
+    description: 'Leads do site (ebooks, popup, formulários)',
+    icon: '📧'
+  },
+  'importação_excel': { 
+    label: 'Convite Jornada', 
+    description: 'Leads importados de planilha Excel',
+    icon: '📊'
+  },
+  'jornada_imobiliaria_2026': { 
+    label: 'Jornada Imobiliária', 
+    description: 'Leads cadastrados na Jornada 2026',
+    icon: '🏠'
+  },
+};
+
 export const LeadNurturingTab = () => {
   const { toast } = useToast();
   const [sequences, setSequences] = useState<NurturingSequence[]>([]);
@@ -80,6 +110,8 @@ export const LeadNurturingTab = () => {
   const [stuckLeads, setStuckLeads] = useState<StuckLead[]>([]);
   const [upcomingSends, setUpcomingSends] = useState<UpcomingSend[]>([]);
   const [lastExecutions, setLastExecutions] = useState<NurturingExecution[]>([]);
+  const [campaignGroups, setCampaignGroups] = useState<CampaignGroup[]>([]);
+  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
 
   useEffect(() => {
     fetchSequences();
@@ -94,10 +126,15 @@ export const LeadNurturingTab = () => {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
+  useEffect(() => {
+    groupSequencesByCampaign();
+  }, [sequences]);
+
   const fetchSequences = async () => {
     const { data, error } = await supabase
       .from("nurturing_sequences")
       .select("*")
+      .order("source_filter", { nullsFirst: true })
       .order("step_number");
 
     if (data) setSequences(data);
@@ -105,14 +142,74 @@ export const LeadNurturingTab = () => {
     setLoading(false);
   };
 
+  const groupSequencesByCampaign = async () => {
+    // Group sequences by source_filter
+    const groups: Map<string, NurturingSequence[]> = new Map();
+    
+    sequences.forEach(seq => {
+      const key = seq.source_filter || 'default';
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key)!.push(seq);
+    });
+
+    // Fetch lead counts per source
+    const { data: leads } = await supabase
+      .from("leads")
+      .select("source, nurturing_active");
+
+    const leadCounts: Map<string, number> = new Map();
+    leads?.forEach(lead => {
+      if (lead.nurturing_active) {
+        const source = lead.source || 'default';
+        leadCounts.set(source, (leadCounts.get(source) || 0) + 1);
+      }
+    });
+
+    // Also count leads without a specific source as 'default'
+    const defaultCount = leads?.filter(l => 
+      l.nurturing_active && 
+      !l.source || 
+      !['importação_excel', 'jornada_imobiliaria_2026'].includes(l.source || '')
+    ).length || 0;
+
+    const campaignGroupsArray: CampaignGroup[] = [];
+
+    groups.forEach((seqs, key) => {
+      const config = CAMPAIGN_CONFIG[key] || { 
+        label: key, 
+        description: `Campanha: ${key}`,
+        icon: '📌'
+      };
+      
+      campaignGroupsArray.push({
+        source_filter: key === 'default' ? null : key,
+        label: config.label,
+        description: config.description,
+        sequences: seqs.sort((a, b) => a.step_number - b.step_number),
+        leadCount: key === 'default' ? defaultCount : (leadCounts.get(key) || 0)
+      });
+    });
+
+    // Sort: default first, then by lead count
+    campaignGroupsArray.sort((a, b) => {
+      if (a.source_filter === null) return -1;
+      if (b.source_filter === null) return 1;
+      return b.leadCount - a.leadCount;
+    });
+
+    setCampaignGroups(campaignGroupsArray);
+  };
+
   const fetchStats = async () => {
     const { data: leads } = await supabase
       .from("leads")
-      .select("id, full_name, email, nurturing_active, nurturing_step, last_contact_at");
+      .select("id, full_name, email, source, nurturing_active, nurturing_step, last_contact_at");
 
     const { data: seqs } = await supabase
       .from("nurturing_sequences")
-      .select("step_number, delay_hours")
+      .select("step_number, delay_hours, source_filter")
       .eq("is_active", true)
       .order("step_number");
 
@@ -234,7 +331,16 @@ export const LeadNurturingTab = () => {
       "bg-pink-100 text-pink-700 border-pink-200",
       "bg-green-100 text-green-700 border-green-200",
     ];
-    return colors[step - 1] || colors[0];
+    // For campaigns with steps 100+, 200+, etc, normalize
+    const normalizedStep = step > 100 ? (step % 100) || 5 : step;
+    return colors[(normalizedStep - 1) % colors.length] || colors[0];
+  };
+
+  const getCampaignColor = (sourceFilter: string | null) => {
+    if (!sourceFilter) return "bg-primary/10 text-primary";
+    if (sourceFilter === 'importação_excel') return "bg-amber-100 text-amber-700";
+    if (sourceFilter === 'jornada_imobiliaria_2026') return "bg-emerald-100 text-emerald-700";
+    return "bg-slate-100 text-slate-700";
   };
 
   if (loading) {
@@ -306,6 +412,37 @@ export const LeadNurturingTab = () => {
         </Card>
       </div>
 
+      {/* Campaign Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {campaignGroups.map((group) => (
+          <Card 
+            key={group.source_filter || 'default'} 
+            className={`cursor-pointer transition-all hover:shadow-md ${
+              selectedCampaign === (group.source_filter || 'default') ? 'ring-2 ring-primary' : ''
+            }`}
+            onClick={() => setSelectedCampaign(group.source_filter || 'default')}
+          >
+            <CardContent className="pt-4 pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className={`p-2 rounded-lg ${getCampaignColor(group.source_filter)}`}>
+                    <Target className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">{group.label}</p>
+                    <p className="text-xs text-muted-foreground">{group.sequences.length} etapas</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-lg font-bold">{group.leadCount}</p>
+                  <p className="text-xs text-muted-foreground">leads</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
       {/* Funnel + Stuck + Upcoming */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card>
@@ -353,7 +490,7 @@ export const LeadNurturingTab = () => {
                   <div key={lead.id} className="flex items-center justify-between text-sm p-2 bg-muted/50 rounded">
                     <div className="truncate flex-1">
                       <p className="font-medium truncate">{lead.full_name}</p>
-                      <p className="text-xs text-muted-foreground">Etapa {lead.nurturing_step}/5</p>
+                      <p className="text-xs text-muted-foreground">Etapa {lead.nurturing_step}</p>
                     </div>
                     <Badge variant="outline" className="text-xs text-yellow-600 border-yellow-300">
                       {lead.days_stuck}d
@@ -423,134 +560,169 @@ export const LeadNurturingTab = () => {
         </Card>
       )}
 
-      {/* Sequences */}
+      {/* Sequences by Campaign */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="w-5 h-5" />
-            Sequência de Nurturing
-          </CardTitle>
-          <CardDescription>
-            Configure a sequência automática de emails. Use {"{{nome}}"} para inserir o nome do lead.
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Layers className="w-5 h-5" />
+                Campanhas de Nurturing
+              </CardTitle>
+              <CardDescription>
+                Cada campanha envia e-mails específicos para leads de acordo com sua origem
+              </CardDescription>
+            </div>
+            <Badge variant="outline" className="text-xs">
+              {campaignGroups.length} campanhas
+            </Badge>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {sequences.map((seq) => (
-            <div 
-              key={seq.id} 
-              className={`p-4 rounded-lg border transition-all ${seq.is_active ? "bg-card" : "bg-muted/50 opacity-60"}`}
-            >
-              <div className="flex items-start gap-4">
-                <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${getStepColor(seq.step_number)}`}>
-                  {seq.step_number}
+        <CardContent className="space-y-6">
+          {campaignGroups
+            .filter(group => selectedCampaign === 'all' || (group.source_filter || 'default') === selectedCampaign)
+            .map((group) => (
+            <div key={group.source_filter || 'default'} className="space-y-4">
+              {/* Campaign Header */}
+              <div className={`p-3 rounded-lg ${getCampaignColor(group.source_filter)} flex items-center justify-between`}>
+                <div className="flex items-center gap-2">
+                  <Target className="w-5 h-5" />
+                  <div>
+                    <h3 className="font-semibold">{group.label}</h3>
+                    <p className="text-xs opacity-80">{group.description}</p>
+                  </div>
                 </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-xs">
+                    {group.leadCount} leads ativos
+                  </Badge>
+                  <Badge variant="secondary" className="text-xs">
+                    {group.sequences.length} etapas
+                  </Badge>
+                </div>
+              </div>
 
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-semibold">{seq.name}</h4>
-                      <Badge variant="outline" className="text-xs">
-                        <Clock className="w-3 h-3 mr-1" />
-                        {seq.delay_hours}h
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => testTemplate(seq)}
-                        disabled={testing === seq.id}
-                        className="h-7 text-xs"
-                      >
-                        {testing === seq.id ? (
-                          <RefreshCw className="w-3 h-3 animate-spin" />
+              {/* Campaign Sequences */}
+              <div className="space-y-3 pl-4 border-l-2 border-muted">
+                {group.sequences.map((seq) => (
+                  <div 
+                    key={seq.id} 
+                    className={`p-4 rounded-lg border transition-all ${seq.is_active ? "bg-card" : "bg-muted/50 opacity-60"}`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${getStepColor(seq.step_number)}`}>
+                        {seq.step_number > 100 ? seq.step_number % 100 || seq.step_number : seq.step_number}
+                      </div>
+
+                      <div className="flex-1 space-y-3">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-semibold">{seq.name}</h4>
+                            <Badge variant="outline" className="text-xs">
+                              <Clock className="w-3 h-3 mr-1" />
+                              {seq.delay_hours}h
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => testTemplate(seq)}
+                              disabled={testing === seq.id}
+                              className="h-7 text-xs"
+                            >
+                              {testing === seq.id ? (
+                                <RefreshCw className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <>
+                                  <Send className="w-3 h-3 mr-1" />
+                                  Testar
+                                </>
+                              )}
+                            </Button>
+                            <div className="flex items-center gap-2">
+                              <Label htmlFor={`active-${seq.id}`} className="text-sm text-muted-foreground">
+                                Ativo
+                              </Label>
+                              <Switch
+                                id={`active-${seq.id}`}
+                                checked={seq.is_active}
+                                onCheckedChange={(checked) => updateSequence(seq.id, { is_active: checked })}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {editingSequence?.id === seq.id ? (
+                          <div className="space-y-3 pt-2">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <Label>Nome da etapa</Label>
+                                <Input
+                                  value={editingSequence.name}
+                                  onChange={(e) => setEditingSequence({ ...editingSequence, name: e.target.value })}
+                                />
+                              </div>
+                              <div>
+                                <Label>Delay (horas)</Label>
+                                <Input
+                                  type="number"
+                                  value={editingSequence.delay_hours}
+                                  onChange={(e) => setEditingSequence({ ...editingSequence, delay_hours: parseInt(e.target.value) })}
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <Label>Assunto do email</Label>
+                              <Input
+                                value={editingSequence.email_subject}
+                                onChange={(e) => setEditingSequence({ ...editingSequence, email_subject: e.target.value })}
+                              />
+                            </div>
+                            <div>
+                              <Label>Corpo do email</Label>
+                              <Textarea
+                                value={editingSequence.email_body}
+                                onChange={(e) => setEditingSequence({ ...editingSequence, email_body: e.target.value })}
+                                rows={5}
+                              />
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  updateSequence(seq.id, {
+                                    name: editingSequence.name,
+                                    delay_hours: editingSequence.delay_hours,
+                                    email_subject: editingSequence.email_subject,
+                                    email_body: editingSequence.email_body,
+                                  });
+                                  setEditingSequence(null);
+                                }}
+                                disabled={saving === seq.id}
+                              >
+                                <Save className="w-4 h-4 mr-1" />
+                                {saving === seq.id ? "Salvando..." : "Salvar"}
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => setEditingSequence(null)}>
+                                Cancelar
+                              </Button>
+                            </div>
+                          </div>
                         ) : (
-                          <>
-                            <Send className="w-3 h-3 mr-1" />
-                            Testar
-                          </>
+                          <div 
+                            className="cursor-pointer hover:bg-muted/50 p-2 rounded-md -mx-2 transition-colors"
+                            onClick={() => setEditingSequence(seq)}
+                          >
+                            <p className="font-medium text-sm">{seq.email_subject}</p>
+                            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{seq.email_body}</p>
+                            <p className="text-xs text-primary mt-2">Clique para editar</p>
+                          </div>
                         )}
-                      </Button>
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor={`active-${seq.id}`} className="text-sm text-muted-foreground">
-                          Ativo
-                        </Label>
-                        <Switch
-                          id={`active-${seq.id}`}
-                          checked={seq.is_active}
-                          onCheckedChange={(checked) => updateSequence(seq.id, { is_active: checked })}
-                        />
                       </div>
                     </div>
                   </div>
-
-                  {editingSequence?.id === seq.id ? (
-                    <div className="space-y-3 pt-2">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label>Nome da etapa</Label>
-                          <Input
-                            value={editingSequence.name}
-                            onChange={(e) => setEditingSequence({ ...editingSequence, name: e.target.value })}
-                          />
-                        </div>
-                        <div>
-                          <Label>Delay (horas)</Label>
-                          <Input
-                            type="number"
-                            value={editingSequence.delay_hours}
-                            onChange={(e) => setEditingSequence({ ...editingSequence, delay_hours: parseInt(e.target.value) })}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <Label>Assunto do email</Label>
-                        <Input
-                          value={editingSequence.email_subject}
-                          onChange={(e) => setEditingSequence({ ...editingSequence, email_subject: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <Label>Corpo do email</Label>
-                        <Textarea
-                          value={editingSequence.email_body}
-                          onChange={(e) => setEditingSequence({ ...editingSequence, email_body: e.target.value })}
-                          rows={5}
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          onClick={() => {
-                            updateSequence(seq.id, {
-                              name: editingSequence.name,
-                              delay_hours: editingSequence.delay_hours,
-                              email_subject: editingSequence.email_subject,
-                              email_body: editingSequence.email_body,
-                            });
-                            setEditingSequence(null);
-                          }}
-                          disabled={saving === seq.id}
-                        >
-                          <Save className="w-4 h-4 mr-1" />
-                          {saving === seq.id ? "Salvando..." : "Salvar"}
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => setEditingSequence(null)}>
-                          Cancelar
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div 
-                      className="cursor-pointer hover:bg-muted/50 p-2 rounded-md -mx-2 transition-colors"
-                      onClick={() => setEditingSequence(seq)}
-                    >
-                      <p className="font-medium text-sm">{seq.email_subject}</p>
-                      <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{seq.email_body}</p>
-                      <p className="text-xs text-primary mt-2">Clique para editar</p>
-                    </div>
-                  )}
-                </div>
+                ))}
               </div>
             </div>
           ))}
@@ -563,13 +735,13 @@ export const LeadNurturingTab = () => {
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
             <div className="text-sm text-muted-foreground">
-              <p className="font-medium mb-1">Como funciona o nurturing automático:</p>
+              <p className="font-medium mb-1">Como funciona o nurturing segmentado:</p>
               <ul className="list-disc list-inside space-y-1">
-                <li>Novos leads são automaticamente ativados no nurturing</li>
-                <li>Cada etapa é enviada após o delay configurado desde o último contato</li>
-                <li>O cron job executa a cada hora automaticamente</li>
-                <li>Use o botão "Executar" para processar manualmente</li>
-                <li>Use "Testar" para enviar um e-mail de teste para você</li>
+                <li>Cada lead recebe e-mails da campanha correspondente à sua <strong>origem (source)</strong></li>
+                <li>Leads importados via Excel recebem a sequência <strong>Convite Jornada</strong></li>
+                <li>Leads cadastrados na Jornada recebem a sequência <strong>Jornada Imobiliária</strong></li>
+                <li>Demais leads recebem a <strong>Sequência Padrão</strong></li>
+                <li>Use o botão "Executar" para processar manualmente ou aguarde o cron automático</li>
               </ul>
             </div>
           </div>
