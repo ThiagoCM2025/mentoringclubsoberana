@@ -321,23 +321,30 @@ const handler = async (req: Request): Promise<Response> => {
     const now = getBrazilNow();
 
     for (const lead of leads || []) {
-      const nextStep = (lead.nurturing_step || 0) + 1;
+      const currentStep = lead.nurturing_step || 0;
       
-      // Find the appropriate sequence for this lead
-      const sequence = findSequenceForLead(lead as Lead, sequences as NurturingSequence[], nextStep);
+      // Validate email format before attempting to send
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!lead.email || !emailRegex.test(lead.email)) {
+        console.log(`Skipping lead ${lead.id}: invalid email "${lead.email}"`);
+        continue;
+      }
+      
+      // Find the appropriate sequence for this lead (based on current step)
+      const sequence = findSequenceForLead(lead as Lead, sequences as NurturingSequence[], currentStep);
 
       if (!sequence) {
         // Check if lead has completed their sequence
         const maxStep = getMaxStepForLead(lead as Lead, sequences as NurturingSequence[]);
-        if ((lead.nurturing_step || 0) >= maxStep) {
-          console.log(`Lead ${lead.email} has completed their nurturing sequence (step ${lead.nurturing_step}/${maxStep})`);
+        if (currentStep >= maxStep) {
+          console.log(`Lead ${lead.email} has completed their nurturing sequence (step ${currentStep}/${maxStep})`);
           // Mark as inactive since they completed
           await supabase
             .from("leads")
             .update({ nurturing_active: false })
             .eq("id", lead.id);
         } else {
-          console.log(`No sequence found for lead ${lead.email} at step ${nextStep}`);
+          console.log(`No sequence found for lead ${lead.email} at step ${currentStep}`);
         }
         continue;
       }
@@ -382,13 +389,13 @@ const handler = async (req: Request): Promise<Response> => {
         // Get max step for this lead's sequence
         const maxStep = getMaxStepForLead(lead as Lead, sequences as NurturingSequence[]);
 
-        // Update lead nurturing step
+        // Update lead nurturing step with the ACTUAL sequence step number
         await supabase
           .from("leads")
           .update({
-            nurturing_step: nextStep,
+            nurturing_step: sequence.step_number, // Use actual step number (e.g., 201, 202)
             last_contact_at: now.toISOString(),
-            nurturing_active: nextStep < maxStep,
+            nurturing_active: sequence.step_number < maxStep,
           })
           .eq("id", lead.id);
 
@@ -403,7 +410,7 @@ const handler = async (req: Request): Promise<Response> => {
           message: personalizedBody,
           status: "sent",
           metadata: { 
-            sequence_step: nextStep, 
+            sequence_step: sequence.step_number, 
             sequence_name: sequence.name,
             source_filter: sequence.source_filter || 'default'
           },
