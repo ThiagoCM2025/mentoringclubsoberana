@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Gift, Crown, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 import isotipoGold from "@/assets/brand/isotipo-s-gold.png";
 
 const containerVariants = {
@@ -21,8 +22,16 @@ export const ExperienceExitPopup = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [hasShown, setHasShown] = useState(false);
   const [countdown, setCountdown] = useState(300); // 5 minutes in seconds
+  
+  const isMobile = useIsMobile();
+  const lastScrollY = useRef(0);
+  const scrollUpDistance = useRef(0);
+  const isActiveRef = useRef(false);
 
+  // Desktop: Mouse leave detection
   useEffect(() => {
+    if (isMobile) return;
+    
     const handleMouseLeave = (e: MouseEvent) => {
       if (e.clientY <= 0 && !hasShown) {
         const sessionShown = sessionStorage.getItem("experience_exit_shown");
@@ -38,7 +47,52 @@ export const ExperienceExitPopup = () => {
 
     document.addEventListener("mouseleave", handleMouseLeave);
     return () => document.removeEventListener("mouseleave", handleMouseLeave);
-  }, [hasShown]);
+  }, [hasShown, isMobile]);
+
+  // Mobile: Scroll-up detection (indicates intention to leave)
+  useEffect(() => {
+    if (!isMobile) return;
+    
+    const sessionShown = sessionStorage.getItem("experience_exit_shown");
+    if (sessionShown || hasShown) return;
+
+    const handleScroll = () => {
+      if (!isActiveRef.current || hasShown) return;
+      
+      const currentScrollY = window.scrollY;
+      const pageHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercentage = (currentScrollY / pageHeight) * 100;
+      
+      // Detect scroll up
+      if (currentScrollY < lastScrollY.current) {
+        scrollUpDistance.current += lastScrollY.current - currentScrollY;
+        
+        // Trigger after scrolling 30%+ of page AND scrolling up 100px+
+        if (scrollUpDistance.current > 100 && scrollPercentage > 30) {
+          setShowPopup(true);
+          setHasShown(true);
+          sessionStorage.setItem("experience_exit_shown", "true");
+          window.removeEventListener("scroll", handleScroll);
+        }
+      } else {
+        scrollUpDistance.current = 0;
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    // Activate after 8 second delay to avoid premature triggers
+    const timer = setTimeout(() => {
+      lastScrollY.current = window.scrollY;
+      isActiveRef.current = true;
+      window.addEventListener("scroll", handleScroll, { passive: true });
+    }, 8000);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [hasShown, isMobile]);
 
   useEffect(() => {
     if (showPopup && countdown > 0) {
