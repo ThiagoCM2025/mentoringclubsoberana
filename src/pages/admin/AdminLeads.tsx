@@ -29,6 +29,7 @@ import { LeadBehaviorTab } from "@/components/admin/leads/LeadBehaviorTab";
 import { LeadNurturingTab } from "@/components/admin/leads/LeadNurturingTab";
 import { LeadTemplatesTab } from "@/components/admin/leads/LeadTemplatesTab";
 import { LeadHistoryTab } from "@/components/admin/leads/LeadHistoryTab";
+import { CampaignSelector } from "@/components/admin/leads/CampaignSelector";
 import { useNurturingSequences } from "@/hooks/useNurturingSequences";
 import { cn } from "@/lib/utils";
 import * as XLSX from "xlsx";
@@ -581,9 +582,13 @@ const AdminLeads = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col gap-1">
-                            <span className={cn("text-[10px] font-semibold px-1.5 py-0.5 rounded w-fit", campaign.color)}>
-                              {campaign.icon} {campaign.name}
-                            </span>
+                            <CampaignSelector
+                              leadId={lead.id}
+                              currentSource={lead.source}
+                              currentStep={lead.nurturing_step || 0}
+                              onCampaignChange={fetchLeads}
+                              variant="badge"
+                            />
                             <span className="text-xs text-foreground">
                               Step {lead.nurturing_step || 0}/{sequenceInfo.maxStep}
                               {(lead.nurturing_step || 0) > 0 && (
@@ -723,9 +728,18 @@ const AdminLeads = () => {
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <span className="text-sm text-muted-foreground">Campanha</span>
-                            <span className={cn("text-xs font-semibold px-2 py-1 rounded", campaign.color)}>
-                              {campaign.icon} {campaign.name}
-                            </span>
+                            <CampaignSelector
+                              leadId={selectedLead.id}
+                              currentSource={selectedLead.source}
+                              currentStep={selectedLead.nurturing_step || 0}
+                              onCampaignChange={() => {
+                                fetchLeads();
+                                // Refresh selected lead
+                                const updatedLead = leads.find(l => l.id === selectedLead.id);
+                                if (updatedLead) setSelectedLead(updatedLead);
+                              }}
+                              variant="badge"
+                            />
                           </div>
                           
                           <div className="flex items-center justify-between">
