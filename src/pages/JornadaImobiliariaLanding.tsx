@@ -93,15 +93,15 @@ const JornadaImobiliariaLanding = () => {
         {/* Pattern overlay */}
         <div className="absolute inset-0 z-[2] opacity-[0.04] md:opacity-[0.06]" style={{ backgroundImage: `url('/assets/brand/pattern-circles-gold.png')`, backgroundSize: '100px md:150px' }} />
 
-        {/* Animated golden particles - hidden on mobile for performance */}
+        {/* Animated golden particles - reduced to 4 for better performance */}
         <div className="absolute inset-0 z-[3] overflow-hidden pointer-events-none hidden md:block">
-          {[...Array(8)].map((_, i) => (
+          {[...Array(4)].map((_, i) => (
             <motion.div
               key={i}
               className="absolute w-1 h-1 bg-secondary/60 rounded-full"
               style={{
-                left: `${15 + i * 10}%`,
-                top: `${20 + (i % 3) * 25}%`,
+                left: `${20 + i * 20}%`,
+                top: `${25 + (i % 2) * 30}%`,
               }}
               animate={{
                 y: [-10, 10, -10],
@@ -153,33 +153,19 @@ const JornadaImobiliariaLanding = () => {
               className="lg:hidden flex justify-center mb-6"
             >
               <div className="relative">
-                {/* Mirror/Reflection effect - blurred copy behind for depth */}
-                <img 
-                  src={heroImage} 
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 w-[85vw] max-w-[300px] h-auto aspect-[3/4] 
-                             sm:w-[75vw] sm:max-w-[340px] 
-                             md:w-[65vw] md:max-w-[400px]
-                             object-cover object-top rounded-2xl opacity-25 
-                             transform scale-[1.08]"
-                  style={{ filter: 'blur(12px) brightness(0.5)' }}
-                />
-                
-                {/* Enhanced golden glow behind - pulsing */}
-                <motion.div 
-                  className="absolute -inset-5 bg-gradient-to-br from-secondary/50 via-secondary/30 to-secondary/50 rounded-3xl blur-xl"
-                  animate={{ opacity: [0.5, 0.8, 0.5] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                />
+                {/* Enhanced golden glow behind - static for performance */}
+                <div className="absolute -inset-5 bg-gradient-to-br from-secondary/50 via-secondary/30 to-secondary/50 rounded-3xl blur-xl opacity-60" />
                 
                 {/* Secondary glow layer for more depth */}
                 <div className="absolute -inset-3 bg-gradient-radial from-secondary/40 to-transparent rounded-2xl blur-md" />
                 
-                {/* Main image with premium frame */}
+                {/* Main image with premium frame - optimized loading */}
                 <img 
                   src={heroImage} 
                   alt="Fabiana Duarte - Mentora em Direito Imobiliário"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                   className="relative w-[85vw] max-w-[300px] h-auto aspect-[3/4] 
                              sm:w-[75vw] sm:max-w-[340px] 
                              md:w-[65vw] md:max-w-[400px]
@@ -187,15 +173,15 @@ const JornadaImobiliariaLanding = () => {
                              shadow-[0_0_60px_rgba(166,144,97,0.4)]"
                 />
                 
-                {/* Floating particles around frame */}
-                {[...Array(8)].map((_, i) => (
+                {/* Floating particles around frame - reduced to 4 for performance */}
+                {[...Array(4)].map((_, i) => (
                   <motion.div
                     key={i}
                     className="absolute w-1.5 h-1.5 bg-secondary/70 rounded-full"
                     style={{
-                      left: i % 2 === 0 ? `${-8 - (i % 3) * 4}px` : 'auto',
-                      right: i % 2 !== 0 ? `${-8 - (i % 3) * 4}px` : 'auto',
-                      top: `${10 + i * 11}%`,
+                      left: i % 2 === 0 ? `${-8 - (i % 2) * 4}px` : 'auto',
+                      right: i % 2 !== 0 ? `${-8 - (i % 2) * 4}px` : 'auto',
+                      top: `${15 + i * 22}%`,
                     }}
                     animate={{ 
                       y: [-6, 6, -6], 
