@@ -11,6 +11,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format, formatDistanceToNow, addHours } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { EmailPreviewModal } from "./EmailPreviewModal";
+import { NewCampaignDialog } from "./NewCampaignDialog";
 import { 
   Zap, 
   Mail, 
@@ -26,7 +28,9 @@ import {
   Calendar,
   Send,
   Target,
-  Layers
+  Layers,
+  Plus,
+  Pencil
 } from "lucide-react";
 
 interface NurturingSequence {
@@ -105,6 +109,8 @@ export const LeadNurturingTab = () => {
   const [testing, setTesting] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [editingSequence, setEditingSequence] = useState<NurturingSequence | null>(null);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [newCampaignDialogOpen, setNewCampaignDialogOpen] = useState(false);
   const [stats, setStats] = useState({ active: 0, completed: 0, total: 0, inactive: 0 });
   const [funnelData, setFunnelData] = useState<LeadFunnelData[]>([]);
   const [stuckLeads, setStuckLeads] = useState<StuckLead[]>([]);
@@ -289,10 +295,25 @@ export const LeadNurturingTab = () => {
     setSaving(null);
     if (error) {
       toast({ title: "Erro ao salvar", variant: "destructive" });
+      throw error;
     } else {
       toast({ title: "Sequência atualizada!" });
       fetchSequences();
     }
+  };
+
+  const handleSaveFromModal = async (updatedSequence: NurturingSequence) => {
+    await updateSequence(updatedSequence.id, {
+      name: updatedSequence.name,
+      delay_hours: updatedSequence.delay_hours,
+      email_subject: updatedSequence.email_subject,
+      email_body: updatedSequence.email_body,
+    });
+  };
+
+  const openEmailEditor = (seq: NurturingSequence) => {
+    setEditingSequence(seq);
+    setPreviewModalOpen(true);
   };
 
   const runNurturing = async () => {
@@ -573,9 +594,20 @@ export const LeadNurturingTab = () => {
                 Cada campanha envia e-mails específicos para leads de acordo com sua origem
               </CardDescription>
             </div>
-            <Badge variant="outline" className="text-xs">
-              {campaignGroups.length} campanhas
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setNewCampaignDialogOpen(true)}
+                className="gap-1"
+              >
+                <Plus className="w-4 h-4" />
+                Nova Campanha
+              </Button>
+              <Badge variant="outline" className="text-xs">
+                {campaignGroups.length} campanhas
+              </Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -711,12 +743,18 @@ export const LeadNurturingTab = () => {
                           </div>
                         ) : (
                           <div 
-                            className="cursor-pointer hover:bg-muted/50 p-2 rounded-md -mx-2 transition-colors"
-                            onClick={() => setEditingSequence(seq)}
+                            className="cursor-pointer hover:bg-muted/50 p-2 rounded-md -mx-2 transition-colors group"
+                            onClick={() => openEmailEditor(seq)}
                           >
-                            <p className="font-medium text-sm">{seq.email_subject}</p>
+                            <div className="flex items-center justify-between">
+                              <p className="font-medium text-sm">{seq.email_subject}</p>
+                              <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
                             <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{seq.email_body}</p>
-                            <p className="text-xs text-primary mt-2">Clique para editar</p>
+                            <p className="text-xs text-primary mt-2 flex items-center gap-1">
+                              <Pencil className="w-3 h-3" />
+                              Abrir editor com preview
+                            </p>
                           </div>
                         )}
                       </div>
@@ -747,6 +785,37 @@ export const LeadNurturingTab = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Email Preview Modal */}
+      <EmailPreviewModal
+        open={previewModalOpen}
+        onOpenChange={(open) => {
+          setPreviewModalOpen(open);
+          if (!open) setEditingSequence(null);
+        }}
+        sequence={editingSequence}
+        onSave={handleSaveFromModal}
+        campaignName={
+          editingSequence
+            ? campaignGroups.find(g => g.source_filter === editingSequence.source_filter)?.label
+            : undefined
+        }
+      />
+
+      {/* New Campaign Dialog */}
+      <NewCampaignDialog
+        open={newCampaignDialogOpen}
+        onOpenChange={setNewCampaignDialogOpen}
+        existingCampaigns={campaignGroups.map(g => ({
+          sourceFilter: g.source_filter,
+          name: g.label,
+          sequences: g.sequences,
+        }))}
+        onCreated={() => {
+          fetchSequences();
+          fetchStats();
+        }}
+      />
     </div>
   );
 };
