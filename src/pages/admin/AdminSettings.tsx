@@ -216,7 +216,7 @@ export default function AdminSettings() {
         </div>
 
         <Tabs defaultValue="admins" className="space-y-4">
-          <TabsList className="bg-muted border border-border">
+          <TabsList className="bg-muted border border-border flex-wrap h-auto gap-1">
             <TabsTrigger value="admins" className="flex items-center gap-1.5 text-sm data-[state=active]:bg-secondary data-[state=active]:text-black">
               <Users className="w-3.5 h-3.5" />
               Administradores
