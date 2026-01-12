@@ -32,6 +32,7 @@ import {
   Plus,
   Pencil
 } from "lucide-react";
+import { CronJobsStatus } from "./CronJobsStatus";
 
 interface NurturingSequence {
   id: string;
@@ -464,8 +465,8 @@ export const LeadNurturingTab = () => {
         ))}
       </div>
 
-      {/* Funnel + Stuck + Upcoming */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      {/* Funnel + Stuck + Upcoming + Cron Status */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
@@ -553,6 +554,9 @@ export const LeadNurturingTab = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Cron Jobs Status */}
+        <CronJobsStatus />
       </div>
 
       {/* Last Executions */}
