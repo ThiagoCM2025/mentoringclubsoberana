@@ -6,6 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+
 const SYSTEM_PROMPT = `Você é um especialista em gamificação e criação de missões para programas de mentoria para advogadas na área imobiliária.
 
 Crie missões práticas e desafiadoras baseadas no conteúdo fornecido.
@@ -69,9 +71,15 @@ ${context ? `Contexto do conteúdo: ${context}` : "Gere uma missão baseada na f
 Retorne APENAS um objeto JSON com a missão, sem texto adicional.`;
     }
 
-    const response = await fetch("https://api.lovable.dev/v1/chat/completions", {
+    if (!LOVABLE_API_KEY) {
+      console.error("LOVABLE_API_KEY not configured");
+      throw new Error("LOVABLE_API_KEY não está configurada");
+    }
+
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
+        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -80,15 +88,21 @@ Retorne APENAS um objeto JSON com a missão, sem texto adicional.`;
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: userPrompt }
         ],
-        temperature: 0.7,
-        max_tokens: 4000
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("AI API error:", errorText);
-      throw new Error(`AI API error: ${response.status}`);
+      console.error("AI API error:", response.status, errorText);
+      
+      if (response.status === 429) {
+        throw new Error("Limite de requisições excedido. Tente novamente em alguns minutos.");
+      }
+      if (response.status === 402) {
+        throw new Error("Créditos insuficientes. Adicione créditos ao workspace.");
+      }
+      
+      throw new Error(`Erro na API de IA: ${response.status}`);
     }
 
     const aiResponse = await response.json();
