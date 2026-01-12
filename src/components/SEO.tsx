@@ -1,5 +1,7 @@
 import { Helmet } from "react-helmet-async";
 
+const BASE_URL = "https://soberanamentoria.com.br";
+
 interface SEOProps {
   title?: string;
   description?: string;
@@ -20,10 +22,10 @@ const SEO = ({
   title = "Soberana Mentoring Club - Transforme sua Carreira Jurídica",
   description = "Programa de mentoria exclusivo para advogadas que desejam construir uma carreira jurídica de sucesso, com autonomia e excelência.",
   keywords = "mentoria jurídica, advogada, carreira jurídica, advocacia feminina, desenvolvimento profissional",
-  image = "/og-image.jpg",
+  image = "/assets/brand/isotipo-gold.png",
   imageWidth = 1200,
   imageHeight = 630,
-  url = "https://soberana.com.br",
+  url = BASE_URL,
   type = "website",
   author = "Fabiana Soberana",
   publishedTime,
@@ -31,21 +33,25 @@ const SEO = ({
   twitterCard = "summary_large_image",
   schema
 }: SEOProps) => {
+  // Garantir URLs absolutas para Open Graph (importante para Instagram/Facebook)
+  const absoluteImageUrl = image.startsWith('http') ? image : `${BASE_URL}${image}`;
+  const absoluteUrl = url.startsWith('http') ? url : `${BASE_URL}${url}`;
+
   const structuredData = schema || {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Soberana Mentoring Club",
     "description": description,
-    "url": url,
-    "logo": `${url}/brand-logo.png`,
+    "url": absoluteUrl,
+    "logo": `${BASE_URL}/assets/brand/isotipo-gold.png`,
     "sameAs": [
-      "https://instagram.com/soberana",
+      "https://instagram.com/soberanamentoria",
       "https://linkedin.com/company/soberana"
     ],
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "customer service",
-      "email": "contato@soberana.com.br"
+      "email": "contato@soberanamentoria.com.br"
     }
   };
 
@@ -60,12 +66,12 @@ const SEO = ({
       <meta name="robots" content="index, follow" />
       <meta name="language" content="pt-BR" />
       
-      {/* Open Graph / Facebook */}
+      {/* Open Graph / Facebook / Instagram - URLs absolutas obrigatórias */}
       <meta property="og:type" content={type} />
-      <meta property="og:url" content={url} />
+      <meta property="og:url" content={absoluteUrl} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={image} />
+      <meta property="og:image" content={absoluteImageUrl} />
       <meta property="og:image:width" content={String(imageWidth)} />
       <meta property="og:image:height" content={String(imageHeight)} />
       <meta property="og:image:alt" content={title} />
@@ -74,10 +80,10 @@ const SEO = ({
       
       {/* Twitter */}
       <meta name="twitter:card" content={twitterCard} />
-      <meta name="twitter:url" content={url} />
+      <meta name="twitter:url" content={absoluteUrl} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image} />
+      <meta name="twitter:image" content={absoluteImageUrl} />
       <meta name="twitter:image:alt" content={title} />
       
       {/* Article specific */}
@@ -85,7 +91,7 @@ const SEO = ({
       {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
       
       {/* Canonical URL */}
-      <link rel="canonical" href={url} />
+      <link rel="canonical" href={absoluteUrl} />
       
       {/* Structured Data */}
       <script type="application/ld+json">

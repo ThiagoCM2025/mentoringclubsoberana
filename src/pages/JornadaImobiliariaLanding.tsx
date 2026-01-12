@@ -38,9 +38,10 @@ const JornadaImobiliariaLanding = () => {
     "endDate": "2026-01-26T21:00:00-03:00",
     "eventStatus": "https://schema.org/EventScheduled",
     "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
-    "location": { "@type": "VirtualLocation", "url": "https://soberana.com.br/jornada-imobiliaria-2026" },
-    "organizer": { "@type": "Organization", "name": "Soberana Mentoring Club" },
+    "location": { "@type": "VirtualLocation", "url": "https://soberanamentoria.com.br/jornada-imobiliaria-2026" },
+    "organizer": { "@type": "Organization", "name": "Soberana Mentoring Club", "url": "https://soberanamentoria.com.br" },
     "performer": { "@type": "Person", "name": "Fabiana Duarte" },
+    "image": "https://soberanamentoria.com.br/assets/brand/isotipo-gold.png",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL", "availability": "https://schema.org/InStock" }
   };
 
@@ -50,7 +51,8 @@ const JornadaImobiliariaLanding = () => {
         title="Jornada Imobiliária 2026 | Janeiro Extraordinário para Advogadas | Soberana"
         description="Participe da série gratuita de 5 lives para advogadas do imobiliário. Aprenda a escalar seu escritório com rotina, captação, IA, precificação e vendas."
         keywords="advocacia imobiliária, jornada advogadas, lives jurídicas, regularização imobiliária, escalar escritório advocacia, curso advogadas 2026, marketing jurídico"
-        url="https://soberana.com.br/jornada-imobiliaria-2026"
+        url="https://soberanamentoria.com.br/jornada-imobiliaria-2026"
+        image="https://soberanamentoria.com.br/assets/brand/isotipo-gold.png"
         type="website"
         schema={eventSchema}
       />
@@ -93,45 +95,28 @@ const JornadaImobiliariaLanding = () => {
         {/* Pattern overlay */}
         <div className="absolute inset-0 z-[2] opacity-[0.04] md:opacity-[0.06]" style={{ backgroundImage: `url('/assets/brand/pattern-circles-gold.png')`, backgroundSize: '100px md:150px' }} />
 
-        {/* Animated golden particles - reduced to 4 for better performance */}
-        <div className="absolute inset-0 z-[3] overflow-hidden pointer-events-none hidden md:block">
+        {/* Golden particles - static for mobile performance */}
+        <div className="absolute inset-0 z-[3] overflow-hidden pointer-events-none hidden lg:block">
           {[...Array(4)].map((_, i) => (
-            <motion.div
+            <div
               key={i}
-              className="absolute w-1 h-1 bg-secondary/60 rounded-full"
+              className="absolute w-1 h-1 bg-secondary/50 rounded-full animate-pulse"
               style={{
                 left: `${20 + i * 20}%`,
                 top: `${25 + (i % 2) * 30}%`,
-              }}
-              animate={{
-                y: [-10, 10, -10],
-                opacity: [0.3, 0.7, 0.3],
-              }}
-              transition={{
-                duration: 3 + i * 0.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: i * 0.3,
+                animationDelay: `${i * 0.5}s`,
+                animationDuration: '3s',
               }}
             />
           ))}
         </div>
 
-        {/* Floating isotipo with animation - desktop only */}
-        <motion.img
+        {/* Isotipo - static positioning, no infinite animation */}
+        <img
           src={isotipoGold}
           alt=""
-          className="absolute right-8 top-1/4 w-32 md:w-56 z-[4] hidden lg:block"
+          className="absolute right-8 top-1/4 w-32 md:w-56 z-[4] hidden lg:block opacity-25"
           style={{ filter: 'drop-shadow(0 0 30px rgba(166, 144, 97, 0.3))' }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={heroInView ? { 
-            opacity: 0.25, 
-            y: [0, -15, 0],
-          } : {}}
-          transition={{ 
-            opacity: { duration: 1, delay: 0.5 },
-            y: { duration: 6, repeat: Infinity, ease: "easeInOut" }
-          }}
         />
 
         {/* Golden glow behind content - smaller on mobile */}
@@ -153,11 +138,8 @@ const JornadaImobiliariaLanding = () => {
               className="lg:hidden flex justify-center mb-6"
             >
               <div className="relative">
-                {/* Enhanced golden glow behind - static for performance */}
-                <div className="absolute -inset-5 bg-gradient-to-br from-secondary/50 via-secondary/30 to-secondary/50 rounded-3xl blur-xl opacity-60" />
-                
-                {/* Secondary glow layer for more depth */}
-                <div className="absolute -inset-3 bg-gradient-radial from-secondary/40 to-transparent rounded-2xl blur-md" />
+                {/* Golden glow behind - static for performance */}
+                <div className="absolute -inset-4 bg-secondary/30 rounded-3xl blur-xl opacity-50" />
                 
                 {/* Main image with premium frame - optimized loading */}
                 <img 
@@ -170,32 +152,10 @@ const JornadaImobiliariaLanding = () => {
                              sm:w-[75vw] sm:max-w-[340px] 
                              md:w-[65vw] md:max-w-[400px]
                              object-cover object-top rounded-2xl border-2 border-secondary/50 
-                             shadow-[0_0_60px_rgba(166,144,97,0.4)]"
+                             shadow-[0_0_40px_rgba(166,144,97,0.3)]"
                 />
                 
-                {/* Floating particles around frame - reduced to 4 for performance */}
-                {[...Array(4)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute w-1.5 h-1.5 bg-secondary/70 rounded-full"
-                    style={{
-                      left: i % 2 === 0 ? `${-8 - (i % 2) * 4}px` : 'auto',
-                      right: i % 2 !== 0 ? `${-8 - (i % 2) * 4}px` : 'auto',
-                      top: `${15 + i * 22}%`,
-                    }}
-                    animate={{ 
-                      y: [-6, 6, -6], 
-                      opacity: [0.3, 0.9, 0.3],
-                      scale: [0.7, 1.3, 0.7]
-                    }}
-                    transition={{ 
-                      duration: 2.5 + i * 0.4, 
-                      repeat: Infinity, 
-                      ease: "easeInOut",
-                      delay: i * 0.2
-                    }}
-                  />
-                ))}
+                {/* Static corner dots instead of animated particles */}
                 
                 {/* Enhanced corner decorations */}
                 <div className="absolute -top-2.5 -left-2.5 w-7 h-7 border-t-2 border-l-2 border-secondary/70 rounded-tl-lg" />
