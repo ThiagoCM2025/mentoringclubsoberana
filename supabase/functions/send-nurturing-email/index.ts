@@ -22,6 +22,7 @@ interface Lead {
   id: string;
   full_name: string;
   email: string;
+  source: string | null;
   nurturing_step: number;
   last_contact_at: string | null;
   nurturing_active: boolean;
@@ -35,6 +36,7 @@ interface NurturingSequence {
   email_subject: string;
   email_body: string;
   is_active: boolean;
+  source_filter: string | null;
 }
 
 const replaceVariables = (text: string, lead: Lead): string => {
@@ -173,6 +175,70 @@ const generateProfessionalTemplate = (recipientName: string, subject: string, co
 </html>`;
 };
 
+/**
+ * Find the correct sequence for a lead based on their source and nurturing step
+ * Priority: source-specific sequence > default sequence (no source_filter)
+ */
+const findSequenceForLead = (
+  lead: Lead, 
+  sequences: NurturingSequence[], 
+  nextStep: number
+): NurturingSequence | null => {
+  const leadSource = lead.source || '';
+  
+  // First, try to find a source-specific sequence
+  const sourceSpecificSequence = sequences.find((s) => 
+    s.source_filter === leadSource && s.step_number === nextStep
+  );
+  
+  if (sourceSpecificSequence) {
+    console.log(`Found source-specific sequence for ${lead.email}: ${sourceSpecificSequence.name} (source: ${leadSource})`);
+    return sourceSpecificSequence;
+  }
+  
+  // Check if this source has ANY sequences defined (to avoid mixing with default)
+  const hasAnySourceSequence = sequences.some((s) => s.source_filter === leadSource);
+  
+  if (hasAnySourceSequence) {
+    // This source has sequences but not for this step - lead has completed their journey
+    console.log(`Lead ${lead.email} (source: ${leadSource}) has no more steps in their sequence`);
+    return null;
+  }
+  
+  // Fall back to default sequence (no source_filter)
+  const defaultSequence = sequences.find((s) => 
+    !s.source_filter && s.step_number === nextStep
+  );
+  
+  if (defaultSequence) {
+    console.log(`Using default sequence for ${lead.email}: ${defaultSequence.name}`);
+  }
+  
+  return defaultSequence || null;
+};
+
+/**
+ * Get the max step for a lead's sequence (source-specific or default)
+ */
+const getMaxStepForLead = (lead: Lead, sequences: NurturingSequence[]): number => {
+  const leadSource = lead.source || '';
+  
+  // Check if this source has specific sequences
+  const sourceSequences = sequences.filter((s) => s.source_filter === leadSource);
+  
+  if (sourceSequences.length > 0) {
+    return Math.max(...sourceSequences.map((s) => s.step_number));
+  }
+  
+  // Fall back to default sequences
+  const defaultSequences = sequences.filter((s) => !s.source_filter);
+  if (defaultSequences.length > 0) {
+    return Math.max(...defaultSequences.map((s) => s.step_number));
+  }
+  
+  return 5; // Fallback
+};
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -195,7 +261,7 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get all active nurturing sequences
+    // Get all active nurturing sequences (including source-specific ones)
     const { data: sequences, error: seqError } = await supabase
       .from("nurturing_sequences")
       .select("*")
@@ -208,13 +274,18 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log(`Found ${sequences?.length || 0} active nurturing sequences`);
+    
+    // Log sequence breakdown
+    const defaultSeqs = sequences?.filter((s: NurturingSequence) => !s.source_filter) || [];
+    const sourceSeqs = sequences?.filter((s: NurturingSequence) => s.source_filter) || [];
+    console.log(`  - Default sequences: ${defaultSeqs.length}`);
+    console.log(`  - Source-specific sequences: ${sourceSeqs.length}`);
 
-    // Get leads with active nurturing that need to be contacted
+    // Get leads with active nurturing - include source for matching
     const { data: leads, error: leadsError } = await supabase
       .from("leads")
-      .select("id, full_name, email, nurturing_step, last_contact_at, nurturing_active")
-      .eq("nurturing_active", true)
-      .lt("nurturing_step", 5);
+      .select("id, full_name, email, source, nurturing_step, last_contact_at, nurturing_active")
+      .eq("nurturing_active", true);
 
     if (leadsError) {
       console.error("Error fetching leads:", leadsError);
@@ -222,15 +293,29 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log(`Found ${leads?.length || 0} leads with active nurturing`);
+    
     // Usar horário de Brasília
     const now = getBrazilNow();
 
     for (const lead of leads || []) {
       const nextStep = (lead.nurturing_step || 0) + 1;
-      const sequence = sequences?.find((s: NurturingSequence) => s.step_number === nextStep);
+      
+      // Find the appropriate sequence for this lead
+      const sequence = findSequenceForLead(lead as Lead, sequences as NurturingSequence[], nextStep);
 
       if (!sequence) {
-        console.log(`No sequence found for step ${nextStep}`);
+        // Check if lead has completed their sequence
+        const maxStep = getMaxStepForLead(lead as Lead, sequences as NurturingSequence[]);
+        if ((lead.nurturing_step || 0) >= maxStep) {
+          console.log(`Lead ${lead.email} has completed their nurturing sequence (step ${lead.nurturing_step}/${maxStep})`);
+          // Mark as inactive since they completed
+          await supabase
+            .from("leads")
+            .update({ nurturing_active: false })
+            .eq("id", lead.id);
+        } else {
+          console.log(`No sequence found for lead ${lead.email} at step ${nextStep}`);
+        }
         continue;
       }
 
@@ -247,12 +332,12 @@ const handler = async (req: Request): Promise<Response> => {
           : 0;
 
       if (hoursElapsed < sequence.delay_hours) {
-        console.log(`Lead ${lead.email}: waiting ${(sequence.delay_hours - hoursElapsed).toFixed(1)} more hours`);
+        console.log(`Lead ${lead.email}: waiting ${(sequence.delay_hours - hoursElapsed).toFixed(1)} more hours for ${sequence.name}`);
         continue;
       }
       
       if (isNewLead) {
-        console.log(`New lead ${lead.email}: sending immediate welcome email`);
+        console.log(`New lead ${lead.email}: sending immediate email from sequence "${sequence.name}"`);
       }
 
       // Prepare personalized email
@@ -269,7 +354,10 @@ const handler = async (req: Request): Promise<Response> => {
           html: htmlContent,
         });
 
-        console.log(`Email sent to ${lead.email}:`, emailResult);
+        console.log(`Email sent to ${lead.email} (sequence: ${sequence.name}):`, emailResult);
+
+        // Get max step for this lead's sequence
+        const maxStep = getMaxStepForLead(lead as Lead, sequences as NurturingSequence[]);
 
         // Update lead nurturing step
         await supabase
@@ -277,7 +365,7 @@ const handler = async (req: Request): Promise<Response> => {
           .update({
             nurturing_step: nextStep,
             last_contact_at: now.toISOString(),
-            nurturing_active: nextStep < 5,
+            nurturing_active: nextStep < maxStep,
           })
           .eq("id", lead.id);
 
@@ -291,7 +379,11 @@ const handler = async (req: Request): Promise<Response> => {
           subject: personalizedSubject,
           message: personalizedBody,
           status: "sent",
-          metadata: { sequence_step: nextStep, sequence_name: sequence.name },
+          metadata: { 
+            sequence_step: nextStep, 
+            sequence_name: sequence.name,
+            source_filter: sequence.source_filter || 'default'
+          },
         });
 
         emailsSent++;
