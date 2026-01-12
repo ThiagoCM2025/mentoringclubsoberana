@@ -182,39 +182,62 @@ const generateProfessionalTemplate = (recipientName: string, subject: string, co
 const findSequenceForLead = (
   lead: Lead, 
   sequences: NurturingSequence[], 
-  nextStep: number
+  currentStep: number
 ): NurturingSequence | null => {
   const leadSource = lead.source || '';
   
-  // First, try to find a source-specific sequence
-  const sourceSpecificSequence = sequences.find((s) => 
-    s.source_filter === leadSource && s.step_number === nextStep
-  );
+  // Check if this source has specific sequences
+  const sourceSequences = sequences
+    .filter((s) => s.source_filter === leadSource)
+    .sort((a, b) => a.step_number - b.step_number);
   
-  if (sourceSpecificSequence) {
-    console.log(`Found source-specific sequence for ${lead.email}: ${sourceSpecificSequence.name} (source: ${leadSource})`);
-    return sourceSpecificSequence;
-  }
-  
-  // Check if this source has ANY sequences defined (to avoid mixing with default)
-  const hasAnySourceSequence = sequences.some((s) => s.source_filter === leadSource);
-  
-  if (hasAnySourceSequence) {
-    // This source has sequences but not for this step - lead has completed their journey
-    console.log(`Lead ${lead.email} (source: ${leadSource}) has no more steps in their sequence`);
+  if (sourceSequences.length > 0) {
+    // For NEW leads (step 0), get the FIRST sequence of their source
+    if (currentStep === 0) {
+      const firstSequence = sourceSequences[0];
+      console.log(`New lead ${lead.email}: starting with first sequence for source "${leadSource}": ${firstSequence.name} (step ${firstSequence.step_number})`);
+      return firstSequence;
+    }
+    
+    // For existing leads, find the NEXT sequence after their current step
+    const nextSequence = sourceSequences.find((s) => s.step_number > currentStep);
+    
+    if (nextSequence) {
+      console.log(`Found next sequence for ${lead.email}: ${nextSequence.name} (step ${nextSequence.step_number})`);
+      return nextSequence;
+    }
+    
+    // No more sequences for this source - completed journey
+    console.log(`Lead ${lead.email} (source: ${leadSource}) has completed their sequence at step ${currentStep}`);
     return null;
   }
   
-  // Fall back to default sequence (no source_filter)
-  const defaultSequence = sequences.find((s) => 
-    !s.source_filter && s.step_number === nextStep
-  );
+  // No source-specific sequences, use default sequence
+  const defaultSequences = sequences
+    .filter((s) => !s.source_filter)
+    .sort((a, b) => a.step_number - b.step_number);
   
-  if (defaultSequence) {
-    console.log(`Using default sequence for ${lead.email}: ${defaultSequence.name}`);
+  if (defaultSequences.length === 0) {
+    console.log(`No sequences found for lead ${lead.email}`);
+    return null;
   }
   
-  return defaultSequence || null;
+  // For NEW leads, get first default sequence
+  if (currentStep === 0) {
+    const firstDefault = defaultSequences[0];
+    console.log(`New lead ${lead.email}: starting with default sequence: ${firstDefault.name}`);
+    return firstDefault;
+  }
+  
+  // Find next default sequence
+  const nextDefault = defaultSequences.find((s) => s.step_number > currentStep);
+  
+  if (nextDefault) {
+    console.log(`Using default sequence for ${lead.email}: ${nextDefault.name}`);
+    return nextDefault;
+  }
+  
+  return null;
 };
 
 /**
