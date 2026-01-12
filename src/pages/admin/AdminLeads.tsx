@@ -529,12 +529,12 @@ const AdminLeads = () => {
 
         {/* Lead Details Dialog - Fullscreen */}
         <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setCommunicationHistory([]); }}>
-          <DialogContent className="w-[95vw] max-w-6xl h-[90vh] overflow-hidden flex flex-col p-0">
+          <DialogContent className="w-[95vw] max-w-6xl max-h-[90vh] h-auto overflow-hidden flex flex-col p-0">
             <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
               <DialogTitle className="text-lg font-semibold">Detalhes do Lead</DialogTitle>
             </DialogHeader>
             {selectedLead && (
-              <div className="flex-1 grid grid-cols-1 lg:grid-cols-[320px_1fr] overflow-hidden">
+              <div className="flex-1 grid grid-cols-1 lg:grid-cols-[320px_1fr] overflow-hidden min-h-0">
                 {/* Left Column - Fixed Lead Info */}
                 <div className="border-r border-border p-6 overflow-y-auto bg-muted/30">
                   {/* Avatar & Basic Info */}
@@ -675,7 +675,7 @@ const AdminLeads = () => {
                 </div>
 
                 {/* Right Column - Scrollable Content */}
-                <div className="flex flex-col overflow-hidden">
+                <div className="flex flex-col overflow-hidden min-h-0">
                   <Tabs value={detailTab} onValueChange={(v) => setDetailTab(v as "info" | "behavior")} className="flex flex-col h-full">
                     <TabsList className="grid w-full grid-cols-2 shrink-0 mx-6 mt-4 max-w-md">
                       <TabsTrigger value="info">Informações</TabsTrigger>
