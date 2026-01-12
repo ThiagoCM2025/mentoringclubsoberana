@@ -1696,7 +1696,22 @@
   }
 }
 
-/* Admin Compact Mode */
+/* Admin Default Scale - 87.5% for better density (like browser zoom 80%) */
+.admin-light-theme main {
+  transform: scale(0.875);
+  transform-origin: top left;
+  width: 114.29%; /* 100% / 0.875 to compensate */
+  min-height: calc(100vh / 0.875);
+}
+
+/* Admin Compact Mode - Extra compact 80% */
+.admin-compact main {
+  transform: scale(0.8);
+  transform-origin: top left;
+  width: 125%; /* 100% / 0.8 */
+  min-height: calc(100vh / 0.8);
+}
+
 .admin-compact {
   /* Cards and containers */
   .admin-compact .card-content,
