@@ -124,7 +124,7 @@ export const JornadaAgendaSection = () => {
           </p>
           
           <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-secondary/15 text-cream px-3 py-2 sm:px-5 sm:py-2.5 rounded-full border border-secondary/25 backdrop-blur-sm">
-            <Radio className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-secondary animate-pulse" />
+            <Radio className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-secondary" />
             <span className="text-xs sm:text-sm font-semibold">Todas às 20h • Ao vivo</span>
           </div>
         </motion.div>

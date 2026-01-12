@@ -253,9 +253,9 @@ export const JornadaLeadForm = ({ variant = "section", ctaText = "QUERO ME INSCR
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full h-14 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-base tracking-wide relative overflow-hidden"
+                    className="w-full h-14 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-base tracking-wide"
                   >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
+                    <span className="flex items-center justify-center gap-2">
                       {isLoading ? "Processando..." : (
                         <>
                           <Download className="w-5 h-5" />
@@ -263,13 +263,6 @@ export const JornadaLeadForm = ({ variant = "section", ctaText = "QUERO ME INSCR
                         </>
                       )}
                     </span>
-                    {/* Shimmer effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                      initial={{ x: "-100%" }}
-                      animate={{ x: "200%" }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
-                    />
                   </Button>
                 </motion.div>
               </form>

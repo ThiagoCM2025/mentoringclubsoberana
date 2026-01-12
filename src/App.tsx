@@ -15,10 +15,23 @@ import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
 const queryClient = new QueryClient();
 
 // Version for cache busting - increment on each significant deploy
-const APP_VERSION = '2026.01.12.2';
+const APP_VERSION = '2026.01.12.3';
+
+// Detecta WebView do Instagram/Facebook para evitar problemas de cache
+const isInAppBrowser = () => {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  return /FBAN|FBAV|Instagram|Twitter|LinkedInApp|Line\//i.test(ua);
+};
 
 const CacheManager = () => {
   useEffect(() => {
+    // Pula lógica de cache em WebViews problemáticos (Instagram, Facebook, etc.)
+    if (isInAppBrowser()) {
+      console.log('WebView detectado, pulando lógica de cache');
+      return;
+    }
+
     const storedVersion = localStorage.getItem('soberana_app_version');
     
     if (storedVersion && storedVersion !== APP_VERSION) {
