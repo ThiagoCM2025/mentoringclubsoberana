@@ -20,13 +20,13 @@ interface CronJob {
   name: string;
   schedule: string;
   brazilHour: number;
-  type: 'daily' | 'hourly';
+  type: 'daily' | 'hourly' | 'interval';
   description: string;
 }
 
 interface NextExecution {
   name: string;
-  type: 'daily' | 'hourly';
+  type: 'daily' | 'hourly' | 'interval';
   scheduledTime: Date;
   countdown: string;
 }
@@ -70,6 +70,13 @@ const CRON_JOBS: CronJob[] = [
     brazilHour: -1, // Indica horário variável
     type: 'hourly',
     description: 'Disparo a cada hora'
+  },
+  { 
+    name: 'process-jornada-reminders', 
+    schedule: '*/5 * * * *', 
+    brazilHour: -1, // Indica horário variável (a cada 5 min)
+    type: 'interval',
+    description: 'Jornada - Lembretes a cada 5 min'
   },
 ];
 
