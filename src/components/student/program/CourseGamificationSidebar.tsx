@@ -101,12 +101,12 @@ export const CourseGamificationSidebar = ({
 
         <div className="space-y-2">
           {[
-            { date: new Date(2026, 0, 30, 18, 30), label: "30 de Janeiro" },
-            { date: new Date(2026, 1, 12, 18, 30), label: "12 de Fevereiro" },
-            { date: new Date(2026, 1, 26, 18, 30), label: "26 de Fevereiro" },
-            { date: new Date(2026, 2, 12, 18, 30), label: "12 de Março" },
-            { date: new Date(2026, 2, 26, 18, 30), label: "26 de Março" },
-            { date: new Date(2026, 3, 9, 18, 30), label: "09 de Abril" },
+            { date: new Date(2026, 0, 29, 18, 30), label: "29 de Janeiro" },
+            { date: new Date(2026, 1, 22, 18, 30), label: "22 de Fevereiro" },
+            { date: new Date(2026, 2, 14, 18, 30), label: "14 de Março" },
+            { date: new Date(2026, 3, 16, 18, 30), label: "16 de Abril" },
+            { date: new Date(2026, 4, 14, 18, 30), label: "14 de Maio" },
+            { date: new Date(2026, 5, 18, 18, 30), label: "18 de Junho" },
           ].map((meeting, index, arr) => {
             const now = new Date();
             const isPast = meeting.date < now;
