@@ -348,7 +348,7 @@ const BlogPostPage = () => {
         description={post.meta_description || post.excerpt}
         keywords={post.meta_keywords || post.tags?.join(", ")}
         image={post.cover_image_url || undefined}
-        url={`https://soberana.com.br/blog/${post.slug}`}
+        url={`https://soberanamentoria.com.br/blog/${post.slug}`}
         type="article"
         publishedTime={post.published_at}
         modifiedTime={post.updated_at}
