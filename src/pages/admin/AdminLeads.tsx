@@ -459,6 +459,14 @@ const AdminLeads = () => {
             Exportar CSV
           </Button>
           <Button 
+            onClick={() => setCampaignDispatchOpen(true)}
+            variant="outline" 
+            className="h-8 text-sm gap-1.5 bg-card border-border text-foreground hover:bg-muted"
+          >
+            <Send className="w-3.5 h-3.5" />
+            Disparo por Campanha
+          </Button>
+          <Button 
             onClick={async () => {
               toast({ title: "Disparando nutrição...", description: "Aguarde o processamento" });
               try {
@@ -477,7 +485,7 @@ const AdminLeads = () => {
             variant="outline" 
             className="h-8 text-sm gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600"
           >
-            <Send className="w-3.5 h-3.5" />
+            <Zap className="w-3.5 h-3.5" />
             Disparar Nutrição
           </Button>
           <input
@@ -1006,10 +1014,20 @@ const AdminLeads = () => {
           onOpenChange={setNewLeadDialogOpen}
           onSuccess={fetchLeads}
         />
+
+        {/* Campaign Dispatch Dialog */}
+        <CampaignDispatchDialog
+          open={campaignDispatchOpen}
+          onOpenChange={setCampaignDispatchOpen}
+          onSuccess={fetchLeads}
+        />
           </TabsContent>
 
           <TabsContent value="automacao">
-            <LeadNurturingTab />
+            <div className="space-y-6">
+              <ScheduledMessagesPanel />
+              <LeadNurturingTab />
+            </div>
           </TabsContent>
 
           <TabsContent value="templates">
