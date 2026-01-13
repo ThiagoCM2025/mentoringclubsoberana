@@ -272,10 +272,10 @@ export const JornadaSessionsManager = () => {
               </div>
             </CardHeader>
             
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
+            <CardContent className="space-y-4 min-w-0">
+              <div className="grid lg:grid-cols-2 gap-4 min-w-0">
                 {/* Preview do vídeo */}
-                <div className="space-y-2">
+                <div className="space-y-2 min-w-0">
                   <Label className="flex items-center gap-2">
                     <Video className="w-4 h-4" />
                     YouTube ID ou URL
@@ -309,7 +309,7 @@ export const JornadaSessionsManager = () => {
                 </div>
 
                 {/* Material */}
-                <div className="space-y-2">
+                <div className="space-y-2 min-w-0">
                   <Label className="flex items-center gap-2">
                     <FileText className="w-4 h-4" />
                     URL do Material (PDF, etc.)
@@ -333,14 +333,14 @@ export const JornadaSessionsManager = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex flex-col sm:flex-row justify-end gap-2">
                 {session.is_unlocked && pendingReminders[session.id] > 0 && (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-secondary/30 text-secondary hover:bg-secondary/10"
+                        className="border-secondary/30 text-secondary hover:bg-secondary/10 w-full sm:w-auto"
                         disabled={sendingReminders}
                       >
                         {sendingReminders ? (
@@ -379,6 +379,7 @@ export const JornadaSessionsManager = () => {
                   onClick={() => handleSaveSession(session)}
                   disabled={saving === session.id}
                   size="sm"
+                  className="w-full sm:w-auto"
                 >
                   {saving === session.id ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
