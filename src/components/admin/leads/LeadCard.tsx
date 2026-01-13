@@ -1,4 +1,5 @@
-import { Flame, Thermometer, ThermometerSnowflake, MessageCircle, Clock, Mail, Send, Eye, Zap, ZapOff, Play, Pause } from "lucide-react";
+import { Flame, Thermometer, ThermometerSnowflake, MessageCircle, Clock, Mail, Send, Eye, Zap, ZapOff, Play, Pause, Check } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ interface Lead {
   email: string;
   phone: string | null;
   source: string | null;
+  status: string | null;
   temperature: LeadTemperature | null;
   messages_sent: number | null;
   created_at: string;
@@ -31,6 +33,9 @@ interface LeadCardProps {
   onClick: () => void;
   onDragStart: (e: React.DragEvent, leadId: string) => void;
   onNurturingToggle?: () => void;
+  isSelectionMode?: boolean;
+  isSelected?: boolean;
+  onSelectionChange?: (leadId: string, selected: boolean) => void;
 }
 
 const temperatureConfig = {
@@ -39,7 +44,7 @@ const temperatureConfig = {
   hot: { label: "Quente", icon: Flame, color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
 };
 
-export function LeadCard({ lead, onClick, onDragStart, onNurturingToggle }: LeadCardProps) {
+export function LeadCard({ lead, onClick, onDragStart, onNurturingToggle, isSelectionMode = false, isSelected = false, onSelectionChange }: LeadCardProps) {
   const { toast } = useToast();
   const { getCampaignInfo, getSequenceInfo, calculateNextSend } = useNurturingSequences();
   
@@ -99,7 +104,26 @@ export function LeadCard({ lead, onClick, onDragStart, onNurturingToggle }: Lead
       >
         {/* Header */}
         <div className="flex items-start gap-3 mb-2">
-          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+          {/* Checkbox for selection mode */}
+          {isSelectionMode && (
+            <div 
+              className="flex-shrink-0 mt-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectionChange?.(lead.id, !isSelected);
+              }}
+            >
+              <Checkbox 
+                checked={isSelected}
+                className="data-[state=checked]:bg-secondary data-[state=checked]:border-secondary"
+              />
+            </div>
+          )}
+          
+          <div className={cn(
+            "w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0",
+            isSelected && "ring-2 ring-secondary ring-offset-2"
+          )}>
             <span className="text-primary font-semibold text-sm">
               {lead.full_name.charAt(0).toUpperCase()}
             </span>
