@@ -93,7 +93,7 @@ const Blog = () => {
         title="Blog | Soberana Mentoring Club - Marketing Jurídico Digital"
         description="Artigos e insights sobre marketing jurídico digital, captação de clientes para advogadas, e estratégias para crescer na advocacia."
         keywords="blog marketing jurídico, artigos para advogadas, captação de clientes advocacia, marketing digital advocacia"
-        url="https://soberana.com.br/blog"
+        url="https://soberanamentoria.com.br/blog"
         type="website"
       />
 

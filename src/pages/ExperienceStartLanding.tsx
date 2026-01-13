@@ -174,7 +174,7 @@ const ExperienceStartLanding = () => {
     }
   };
   return <div className="min-h-screen bg-background landing-page">
-      <SEO title="Soberana Experience Start | Oficina Presencial para Advogadas em SP" description="Reorganize sua advocacia e destrave seu crescimento em 2026. Oficina 100% prática com Fabiana Soberana. 21 de Fevereiro em São Paulo." keywords="oficina para advogadas, evento presencial advocacia, mentoria jurídica SP, networking advogadas, Fabiana Soberana, gestão advocacia" url="https://soberana.com.br/experience-start" image="https://soberana.com.br/og-experience-start.jpg" imageWidth={1200} imageHeight={630} twitterCard="summary_large_image" type="website" schema={eventSchema} />
+      <SEO title="Soberana Experience Start | Oficina Presencial para Advogadas em SP" description="Reorganize sua advocacia e destrave seu crescimento em 2026. Oficina 100% prática com Fabiana Soberana. 21 de Fevereiro em São Paulo." keywords="oficina para advogadas, evento presencial advocacia, mentoria jurídica SP, networking advogadas, Fabiana Soberana, gestão advocacia" url="https://soberanamentoria.com.br/experience-start" image="https://soberanamentoria.com.br/og-experience-start.jpg" imageWidth={1200} imageHeight={630} twitterCard="summary_large_image" type="website" schema={eventSchema} />
 
       {/* Header Sticky Premium */}
       <motion.header initial={{

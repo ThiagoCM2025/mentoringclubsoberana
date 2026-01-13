@@ -255,7 +255,7 @@ function generateJornadaEmailTemplate(
                 <!-- CTA Area -->
                 <tr>
                   <td style="text-align: center; padding: 25px 0;">
-                    <a href="https://soberana.com.br/jornada-imobiliaria-2026" style="display: inline-block; background: linear-gradient(135deg, #64001C 0%, #8B0027 100%); color: #ffffff; font-size: 16px; font-weight: bold; text-decoration: none; padding: 16px 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(100, 0, 28, 0.4);">
+                  <a href="https://soberanamentoria.com.br/jornada-imobiliaria-2026" style="display: inline-block; background: linear-gradient(135deg, #64001C 0%, #8B0027 100%); color: #ffffff; font-size: 16px; font-weight: bold; text-decoration: none; padding: 16px 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(100, 0, 28, 0.4);">
                       🎬 Acessar Área das Aulas
                     </a>
                   </td>

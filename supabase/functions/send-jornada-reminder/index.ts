@@ -184,7 +184,7 @@ const handler = async (req: Request): Promise<Response> => {
 };
 
 function buildEmailHtml(notification: NotificationQueueItem, email: string): string {
-  const watchUrl = `https://soberana.com.br/jornada-imobiliaria-2026?session=${notification.session_day}`;
+  const watchUrl = `https://soberanamentoria.com.br/jornada-imobiliaria-2026?session=${notification.session_day}`;
   
   return `
 <!DOCTYPE html>
