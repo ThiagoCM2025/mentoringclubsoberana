@@ -36,6 +36,9 @@ interface LeadColumnProps {
   onDrop: (e: React.DragEvent, status: LeadStatus) => void;
   isDragOver: boolean;
   onNurturingToggle?: () => void;
+  isSelectionMode?: boolean;
+  selectedLeadIds?: Set<string>;
+  onSelectionChange?: (leadId: string, selected: boolean) => void;
 }
 
 export function LeadColumn({
@@ -47,6 +50,9 @@ export function LeadColumn({
   onDrop,
   isDragOver,
   onNurturingToggle,
+  isSelectionMode = false,
+  selectedLeadIds = new Set(),
+  onSelectionChange,
 }: LeadColumnProps) {
   return (
     <div
@@ -85,6 +91,9 @@ export function LeadColumn({
               onClick={() => onLeadClick(lead)}
               onDragStart={onDragStart}
               onNurturingToggle={onNurturingToggle}
+              isSelectionMode={isSelectionMode}
+              isSelected={selectedLeadIds.has(lead.id)}
+              onSelectionChange={onSelectionChange}
             />
           ))
         )}

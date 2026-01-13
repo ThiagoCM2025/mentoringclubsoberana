@@ -2,6 +2,8 @@ import { useState, useCallback } from "react";
 import { LeadColumn } from "./LeadColumn";
 import { LeadMessageModal } from "./LeadMessageModal";
 import { LeadConversionDialog } from "./LeadConversionDialog";
+import { BulkActionBar } from "./BulkActionBar";
+import { MessageComposer } from "../messaging/MessageComposer";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
@@ -42,6 +44,13 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
   const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<LeadStatus | null>(null);
   
+  // Selection state
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set());
+  
+  // Message composer for bulk sending
+  const [bulkMessageOpen, setBulkMessageOpen] = useState(false);
+  
   // Message modal
   const [messageModalOpen, setMessageModalOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -49,6 +58,53 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
   // Conversion dialog
   const [conversionDialogOpen, setConversionDialogOpen] = useState(false);
   const [convertingLead, setConvertingLead] = useState<Lead | null>(null);
+
+  // Selection handlers
+  const handleSelectionChange = useCallback((leadId: string, selected: boolean) => {
+    setSelectedLeadIds(prev => {
+      const next = new Set(prev);
+      if (selected) {
+        next.add(leadId);
+      } else {
+        next.delete(leadId);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleClearSelection = useCallback(() => {
+    setSelectedLeadIds(new Set());
+  }, []);
+
+  const handleSelectAll = useCallback(() => {
+    setSelectedLeadIds(new Set(leads.map(l => l.id)));
+  }, [leads]);
+
+  const handleToggleSelectionMode = useCallback(() => {
+    setIsSelectionMode(prev => {
+      if (prev) {
+        setSelectedLeadIds(new Set());
+      }
+      return !prev;
+    });
+  }, []);
+
+  const handleOpenBulkMessage = useCallback(() => {
+    if (selectedLeadIds.size > 0) {
+      setBulkMessageOpen(true);
+    }
+  }, [selectedLeadIds]);
+
+  // Get selected leads as recipients for MessageComposer
+  const selectedRecipients = leads
+    .filter(l => selectedLeadIds.has(l.id))
+    .map(l => ({
+      id: l.id,
+      name: l.full_name,
+      email: l.email,
+      phone: l.phone || undefined,
+      type: "lead" as const,
+    }));
 
   const handleDragStart = useCallback((e: React.DragEvent, leadId: string) => {
     e.dataTransfer.setData("text/plain", leadId);
@@ -113,6 +169,17 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
 
   return (
     <>
+      {/* Bulk Action Bar */}
+      <BulkActionBar
+        selectedCount={selectedLeadIds.size}
+        onSendMessage={handleOpenBulkMessage}
+        onClearSelection={handleClearSelection}
+        isSelectionMode={isSelectionMode}
+        onToggleSelectionMode={handleToggleSelectionMode}
+        onSelectAll={handleSelectAll}
+        totalLeads={leads.length}
+      />
+
       <div 
         className="flex gap-4 overflow-x-auto pb-4"
         onDragLeave={handleDragLeave}
@@ -131,12 +198,15 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
               onDrop={handleDrop}
               isDragOver={dragOverColumn === column.status}
               onNurturingToggle={onRefresh}
+              isSelectionMode={isSelectionMode}
+              selectedLeadIds={selectedLeadIds}
+              onSelectionChange={handleSelectionChange}
             />
           </div>
         ))}
       </div>
 
-      {/* Message Modal */}
+      {/* Message Modal for single lead */}
       <LeadMessageModal
         open={messageModalOpen}
         onClose={() => {
@@ -145,6 +215,18 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
         }}
         lead={selectedLead}
         onMessageSent={onRefresh}
+      />
+
+      {/* Bulk Message Composer */}
+      <MessageComposer
+        isOpen={bulkMessageOpen}
+        onClose={() => {
+          setBulkMessageOpen(false);
+          handleClearSelection();
+          setIsSelectionMode(false);
+        }}
+        recipients={selectedRecipients}
+        audienceType="lead"
       />
 
       {/* Conversion Dialog */}
