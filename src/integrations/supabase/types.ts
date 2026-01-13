@@ -2708,6 +2708,74 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_messages: {
+        Row: {
+          channel: string
+          created_at: string | null
+          created_by: string | null
+          error_message: string | null
+          failed_count: number | null
+          id: string
+          message: string
+          processed_at: string | null
+          recipient_count: number | null
+          scheduled_for: string
+          sent_count: number | null
+          source_filter: string | null
+          status: string | null
+          status_filter: string | null
+          subject: string | null
+          temperature_filter: string | null
+          template_id: string | null
+        }
+        Insert: {
+          channel: string
+          created_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          failed_count?: number | null
+          id?: string
+          message: string
+          processed_at?: string | null
+          recipient_count?: number | null
+          scheduled_for: string
+          sent_count?: number | null
+          source_filter?: string | null
+          status?: string | null
+          status_filter?: string | null
+          subject?: string | null
+          temperature_filter?: string | null
+          template_id?: string | null
+        }
+        Update: {
+          channel?: string
+          created_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          failed_count?: number | null
+          id?: string
+          message?: string
+          processed_at?: string | null
+          recipient_count?: number | null
+          scheduled_for?: string
+          sent_count?: number | null
+          source_filter?: string | null
+          status?: string | null
+          status_filter?: string | null
+          subject?: string | null
+          temperature_filter?: string | null
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_messages_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_diagnostics: {
         Row: {
           completed: boolean | null

@@ -74,9 +74,16 @@ const CRON_JOBS: CronJob[] = [
   { 
     name: 'process-jornada-reminders', 
     schedule: '*/5 * * * *', 
-    brazilHour: -1, // Indica horário variável (a cada 5 min)
+    brazilHour: -1,
     type: 'interval',
     description: 'Jornada - Lembretes a cada 5 min'
+  },
+  { 
+    name: 'process-scheduled-messages', 
+    schedule: '*/5 * * * *', 
+    brazilHour: -1,
+    type: 'interval',
+    description: 'Disparos agendados a cada 5 min'
   },
 ];
 

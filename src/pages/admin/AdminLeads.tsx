@@ -30,6 +30,8 @@ import { LeadNurturingTab } from "@/components/admin/leads/LeadNurturingTab";
 import { LeadTemplatesTab } from "@/components/admin/leads/LeadTemplatesTab";
 import { LeadHistoryTab } from "@/components/admin/leads/LeadHistoryTab";
 import { CampaignSelector } from "@/components/admin/leads/CampaignSelector";
+import { CampaignDispatchDialog } from "@/components/admin/leads/CampaignDispatchDialog";
+import { ScheduledMessagesPanel } from "@/components/admin/leads/ScheduledMessagesPanel";
 import { useNurturingSequences } from "@/hooks/useNurturingSequences";
 import { cn } from "@/lib/utils";
 import * as XLSX from "xlsx";
@@ -106,6 +108,7 @@ const AdminLeads = () => {
   const [detailTab, setDetailTab] = useState<"info" | "behavior">("info");
   const [mainTab, setMainTab] = useState<"crm" | "automacao" | "templates" | "historico">("crm");
   const [importing, setImporting] = useState(false);
+  const [campaignDispatchOpen, setCampaignDispatchOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
