@@ -137,7 +137,7 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
     const { data, error } = await supabase
       .from('message_templates')
       .select('id, name, email_subject, email_body, whatsapp_message, icon')
-      .eq('target_audience', 'leads')
+      .eq('target_audience', 'lead')
       .eq('is_active', true);
     
     if (!error && data) {
