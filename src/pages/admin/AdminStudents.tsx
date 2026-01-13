@@ -76,25 +76,36 @@ const AdminStudents = () => {
   }, []);
 
   const fetchStudents = async () => {
-    const { data: adminRoles } = await supabase
+    // Buscar apenas usuários que TÊM role 'student' (mais seguro)
+    const { data: studentRoles } = await supabase
       .from("user_roles")
       .select("user_id")
-      .eq("role", "admin");
+      .eq("role", "student");
     
-    const adminUserIds = adminRoles?.map(r => r.user_id) || [];
+    const studentUserIds = studentRoles?.map(r => r.user_id) || [];
+
+    // Se não há students, não precisa buscar mais nada
+    if (studentUserIds.length === 0) {
+      setStudents([]);
+      setLoading(false);
+      return;
+    }
 
     const { data: profiles } = await supabase
       .from("profiles")
       .select(`id, user_id, full_name, phone, created_at`)
+      .in("user_id", studentUserIds)
       .order("created_at", { ascending: false });
 
     const { data: enrollments } = await supabase
       .from("enrollments")
-      .select("user_id");
+      .select("user_id")
+      .in("user_id", studentUserIds);
 
     const { data: diagnostics } = await supabase
       .from("student_diagnostics")
-      .select("user_id, completed");
+      .select("user_id, completed")
+      .in("user_id", studentUserIds);
 
     const enrollmentCounts: Record<string, number> = {};
     enrollments?.forEach(e => {
@@ -107,14 +118,12 @@ const AdminStudents = () => {
     });
 
     if (profiles) {
-      const studentsOnly = profiles
-        .filter(p => !adminUserIds.includes(p.user_id))
-        .map(p => ({ 
-          ...p, 
-          enrollment_count: enrollmentCounts[p.user_id] || 0,
-          diagnostic_completed: diagnosticStatus[p.user_id] || false
-        }));
-      setStudents(studentsOnly);
+      const studentsData = profiles.map(p => ({ 
+        ...p, 
+        enrollment_count: enrollmentCounts[p.user_id] || 0,
+        diagnostic_completed: diagnosticStatus[p.user_id] || false
+      }));
+      setStudents(studentsData);
     }
     setLoading(false);
   };
