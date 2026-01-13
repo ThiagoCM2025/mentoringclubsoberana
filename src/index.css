@@ -1697,78 +1697,94 @@
 }
 
 /* Admin Default Scale - 87.5% for better density (like browser zoom 80%) */
+/* Only apply scale on desktop (lg breakpoint) to avoid overflow issues */
 .admin-light-theme {
-  overflow-x: hidden; /* Previne corte à direita da viewport */
+  overflow-x: hidden;
   max-width: 100vw;
 }
 
-.admin-light-theme main {
-  transform: scale(0.875);
-  transform-origin: top left;
-  width: 114.29%; /* 100% / 0.875 to compensate */
-  min-height: calc(100vh / 0.875);
+/* Admin Compact Mode base styles */
+.admin-compact {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
-/* Admin Compact Mode - Extra compact 80% */
-.admin-compact main {
-  transform: scale(0.8);
-  transform-origin: top left;
-  width: 125%; /* 100% / 0.8 */
-  min-height: calc(100vh / 0.8);
+/* Scale transformations only on desktop (lg: 1024px+) */
+@media (min-width: 1024px) {
+  .admin-light-theme:not(.admin-compact) main {
+    transform: scale(0.875);
+    transform-origin: top left;
+    /* Use auto width to respect sidebar margins, min-height compensates scale */
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    min-height: calc(100vh / 0.875);
+  }
+
+  .admin-compact main {
+    transform: scale(0.8);
+    transform-origin: top left;
+    /* Use auto width to respect sidebar margins */
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    min-height: calc(100vh / 0.8);
+  }
 }
 
+/* Compact mode density adjustments */
 .admin-compact {
   /* Cards and containers */
-  .admin-compact .card-content,
-  .admin-compact [class*="CardContent"] {
+  & .card-content,
+  & [class*="CardContent"] {
     padding: 0.75rem !important;
   }
   
   /* Smaller fonts in compact mode */
-  .admin-compact .text-2xl {
+  & .text-2xl {
     font-size: 1.25rem !important;
   }
   
-  .admin-compact .text-3xl {
+  & .text-3xl {
     font-size: 1.5rem !important;
   }
   
   /* Tighter spacing */
-  .admin-compact .gap-4 {
+  & .gap-4 {
     gap: 0.5rem !important;
   }
   
-  .admin-compact .gap-6 {
+  & .gap-6 {
     gap: 1rem !important;
   }
   
-  .admin-compact .p-4 {
+  & .p-4 {
     padding: 0.75rem !important;
   }
   
-  .admin-compact .p-6 {
+  & .p-6 {
     padding: 1rem !important;
   }
   
   /* Smaller icons */
-  .admin-compact .w-10.h-10 {
+  & .w-10.h-10 {
     width: 2rem !important;
     height: 2rem !important;
   }
   
-  .admin-compact .w-12.h-12 {
+  & .w-12.h-12 {
     width: 2.5rem !important;
     height: 2.5rem !important;
   }
   
   /* Table density */
-  .admin-compact table tbody tr td {
+  & table tbody tr td {
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
   }
   
   /* Chart heights */
-  .admin-compact .recharts-wrapper {
+  & .recharts-wrapper {
     height: auto !important;
   }
 }
