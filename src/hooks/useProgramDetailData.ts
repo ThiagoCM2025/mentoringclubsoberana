@@ -22,6 +22,8 @@ interface ProgramLesson {
   duration_minutes: number | null;
   order_index: number;
   video_url: string | null;
+  lesson_type: string | null;
+  lesson_label: string | null;
   completed: boolean;
   watch_percentage: number;
 }

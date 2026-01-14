@@ -122,8 +122,8 @@ const ProgramCourseDetail = () => {
       duration_minutes: l.duration_minutes,
       order_index: l.order_index,
       is_free: false,
-      lesson_type: 'video',
-      lesson_label: null,
+      lesson_type: l.lesson_type || 'video',
+      lesson_label: l.lesson_label || null,
     })),
   }));
 
