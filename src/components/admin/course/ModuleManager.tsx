@@ -31,6 +31,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import VideoUrlInput from "./VideoUrlInput";
 import LessonMaterialsSection from "./LessonMaterialsSection";
@@ -51,7 +57,8 @@ import {
   RotateCcw,
   AlertTriangle,
   Target,
-  CheckCircle2
+  CheckCircle2,
+  MoreVertical
 } from "lucide-react";
 
 interface PendingFile {
@@ -91,8 +98,21 @@ interface Module {
 
 interface Mission {
   id: string;
+  course_id: string;
+  week_number: number;
+  month_number: number | null;
+  month_title: string | null;
   title: string;
+  challenge_description: string;
+  why_do: string | null;
+  gamification_emoji: string | null;
+  gamification_title: string | null;
+  gamification_reward: string | null;
+  xp_reward: number | null;
   related_lesson_id: string | null;
+  requires_proof: boolean | null;
+  proof_type: string | null;
+  is_active: boolean | null;
 }
 
 interface ModuleManagerProps {
@@ -123,6 +143,7 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
   
   // Mission dialog
   const [missionDialogOpen, setMissionDialogOpen] = useState(false);
+  const [editingMission, setEditingMission] = useState<Mission | null>(null);
   const [missionPrefill, setMissionPrefill] = useState<{
     related_lesson_id?: string;
     title?: string;
@@ -131,12 +152,30 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
 
   // Open mission dialog with lesson context
   const openMissionDialog = (lesson: Lesson, module: Module) => {
+    setEditingMission(null);
     setMissionPrefill({
       related_lesson_id: lesson.id,
       title: `Missão: ${lesson.title}`,
       context: `Módulo: ${module.title}\nAula: ${lesson.title}\n${lesson.description || ''}`
     });
     setMissionDialogOpen(true);
+  };
+
+  // Delete mission
+  const deleteMission = async (missionId: string) => {
+    if (!confirm("Tem certeza que deseja excluir esta missão?")) return;
+    
+    const { error } = await supabase
+      .from("weekly_missions")
+      .delete()
+      .eq("id", missionId);
+      
+    if (error) {
+      toast({ title: "Erro ao excluir missão", variant: "destructive" });
+    } else {
+      toast({ title: "Missão excluída!" });
+      onMissionCreated?.();
+    }
   };
 
   // Calculate counts
@@ -778,17 +817,34 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
                               <div className="flex gap-1 items-center">
                                 {/* Mission indicator/button */}
                                 {(() => {
-                                  const hasMission = missions.some(m => m.related_lesson_id === lesson.id);
-                                  return hasMission ? (
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 dark:bg-green-950/30 px-2 py-1 rounded-full">
+                                  const mission = missions.find(m => m.related_lesson_id === lesson.id);
+                                  return mission ? (
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <button className="flex items-center gap-1 text-xs text-green-600 bg-green-50 dark:bg-green-950/30 px-2 py-1 rounded-full hover:bg-green-100 dark:hover:bg-green-950/50 transition-colors cursor-pointer">
                                           <CheckCircle2 className="w-3 h-3" />
                                           <span>Missão</span>
-                                        </div>
-                                      </TooltipTrigger>
-                                      <TooltipContent>Já possui missão vinculada</TooltipContent>
-                                    </Tooltip>
+                                          <ChevronDown className="w-3 h-3 ml-0.5" />
+                                        </button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end" className="bg-popover border border-border">
+                                        <DropdownMenuItem onClick={() => {
+                                          setEditingMission(mission);
+                                          setMissionPrefill(null);
+                                          setMissionDialogOpen(true);
+                                        }}>
+                                          <Pencil className="w-3 h-3 mr-2" />
+                                          Editar Missão
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem 
+                                          onClick={() => deleteMission(mission.id)}
+                                          className="text-destructive focus:text-destructive"
+                                        >
+                                          <Trash2 className="w-3 h-3 mr-2" />
+                                          Excluir Missão
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
                                   ) : (
                                     <Tooltip>
                                       <TooltipTrigger asChild>
@@ -1053,9 +1109,15 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
       {/* Mission Dialog */}
       <MissionDialog
         open={missionDialogOpen}
-        onOpenChange={setMissionDialogOpen}
+        onOpenChange={(open) => {
+          setMissionDialogOpen(open);
+          if (!open) {
+            setEditingMission(null);
+            setMissionPrefill(null);
+          }
+        }}
         courseId={courseId}
-        mission={null}
+        mission={editingMission}
         lessons={modules.flatMap(m => m.lessons.filter(l => !l.deleted_at).map(l => ({
           id: l.id,
           title: l.title,
@@ -1063,9 +1125,11 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
         })))}
         onSaved={() => {
           setMissionDialogOpen(false);
+          setEditingMission(null);
+          setMissionPrefill(null);
           onMissionCreated?.();
         }}
-        prefillData={missionPrefill || undefined}
+        prefillData={editingMission ? undefined : (missionPrefill || undefined)}
       />
     </div>
   );
