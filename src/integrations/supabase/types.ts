@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_alert_email_config: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          is_active: boolean | null
+          is_primary: boolean | null
+          name: string | null
+          notify_critical: boolean | null
+          notify_info: boolean | null
+          notify_warning: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          is_active?: boolean | null
+          is_primary?: boolean | null
+          name?: string | null
+          notify_critical?: boolean | null
+          notify_info?: boolean | null
+          notify_warning?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          is_active?: boolean | null
+          is_primary?: boolean | null
+          name?: string | null
+          notify_critical?: boolean | null
+          notify_info?: boolean | null
+          notify_warning?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       admin_alert_occurrences: {
         Row: {
           created_at: string
