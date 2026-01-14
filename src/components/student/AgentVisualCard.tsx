@@ -3,6 +3,19 @@ import { Bot, Lock, Sparkles, ChevronRight, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
+// Import all agent images
+import agentComportamental from "@/assets/agents/agent-comportamental.png";
+import agentConteudos from "@/assets/agents/agent-conteudos.png";
+import agentVendasFunis from "@/assets/agents/agent-vendas-funis.png";
+import agentEstrategia from "@/assets/agents/agent-estrategia.png";
+import agentPropostas from "@/assets/agents/agent-propostas.png";
+import agentPecas from "@/assets/agents/agent-pecas.png";
+import agentAgenda from "@/assets/agents/agent-agenda.png";
+import agentTrafego from "@/assets/agents/agent-trafego.png";
+import agentPeticoes from "@/assets/agents/agent-peticoes.png";
+import agentArtigos from "@/assets/agents/agent-artigos.png";
+import agentVendasImob from "@/assets/agents/agent-vendas-imob.png";
+
 interface AgentCategory {
   id: string;
   name: string;
@@ -27,6 +40,21 @@ interface AgentVisualCardProps {
   hasAccess: boolean;
   onClick: () => void;
 }
+
+// Map slug to local image
+const agentImages: Record<string, string> = {
+  "assistente-comportamental-para-advogadas": agentComportamental,
+  "especialista-criacao-conteudos-soberanos": agentConteudos,
+  "vendas-e-funis-de-vendas-para-advogadas": agentVendasFunis,
+  "diretora-de-estrategia-de-nicho-juridico": agentEstrategia,
+  "criador-de-propostas-comerciais": agentPropostas,
+  "advogada-expert-em-pecas-juridicas": agentPecas,
+  "assistente-pessoal-e-organizacao-de-agenda": agentAgenda,
+  "gestora-de-trafego-soberana": agentTrafego,
+  "peticoes-e-pecas-juridicas": agentPeticoes,
+  "criacao-de-artigos-para-blog": agentArtigos,
+  "especialista-em-vendas-advocacia-imobiliaria": agentVendasImob,
+};
 
 const categoryColors: Record<string, string> = {
   purple: "bg-purple-500/20 text-purple-400 border-purple-500/30",
@@ -63,7 +91,10 @@ const cardVariants = {
 
 export function AgentVisualCard({ agent, hasAccess, onClick }: AgentVisualCardProps) {
   const gradientIndex = agent.title.charCodeAt(0) % gradientFallbacks.length;
-  const hasThumbnail = !!agent.thumbnail_url;
+  
+  // Use local image if available, otherwise use thumbnail_url from DB
+  const imageSource = agentImages[agent.slug] || agent.thumbnail_url;
+  const hasThumbnail = !!imageSource;
 
   return (
     <motion.button
@@ -88,19 +119,19 @@ export function AgentVisualCard({ agent, hasAccess, onClick }: AgentVisualCardPr
       )}>
         {/* Featured Badge */}
         {agent.is_featured && (
-          <div className="absolute top-3 right-3 z-20">
-            <Badge className="bg-secondary/90 text-zinc-900 border-0 shadow-lg backdrop-blur-sm text-xs">
-              <Sparkles className="w-3 h-3 mr-1" />
+          <div className="absolute top-2 right-2 z-20">
+            <Badge className="bg-secondary/90 text-zinc-900 border-0 shadow-lg backdrop-blur-sm text-[10px] px-1.5 py-0.5">
+              <Sparkles className="w-2.5 h-2.5 mr-0.5" />
               Destaque
             </Badge>
           </div>
         )}
 
-        {/* Image Container */}
-        <div className="relative aspect-[16/10] overflow-hidden">
+        {/* Image Container - More compact */}
+        <div className="relative aspect-[4/3] overflow-hidden">
           {hasThumbnail ? (
             <img
-              src={agent.thumbnail_url!}
+              src={imageSource!}
               alt={agent.title}
               className={cn(
                 "w-full h-full object-cover transition-all duration-500 group-hover:scale-105",
@@ -113,7 +144,7 @@ export function AgentVisualCard({ agent, hasAccess, onClick }: AgentVisualCardPr
               gradientFallbacks[gradientIndex]
             )}>
               <Bot className={cn(
-                "w-16 h-16 transition-all duration-300",
+                "w-10 h-10 transition-all duration-300",
                 hasAccess ? "text-secondary/60" : "text-zinc-600"
               )} />
             </div>
@@ -125,21 +156,21 @@ export function AgentVisualCard({ agent, hasAccess, onClick }: AgentVisualCardPr
           {/* Lock overlay */}
           {!hasAccess && (
             <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/40">
-              <div className="w-12 h-12 rounded-full bg-zinc-900/80 backdrop-blur-sm border border-zinc-600/50 flex items-center justify-center">
-                <Lock className="w-5 h-5 text-zinc-400" />
+              <div className="w-10 h-10 rounded-full bg-zinc-900/80 backdrop-blur-sm border border-zinc-600/50 flex items-center justify-center">
+                <Lock className="w-4 h-4 text-zinc-400" />
               </div>
             </div>
           )}
         </div>
 
-        {/* Content */}
-        <div className="p-4">
+        {/* Content - More compact */}
+        <div className="p-3">
           {/* Category Badge */}
           {agent.category && (
             <Badge
               variant="outline"
               className={cn(
-                "text-xs mb-2",
+                "text-[10px] mb-1.5 px-1.5 py-0",
                 categoryColors[agent.category.color] || "bg-zinc-700/50 text-zinc-400 border-zinc-600/50"
               )}
             >
@@ -148,40 +179,40 @@ export function AgentVisualCard({ agent, hasAccess, onClick }: AgentVisualCardPr
           )}
 
           <h3 className={cn(
-            "font-semibold mb-1 line-clamp-1 transition-colors",
+            "font-semibold text-sm mb-1 line-clamp-1 transition-colors",
             hasAccess ? "text-cream group-hover:text-secondary" : "text-zinc-400"
           )}>
             {agent.title}
           </h3>
 
           {agent.description && (
-            <p className="text-cream/50 text-sm line-clamp-2 mb-3">
+            <p className="text-cream/50 text-xs line-clamp-2 mb-2">
               {agent.description}
             </p>
           )}
 
           {/* Footer */}
           <div className="flex items-center justify-between pt-2 border-t border-zinc-700/50">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               {hasAccess ? (
                 <>
-                  <ExternalLink className="w-3.5 h-3.5 text-emerald-500" />
-                  <span className="text-xs text-emerald-500">Liberado</span>
+                  <ExternalLink className="w-3 h-3 text-emerald-500" />
+                  <span className="text-[10px] text-emerald-500">Liberado</span>
                 </>
               ) : (
                 <>
-                  <Lock className="w-3.5 h-3.5 text-zinc-500" />
-                  <span className="text-xs text-zinc-500">Bloqueado</span>
+                  <Lock className="w-3 h-3 text-zinc-500" />
+                  <span className="text-[10px] text-zinc-500">Bloqueado</span>
                 </>
               )}
             </div>
 
             <div className={cn(
-              "flex items-center gap-1 text-sm font-medium transition-colors",
+              "flex items-center gap-0.5 text-xs font-medium transition-colors",
               hasAccess ? "text-secondary" : "text-zinc-500"
             )}>
               <span>Acessar</span>
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </div>
           </div>
         </div>

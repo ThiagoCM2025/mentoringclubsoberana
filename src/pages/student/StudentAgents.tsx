@@ -270,15 +270,15 @@ export default function StudentAgents() {
                   <Sparkles className="w-5 h-5 text-secondary" />
                   <h2 className="text-lg font-semibold text-cream">Destaques</h2>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {featuredAgents.map((agent) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                  {featuredAgents.map((agent) => (
                     <AgentVisualCard
                       key={agent.id}
                       agent={agent}
                       hasAccess={userAccess.has(agent.id)}
                       onClick={() => setSelectedAgent(agent)}
                     />
-                ))}
+                  ))}
                 </div>
               </section>
             )}
@@ -297,7 +297,7 @@ export default function StudentAgents() {
                       {categoryAgents.length}
                     </Badge>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                     {categoryAgents.map((agent) => (
                       <AgentVisualCard
                         key={agent.id}
