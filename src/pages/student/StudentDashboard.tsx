@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useGamification } from "@/hooks/useGamification";
 import { motion } from "framer-motion";
-import { BookOpen, PlayCircle, Clock, Award, Flame, Star, Trophy, Menu, X, LogOut, User, Medal, ChevronRight, Heart, Users, MessageCircle, Settings, Search, Calendar, FileText, ExternalLink, Sparkles } from "lucide-react";
+import { BookOpen, PlayCircle, Clock, Award, Flame, Star, Trophy, Menu, X, LogOut, User, Medal, ChevronRight, Heart, Users, MessageCircle, Settings, Search, Calendar, FileText, ExternalLink, Sparkles, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -90,6 +90,8 @@ const StudentDashboard = () => {
   const [welcomeVideoUrl, setWelcomeVideoUrl] = useState<string | null>(null);
   const [welcomeVideoThumbnail, setWelcomeVideoThumbnail] = useState<string | null>(null);
   const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
+  const [totalAgents, setTotalAgents] = useState(0);
+  const [accessibleAgents, setAccessibleAgents] = useState(0);
 
   // Achievement notification - monitors and sends push when close to new badge/level
   useAchievementNotification();
@@ -107,8 +109,27 @@ const StudentDashboard = () => {
       fetchData();
       fetchDailyChallengesCount();
       fetchWelcomeVideo();
+      fetchAgentsStats();
     }
   }, [user]);
+
+  const fetchAgentsStats = async () => {
+    if (!user) return;
+    
+    const { count: total } = await supabase
+      .from("ai_agents")
+      .select("*", { count: "exact", head: true })
+      .eq("is_published", true)
+      .is("deleted_at", null);
+    
+    const { count: accessible } = await supabase
+      .from("ai_agent_access")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id);
+    
+    setTotalAgents(total || 0);
+    setAccessibleAgents(accessible || 0);
+  };
   const fetchWelcomeVideo = async () => {
     const { data } = await supabase
       .from("platform_settings")
@@ -856,6 +877,77 @@ const StudentDashboard = () => {
           })}
           </motion.div>
         </section>
+
+        {/* Assistentes Soberanas - AI Agents */}
+        {totalAgents > 0 && (
+          <section className="mb-12">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.35 }}
+              className="flex items-center justify-between mb-6"
+            >
+              <div>
+                <h2 className="text-2xl font-serif font-bold text-cream">
+                  Assistentes Soberanas
+                </h2>
+                <p className="text-cream/50 text-sm mt-1">
+                  Seus agentes de IA especializados para advocacia
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/student/agents")}
+                className="border-secondary/30 text-secondary hover:bg-secondary/10"
+              >
+                Ver Todos
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.4, type: "spring", stiffness: 120 }}
+              whileHover={{ y: -4, scale: 1.01, boxShadow: "0 0 40px rgba(166, 144, 97, 0.15)" }}
+              whileTap={{ scale: 0.99 }}
+              onClick={() => navigate("/student/agents")}
+              className="group relative p-6 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-zinc-800/90 rounded-2xl border border-secondary/30 hover:border-secondary/60 cursor-pointer overflow-hidden transition-all duration-300"
+            >
+              {/* Decorative background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-radial from-secondary/10 to-transparent opacity-50" />
+              
+              <div className="relative z-10 flex items-center justify-between">
+                <div className="flex items-center gap-5">
+                  <div className="relative">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-secondary/30 to-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Bot className="w-8 h-8 text-secondary" />
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-secondary flex items-center justify-center">
+                      <Sparkles className="w-3 h-3 text-black" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-cream mb-1 group-hover:text-secondary transition-colors">
+                      Assistentes de IA Soberanas
+                    </h3>
+                    <p className="text-cream/60 text-sm">
+                      {totalAgents} agentes disponíveis • {accessibleAgents} liberados para você
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-secondary">
+                  <span className="text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                    Explorar
+                  </span>
+                  <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </motion.div>
+          </section>
+        )}
 
         {/* Learning Paths */}
         <section className="mb-12">
