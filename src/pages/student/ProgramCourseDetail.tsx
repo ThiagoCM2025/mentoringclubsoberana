@@ -25,6 +25,7 @@ import { SchedulingCTA } from "@/components/student/program/SchedulingCTA";
 import { CertificateGenerator } from "@/components/student/CertificateGenerator";
 import { WeekCelebrationModal } from "@/components/student/program/WeekCelebrationModal";
 import { useRealtimeMissionCelebration } from "@/hooks/useRealtimeMissionCelebration";
+import { useRealtimeProgramSync } from "@/hooks/useRealtimeProgramSync";
 import { ContentModulesSection } from "@/components/student/program/ContentModulesSection";
 import { CurrentMissionSection } from "@/components/student/program/CurrentMissionSection";
 
@@ -44,6 +45,9 @@ const ProgramCourseDetail = () => {
 
   // Use the optimized RPC hook - 1 query instead of 10+
   const { data, isLoading, refetch } = useProgramDetailData(courseId, user?.id);
+
+  // Realtime sync: admin changes → student view updates instantly
+  useRealtimeProgramSync(courseId, user?.id);
 
   // Realtime celebration hook
   const { celebration, clearCelebration } = useRealtimeMissionCelebration(user?.id, courseId);
