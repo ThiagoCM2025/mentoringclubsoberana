@@ -16,6 +16,7 @@ import {
   Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AvatarMapForm } from "./AvatarMapForm";
 
 interface Material {
   id: string;
@@ -44,6 +45,7 @@ interface TextLessonContentProps {
     id: string;
     title: string;
     description: string | null;
+    form_type?: string | null;
   };
   materials: Material[];
   relatedMission?: RelatedMission | null;
@@ -66,6 +68,28 @@ const TextLessonContent = ({
   const missionIsApproved = missionCompletion?.status === 'approved';
   const missionIsSubmitted = missionCompletion?.status === 'submitted' || missionCompletion?.status === 'pending';
   const missionIsRejected = missionCompletion?.status === 'rejected';
+
+  // Check if this lesson has a special form type
+  const isAvatarMapForm = lesson.form_type === 'avatar_map' ||
+    materials.some(m => 
+      m.file_url?.includes('1t1bfc9BieVxsYmLMpXEJZYioUpCJ49eE') || // Google Doc ID from user's link
+      m.title?.toLowerCase().includes('mapa do avatar') ||
+      m.title?.toLowerCase().includes('nicho') && m.title?.toLowerCase().includes('avatar')
+    );
+
+  // If it's an avatar map form, render the interactive form
+  if (isAvatarMapForm) {
+    return (
+      <div className="w-full bg-zinc-900 py-6">
+        <AvatarMapForm
+          lessonId={lesson.id}
+          missionId={relatedMission?.id}
+          onComplete={onComplete}
+          onMissionSubmit={onMissionSubmit}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto px-6 py-8">
