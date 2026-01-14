@@ -205,7 +205,7 @@ export function AvatarMapForm({ lessonId, missionId, onComplete, onMissionSubmit
           mission_id: missionId,
           status: "submitted",
           proof_content: `Formulário Mapa do Avatar preenchido e finalizado`,
-          proof_links: [`/student/avatar-form/${formId || lessonId}`],
+          proof_links: [`avatar-form:${lessonId}:${formId}`],
           submitted_at: new Date().toISOString(),
         }, { onConflict: "user_id,mission_id" });
         

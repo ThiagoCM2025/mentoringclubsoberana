@@ -34,10 +34,12 @@ import {
   ExternalLink,
   MessageSquare,
   Trophy,
-  Filter
+  Filter,
+  Eye
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { StudentAvatarFormViewer } from "@/components/admin/StudentAvatarFormViewer";
 
 interface MissionSubmission {
   id: string;
@@ -72,6 +74,11 @@ const AdminMissionReviews = () => {
   const [selectedSubmission, setSelectedSubmission] = useState<MissionSubmission | null>(null);
   const [feedback, setFeedback] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [avatarFormViewer, setAvatarFormViewer] = useState<{
+    lessonId: string;
+    userId: string;
+    studentName: string;
+  } | null>(null);
 
   useEffect(() => {
     fetchSubmissions();
@@ -341,18 +348,42 @@ const AdminMissionReviews = () => {
                         Links de Prova
                       </div>
                       <div className="space-y-2">
-                        {selectedSubmission.proof_links.map((link, i) => (
-                          <a
-                            key={i}
-                            href={link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors text-sm text-primary"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                            {link}
-                          </a>
-                        ))}
+                        {selectedSubmission.proof_links.map((link, i) => {
+                          // Detectar se é um link interno de avatar-form
+                          const avatarFormMatch = link.match(/^avatar-form:(.+):(.+)$/) || 
+                                                  link.match(/\/student\/avatar-form\/(.+)/);
+                          
+                          if (avatarFormMatch) {
+                            const lessonId = avatarFormMatch[1];
+                            return (
+                              <button
+                                key={i}
+                                onClick={() => setAvatarFormViewer({
+                                  lessonId,
+                                  userId: selectedSubmission.user_id,
+                                  studentName: selectedSubmission.profile.full_name
+                                })}
+                                className="flex items-center gap-2 p-3 bg-secondary/10 rounded-lg hover:bg-secondary/20 transition-colors text-sm text-secondary w-full text-left"
+                              >
+                                <Eye className="w-4 h-4" />
+                                Ver Mapa do Avatar preenchido
+                              </button>
+                            );
+                          }
+                          
+                          return (
+                            <a
+                              key={i}
+                              href={link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors text-sm text-primary"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                              {link}
+                            </a>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -413,6 +444,15 @@ const AdminMissionReviews = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Avatar Form Viewer Modal */}
+        <StudentAvatarFormViewer
+          open={!!avatarFormViewer}
+          onOpenChange={(open) => !open && setAvatarFormViewer(null)}
+          lessonId={avatarFormViewer?.lessonId || ""}
+          userId={avatarFormViewer?.userId || ""}
+          studentName={avatarFormViewer?.studentName}
+        />
       </div>
     </AdminLayout>
   );
