@@ -102,6 +102,11 @@ const TextLessonContent = ({
         proof_content: `Formulário Mapa do Avatar preenchido e finalizado`,
         proof_links: proofLinks,
         submitted_at: new Date().toISOString(),
+        // Limpar campos de revisão anterior (importante para reenvios)
+        reviewed_at: null,
+        reviewed_by: null,
+        admin_feedback: null,
+        xp_earned: 0
       }, { onConflict: "user_id,mission_id" });
       
       toast.success("Missão entregue com sucesso!");

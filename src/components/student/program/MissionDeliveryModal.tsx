@@ -163,7 +163,12 @@ export const MissionDeliveryModal = ({
           proof_links: filteredLinks.length > 0 ? filteredLinks : null,
           proof_file_url: imageUrl,
           status: 'submitted',
-          submitted_at: new Date().toISOString()
+          submitted_at: new Date().toISOString(),
+          // Limpar campos de revisão anterior (importante para reenvios)
+          reviewed_at: null,
+          reviewed_by: null,
+          admin_feedback: null,
+          xp_earned: 0
         }, {
           onConflict: 'user_id,mission_id'
         });
