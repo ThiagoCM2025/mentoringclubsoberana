@@ -65,6 +65,7 @@ const AdminStudents = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [agentAccessCounts, setAgentAccessCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -122,6 +123,12 @@ const AdminStudents = () => {
       .select("user_id, completed")
       .in("user_id", studentUserIds);
 
+    // Fetch agent access counts
+    const { data: agentAccess } = await supabase
+      .from("ai_agent_access")
+      .select("user_id")
+      .in("user_id", studentUserIds);
+
     const enrollmentCounts: Record<string, number> = {};
     enrollments?.forEach(e => {
       enrollmentCounts[e.user_id] = (enrollmentCounts[e.user_id] || 0) + 1;
@@ -131,6 +138,12 @@ const AdminStudents = () => {
     diagnostics?.forEach(d => {
       diagnosticStatus[d.user_id] = d.completed || false;
     });
+
+    const accessCounts: Record<string, number> = {};
+    agentAccess?.forEach(a => {
+      accessCounts[a.user_id] = (accessCounts[a.user_id] || 0) + 1;
+    });
+    setAgentAccessCounts(accessCounts);
 
     if (profiles) {
       const studentsData = profiles.map(p => ({ 
@@ -336,6 +349,7 @@ const AdminStudents = () => {
       setSelectedStudent(null);
       setSelectedAgentId("");
       setGrantAllAgents(false);
+      fetchStudents(); // Refresh to update agent access counts
     } catch (error: any) {
       toast({ 
         title: "Erro", 
@@ -697,15 +711,26 @@ const AdminStudents = () => {
                           <GraduationCap className="w-4 h-4" />
                           Matricular
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => openAgentDialog(student)}
-                          className="gap-2 border-secondary/30 text-secondary hover:bg-secondary/10"
-                        >
-                          <Bot className="w-4 h-4" />
-                          Agentes
-                        </Button>
+                        {(() => {
+                          const accessCount = agentAccessCounts[student.user_id] || 0;
+                          const hasAgentAccess = accessCount > 0;
+                          
+                          return (
+                            <Button
+                              size="sm"
+                              variant={hasAgentAccess ? "default" : "outline"}
+                              onClick={() => openAgentDialog(student)}
+                              className={`gap-2 ${
+                                hasAgentAccess 
+                                  ? "bg-green-600 hover:bg-green-700 text-white border-green-600" 
+                                  : "border-secondary/30 text-secondary hover:bg-secondary/10"
+                              }`}
+                            >
+                              <Bot className="w-4 h-4" />
+                              Agentes {hasAgentAccess && `(${accessCount})`}
+                            </Button>
+                          );
+                        })()}
                       </div>
                     </TableCell>
                   </TableRow>
