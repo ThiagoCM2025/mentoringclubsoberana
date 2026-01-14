@@ -38,6 +38,9 @@ interface Lesson {
   duration_minutes: number | null;
   order_index: number;
   is_free: boolean;
+  lesson_type?: string | null;
+  action_url?: string | null;
+  action_button_text?: string | null;
   deleted_at?: string | null;
   deleted_by?: string | null;
 }
@@ -108,6 +111,9 @@ const CourseEditor = () => {
           duration_minutes,
           order_index,
           is_free,
+          lesson_type,
+          action_url,
+          action_button_text,
           deleted_at,
           deleted_by
         )
