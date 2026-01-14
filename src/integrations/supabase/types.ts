@@ -1946,6 +1946,7 @@ export type Database = {
           deleted_by: string | null
           description: string | null
           duration_minutes: number | null
+          form_type: string | null
           id: string
           is_free: boolean | null
           lesson_label: string | null
@@ -1965,6 +1966,7 @@ export type Database = {
           deleted_by?: string | null
           description?: string | null
           duration_minutes?: number | null
+          form_type?: string | null
           id?: string
           is_free?: boolean | null
           lesson_label?: string | null
@@ -1984,6 +1986,7 @@ export type Database = {
           deleted_by?: string | null
           description?: string | null
           duration_minutes?: number | null
+          form_type?: string | null
           id?: string
           is_free?: boolean | null
           lesson_label?: string | null
@@ -2772,6 +2775,101 @@ export type Database = {
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_avatar_forms: {
+        Row: {
+          avatar_idade: string | null
+          avatar_momento_vida: string | null
+          avatar_orientacao_politica: string | null
+          avatar_profissao: string | null
+          avatar_religiao: string | null
+          avatar_salario: string | null
+          avatar_sexo: string | null
+          completed_at: string | null
+          created_at: string | null
+          current_step: number | null
+          desejos_financeiros: string[] | null
+          desejos_pessoais: string[] | null
+          desejos_profissionais: string[] | null
+          dores_emocionais: string[] | null
+          dores_pessoais: string[] | null
+          dores_profissionais: string[] | null
+          dores_relacionamento: string[] | null
+          id: string
+          is_completed: boolean | null
+          lesson_id: string | null
+          nicho: string | null
+          resumo_avatar: string | null
+          roma: string | null
+          subnicho: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avatar_idade?: string | null
+          avatar_momento_vida?: string | null
+          avatar_orientacao_politica?: string | null
+          avatar_profissao?: string | null
+          avatar_religiao?: string | null
+          avatar_salario?: string | null
+          avatar_sexo?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          current_step?: number | null
+          desejos_financeiros?: string[] | null
+          desejos_pessoais?: string[] | null
+          desejos_profissionais?: string[] | null
+          dores_emocionais?: string[] | null
+          dores_pessoais?: string[] | null
+          dores_profissionais?: string[] | null
+          dores_relacionamento?: string[] | null
+          id?: string
+          is_completed?: boolean | null
+          lesson_id?: string | null
+          nicho?: string | null
+          resumo_avatar?: string | null
+          roma?: string | null
+          subnicho?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avatar_idade?: string | null
+          avatar_momento_vida?: string | null
+          avatar_orientacao_politica?: string | null
+          avatar_profissao?: string | null
+          avatar_religiao?: string | null
+          avatar_salario?: string | null
+          avatar_sexo?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          current_step?: number | null
+          desejos_financeiros?: string[] | null
+          desejos_pessoais?: string[] | null
+          desejos_profissionais?: string[] | null
+          dores_emocionais?: string[] | null
+          dores_pessoais?: string[] | null
+          dores_profissionais?: string[] | null
+          dores_relacionamento?: string[] | null
+          id?: string
+          is_completed?: boolean | null
+          lesson_id?: string | null
+          nicho?: string | null
+          resumo_avatar?: string | null
+          roma?: string | null
+          subnicho?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_avatar_forms_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
             referencedColumns: ["id"]
           },
         ]

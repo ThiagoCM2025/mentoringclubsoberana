@@ -41,6 +41,7 @@ interface Lesson {
   lesson_type?: string | null;
   action_url?: string | null;
   action_button_text?: string | null;
+  form_type?: string | null;
 }
 
 interface Material {
@@ -481,7 +482,8 @@ const LessonPlayer = () => {
                 lesson={{
                   id: lesson.id,
                   title: lesson.title,
-                  description: lesson.description
+                  description: lesson.description,
+                  form_type: lesson.form_type
                 }}
                 materials={materials}
                 relatedMission={relatedMission}
