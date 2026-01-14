@@ -32,6 +32,8 @@ import isotipoGold from "@/assets/brand/isotipo-gold.png";
 import { AIAssistant } from "@/components/student/AIAssistant";
 import { LessonQuiz } from "@/components/student/LessonQuiz";
 import { LessonNotes } from "@/components/student/LessonNotes";
+import { MissionDeliveryModal } from "@/components/student/program/MissionDeliveryModal";
+import { WeeklyMission as MissionModalType } from "@/components/student/program/WeeklyMissionCard";
 
 interface Lesson {
   id: string;
@@ -118,6 +120,23 @@ const LessonPlayer = () => {
   const [theaterMode, setTheaterMode] = useState(false);
   const [relatedMission, setRelatedMission] = useState<WeeklyMission | null>(null);
   const [missionCompletion, setMissionCompletion] = useState<MissionCompletion | null>(null);
+  const [deliveryModalOpen, setDeliveryModalOpen] = useState(false);
+
+  // Convert to modal type
+  const missionForModal: MissionModalType | null = relatedMission ? {
+    id: relatedMission.id,
+    week_number: relatedMission.week_number,
+    month_number: Math.ceil(relatedMission.week_number / 4),
+    month_title: null,
+    title: relatedMission.title,
+    challenge_description: relatedMission.challenge_description || '',
+    why_do: relatedMission.why_do,
+    gamification_emoji: relatedMission.gamification_emoji || '🎯',
+    gamification_title: relatedMission.gamification_title,
+    gamification_reward: null,
+    xp_reward: relatedMission.xp_reward,
+    requires_proof: true,
+  } : null;
 
   useEffect(() => {
     if (lessonId && user) {
@@ -516,7 +535,7 @@ const LessonPlayer = () => {
               {missionCompletion?.status !== 'approved' && (
                 <Button
                   size="sm"
-                  onClick={() => navigate(`/student/program/${module?.course_id}?mission=${relatedMission.id}`)}
+                  onClick={() => setDeliveryModalOpen(true)}
                   className="bg-secondary hover:bg-secondary/90 text-black font-medium"
                 >
                   <Target className="w-4 h-4 mr-1" />
@@ -775,6 +794,20 @@ const LessonPlayer = () => {
         contextType="lesson" 
         contextId={lessonId} 
         contextTitle={lesson?.title} 
+      />
+
+      {/* Mission Delivery Modal */}
+      <MissionDeliveryModal
+        open={deliveryModalOpen}
+        onOpenChange={setDeliveryModalOpen}
+        mission={missionForModal}
+        onSuccess={() => {
+          setDeliveryModalOpen(false);
+          // Refresh mission status
+          if (lessonId && user) {
+            fetchLessonData();
+          }
+        }}
       />
     </div>
   );
