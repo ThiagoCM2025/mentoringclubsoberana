@@ -28,13 +28,18 @@ const getSessionId = (): string => {
   return sessionId;
 };
 
-// Push para dataLayer do GTM
+// Push para dataLayer do GTM com proteção contra erros
 const pushToDataLayer = (eventName: string, eventData: EventData) => {
-  if (typeof window !== "undefined" && window.dataLayer) {
-    window.dataLayer.push({
-      event: eventName,
-      ...eventData,
-    });
+  try {
+    if (typeof window !== "undefined" && window.dataLayer) {
+      window.dataLayer.push({
+        event: eventName,
+        ...eventData,
+      });
+    }
+  } catch (error) {
+    // Silently fail - GTM errors shouldn't break the app
+    console.warn("GTM push failed:", error);
   }
 };
 
