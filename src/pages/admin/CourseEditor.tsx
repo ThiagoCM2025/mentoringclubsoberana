@@ -71,7 +71,7 @@ const CourseEditor = () => {
     is_subscription: false,
   });
   const [modules, setModules] = useState<Module[]>([]);
-  const [missions, setMissions] = useState<{ id: string; title: string; related_lesson_id: string | null }[]>([]);
+  const [missions, setMissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("basic");
@@ -136,10 +136,10 @@ const CourseEditor = () => {
     }
 
     // Fetch missions for this course
-    const { data: missionsData } = await supabase
-      .from("weekly_missions")
-      .select("id, title, related_lesson_id")
-      .eq("course_id", courseId);
+      const { data: missionsData } = await supabase
+        .from("weekly_missions")
+        .select("*")
+        .eq("course_id", courseId);
 
     setMissions(missionsData || []);
 
