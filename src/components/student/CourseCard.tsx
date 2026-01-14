@@ -18,6 +18,7 @@ interface CourseCardProps {
   isLocked?: boolean;
   price?: number | null;
   onPreview?: () => void;
+  programType?: string | null;
 }
 
 const CourseCard = ({
@@ -32,7 +33,8 @@ const CourseCard = ({
   index = 0,
   isLocked = false,
   price = null,
-  onPreview
+  onPreview,
+  programType = null
 }: CourseCardProps) => {
   const navigate = useNavigate();
 
@@ -41,6 +43,9 @@ const CourseCard = ({
       onPreview();
     } else if (isLocked) {
       window.location.href = "/#produtos";
+    } else if (programType) {
+      // Cursos com program_type vão direto para a página de programa
+      navigate(`/student/program/${id}`);
     } else {
       navigate(`/student/course/${id}`);
     }
