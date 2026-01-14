@@ -36,6 +36,7 @@ interface Course {
   thumbnail_url: string | null;
   thumbnail_position: string | null;
   price: number | null;
+  program_type: string | null;
 }
 interface EnrollmentWithCourse {
   course_id: string;
@@ -161,7 +162,7 @@ const StudentDashboard = () => {
       if (profileData) setProfile(profileData);
       const {
         data: coursesData
-      } = await supabase.from("courses").select("id, title, description, thumbnail_url, thumbnail_position, price").eq("is_published", true);
+      } = await supabase.from("courses").select("id, title, description, thumbnail_url, thumbnail_position, price, program_type").eq("is_published", true);
       if (coursesData) {
         setAllCourses(coursesData);
       }
@@ -175,7 +176,8 @@ const StudentDashboard = () => {
             description,
             thumbnail_url,
             thumbnail_position,
-            price
+            price,
+            program_type
           )
         `).eq("user_id", user.id);
       if (enrollmentData) {
@@ -745,7 +747,7 @@ const StudentDashboard = () => {
             </h2>
           </div>
           {loading ? <SkeletonCourseGrid count={3} className="[&>div]:bg-zinc-900 [&>div]:border-secondary/20" /> : enrollments.length > 0 ? <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {enrollments.map((enrollment, index) => <CourseCard key={enrollment.course_id} id={enrollment.courses!.id} title={enrollment.courses!.title} description={enrollment.courses!.description} thumbnail={enrollment.courses!.thumbnail_url} thumbnailPosition={enrollment.courses!.thumbnail_position} progress={progress[enrollment.course_id] || 0} totalLessons={courseStats[enrollment.course_id]?.total || 0} completedLessons={courseStats[enrollment.course_id]?.completed || 0} index={index} />)}
+              {enrollments.map((enrollment, index) => <CourseCard key={enrollment.course_id} id={enrollment.courses!.id} title={enrollment.courses!.title} description={enrollment.courses!.description} thumbnail={enrollment.courses!.thumbnail_url} thumbnailPosition={enrollment.courses!.thumbnail_position} progress={progress[enrollment.course_id] || 0} totalLessons={courseStats[enrollment.course_id]?.total || 0} completedLessons={courseStats[enrollment.course_id]?.completed || 0} index={index} programType={enrollment.courses!.program_type} />)}
             </div> : <div className="text-center py-16 bg-zinc-900/50 rounded-2xl border border-secondary/10">
               <BookOpen className="w-16 h-16 text-secondary/40 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-cream mb-2">
