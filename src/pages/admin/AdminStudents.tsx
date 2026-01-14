@@ -31,7 +31,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { Search, Users, UserPlus, Loader2, Eye, EyeOff, GraduationCap, User, CheckCircle2, AlertCircle } from "lucide-react";
+import { Search, Users, UserPlus, Loader2, Eye, EyeOff, GraduationCap, User, CheckCircle2, AlertCircle, Bot } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
 interface Student {
@@ -50,16 +52,28 @@ interface Course {
   is_published: boolean;
 }
 
+interface Agent {
+  id: string;
+  title: string;
+  is_published: boolean;
+  category: { name: string } | null;
+}
+
 const AdminStudents = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [students, setStudents] = useState<Student[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
+  const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEnrollDialogOpen, setIsEnrollDialogOpen] = useState(false);
+  const [isAgentDialogOpen, setIsAgentDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
+  const [selectedAgentId, setSelectedAgentId] = useState<string>("");
+  const [grantAllAgents, setGrantAllAgents] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -73,6 +87,7 @@ const AdminStudents = () => {
   useEffect(() => {
     fetchStudents();
     fetchCourses();
+    fetchAgents();
   }, []);
 
   const fetchStudents = async () => {
@@ -135,6 +150,17 @@ const AdminStudents = () => {
       .order("title");
     
     if (data) setCourses(data);
+  };
+
+  const fetchAgents = async () => {
+    const { data } = await supabase
+      .from("ai_agents")
+      .select("id, title, is_published, category:ai_agent_categories(name)")
+      .eq("is_published", true)
+      .is("deleted_at", null)
+      .order("title");
+    
+    if (data) setAgents(data as Agent[]);
   };
 
   const handleCreateStudent = async (e: React.FormEvent) => {
@@ -226,6 +252,99 @@ const AdminStudents = () => {
     setSelectedStudent(student);
     setSelectedCourseId("");
     setIsEnrollDialogOpen(true);
+  };
+
+  const openAgentDialog = (student: Student) => {
+    setSelectedStudent(student);
+    setSelectedAgentId("");
+    setGrantAllAgents(false);
+    setIsAgentDialogOpen(true);
+  };
+
+  const handleGrantAgentAccess = async () => {
+    if (!selectedStudent) return;
+    
+    setIsSubmitting(true);
+
+    try {
+      if (grantAllAgents) {
+        // Grant access to all published agents
+        const accessRecords = agents.map(agent => ({
+          agent_id: agent.id,
+          user_id: selectedStudent.user_id,
+          granted_by: user?.id,
+        }));
+
+        const { error } = await supabase
+          .from("ai_agent_access")
+          .upsert(accessRecords, { 
+            onConflict: 'agent_id,user_id',
+            ignoreDuplicates: true
+          });
+
+        if (error) throw error;
+
+        toast({ 
+          title: "Sucesso!", 
+          description: `Acesso a ${agents.length} agentes liberado com sucesso.` 
+        });
+      } else {
+        if (!selectedAgentId) {
+          toast({ 
+            title: "Aviso", 
+            description: "Selecione um agente ou marque 'Liberar todos'.", 
+            variant: "destructive" 
+          });
+          return;
+        }
+
+        // Check if already has access
+        const { data: existing } = await supabase
+          .from("ai_agent_access")
+          .select("id")
+          .eq("user_id", selectedStudent.user_id)
+          .eq("agent_id", selectedAgentId)
+          .maybeSingle();
+
+        if (existing) {
+          toast({ 
+            title: "Aviso", 
+            description: "Esta aluna já tem acesso a este agente.", 
+            variant: "destructive" 
+          });
+          return;
+        }
+
+        const { error } = await supabase
+          .from("ai_agent_access")
+          .insert({
+            agent_id: selectedAgentId,
+            user_id: selectedStudent.user_id,
+            granted_by: user?.id,
+          });
+
+        if (error) throw error;
+
+        const agentName = agents.find(a => a.id === selectedAgentId)?.title || "Agente";
+        toast({ 
+          title: "Sucesso!", 
+          description: `Acesso ao ${agentName} liberado.` 
+        });
+      }
+
+      setIsAgentDialogOpen(false);
+      setSelectedStudent(null);
+      setSelectedAgentId("");
+      setGrantAllAgents(false);
+    } catch (error: any) {
+      toast({ 
+        title: "Erro", 
+        description: error.message || "Não foi possível liberar o acesso.", 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const filteredStudents = students.filter(
@@ -399,6 +518,88 @@ const AdminStudents = () => {
           </DialogContent>
         </Dialog>
 
+        {/* Agent Access Dialog */}
+        <Dialog open={isAgentDialogOpen} onOpenChange={setIsAgentDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Bot className="w-5 h-5 text-secondary" />
+                Liberar Agentes de IA
+              </DialogTitle>
+              <DialogDescription>
+                Liberando para: <strong>{selectedStudent?.full_name || "Aluna"}</strong>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label>Selecione o agente</Label>
+                <Select 
+                  value={selectedAgentId} 
+                  onValueChange={setSelectedAgentId}
+                  disabled={grantAllAgents}
+                >
+                  <SelectTrigger className={grantAllAgents ? "opacity-50" : ""}>
+                    <SelectValue placeholder="Escolha um agente..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {agents.map((agent) => (
+                      <SelectItem key={agent.id} value={agent.id}>
+                        {agent.title} {agent.category?.name && `(${agent.category.name})`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center space-x-2 p-3 bg-secondary/10 rounded-lg border border-secondary/20">
+                <Checkbox 
+                  id="grant-all" 
+                  checked={grantAllAgents}
+                  onCheckedChange={(checked) => {
+                    setGrantAllAgents(checked as boolean);
+                    if (checked) setSelectedAgentId("");
+                  }}
+                />
+                <label 
+                  htmlFor="grant-all" 
+                  className="text-sm font-medium cursor-pointer flex items-center gap-2"
+                >
+                  <Bot className="w-4 h-4 text-secondary" />
+                  Liberar todos os agentes ({agents.length} disponíveis)
+                </label>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsAgentDialogOpen(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={handleGrantAgentAccess} 
+                  disabled={isSubmitting || (!selectedAgentId && !grantAllAgents)}
+                  className="gap-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Liberando...
+                    </>
+                  ) : (
+                    <>
+                      <Bot className="w-4 h-4" />
+                      Liberar Acesso
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Search */}
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -495,6 +696,15 @@ const AdminStudents = () => {
                         >
                           <GraduationCap className="w-4 h-4" />
                           Matricular
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openAgentDialog(student)}
+                          className="gap-2 border-secondary/30 text-secondary hover:bg-secondary/10"
+                        >
+                          <Bot className="w-4 h-4" />
+                          Agentes
                         </Button>
                       </div>
                     </TableCell>
