@@ -52,6 +52,7 @@ interface Post {
   is_pinned: boolean;
   is_highlighted: boolean;
   is_hidden: boolean;
+  is_official: boolean;
   image_url: string | null;
   poll_question: string | null;
   poll_options: PollOption[] | null;
@@ -120,6 +121,7 @@ const StudentCommunity = () => {
       .select("*")
       .eq("is_hidden", false)
       .order("is_pinned", { ascending: false })
+      .order("is_official", { ascending: false })
       .order("created_at", { ascending: false });
 
     if (selectedCategory !== "all") {

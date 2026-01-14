@@ -834,6 +834,7 @@ export type Database = {
           image_url: string | null
           is_hidden: boolean | null
           is_highlighted: boolean | null
+          is_official: boolean | null
           is_pinned: boolean | null
           likes_count: number | null
           moderated_at: string | null
@@ -853,6 +854,7 @@ export type Database = {
           image_url?: string | null
           is_hidden?: boolean | null
           is_highlighted?: boolean | null
+          is_official?: boolean | null
           is_pinned?: boolean | null
           likes_count?: number | null
           moderated_at?: string | null
@@ -872,6 +874,7 @@ export type Database = {
           image_url?: string | null
           is_hidden?: boolean | null
           is_highlighted?: boolean | null
+          is_official?: boolean | null
           is_pinned?: boolean | null
           likes_count?: number | null
           moderated_at?: string | null

@@ -36,7 +36,9 @@ import {
   Edit,
   Trash2,
   X,
-  Check
+  Check,
+  Crown,
+  Sparkles
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -45,6 +47,7 @@ import PostReactions from "./PostReactions";
 import PostPoll from "./PostPoll";
 import MentionAutocomplete from "./MentionAutocomplete";
 import CommentReactions from "./CommentReactions";
+import isotipoGold from "@/assets/brand/isotipo-s-gold.png";
 
 interface Comment {
   id: string;
@@ -73,6 +76,7 @@ interface Post {
   is_pinned: boolean;
   is_highlighted: boolean;
   is_hidden: boolean;
+  is_official: boolean;
   image_url: string | null;
   poll_question: string | null;
   poll_options: PollOption[] | null;
@@ -88,6 +92,7 @@ const CATEGORY_LABELS: Record<string, { label: string; color: string }> = {
   duvidas: { label: "Dúvidas", color: "bg-blue-900/50 text-blue-300" },
   sucesso: { label: "Histórias de Sucesso", color: "bg-green-900/50 text-green-300" },
   dicas: { label: "Dicas", color: "bg-amber-900/50 text-amber-300" },
+  oficial: { label: "Comunicado Oficial", color: "bg-secondary/20 text-secondary border border-secondary/30" },
 };
 
 interface CommunityPostProps {
@@ -113,8 +118,9 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
   const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
   const [localCommentsCount, setLocalCommentsCount] = useState(post.comments_count);
 
-  const authorName = post.profiles?.full_name || "Aluna";
-  const authorInitials = authorName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+  const isOfficial = post.is_official;
+  const authorName = isOfficial ? "Equipe Soberana" : (post.profiles?.full_name || "Aluna");
+  const authorInitials = isOfficial ? "S" : authorName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
   const categoryInfo = CATEGORY_LABELS[post.category] || CATEGORY_LABELS.general;
 
   const handleMention = (userId: string, userName: string) => {
@@ -325,12 +331,21 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
       transition={{ delay: index * 0.05 }}
       className={cn(
         "bg-zinc-900 rounded-xl border border-secondary/20 p-5 shadow-sm",
-        post.is_pinned && "border-secondary",
-        post.is_highlighted && "border-green-500 bg-green-500/5"
+        post.is_pinned && !isOfficial && "border-secondary",
+        post.is_highlighted && "border-green-500 bg-green-500/5",
+        isOfficial && "border-secondary/50 bg-gradient-to-br from-secondary/10 via-secondary/5 to-transparent"
       )}
     >
+      {/* Official Badge Banner */}
+      {isOfficial && (
+        <div className="flex items-center gap-2 mb-4 -mx-5 -mt-5 px-5 py-3 bg-gradient-to-r from-secondary/20 via-secondary/10 to-transparent border-b border-secondary/20 rounded-t-xl">
+          <Crown className="w-4 h-4 text-secondary" />
+          <span className="text-sm font-medium text-secondary">Comunicado Oficial</span>
+        </div>
+      )}
+
       {/* Status Badges */}
-      {(post.is_pinned || post.is_highlighted) && (
+      {(post.is_pinned || post.is_highlighted) && !isOfficial && (
         <div className="flex flex-wrap gap-2 mb-3">
           {post.is_pinned && (
             <Badge className="bg-secondary text-secondary-foreground text-xs">
@@ -347,15 +362,29 @@ const CommunityPost = ({ post, index, onLike, onRefresh }: CommunityPostProps) =
 
       {/* Header */}
       <div className="flex items-start gap-3 mb-4">
-        <Avatar className="w-10 h-10">
-          <AvatarImage src={post.profiles?.avatar_url || undefined} />
-          <AvatarFallback className="bg-secondary/20 text-secondary">
-            {authorInitials}
-          </AvatarFallback>
-        </Avatar>
+        {isOfficial ? (
+          <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center ring-2 ring-secondary/30">
+            <img src={isotipoGold} alt="Soberana" className="w-6 h-6" />
+          </div>
+        ) : (
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={post.profiles?.avatar_url || undefined} />
+            <AvatarFallback className="bg-secondary/20 text-secondary">
+              {authorInitials}
+            </AvatarFallback>
+          </Avatar>
+        )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-medium text-cream">{authorName}</span>
+            <span className={cn("font-medium", isOfficial ? "text-secondary" : "text-cream")}>
+              {authorName}
+            </span>
+            {isOfficial && (
+              <Badge className="bg-secondary/10 text-secondary border border-secondary/30 text-xs py-0 px-1.5">
+                <Sparkles className="w-2.5 h-2.5 mr-0.5" />
+                Oficial
+              </Badge>
+            )}
             <span className="text-cream/50 text-sm">•</span>
             <span className="text-cream/50 text-sm">
               {formatDistanceToNow(new Date(post.created_at), { 
