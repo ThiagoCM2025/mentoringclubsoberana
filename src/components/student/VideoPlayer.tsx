@@ -303,7 +303,7 @@ const VideoPlayer = ({ url, onTimeUpdate, onEnded, initialTime = 0 }: VideoPlaye
 
   if (videoType === "none" || !url) {
     return (
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
+      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 rounded-lg">
         <div className="text-center p-8">
           <div className="w-24 h-24 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-6 border-2 border-secondary/30">
             <PlayCircle className="w-12 h-12 text-secondary" />

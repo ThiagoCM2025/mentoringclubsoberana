@@ -584,26 +584,31 @@ const LessonPlayer = () => {
                 minHeight: '400px' 
               }}
             >
-              {lesson?.lesson_type === 'scheduling' || 
-               lesson?.video_url?.includes('calendar.google.com') ||
-               lesson?.video_url?.includes('calendly.com') ||
-               lesson?.action_url?.includes('calendar') ? (
-                <SchedulingContent
-                  url={lesson.action_url || lesson.video_url || ""}
-                  title={lesson.title}
-                  description={lesson.description}
-                  buttonText={lesson.action_button_text}
-                  isCompleted={isCompleted}
-                  onComplete={markAsComplete}
-                />
-              ) : (
-                <VideoPlayer
-                  url={lesson?.video_url || null}
-                  onTimeUpdate={handleTimeUpdate}
-                  onEnded={handleVideoEnded}
-                  initialTime={progressSeconds}
-                />
-              )}
+              {/* Wrapper centralizado com largura máxima */}
+              <div className="w-full h-full max-w-[1400px] mx-auto flex items-center justify-center px-4">
+                {lesson?.lesson_type === 'scheduling' || 
+                 lesson?.video_url?.includes('calendar.google.com') ||
+                 lesson?.video_url?.includes('calendly.com') ||
+                 lesson?.action_url?.includes('calendar') ? (
+                  <SchedulingContent
+                    url={lesson.action_url || lesson.video_url || ""}
+                    title={lesson.title}
+                    description={lesson.description}
+                    buttonText={lesson.action_button_text}
+                    isCompleted={isCompleted}
+                    onComplete={markAsComplete}
+                  />
+                ) : (
+                  <div className="relative w-full aspect-video max-h-full">
+                    <VideoPlayer
+                      url={lesson?.video_url || null}
+                      onTimeUpdate={handleTimeUpdate}
+                      onEnded={handleVideoEnded}
+                      initialTime={progressSeconds}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
