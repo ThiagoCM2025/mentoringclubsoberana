@@ -25,6 +25,7 @@ import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import { CourseSplashScreen } from "@/components/CourseSplashScreen";
 import { SkeletonList } from "@/components/ui/premium-skeleton";
+import { useRealtimeProgramSync } from "@/hooks/useRealtimeProgramSync";
 
 interface Course {
   id: string;
@@ -66,6 +67,9 @@ const CourseDetail = () => {
   const [lessonProgress, setLessonProgress] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [firstIncompleteLessonId, setFirstIncompleteLessonId] = useState<string | null>(null);
+
+  // Real-time sync: admin changes → student view updates instantly
+  useRealtimeProgramSync(courseId, user?.id);
 
   useEffect(() => {
     if (courseId && user) {
