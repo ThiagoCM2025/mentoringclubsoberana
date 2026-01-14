@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { AgentThumbnailUpload } from "@/components/admin/agents/AgentThumbnailUpload";
 import {
   ArrowLeft,
   Save,
@@ -512,20 +513,16 @@ export default function AgentEditor() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="thumbnail_url">URL da Thumbnail (opcional)</Label>
-                  <Input
-                    id="thumbnail_url"
-                    placeholder="https://..."
+                  <Label>Thumbnail do Agente</Label>
+                  <AgentThumbnailUpload
                     value={agent.thumbnail_url}
-                    onChange={(e) =>
-                      setAgent((prev) => ({
-                        ...prev,
-                        thumbnail_url: e.target.value,
-                      }))
+                    onChange={(url) =>
+                      setAgent((prev) => ({ ...prev, thumbnail_url: url }))
                     }
+                    agentSlug={agent.slug}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Se não informada, será usado o ícone como visual principal
+                    Faça upload de uma imagem ou deixe em branco para usar o ícone
                   </p>
                 </div>
 
@@ -533,19 +530,39 @@ export default function AgentEditor() {
                 <div className="space-y-2">
                   <Label>Preview do Card</Label>
                   <div className="p-6 rounded-xl bg-gradient-to-br from-zinc-900 to-zinc-800 border border-secondary/20">
-                    <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-xl bg-secondary/20 flex items-center justify-center border border-secondary/30">
-                        <SelectedIcon className="w-7 h-7 text-secondary" />
+                    {agent.thumbnail_url ? (
+                      <div className="space-y-3">
+                        <div className="aspect-video w-full max-w-xs rounded-lg overflow-hidden">
+                          <img
+                            src={agent.thumbnail_url}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">
+                            {agent.title || "Nome do Agente"}
+                          </p>
+                          <p className="text-zinc-400 text-sm line-clamp-1">
+                            {agent.description || "Descrição do agente..."}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-white font-medium">
-                          {agent.title || "Nome do Agente"}
-                        </p>
-                        <p className="text-zinc-400 text-sm line-clamp-1">
-                          {agent.description || "Descrição do agente..."}
-                        </p>
+                    ) : (
+                      <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 rounded-xl bg-secondary/20 flex items-center justify-center border border-secondary/30">
+                          <SelectedIcon className="w-7 h-7 text-secondary" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-white font-medium">
+                            {agent.title || "Nome do Agente"}
+                          </p>
+                          <p className="text-zinc-400 text-sm line-clamp-1">
+                            {agent.description || "Descrição do agente..."}
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
