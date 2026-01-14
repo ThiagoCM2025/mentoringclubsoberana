@@ -41,6 +41,9 @@ import BlogEditor from "@/pages/admin/BlogEditor";
 import AdminMissions from "@/pages/admin/AdminMissions";
 import AdminMissionReviews from "@/pages/admin/AdminMissionReviews";
 import AdminVideos from "@/pages/admin/AdminVideos";
+import AdminAgents from "@/pages/admin/AdminAgents";
+import AgentEditor from "@/pages/admin/AgentEditor";
+import StudentAgents from "@/pages/student/StudentAgents";
 import ExperienceStartLanding from "@/pages/ExperienceStartLanding";
 import OperacaoRegularizacaoLanding from "@/pages/OperacaoRegularizacaoLanding";
 import JornadaImobiliariaLanding from "@/pages/JornadaImobiliariaLanding";
@@ -310,6 +313,30 @@ export const AnimatedRoutes = () => {
           element={
             <ProtectedRoute requireAdmin>
               <PageTransition><AdminVideos /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/agents"
+          element={
+            <ProtectedRoute requireAdmin>
+              <PageTransition><AdminAgents /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/agents/:agentId"
+          element={
+            <ProtectedRoute requireAdmin>
+              <PageTransition><AgentEditor /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/agents"
+          element={
+            <ProtectedRoute requireStudent>
+              <PageTransition><StudentAgents /></PageTransition>
             </ProtectedRoute>
           }
         />

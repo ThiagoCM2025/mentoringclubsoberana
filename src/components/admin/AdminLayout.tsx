@@ -40,6 +40,7 @@ interface AdminLayoutProps {
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin", hasBadge: false },
   { icon: BookOpen, label: "Cursos", href: "/admin/courses", hasBadge: false },
+  { icon: Target, label: "Agentes IA", href: "/admin/agents", hasBadge: false },
   { icon: FileText, label: "Blog", href: "/admin/blog", hasBadge: false },
   { icon: Users, label: "Alunos", href: "/admin/students", hasBadge: false },
   { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments", hasBadge: false },
