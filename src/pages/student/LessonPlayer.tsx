@@ -10,6 +10,7 @@ import LessonSidebar from "@/components/student/LessonSidebar";
 import FavoriteButton from "@/components/student/FavoriteButton";
 import VideoPlayer from "@/components/student/VideoPlayer";
 import SchedulingContent from "@/components/student/SchedulingContent";
+import TextLessonContent from "@/components/student/TextLessonContent";
 import { useConfetti } from "@/hooks/useConfetti";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -73,6 +74,24 @@ interface LessonNav {
   title: string;
 }
 
+interface WeeklyMission {
+  id: string;
+  week_number: number;
+  title: string;
+  challenge_description: string | null;
+  why_do: string | null;
+  xp_reward: number;
+  badge_unlock_id: string | null;
+  gamification_title: string | null;
+  is_active: boolean;
+}
+
+interface MissionCompletion {
+  id: string;
+  status: string | null;
+  admin_feedback: string | null;
+}
+
 const LessonPlayer = () => {
   const { lessonId } = useParams<{ lessonId: string }>();
   const { user } = useAuth();
@@ -92,6 +111,8 @@ const LessonPlayer = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [modulesWithLessons, setModulesWithLessons] = useState<ModuleWithLessons[]>([]);
   const [theaterMode, setTheaterMode] = useState(false);
+  const [relatedMission, setRelatedMission] = useState<WeeklyMission | null>(null);
+  const [missionCompletion, setMissionCompletion] = useState<MissionCompletion | null>(null);
 
   useEffect(() => {
     if (lessonId && user) {
@@ -140,6 +161,29 @@ const LessonPlayer = () => {
       if (progressData) {
         setIsCompleted(progressData.completed);
         setProgressSeconds(progressData.progress_seconds || 0);
+      }
+
+      // Fetch related mission for this lesson
+      const { data: missionData } = await supabase
+        .from("weekly_missions")
+        .select("id, week_number, title, challenge_description, why_do, xp_reward, badge_unlock_id, gamification_title, is_active")
+        .eq("related_lesson_id", lessonId)
+        .maybeSingle();
+
+      if (missionData) {
+        setRelatedMission(missionData);
+        
+        // Fetch user's mission completion status
+        const { data: completionData } = await supabase
+          .from("user_mission_completions")
+          .select("id, status, admin_feedback")
+          .eq("user_id", user.id)
+          .eq("mission_id", missionData.id)
+          .maybeSingle();
+
+        if (completionData) {
+          setMissionCompletion(completionData);
+        }
       }
     }
 
@@ -449,6 +493,23 @@ const LessonPlayer = () => {
                 buttonText={lesson.action_button_text}
                 isCompleted={isCompleted}
                 onComplete={markAsComplete}
+              />
+            ) : lesson?.lesson_type === 'text' ? (
+              <TextLessonContent
+                lesson={{
+                  id: lesson.id,
+                  title: lesson.title,
+                  description: lesson.description
+                }}
+                materials={materials}
+                relatedMission={relatedMission}
+                missionCompletion={missionCompletion}
+                isCompleted={isCompleted}
+                onComplete={markAsComplete}
+                onMissionSubmit={(missionId) => {
+                  // Navigate to mission delivery or open modal
+                  navigate(`/student/program/${module?.course_id}?mission=${missionId}`);
+                }}
               />
             ) : (
               <VideoPlayer
