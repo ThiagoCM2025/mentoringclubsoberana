@@ -297,10 +297,10 @@ export function AvatarMapForm({ lessonId, missionId, onComplete, onMissionSubmit
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
                   step.id === currentStep
-                    ? "border-primary bg-primary/10"
+                    ? "border-secondary bg-secondary/20"
                     : step.id < currentStep
-                    ? "border-green-500 bg-green-500/10"
-                    : "border-muted"
+                    ? "border-green-500 bg-green-500/20"
+                    : "border-zinc-700 bg-zinc-800"
                 }`}
               >
                 {step.id < currentStep ? (
