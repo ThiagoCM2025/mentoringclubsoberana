@@ -41,19 +41,19 @@ interface AgentVisualCardProps {
   onClick: () => void;
 }
 
-// Map slug to local image
+// Map slug to local image - using actual database slugs
 const agentImages: Record<string, string> = {
-  "assistente-comportamental-para-advogadas": agentComportamental,
-  "especialista-criacao-conteudos-soberanos": agentConteudos,
-  "vendas-e-funis-de-vendas-para-advogadas": agentVendasFunis,
-  "diretora-de-estrategia-de-nicho-juridico": agentEstrategia,
-  "criador-de-propostas-comerciais": agentPropostas,
-  "advogada-expert-em-pecas-juridicas": agentPecas,
-  "assistente-pessoal-e-organizacao-de-agenda": agentAgenda,
-  "gestora-de-trafego-soberana": agentTrafego,
-  "peticoes-e-pecas-juridicas": agentPeticoes,
-  "criacao-de-artigos-para-blog": agentArtigos,
-  "especialista-em-vendas-advocacia-imobiliaria": agentVendasImob,
+  "assistente-comportamental": agentComportamental,
+  "especialista-conteudos": agentConteudos,
+  "vendas-funis": agentVendasFunis,
+  "estrategia-nicho": agentEstrategia,
+  "criador-propostas": agentPropostas,
+  "expert-pecas": agentPecas,
+  "organizacao-agenda": agentAgenda,
+  "gestora-trafego": agentTrafego,
+  "peticoes-pecas": agentPeticoes,
+  "criacao-artigos": agentArtigos,
+  "vendas-imobiliaria": agentVendasImob,
 };
 
 const categoryColors: Record<string, string> = {
@@ -119,16 +119,16 @@ export function AgentVisualCard({ agent, hasAccess, onClick }: AgentVisualCardPr
       )}>
         {/* Featured Badge */}
         {agent.is_featured && (
-          <div className="absolute top-2 right-2 z-20">
-            <Badge className="bg-secondary/90 text-zinc-900 border-0 shadow-lg backdrop-blur-sm text-[10px] px-1.5 py-0.5">
-              <Sparkles className="w-2.5 h-2.5 mr-0.5" />
+          <div className="absolute top-1.5 right-1.5 z-20">
+            <Badge className="bg-secondary/90 text-zinc-900 border-0 shadow-lg backdrop-blur-sm text-[9px] px-1 py-0">
+              <Sparkles className="w-2 h-2 mr-0.5" />
               Destaque
             </Badge>
           </div>
         )}
 
-        {/* Image Container - More compact */}
-        <div className="relative aspect-[4/3] overflow-hidden">
+        {/* Image Container - Compact square */}
+        <div className="relative aspect-square overflow-hidden">
           {hasThumbnail ? (
             <img
               src={imageSource!}
@@ -144,7 +144,7 @@ export function AgentVisualCard({ agent, hasAccess, onClick }: AgentVisualCardPr
               gradientFallbacks[gradientIndex]
             )}>
               <Bot className={cn(
-                "w-10 h-10 transition-all duration-300",
+                "w-8 h-8 transition-all duration-300",
                 hasAccess ? "text-secondary/60" : "text-zinc-600"
               )} />
             </div>
@@ -156,21 +156,21 @@ export function AgentVisualCard({ agent, hasAccess, onClick }: AgentVisualCardPr
           {/* Lock overlay */}
           {!hasAccess && (
             <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/40">
-              <div className="w-10 h-10 rounded-full bg-zinc-900/80 backdrop-blur-sm border border-zinc-600/50 flex items-center justify-center">
-                <Lock className="w-4 h-4 text-zinc-400" />
+              <div className="w-8 h-8 rounded-full bg-zinc-900/80 backdrop-blur-sm border border-zinc-600/50 flex items-center justify-center">
+                <Lock className="w-3.5 h-3.5 text-zinc-400" />
               </div>
             </div>
           )}
         </div>
 
-        {/* Content - More compact */}
-        <div className="p-3">
+        {/* Content - Ultra compact */}
+        <div className="p-2">
           {/* Category Badge */}
           {agent.category && (
             <Badge
               variant="outline"
               className={cn(
-                "text-[10px] mb-1.5 px-1.5 py-0",
+                "text-[9px] mb-1 px-1 py-0",
                 categoryColors[agent.category.color] || "bg-zinc-700/50 text-zinc-400 border-zinc-600/50"
               )}
             >
@@ -179,40 +179,40 @@ export function AgentVisualCard({ agent, hasAccess, onClick }: AgentVisualCardPr
           )}
 
           <h3 className={cn(
-            "font-semibold text-sm mb-1 line-clamp-1 transition-colors",
+            "font-semibold text-xs mb-0.5 line-clamp-1 transition-colors",
             hasAccess ? "text-cream group-hover:text-secondary" : "text-zinc-400"
           )}>
             {agent.title}
           </h3>
 
           {agent.description && (
-            <p className="text-cream/50 text-xs line-clamp-2 mb-2">
+            <p className="text-cream/50 text-[10px] line-clamp-1 mb-1.5">
               {agent.description}
             </p>
           )}
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-2 border-t border-zinc-700/50">
-            <div className="flex items-center gap-1">
+          <div className="flex items-center justify-between pt-1.5 border-t border-zinc-700/50">
+            <div className="flex items-center gap-0.5">
               {hasAccess ? (
                 <>
-                  <ExternalLink className="w-3 h-3 text-emerald-500" />
-                  <span className="text-[10px] text-emerald-500">Liberado</span>
+                  <ExternalLink className="w-2.5 h-2.5 text-emerald-500" />
+                  <span className="text-[9px] text-emerald-500">Liberado</span>
                 </>
               ) : (
                 <>
-                  <Lock className="w-3 h-3 text-zinc-500" />
-                  <span className="text-[10px] text-zinc-500">Bloqueado</span>
+                  <Lock className="w-2.5 h-2.5 text-zinc-500" />
+                  <span className="text-[9px] text-zinc-500">Bloqueado</span>
                 </>
               )}
             </div>
 
             <div className={cn(
-              "flex items-center gap-0.5 text-xs font-medium transition-colors",
+              "flex items-center gap-0.5 text-[10px] font-medium transition-colors",
               hasAccess ? "text-secondary" : "text-zinc-500"
             )}>
               <span>Acessar</span>
-              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
             </div>
           </div>
         </div>
