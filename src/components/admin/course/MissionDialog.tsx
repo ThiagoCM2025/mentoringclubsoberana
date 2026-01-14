@@ -323,14 +323,14 @@ const MissionDialog = ({
             <div className="space-y-2">
               <Label>Aula Relacionada</Label>
               <Select 
-                value={formData.related_lesson_id} 
-                onValueChange={(v) => setFormData({ ...formData, related_lesson_id: v })}
+                value={formData.related_lesson_id || "none"} 
+                onValueChange={(v) => setFormData({ ...formData, related_lesson_id: v === "none" ? "" : v })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Opcional - selecione uma aula" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Nenhuma</SelectItem>
+                  <SelectItem value="none">Nenhuma</SelectItem>
                   {lessons.map(lesson => (
                     <SelectItem key={lesson.id} value={lesson.id}>
                       {lesson.module_title}: {lesson.title}
