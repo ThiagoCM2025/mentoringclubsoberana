@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { PremiumBackground } from "@/components/ui/premium-background";
-import { AgentCard } from "@/components/student/AgentCard";
+import { AgentVisualCard } from "@/components/student/AgentVisualCard";
 import { AgentAccessModal } from "@/components/student/AgentAccessModal";
 import { MobileBottomNav } from "@/components/student/MobileBottomNav";
+import agentHeroImage from "@/assets/agents/agent-hero.png";
 import {
   Bot,
   Search,
@@ -79,11 +80,6 @@ const staggerContainer = {
       staggerChildren: 0.1,
     },
   },
-};
-
-const staggerItem = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
 };
 
 export default function StudentAgents() {
@@ -210,33 +206,38 @@ export default function StudentAgents() {
       </header>
 
       <main className="container mx-auto px-4 py-6 space-y-8">
-        {/* Stats Card */}
+        {/* Hero Section with Image */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-6 rounded-2xl bg-gradient-to-br from-zinc-800/80 to-zinc-900/80 border border-secondary/20 backdrop-blur-sm"
+          className="relative rounded-2xl overflow-hidden border border-secondary/20"
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl bg-secondary/20 flex items-center justify-center border border-secondary/30">
-                <Sparkles className="w-7 h-7 text-secondary" />
+          <div className="relative h-48 sm:h-64 md:h-80">
+            <img
+              src={agentHeroImage}
+              alt="Assistentes Soberanas"
+              className="w-full h-full object-cover object-top"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 via-zinc-900/80 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent" />
+            
+            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+              <div className="flex items-center gap-3 mb-2">
+                <Badge className="bg-secondary text-zinc-900 border-0">
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  IA Exclusiva
+                </Badge>
+                <Badge className="bg-emerald-500/90 text-white border-0">
+                  {accessibleAgents} Liberados
+                </Badge>
               </div>
-              <div>
-                <h2 className="text-lg font-semibold text-cream">
-                  Central de Agentes
-                </h2>
-                <p className="text-cream/60 text-sm">
-                  {totalAgents} agentes disponíveis • {accessibleAgents} liberados
-                </p>
-              </div>
+              <h2 className="text-2xl md:text-3xl font-serif font-bold text-cream mb-2">
+                Central de Agentes
+              </h2>
+              <p className="text-cream/70 text-sm md:text-base max-w-lg">
+                Seus assistentes de IA especializados para potencializar sua advocacia imobiliária
+              </p>
             </div>
-            <Badge
-              variant="outline"
-              className="bg-secondary/10 text-secondary border-secondary/30 hidden sm:flex"
-            >
-              <Bot className="w-3.5 h-3.5 mr-1" />
-              IA Especializada
-            </Badge>
           </div>
         </motion.div>
 
@@ -269,28 +270,21 @@ export default function StudentAgents() {
                   <Sparkles className="w-5 h-5 text-secondary" />
                   <h2 className="text-lg font-semibold text-cream">Destaques</h2>
                 </div>
-                <motion.div
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="visible"
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-                >
-                  {featuredAgents.map((agent) => (
-                    <motion.div key={agent.id} variants={staggerItem}>
-                      <AgentCard
-                        agent={agent}
-                        hasAccess={userAccess.has(agent.id)}
-                        onClick={() => setSelectedAgent(agent)}
-                        iconMap={iconMap}
-                      />
-                    </motion.div>
-                  ))}
-                </motion.div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {featuredAgents.map((agent) => (
+                    <AgentVisualCard
+                      key={agent.id}
+                      agent={agent}
+                      hasAccess={userAccess.has(agent.id)}
+                      onClick={() => setSelectedAgent(agent)}
+                    />
+                ))}
+                </div>
               </section>
             )}
 
             {/* Agents by Category */}
-            {agentsByCategory.map(({ category, agents }) => {
+            {agentsByCategory.map(({ category, agents: categoryAgents }) => {
               const CategoryIcon = iconMap[category.icon] || Bot;
               return (
                 <section key={category.id}>
@@ -300,26 +294,19 @@ export default function StudentAgents() {
                       {category.name}
                     </h2>
                     <Badge variant="outline" className="text-cream/60 border-cream/20 text-xs">
-                      {agents.length}
+                      {categoryAgents.length}
                     </Badge>
                   </div>
-                  <motion.div
-                    variants={staggerContainer}
-                    initial="hidden"
-                    animate="visible"
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-                  >
-                    {agents.map((agent) => (
-                      <motion.div key={agent.id} variants={staggerItem}>
-                        <AgentCard
-                          agent={agent}
-                          hasAccess={userAccess.has(agent.id)}
-                          onClick={() => setSelectedAgent(agent)}
-                          iconMap={iconMap}
-                        />
-                      </motion.div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {categoryAgents.map((agent) => (
+                      <AgentVisualCard
+                        key={agent.id}
+                        agent={agent}
+                        hasAccess={userAccess.has(agent.id)}
+                        onClick={() => setSelectedAgent(agent)}
+                      />
                     ))}
-                  </motion.div>
+                  </div>
                 </section>
               );
             })}

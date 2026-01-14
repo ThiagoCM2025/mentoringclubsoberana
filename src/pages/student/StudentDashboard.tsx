@@ -16,6 +16,7 @@ import { NotificationBell } from "@/components/student/NotificationBell";
 import StudyReminderButton from "@/components/student/StudyReminderButton";
 import { SoberanaLogo } from "@/components/brand/SoberanaLogo";
 import ProgramCard from "@/components/student/ProgramCard";
+import { AgentProgramCard } from "@/components/student/AgentProgramCard";
 import { programsList } from "@/data/programs";
 import { programToCourseId } from "@/lib/programCourseMapping";
 import { SkeletonCourseGrid, SkeletonHero, SkeletonStats, SkeletonWelcomeBanner, SkeletonChallenges, SkeletonCalendar, SkeletonLeaderboard, SkeletonLearningPaths, SkeletonQuickActions } from "@/components/ui/premium-skeleton";
@@ -906,46 +907,13 @@ const StudentDashboard = () => {
               </Button>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.4, type: "spring", stiffness: 120 }}
-              whileHover={{ y: -4, scale: 1.01, boxShadow: "0 0 40px rgba(166, 144, 97, 0.15)" }}
-              whileTap={{ scale: 0.99 }}
-              onClick={() => navigate("/student/agents")}
-              className="group relative p-6 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-zinc-800/90 rounded-2xl border border-secondary/30 hover:border-secondary/60 cursor-pointer overflow-hidden transition-all duration-300"
-            >
-              {/* Decorative background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-radial from-secondary/10 to-transparent opacity-50" />
-              
-              <div className="relative z-10 flex items-center justify-between">
-                <div className="flex items-center gap-5">
-                  <div className="relative">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-secondary/30 to-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      <Bot className="w-8 h-8 text-secondary" />
-                    </div>
-                    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-secondary flex items-center justify-center">
-                      <Sparkles className="w-3 h-3 text-black" />
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-cream mb-1 group-hover:text-secondary transition-colors">
-                      Assistentes de IA Soberanas
-                    </h3>
-                    <p className="text-cream/60 text-sm">
-                      {totalAgents} agentes disponíveis • {accessibleAgents} liberados para você
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 text-secondary">
-                  <span className="text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                    Explorar
-                  </span>
-                  <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </motion.div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+              {/* Agent Program Card */}
+              <AgentProgramCard 
+                totalAgents={totalAgents} 
+                accessibleAgents={accessibleAgents}
+              />
+            </div>
           </section>
         )}
 
