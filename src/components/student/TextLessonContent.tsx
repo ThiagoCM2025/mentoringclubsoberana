@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,6 +18,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AvatarMapForm } from "./AvatarMapForm";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface Material {
   id: string;
@@ -64,6 +68,10 @@ const TextLessonContent = ({
   onComplete,
   onMissionSubmit
 }: TextLessonContentProps) => {
+  const { user } = useAuth();
+  const [avatarFormId, setAvatarFormId] = useState<string | null>(null);
+  const [isSubmittingMission, setIsSubmittingMission] = useState(false);
+  
   // Determine mission status
   const missionIsApproved = missionCompletion?.status === 'approved';
   const missionIsSubmitted = missionCompletion?.status === 'submitted' || missionCompletion?.status === 'pending';
@@ -77,6 +85,35 @@ const TextLessonContent = ({
       m.title?.toLowerCase().includes('nicho') && m.title?.toLowerCase().includes('avatar')
     );
 
+  // Handler para submeter missão com o Avatar Form
+  const handleAvatarMissionSubmit = async (missionId: string) => {
+    if (!user?.id) return;
+    
+    setIsSubmittingMission(true);
+    try {
+      const proofLinks = avatarFormId 
+        ? [`avatar-form:${lesson.id}:${avatarFormId}`]
+        : [`avatar-form:${lesson.id}:pending`];
+      
+      await supabase.from("user_mission_completions").upsert({
+        user_id: user.id,
+        mission_id: missionId,
+        status: "submitted",
+        proof_content: `Formulário Mapa do Avatar preenchido e finalizado`,
+        proof_links: proofLinks,
+        submitted_at: new Date().toISOString(),
+      }, { onConflict: "user_id,mission_id" });
+      
+      toast.success("Missão entregue com sucesso!");
+      onMissionSubmit?.(missionId);
+    } catch (error) {
+      console.error("Error submitting mission:", error);
+      toast.error("Erro ao entregar missão");
+    } finally {
+      setIsSubmittingMission(false);
+    }
+  };
+
   // If it's an avatar map form, render the interactive form AND the mission section
   if (isAvatarMapForm) {
     return (
@@ -85,6 +122,7 @@ const TextLessonContent = ({
         <AvatarMapForm
           lessonId={lesson.id}
           onComplete={onComplete}
+          onFormFinalized={(formId) => setAvatarFormId(formId)}
         />
 
         {/* Missão Adicional (Sua Voz no Mundo Digital) */}
@@ -173,12 +211,13 @@ const TextLessonContent = ({
                     </div>
                   ) : (
                     <Button
-                      onClick={() => onMissionSubmit?.(relatedMission.id)}
+                      onClick={() => handleAvatarMissionSubmit(relatedMission.id)}
                       className="w-full bg-secondary hover:bg-secondary/90 text-black font-semibold"
                       size="sm"
+                      disabled={isSubmittingMission}
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      {missionIsRejected ? "Reenviar Entrega" : "Entregar Missão"}
+                      {isSubmittingMission ? "Enviando..." : missionIsRejected ? "Reenviar Entrega" : "Entregar Missão"}
                     </Button>
                   )}
                 </div>

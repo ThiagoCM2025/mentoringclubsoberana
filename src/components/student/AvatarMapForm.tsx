@@ -56,6 +56,7 @@ interface AvatarMapFormProps {
   missionId?: string;
   onComplete?: () => void;
   onMissionSubmit?: (missionId: string) => void;
+  onFormFinalized?: (formId: string) => void;
 }
 
 const STEPS = [
@@ -87,7 +88,7 @@ const INITIAL_DATA: AvatarFormData = {
   desejos_financeiros: ["", "", "", "", ""],
 };
 
-export function AvatarMapForm({ lessonId, missionId, onComplete, onMissionSubmit }: AvatarMapFormProps) {
+export function AvatarMapForm({ lessonId, missionId, onComplete, onMissionSubmit, onFormFinalized }: AvatarMapFormProps) {
   const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<AvatarFormData>(INITIAL_DATA);
@@ -197,23 +198,12 @@ export function AvatarMapForm({ lessonId, missionId, onComplete, onMissionSubmit
   const handleComplete = async () => {
     await saveForm(5, true);
     
-    // If there's a mission associated, submit it
-    if (missionId && onMissionSubmit) {
-      try {
-        await supabase.from("user_mission_completions").upsert({
-          user_id: user!.id,
-          mission_id: missionId,
-          status: "submitted",
-          proof_content: `Formulário Mapa do Avatar preenchido e finalizado`,
-          proof_links: [`avatar-form:${lessonId}:${formId}`],
-          submitted_at: new Date().toISOString(),
-        }, { onConflict: "user_id,mission_id" });
-        
-        onMissionSubmit(missionId);
-      } catch (error) {
-        console.error("Error submitting mission:", error);
-      }
+    // Notifica que o formulário foi finalizado (para o botão "Entregar Missão" externo)
+    if (formId) {
+      onFormFinalized?.(formId);
     }
+    
+    toast.success("Formulário finalizado! Agora entregue a missão abaixo.");
   };
 
   const updateField = <K extends keyof AvatarFormData>(field: K, value: AvatarFormData[K]) => {
@@ -259,11 +249,11 @@ export function AvatarMapForm({ lessonId, missionId, onComplete, onMissionSubmit
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-              <StepIcon className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold text-cream flex items-center gap-2">
+              <StepIcon className="h-6 w-6 text-secondary" />
               Mapa do Avatar
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-cream/70">
               Etapa {currentStep} de 5: {STEPS[currentStep - 1].title}
             </p>
           </div>
@@ -288,10 +278,10 @@ export function AvatarMapForm({ lessonId, missionId, onComplete, onMissionSubmit
               onClick={() => setCurrentStep(step.id)}
               className={`flex flex-col items-center gap-1 transition-colors ${
                 step.id === currentStep
-                  ? "text-primary"
+                  ? "text-secondary"
                   : step.id < currentStep
-                  ? "text-green-500"
-                  : "text-muted-foreground"
+                  ? "text-green-400"
+                  : "text-cream/60"
               }`}
             >
               <div
@@ -309,7 +299,10 @@ export function AvatarMapForm({ lessonId, missionId, onComplete, onMissionSubmit
                   <step.icon className="h-4 w-4" />
                 )}
               </div>
-              <span className="text-xs hidden md:block">{step.title}</span>
+              <span className={`text-xs hidden md:block ${
+                step.id === currentStep ? "text-secondary font-medium" :
+                step.id < currentStep ? "text-green-400" : "text-cream/60"
+              }`}>{step.title}</span>
             </button>
           ))}
         </div>
@@ -641,6 +634,11 @@ export function AvatarMapForm({ lessonId, missionId, onComplete, onMissionSubmit
               Próximo
               <ChevronRight className="h-4 w-4 ml-2" />
             </Button>
+          ) : isCompleted ? (
+            <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/30 rounded-lg">
+              <CheckCircle2 className="h-5 w-5 text-green-400" />
+              <span className="text-green-400 font-medium">Formulário Finalizado</span>
+            </div>
           ) : (
             <Button 
               onClick={handleComplete} 
@@ -650,9 +648,9 @@ export function AvatarMapForm({ lessonId, missionId, onComplete, onMissionSubmit
               {isSaving ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
               ) : (
-                <Send className="h-4 w-4 mr-2" />
+                <CheckCircle2 className="h-4 w-4 mr-2" />
               )}
-              {missionId ? "Finalizar e Entregar Missão" : "Finalizar Formulário"}
+              Finalizar Formulário
             </Button>
           )}
         </div>
