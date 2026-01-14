@@ -26,9 +26,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import VideoUrlInput from "./VideoUrlInput";
 import LessonMaterialsSection from "./LessonMaterialsSection";
+import MissionDialog from "./MissionDialog";
 import {
   Plus,
   Trash2,
@@ -43,7 +49,9 @@ import {
   Calendar,
   FileEdit,
   RotateCcw,
-  AlertTriangle
+  AlertTriangle,
+  Target,
+  CheckCircle2
 } from "lucide-react";
 
 interface PendingFile {
@@ -81,15 +89,23 @@ interface Module {
   deleted_by?: string | null;
 }
 
+interface Mission {
+  id: string;
+  title: string;
+  related_lesson_id: string | null;
+}
+
 interface ModuleManagerProps {
   courseId: string;
   modules: Module[];
   onRefresh: () => void;
   showDeleted?: boolean;
   onToggleShowDeleted?: (show: boolean) => void;
+  missions?: Mission[];
+  onMissionCreated?: () => void;
 }
 
-const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onToggleShowDeleted }: ModuleManagerProps) => {
+const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onToggleShowDeleted, missions = [], onMissionCreated }: ModuleManagerProps) => {
   const { toast } = useToast();
   
   // Module dialog
@@ -104,6 +120,24 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
   // Materials for new lessons (pending until lesson is saved)
   const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
   const [pendingLinks, setPendingLinks] = useState<PendingLink[]>([]);
+  
+  // Mission dialog
+  const [missionDialogOpen, setMissionDialogOpen] = useState(false);
+  const [missionPrefill, setMissionPrefill] = useState<{
+    related_lesson_id?: string;
+    title?: string;
+    context?: string;
+  } | null>(null);
+
+  // Open mission dialog with lesson context
+  const openMissionDialog = (lesson: Lesson, module: Module) => {
+    setMissionPrefill({
+      related_lesson_id: lesson.id,
+      title: `Missão: ${lesson.title}`,
+      context: `Módulo: ${module.title}\nAula: ${lesson.title}\n${lesson.description || ''}`
+    });
+    setMissionDialogOpen(true);
+  };
 
   // Calculate counts
   const activeModules = modules.filter(m => !m.deleted_at);
@@ -741,47 +775,80 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
                                 </Button>
                               </div>
                             ) : (
-                              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7"
-                                  disabled={activeLessonIndex === 0}
-                                  onClick={() => moveLesson(lesson, module.id, "up")}
-                                >
-                                  <ChevronUp className="w-3 h-3" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7"
-                                  disabled={activeLessonIndex === activeLessonsInModule.length - 1}
-                                  onClick={() => moveLesson(lesson, module.id, "down")}
-                                >
-                                  <ChevronDown className="w-3 h-3" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7"
-                                  onClick={() => {
-                                    setLessonModuleId(module.id);
-                                    setEditingLesson(lesson);
-                                    setPendingFiles([]);
-                                    setPendingLinks([]);
-                                    setLessonDialogOpen(true);
-                                  }}
-                                >
-                                  <Pencil className="w-3 h-3" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7 text-destructive"
-                                  onClick={() => moveLessonToBin(lesson.id)}
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
+                              <div className="flex gap-1 items-center">
+                                {/* Mission indicator/button */}
+                                {(() => {
+                                  const hasMission = missions.some(m => m.related_lesson_id === lesson.id);
+                                  return hasMission ? (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 dark:bg-green-950/30 px-2 py-1 rounded-full">
+                                          <CheckCircle2 className="w-3 h-3" />
+                                          <span>Missão</span>
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent>Já possui missão vinculada</TooltipContent>
+                                    </Tooltip>
+                                  ) : (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          className="h-7 w-7 text-secondary hover:text-secondary hover:bg-secondary/10"
+                                          onClick={() => openMissionDialog(lesson, module)}
+                                        >
+                                          <Target className="w-3.5 h-3.5" />
+                                        </Button>
+                                      </TooltipTrigger>
+                                      <TooltipContent>Criar missão para esta aula</TooltipContent>
+                                    </Tooltip>
+                                  );
+                                })()}
+                                
+                                {/* Other action buttons */}
+                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7"
+                                    disabled={activeLessonIndex === 0}
+                                    onClick={() => moveLesson(lesson, module.id, "up")}
+                                  >
+                                    <ChevronUp className="w-3 h-3" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7"
+                                    disabled={activeLessonIndex === activeLessonsInModule.length - 1}
+                                    onClick={() => moveLesson(lesson, module.id, "down")}
+                                  >
+                                    <ChevronDown className="w-3 h-3" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7"
+                                    onClick={() => {
+                                      setLessonModuleId(module.id);
+                                      setEditingLesson(lesson);
+                                      setPendingFiles([]);
+                                      setPendingLinks([]);
+                                      setLessonDialogOpen(true);
+                                    }}
+                                  >
+                                    <Pencil className="w-3 h-3" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 text-destructive"
+                                    onClick={() => moveLessonToBin(lesson.id)}
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </div>
                               </div>
                             )}
                           </div>
@@ -982,6 +1049,24 @@ const ModuleManager = ({ courseId, modules, onRefresh, showDeleted = false, onTo
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Mission Dialog */}
+      <MissionDialog
+        open={missionDialogOpen}
+        onOpenChange={setMissionDialogOpen}
+        courseId={courseId}
+        mission={null}
+        lessons={modules.flatMap(m => m.lessons.filter(l => !l.deleted_at).map(l => ({
+          id: l.id,
+          title: l.title,
+          module_title: m.title
+        })))}
+        onSaved={() => {
+          setMissionDialogOpen(false);
+          onMissionCreated?.();
+        }}
+        prefillData={missionPrefill || undefined}
+      />
     </div>
   );
 };

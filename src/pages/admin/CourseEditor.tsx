@@ -71,6 +71,7 @@ const CourseEditor = () => {
     is_subscription: false,
   });
   const [modules, setModules] = useState<Module[]>([]);
+  const [missions, setMissions] = useState<{ id: string; title: string; related_lesson_id: string | null }[]>([]);
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("basic");
@@ -133,6 +134,14 @@ const CourseEditor = () => {
         }));
       setModules(filteredModules as Module[]);
     }
+
+    // Fetch missions for this course
+    const { data: missionsData } = await supabase
+      .from("weekly_missions")
+      .select("id, title, related_lesson_id")
+      .eq("course_id", courseId);
+
+    setMissions(missionsData || []);
 
     setLoading(false);
   };
@@ -395,6 +404,8 @@ const CourseEditor = () => {
                       onRefresh={fetchCourse}
                       showDeleted={showDeletedContent}
                       onToggleShowDeleted={setShowDeletedContent}
+                      missions={missions}
+                      onMissionCreated={fetchCourse}
                     />
                   )}
                 </div>
