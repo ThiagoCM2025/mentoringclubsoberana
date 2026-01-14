@@ -23,8 +23,11 @@ import {
   Clock,
   List,
   SkipBack,
-  SkipForward
+  SkipForward,
+  Trophy,
+  Target
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
 import { AIAssistant } from "@/components/student/AIAssistant";
 import { LessonQuiz } from "@/components/student/LessonQuiz";
@@ -84,6 +87,7 @@ interface WeeklyMission {
   xp_reward: number;
   badge_unlock_id: string | null;
   gamification_title: string | null;
+  gamification_emoji: string | null;
   is_active: boolean;
 }
 
@@ -167,7 +171,7 @@ const LessonPlayer = () => {
       // Fetch related mission for this lesson
       const { data: missionData } = await supabase
         .from("weekly_missions")
-        .select("id, week_number, title, challenge_description, why_do, xp_reward, badge_unlock_id, gamification_title, is_active")
+        .select("id, week_number, title, challenge_description, why_do, xp_reward, badge_unlock_id, gamification_title, gamification_emoji, is_active")
         .eq("related_lesson_id", lessonId)
         .maybeSingle();
 
@@ -469,6 +473,60 @@ const LessonPlayer = () => {
           </div>
         </div>
       </header>
+
+      {/* Mission Banner - Shows when lesson has related mission (except text lessons which handle internally) */}
+      {relatedMission && lesson?.lesson_type !== 'text' && (
+        <div className="bg-gradient-to-r from-secondary/10 via-secondary/5 to-secondary/10 border-b border-secondary/30 py-3 px-4">
+          <div className="max-w-[1920px] mx-auto flex items-center justify-between">
+            {/* Left: Mission Info */}
+            <div className="flex items-center gap-3">
+              <span className="text-xl">{relatedMission.gamification_emoji || "🎯"}</span>
+              <div>
+                <p className="text-xs text-secondary font-medium">Missão da Semana {relatedMission.week_number}</p>
+                <p className="text-sm font-medium text-cream">{relatedMission.title}</p>
+              </div>
+            </div>
+
+            {/* Right: Status & Action */}
+            <div className="flex items-center gap-3">
+              {/* XP Badge */}
+              <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30 hidden sm:flex">
+                <Trophy className="w-3 h-3 mr-1" />
+                {relatedMission.xp_reward} XP
+              </Badge>
+
+              {/* Status Badge */}
+              {missionCompletion?.status === 'approved' && (
+                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                  ✓ Concluída
+                </Badge>
+              )}
+              {missionCompletion?.status === 'submitted' && (
+                <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
+                  ⏳ Aguardando
+                </Badge>
+              )}
+              {missionCompletion?.status === 'rejected' && (
+                <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                  ↻ Reenviar
+                </Badge>
+              )}
+
+              {/* Action Button */}
+              {missionCompletion?.status !== 'approved' && (
+                <Button
+                  size="sm"
+                  onClick={() => navigate(`/student/program/${module?.course_id}?mission=${relatedMission.id}`)}
+                  className="bg-secondary hover:bg-secondary/90 text-black font-medium"
+                >
+                  <Target className="w-4 h-4 mr-1" />
+                  {missionCompletion?.status === 'rejected' ? 'Reenviar' : missionCompletion?.status === 'submitted' ? 'Ver Status' : 'Entregar'}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex">
         {/* Main Content */}
