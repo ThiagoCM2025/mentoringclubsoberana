@@ -473,28 +473,10 @@ const LessonPlayer = () => {
         {/* Main Content */}
         <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? "lg:mr-80" : ""}`}>
           {/* Content Area - Video or Scheduling */}
-          <div 
-            className="bg-black relative w-full flex items-center justify-center"
-            style={{ 
-              height: theaterMode ? '80vh' : 'calc(100vh - 280px)', 
-              maxHeight: '720px', 
-              minHeight: '400px' 
-            }}
-          >
-            {/* Detect content type based on lesson_type or URL patterns */}
-            {lesson?.lesson_type === 'scheduling' || 
-             lesson?.video_url?.includes('calendar.google.com') ||
-             lesson?.video_url?.includes('calendly.com') ||
-             lesson?.action_url?.includes('calendar') ? (
-              <SchedulingContent
-                url={lesson.action_url || lesson.video_url || ""}
-                title={lesson.title}
-                description={lesson.description}
-                buttonText={lesson.action_button_text}
-                isCompleted={isCompleted}
-                onComplete={markAsComplete}
-              />
-            ) : lesson?.lesson_type === 'text' ? (
+          {/* Content Area - Conditional height based on lesson type */}
+          {lesson?.lesson_type === 'text' ? (
+            // Text lessons: auto height, no restrictions
+            <div className="bg-zinc-900 w-full">
               <TextLessonContent
                 lesson={{
                   id: lesson.id,
@@ -507,19 +489,42 @@ const LessonPlayer = () => {
                 isCompleted={isCompleted}
                 onComplete={markAsComplete}
                 onMissionSubmit={(missionId) => {
-                  // Navigate to mission delivery or open modal
                   navigate(`/student/program/${module?.course_id}?mission=${missionId}`);
                 }}
               />
-            ) : (
-              <VideoPlayer
-                url={lesson?.video_url || null}
-                onTimeUpdate={handleTimeUpdate}
-                onEnded={handleVideoEnded}
-                initialTime={progressSeconds}
-              />
-            )}
-          </div>
+            </div>
+          ) : (
+            // Video/Scheduling: fixed height container
+            <div 
+              className="bg-black relative w-full flex items-center justify-center"
+              style={{ 
+                height: theaterMode ? '80vh' : 'calc(100vh - 280px)', 
+                maxHeight: '720px', 
+                minHeight: '400px' 
+              }}
+            >
+              {lesson?.lesson_type === 'scheduling' || 
+               lesson?.video_url?.includes('calendar.google.com') ||
+               lesson?.video_url?.includes('calendly.com') ||
+               lesson?.action_url?.includes('calendar') ? (
+                <SchedulingContent
+                  url={lesson.action_url || lesson.video_url || ""}
+                  title={lesson.title}
+                  description={lesson.description}
+                  buttonText={lesson.action_button_text}
+                  isCompleted={isCompleted}
+                  onComplete={markAsComplete}
+                />
+              ) : (
+                <VideoPlayer
+                  url={lesson?.video_url || null}
+                  onTimeUpdate={handleTimeUpdate}
+                  onEnded={handleVideoEnded}
+                  initialTime={progressSeconds}
+                />
+              )}
+            </div>
+          )}
 
           {/* Navigation Controls & Completion Checkbox */}
           <div className="bg-zinc-900 border-b border-secondary/20">
