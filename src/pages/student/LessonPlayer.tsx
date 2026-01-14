@@ -34,6 +34,7 @@ import { LessonQuiz } from "@/components/student/LessonQuiz";
 import { LessonNotes } from "@/components/student/LessonNotes";
 import { MissionDeliveryModal } from "@/components/student/program/MissionDeliveryModal";
 import { WeeklyMission as MissionModalType } from "@/components/student/program/WeeklyMissionCard";
+import { AvatarMapForm } from "@/components/student/AvatarMapForm";
 
 interface Lesson {
   id: string;
@@ -121,6 +122,7 @@ const LessonPlayer = () => {
   const [relatedMission, setRelatedMission] = useState<WeeklyMission | null>(null);
   const [missionCompletion, setMissionCompletion] = useState<MissionCompletion | null>(null);
   const [deliveryModalOpen, setDeliveryModalOpen] = useState(false);
+  const [avatarFormId, setAvatarFormId] = useState<string | null>(null);
 
   // Convert to modal type
   const missionForModal: MissionModalType | null = relatedMission ? {
@@ -655,6 +657,21 @@ const LessonPlayer = () => {
               </div>
             </div>
           </div>
+
+          {/* Avatar Map Form - Shows for video lessons with form_type = avatar_map */}
+          {lesson?.form_type === 'avatar_map' && lesson?.lesson_type !== 'text' && (
+            <div className="bg-zinc-950 border-b border-secondary/20">
+              <div className="max-w-4xl mx-auto px-4 py-8">
+                <AvatarMapForm
+                  lessonId={lessonId || ''}
+                  onComplete={() => {
+                    // Opcional: atualizar estado da aula
+                  }}
+                  onFormFinalized={(formId) => setAvatarFormId(formId)}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Lesson Content - Dark Theme */}
           <div className="bg-zinc-950">
