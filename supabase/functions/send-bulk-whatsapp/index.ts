@@ -76,10 +76,11 @@ serve(async (req) => {
         continue;
       }
 
-      // Replace variables in message
+      // Replace variables in message and convert literal \n to actual newlines
       let personalizedMessage = message
         .replace(/\{\{nome\}\}/gi, recipient.name || "")
-        .replace(/\{\{name\}\}/gi, recipient.name || "");
+        .replace(/\{\{name\}\}/gi, recipient.name || "")
+        .replace(/\\n/g, '\n');
 
       // Format phone number (remove non-digits, ensure country code)
       let formattedPhone = recipient.phone.replace(/\D/g, "");
