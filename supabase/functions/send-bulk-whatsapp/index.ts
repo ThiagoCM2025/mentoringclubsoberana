@@ -99,7 +99,6 @@ serve(async (req) => {
           body: JSON.stringify({
             number: formattedPhone,
             text: personalizedMessage,
-            delay: Math.floor(1200 + Math.random() * 800), // Random delay 1.2-2s (integer required)
           }),
         });
 

@@ -58,7 +58,6 @@ serve(async (req) => {
       body: JSON.stringify({
         number: formattedPhone,
         text: message,
-        delay: 1200, // Small delay to seem more human
       }),
     });
 
