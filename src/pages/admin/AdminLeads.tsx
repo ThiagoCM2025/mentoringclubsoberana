@@ -55,6 +55,21 @@ interface Lead {
   nurturing_step: number | null;
   nurturing_active: boolean | null;
   last_contact_at: string | null;
+  // Campos de qualificação
+  pain_points?: string[] | null;
+  mentoring_goals?: string | null;
+  practice_area?: string | null;
+  product_interest?: string | null;
+  investment_range?: string | null;
+  // Campos de reunião
+  meeting_scheduled_at?: string | null;
+  meeting_status?: string | null;
+  meeting_link?: string | null;
+  meeting_notes?: string | null;
+  // Campos de descarte
+  discard_reason?: string | null;
+  discard_notes?: string | null;
+  student_user_id?: string | null;
 }
 
 interface CommunicationHistory {
