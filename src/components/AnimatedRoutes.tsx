@@ -51,6 +51,7 @@ import SimuladorFinanceiro from "@/pages/SimuladorFinanceiro";
 import Privacidade from "@/pages/Privacidade";
 import Termos from "@/pages/Termos";
 import NotFound from "@/pages/NotFound";
+import TrackingRedirect from "@/pages/TrackingRedirect";
 
 export const AnimatedRoutes = () => {
   const location = useLocation();
@@ -74,6 +75,9 @@ export const AnimatedRoutes = () => {
         <Route path="/simulador" element={<PageTransition><SimuladorFinanceiro /></PageTransition>} />
         <Route path="/privacidade" element={<PageTransition><Privacidade /></PageTransition>} />
         <Route path="/termos" element={<PageTransition><Termos /></PageTransition>} />
+        
+        {/* Tracking Redirect */}
+        <Route path="/t/:token" element={<TrackingRedirect />} />
         
         {/* Student Routes */}
         <Route

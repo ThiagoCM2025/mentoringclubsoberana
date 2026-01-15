@@ -81,10 +81,10 @@ export function StudentRecipientSelector() {
         return;
       }
 
-      // Fetch profiles for these users
+      // Fetch profiles for these users (including phone)
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("user_id, full_name")
+        .select("user_id, full_name, phone")
         .in("user_id", userIds);
 
       if (profilesError) throw profilesError;
@@ -106,7 +106,7 @@ export function StudentRecipientSelector() {
         id: p.user_id,
         name: p.full_name || "Sem nome",
         email: emailMap.get(p.user_id) || "email@desconhecido.com",
-        phone: null,
+        phone: p.phone || null,
         type: "student" as const
       }));
 
