@@ -1789,54 +1789,90 @@ export type Database = {
         Row: {
           behavior_score: number | null
           created_at: string
+          discard_notes: string | null
+          discard_reason: string | null
           email: string
           full_name: string
           id: string
+          investment_range: string | null
           last_contact_at: string | null
+          meeting_link: string | null
+          meeting_notes: string | null
+          meeting_scheduled_at: string | null
+          meeting_status: string | null
+          mentoring_goals: string | null
           messages_sent: number | null
           notes: string | null
           nurturing_active: boolean | null
           nurturing_step: number | null
+          pain_points: string[] | null
           phone: string | null
+          practice_area: string | null
+          product_interest: string | null
           score: number | null
           source: string | null
           status: Database["public"]["Enums"]["lead_status"] | null
+          student_user_id: string | null
           temperature: Database["public"]["Enums"]["lead_temperature"] | null
           updated_at: string
         }
         Insert: {
           behavior_score?: number | null
           created_at?: string
+          discard_notes?: string | null
+          discard_reason?: string | null
           email: string
           full_name: string
           id?: string
+          investment_range?: string | null
           last_contact_at?: string | null
+          meeting_link?: string | null
+          meeting_notes?: string | null
+          meeting_scheduled_at?: string | null
+          meeting_status?: string | null
+          mentoring_goals?: string | null
           messages_sent?: number | null
           notes?: string | null
           nurturing_active?: boolean | null
           nurturing_step?: number | null
+          pain_points?: string[] | null
           phone?: string | null
+          practice_area?: string | null
+          product_interest?: string | null
           score?: number | null
           source?: string | null
           status?: Database["public"]["Enums"]["lead_status"] | null
+          student_user_id?: string | null
           temperature?: Database["public"]["Enums"]["lead_temperature"] | null
           updated_at?: string
         }
         Update: {
           behavior_score?: number | null
           created_at?: string
+          discard_notes?: string | null
+          discard_reason?: string | null
           email?: string
           full_name?: string
           id?: string
+          investment_range?: string | null
           last_contact_at?: string | null
+          meeting_link?: string | null
+          meeting_notes?: string | null
+          meeting_scheduled_at?: string | null
+          meeting_status?: string | null
+          mentoring_goals?: string | null
           messages_sent?: number | null
           notes?: string | null
           nurturing_active?: boolean | null
           nurturing_step?: number | null
+          pain_points?: string[] | null
           phone?: string | null
+          practice_area?: string | null
+          product_interest?: string | null
           score?: number | null
           source?: string | null
           status?: Database["public"]["Enums"]["lead_status"] | null
+          student_user_id?: string | null
           temperature?: Database["public"]["Enums"]["lead_temperature"] | null
           updated_at?: string
         }
@@ -3712,7 +3748,15 @@ export type Database = {
     Enums: {
       action_type: "calendar" | "whatsapp" | "form" | "external" | "diagnostic"
       app_role: "admin" | "student"
-      lead_status: "new" | "contacted" | "negotiating" | "converted" | "lost"
+      lead_status:
+        | "new"
+        | "contacted"
+        | "negotiating"
+        | "converted"
+        | "lost"
+        | "qualified"
+        | "meeting"
+        | "discarded"
       lead_temperature: "cold" | "warm" | "hot"
       lesson_type:
         | "video"
@@ -3863,7 +3907,16 @@ export const Constants = {
     Enums: {
       action_type: ["calendar", "whatsapp", "form", "external", "diagnostic"],
       app_role: ["admin", "student"],
-      lead_status: ["new", "contacted", "negotiating", "converted", "lost"],
+      lead_status: [
+        "new",
+        "contacted",
+        "negotiating",
+        "converted",
+        "lost",
+        "qualified",
+        "meeting",
+        "discarded",
+      ],
       lead_temperature: ["cold", "warm", "hot"],
       lesson_type: [
         "video",

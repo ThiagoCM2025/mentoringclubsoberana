@@ -14,23 +14,29 @@ interface LeadFunnelChartProps {
   leads: Lead[];
 }
 
-const statusOrder: LeadStatus[] = ["new", "contacted", "negotiating", "converted", "lost"];
+const statusOrder: LeadStatus[] = ["new", "qualified", "negotiating", "meeting", "converted", "discarded", "contacted", "lost"];
 
 const statusConfig: Record<LeadStatus, { label: string; color: string }> = {
   new: { label: "Novos", color: "#3B82F6" },
+  qualified: { label: "Qualificados", color: "#8B5CF6" },
   contacted: { label: "Contactados", color: "#F97316" },
-  negotiating: { label: "Em Tratativa", color: "#8B5CF6" },
+  negotiating: { label: "Negociando", color: "#F59E0B" },
+  meeting: { label: "Reunião", color: "#06B6D4" },
   converted: { label: "Clientes", color: "#22C55E" },
-  lost: { label: "Descartados", color: "#6B7280" },
+  discarded: { label: "Descartados", color: "#6B7280" },
+  lost: { label: "Perdidos", color: "#9CA3AF" },
 };
 
 export function LeadFunnelChart({ leads }: LeadFunnelChartProps) {
   const funnelData = useMemo(() => {
     const counts: Record<LeadStatus, number> = {
       new: 0,
+      qualified: 0,
       contacted: 0,
       negotiating: 0,
+      meeting: 0,
       converted: 0,
+      discarded: 0,
       lost: 0,
     };
 
@@ -41,7 +47,7 @@ export function LeadFunnelChart({ leads }: LeadFunnelChartProps) {
     });
 
     // Calcular funil progressivo (excluindo lost)
-    const funnelStatuses: LeadStatus[] = ["new", "contacted", "negotiating", "converted"];
+    const funnelStatuses: LeadStatus[] = ["new", "qualified", "negotiating", "meeting", "converted"];
     let runningTotal = leads.length;
 
     return funnelStatuses.map((status, index) => {
@@ -126,7 +132,7 @@ export function LeadFunnelChart({ leads }: LeadFunnelChartProps) {
         </div>
 
         {/* Stages breakdown */}
-        <div className="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-border">
+        <div className="grid grid-cols-5 gap-2 mt-4 pt-4 border-t border-border">
           {funnelData.map((stage) => (
             <div key={stage.status} className="text-center">
               <div 

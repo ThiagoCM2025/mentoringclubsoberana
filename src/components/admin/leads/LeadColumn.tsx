@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { LeadCard } from "./LeadCard";
 import type { Database } from "@/integrations/supabase/types";
+import type { LucideIcon } from "lucide-react";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
@@ -18,6 +19,19 @@ interface Lead {
   last_contact_at: string | null;
   nurturing_active?: boolean | null;
   nurturing_step?: number | null;
+  // New fields
+  pain_points?: string[] | null;
+  mentoring_goals?: string | null;
+  practice_area?: string | null;
+  product_interest?: string | null;
+  investment_range?: string | null;
+  meeting_scheduled_at?: string | null;
+  meeting_status?: string | null;
+  meeting_link?: string | null;
+  meeting_notes?: string | null;
+  discard_reason?: string | null;
+  discard_notes?: string | null;
+  student_user_id?: string | null;
 }
 
 interface ColumnConfig {
@@ -25,6 +39,7 @@ interface ColumnConfig {
   label: string;
   color: string;
   bgColor: string;
+  icon?: LucideIcon;
 }
 
 interface LeadColumnProps {
@@ -39,6 +54,7 @@ interface LeadColumnProps {
   isSelectionMode?: boolean;
   selectedLeadIds?: Set<string>;
   onSelectionChange?: (leadId: string, selected: boolean) => void;
+  onMakeStudent?: (lead: Lead) => void;
 }
 
 export function LeadColumn({
@@ -53,7 +69,10 @@ export function LeadColumn({
   isSelectionMode = false,
   selectedLeadIds = new Set(),
   onSelectionChange,
+  onMakeStudent,
 }: LeadColumnProps) {
+  const Icon = config.icon;
+  
   return (
     <div
       className={cn(
@@ -67,7 +86,10 @@ export function LeadColumn({
       {/* Header */}
       <div className={cn("px-4 py-3 rounded-t-lg", config.bgColor)}>
         <div className="flex items-center justify-between">
-          <h3 className={cn("font-semibold text-sm", config.color)}>{config.label}</h3>
+          <div className="flex items-center gap-2">
+            {Icon && <Icon className={cn("w-4 h-4", config.color)} />}
+            <h3 className={cn("font-semibold text-sm", config.color)}>{config.label}</h3>
+          </div>
           <span className={cn(
             "px-2 py-0.5 rounded-full text-xs font-medium",
             "bg-background/80 text-foreground"
@@ -94,6 +116,8 @@ export function LeadColumn({
               isSelectionMode={isSelectionMode}
               isSelected={selectedLeadIds.has(lead.id)}
               onSelectionChange={onSelectionChange}
+              onMakeStudent={onMakeStudent ? () => onMakeStudent(lead) : undefined}
+              columnStatus={config.status}
             />
           ))
         )}

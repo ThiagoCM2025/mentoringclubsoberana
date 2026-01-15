@@ -2,11 +2,16 @@ import { useState, useCallback } from "react";
 import { LeadColumn } from "./LeadColumn";
 import { LeadMessageModal } from "./LeadMessageModal";
 import { LeadConversionDialog } from "./LeadConversionDialog";
+import { LeadQualificationModal } from "./LeadQualificationModal";
+import { LeadMeetingModal } from "./LeadMeetingModal";
+import { LeadDiscardModal } from "./LeadDiscardModal";
+import { LeadToStudentDialog } from "./LeadToStudentDialog";
 import { BulkActionBar } from "./BulkActionBar";
 import { MessageComposer } from "../messaging/MessageComposer";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
+import { UserPlus, UserCheck, Handshake, Calendar, Trophy, XCircle } from "lucide-react";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
@@ -24,6 +29,19 @@ interface Lead {
   last_contact_at: string | null;
   nurturing_active?: boolean | null;
   nurturing_step?: number | null;
+  // New fields
+  pain_points?: string[] | null;
+  mentoring_goals?: string | null;
+  practice_area?: string | null;
+  product_interest?: string | null;
+  investment_range?: string | null;
+  meeting_scheduled_at?: string | null;
+  meeting_status?: string | null;
+  meeting_link?: string | null;
+  meeting_notes?: string | null;
+  discard_reason?: string | null;
+  discard_notes?: string | null;
+  student_user_id?: string | null;
 }
 
 interface LeadPipelineViewProps {
@@ -32,11 +50,12 @@ interface LeadPipelineViewProps {
 }
 
 const columns = [
-  { status: "new" as LeadStatus, label: "Novos", color: "text-blue-700", bgColor: "bg-blue-50" },
-  { status: "contacted" as LeadStatus, label: "Contactados", color: "text-orange-700", bgColor: "bg-orange-50" },
-  { status: "negotiating" as LeadStatus, label: "Em Tratativa", color: "text-purple-700", bgColor: "bg-purple-50" },
-  { status: "converted" as LeadStatus, label: "Clientes", color: "text-green-700", bgColor: "bg-green-50" },
-  { status: "lost" as LeadStatus, label: "Descartados", color: "text-gray-700", bgColor: "bg-gray-100" },
+  { status: "new" as LeadStatus, label: "Novos", color: "text-blue-700", bgColor: "bg-blue-50", icon: UserPlus },
+  { status: "qualified" as LeadStatus, label: "Qualificados", color: "text-purple-700", bgColor: "bg-purple-50", icon: UserCheck },
+  { status: "negotiating" as LeadStatus, label: "Negociando", color: "text-orange-700", bgColor: "bg-orange-50", icon: Handshake },
+  { status: "meeting" as LeadStatus, label: "Reunião", color: "text-cyan-700", bgColor: "bg-cyan-50", icon: Calendar },
+  { status: "converted" as LeadStatus, label: "Clientes", color: "text-green-700", bgColor: "bg-green-50", icon: Trophy },
+  { status: "discarded" as LeadStatus, label: "Descartados", color: "text-gray-700", bgColor: "bg-gray-100", icon: XCircle },
 ];
 
 export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
@@ -58,6 +77,19 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
   // Conversion dialog
   const [conversionDialogOpen, setConversionDialogOpen] = useState(false);
   const [convertingLead, setConvertingLead] = useState<Lead | null>(null);
+
+  // New modals
+  const [qualificationModalOpen, setQualificationModalOpen] = useState(false);
+  const [qualifyingLead, setQualifyingLead] = useState<Lead | null>(null);
+  
+  const [meetingModalOpen, setMeetingModalOpen] = useState(false);
+  const [meetingLead, setMeetingLead] = useState<Lead | null>(null);
+  
+  const [discardModalOpen, setDiscardModalOpen] = useState(false);
+  const [discardingLead, setDiscardingLead] = useState<Lead | null>(null);
+  
+  const [studentDialogOpen, setStudentDialogOpen] = useState(false);
+  const [studentLead, setStudentLead] = useState<Lead | null>(null);
 
   // Selection handlers
   const handleSelectionChange = useCallback((leadId: string, selected: boolean) => {
@@ -134,18 +166,36 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
     const lead = leads.find(l => l.id === leadId);
     if (!lead || lead.status === newStatus) return;
 
-    // Se está movendo para "converted", abrir dialog de conversão
+    // Handle special status transitions with modals
+    if (newStatus === "qualified" && lead.status === "new") {
+      setQualifyingLead(lead);
+      setQualificationModalOpen(true);
+      return;
+    }
+
+    if (newStatus === "meeting") {
+      setMeetingLead(lead);
+      setMeetingModalOpen(true);
+      return;
+    }
+
     if (newStatus === "converted") {
       setConvertingLead(lead);
       setConversionDialogOpen(true);
       return;
     }
 
-    // Atualizar status diretamente
+    if (newStatus === "discarded") {
+      setDiscardingLead(lead);
+      setDiscardModalOpen(true);
+      return;
+    }
+
+    // Direct status update for other transitions
     try {
       const { error } = await supabase
         .from("leads")
-        .update({ status: newStatus })
+        .update({ status: newStatus, last_contact_at: new Date().toISOString() })
         .eq("id", leadId);
 
       if (error) throw error;
@@ -161,6 +211,11 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
   const handleLeadClick = useCallback((lead: Lead) => {
     setSelectedLead(lead);
     setMessageModalOpen(true);
+  }, []);
+
+  const handleMakeStudent = useCallback((lead: Lead) => {
+    setStudentLead(lead);
+    setStudentDialogOpen(true);
   }, []);
 
   const getLeadsByStatus = useCallback((status: LeadStatus) => {
@@ -201,6 +256,7 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
               isSelectionMode={isSelectionMode}
               selectedLeadIds={selectedLeadIds}
               onSelectionChange={handleSelectionChange}
+              onMakeStudent={handleMakeStudent}
             />
           </div>
         ))}
@@ -229,6 +285,48 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
         audienceType="lead"
       />
 
+      {/* Qualification Modal */}
+      <LeadQualificationModal
+        open={qualificationModalOpen}
+        onClose={() => {
+          setQualificationModalOpen(false);
+          setQualifyingLead(null);
+        }}
+        leadId={qualifyingLead?.id || null}
+        leadName={qualifyingLead?.full_name || ""}
+        onQualificationComplete={onRefresh}
+      />
+
+      {/* Meeting Modal */}
+      <LeadMeetingModal
+        open={meetingModalOpen}
+        onClose={() => {
+          setMeetingModalOpen(false);
+          setMeetingLead(null);
+        }}
+        leadId={meetingLead?.id || null}
+        leadName={meetingLead?.full_name || ""}
+        existingData={meetingLead ? {
+          meeting_scheduled_at: meetingLead.meeting_scheduled_at,
+          meeting_status: meetingLead.meeting_status,
+          meeting_link: meetingLead.meeting_link,
+          meeting_notes: meetingLead.meeting_notes,
+        } : undefined}
+        onMeetingScheduled={onRefresh}
+      />
+
+      {/* Discard Modal */}
+      <LeadDiscardModal
+        open={discardModalOpen}
+        onClose={() => {
+          setDiscardModalOpen(false);
+          setDiscardingLead(null);
+        }}
+        leadId={discardingLead?.id || null}
+        leadName={discardingLead?.full_name || ""}
+        onDiscardComplete={onRefresh}
+      />
+
       {/* Conversion Dialog */}
       <LeadConversionDialog
         open={conversionDialogOpen}
@@ -238,6 +336,20 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
         }}
         leadId={convertingLead?.id || null}
         leadName={convertingLead?.full_name || ""}
+        onConversionComplete={onRefresh}
+      />
+
+      {/* Lead to Student Dialog */}
+      <LeadToStudentDialog
+        open={studentDialogOpen}
+        onClose={() => {
+          setStudentDialogOpen(false);
+          setStudentLead(null);
+        }}
+        leadId={studentLead?.id || null}
+        leadName={studentLead?.full_name || ""}
+        leadEmail={studentLead?.email || ""}
+        leadPhone={studentLead?.phone}
         onConversionComplete={onRefresh}
       />
     </>
