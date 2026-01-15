@@ -44,6 +44,9 @@ serve(async (req) => {
       formattedPhone = "55" + formattedPhone;
     }
 
+    // Convert literal \n to actual newlines
+    const processedMessage = message.replace(/\\n/g, '\n');
+
     console.log(`Sending WhatsApp to ${formattedPhone} via Evolution API`);
 
     // Send message via Evolution API
@@ -57,7 +60,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         number: formattedPhone,
-        text: message,
+        text: processedMessage,
       }),
     });
 
