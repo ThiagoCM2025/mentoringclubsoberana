@@ -1,4 +1,4 @@
-import { Flame, Thermometer, ThermometerSnowflake, MessageCircle, Clock, Mail, Send, Eye, Zap, ZapOff, Play, Pause, Calendar, GraduationCap, Trophy } from "lucide-react";
+import { Flame, Thermometer, ThermometerSnowflake, MessageCircle, Clock, Mail, Send, Eye, Zap, ZapOff, Play, Pause, Calendar, GraduationCap, Trophy, FileText } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -38,6 +38,8 @@ interface Lead {
 interface LeadCardProps {
   lead: Lead;
   onClick: () => void;
+  onOpenDetails: () => void;
+  onOpenTemplates: () => void;
   onDragStart: (e: React.DragEvent, leadId: string) => void;
   onNurturingToggle?: () => void;
   isSelectionMode?: boolean;
@@ -61,7 +63,7 @@ const meetingStatusConfig: Record<string, { label: string; color: string }> = {
   cancelada: { label: "Cancelada", color: "bg-gray-100 text-gray-700" },
 };
 
-export function LeadCard({ lead, onClick, onDragStart, onNurturingToggle, isSelectionMode = false, isSelected = false, onSelectionChange, onMakeStudent, columnStatus }: LeadCardProps) {
+export function LeadCard({ lead, onClick, onOpenDetails, onOpenTemplates, onDragStart, onNurturingToggle, isSelectionMode = false, isSelected = false, onSelectionChange, onMakeStudent, columnStatus }: LeadCardProps) {
   const { toast } = useToast();
   const { getCampaignInfo, getSequenceInfo, calculateNextSend } = useNurturingSequences();
   
@@ -128,11 +130,11 @@ export function LeadCard({ lead, onClick, onDragStart, onNurturingToggle, isSele
             </div>
           )}
           
-          <div className={cn("w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0", isSelected && "ring-2 ring-secondary ring-offset-2")}>
+          <div className={cn("w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 cursor-pointer", isSelected && "ring-2 ring-secondary ring-offset-2")} onClick={(e) => { e.stopPropagation(); onOpenDetails(); }}>
             <span className="text-primary font-semibold text-sm">{lead.full_name.charAt(0).toUpperCase()}</span>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-foreground text-sm truncate">{lead.full_name}</p>
+          <div className="flex-1 min-w-0 cursor-pointer" onClick={(e) => { e.stopPropagation(); onOpenDetails(); }}>
+            <p className="font-medium text-foreground text-sm truncate hover:text-primary transition-colors">{lead.full_name}</p>
             <p className="text-xs text-muted-foreground truncate">{lead.source || "Direto"}</p>
           </div>
           {temp && (
@@ -223,11 +225,14 @@ export function LeadCard({ lead, onClick, onDragStart, onNurturingToggle, isSele
           </div>
         )}
 
-        {/* Quick Actions */}
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity mb-2">
-          <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleEmailClick}><Mail className="w-3.5 h-3.5" /></Button></TooltipTrigger><TooltipContent>Email</TooltipContent></Tooltip>
-          {lead.phone && (<Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleWhatsAppClick}><MessageCircle className="w-3.5 h-3.5 text-green-600" /></Button></TooltipTrigger><TooltipContent>WhatsApp</TooltipContent></Tooltip>)}
-          <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onClick(); }}><Eye className="w-3.5 h-3.5" /></Button></TooltipTrigger><TooltipContent>Detalhes</TooltipContent></Tooltip>
+        {/* Quick Actions - Always Visible */}
+        <div className="flex items-center justify-between mb-2 pt-2 border-t border-border/30">
+          <div className="flex items-center gap-1">
+            <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleWhatsAppClick} disabled={!lead.phone}><MessageCircle className={cn("w-3.5 h-3.5", lead.phone ? "text-green-600" : "text-muted-foreground")} /></Button></TooltipTrigger><TooltipContent>WhatsApp</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleEmailClick}><Mail className="w-3.5 h-3.5" /></Button></TooltipTrigger><TooltipContent>Email</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-7 w-7 text-secondary" onClick={(e) => { e.stopPropagation(); onOpenTemplates(); }}><FileText className="w-3.5 h-3.5" /></Button></TooltipTrigger><TooltipContent>Templates</TooltipContent></Tooltip>
+          </div>
+          <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onOpenDetails(); }}><Eye className="w-3.5 h-3.5" /></Button></TooltipTrigger><TooltipContent>Ver Detalhes</TooltipContent></Tooltip>
         </div>
 
         {/* Footer */}
