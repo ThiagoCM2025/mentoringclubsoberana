@@ -238,7 +238,7 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0 overflow-hidden">
+      <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 gap-0 overflow-hidden rounded-none border-0">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-muted/30">
           <div className="flex items-center gap-3">

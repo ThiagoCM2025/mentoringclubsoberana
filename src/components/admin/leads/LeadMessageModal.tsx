@@ -134,30 +134,30 @@ export function LeadMessageModal({ open, onClose, lead, onMessageSent }: LeadMes
       const finalSubject = replaceVariables(subject);
 
       if (channel === "whatsapp") {
-        // Abrir WhatsApp
+        // Enviar via Evolution API
         const phone = lead.phone?.replace(/\D/g, "") || "";
         if (!phone) {
           toast({ title: "Lead não possui telefone cadastrado", variant: "destructive" });
           setSending(false);
           return;
         }
-        const whatsappUrl = `https://wa.me/55${phone}?text=${encodeURIComponent(finalMessage)}`;
-        window.open(whatsappUrl, "_blank");
 
-        // Registrar no histórico
-        await supabase.from("communication_history").insert({
-          recipient_id: lead.id,
-          recipient_type: "lead",
-          recipient_name: lead.full_name,
-          recipient_email: lead.email,
-          recipient_phone: lead.phone,
-          channel: "whatsapp",
-          message: finalMessage,
-          template_id: selectedTemplate?.id || null,
-          status: "sent",
+        const { data, error } = await supabase.functions.invoke("send-whatsapp", {
+          body: {
+            phone: lead.phone,
+            message: finalMessage,
+            leadId: lead.id,
+            leadName: lead.full_name,
+            templateId: selectedTemplate?.id || null,
+          },
         });
 
-        toast({ title: "WhatsApp aberto!" });
+        if (error) {
+          console.error("Evolution API error:", error);
+          throw new Error("Falha ao enviar mensagem via WhatsApp");
+        }
+
+        toast({ title: "Mensagem enviada via WhatsApp!", description: "Enviado com sucesso pela Evolution API" });
       } else if (channel === "email") {
         // Enviar email via edge function
         const { error } = await supabase.functions.invoke("send-bulk-email", {
