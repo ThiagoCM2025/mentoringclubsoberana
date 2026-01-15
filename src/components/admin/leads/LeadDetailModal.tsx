@@ -213,10 +213,30 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
     }
   };
 
-  const handleWhatsAppClick = () => {
-    if (lead?.phone) {
+  const handleWhatsAppClick = async () => {
+    if (!lead?.phone) return;
+    
+    try {
+      const { error } = await supabase.functions.invoke("send-whatsapp", {
+        body: {
+          phone: lead.phone,
+          message: `Olá ${lead.full_name}! Tudo bem?`,
+          leadId: lead.id,
+          leadName: lead.full_name,
+        }
+      });
+      
+      if (error) throw error;
+      toast({ title: "Mensagem enviada via WhatsApp!" });
+    } catch (err) {
+      console.error("WhatsApp API error:", err);
+      // Fallback para wa.me caso a API falhe
       const cleanPhone = lead.phone.replace(/\D/g, "");
       window.open(`https://wa.me/55${cleanPhone}`, "_blank");
+      toast({ 
+        title: "Abrindo WhatsApp Web", 
+        description: "API indisponível, abrindo via wa.me" 
+      });
     }
   };
 
@@ -240,7 +260,7 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 gap-0 overflow-hidden rounded-none border-0">
+      <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 gap-0 overflow-hidden rounded-none border-0 z-[100]">
         {/* Compact Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b bg-background">
           <div className="flex items-center gap-4">
