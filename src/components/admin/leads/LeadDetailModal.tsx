@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNurturingSequences } from "@/hooks/useNurturingSequences";
@@ -15,13 +15,13 @@ import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import {
+  ArrowLeft,
   X,
   Mail,
   MessageCircle,
   FileText,
   User,
   Phone,
-  MapPin,
   Calendar,
   Clock,
   Send,
@@ -40,6 +40,8 @@ import {
   Loader2,
   Pencil,
   History,
+  TrendingUp,
+  BarChart3,
 } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -62,18 +64,15 @@ interface Lead {
   score?: number | null;
   behavior_score?: number | null;
   notes?: string | null;
-  // Qualification fields
   pain_points?: string[] | null;
   mentoring_goals?: string | null;
   practice_area?: string | null;
   product_interest?: string | null;
   investment_range?: string | null;
-  // Meeting fields
   meeting_scheduled_at?: string | null;
   meeting_status?: string | null;
   meeting_link?: string | null;
   meeting_notes?: string | null;
-  // Discard fields
   discard_reason?: string | null;
   discard_notes?: string | null;
   student_user_id?: string | null;
@@ -98,18 +97,18 @@ interface LeadDetailModalProps {
 }
 
 const temperatureConfig = {
-  cold: { label: "Frio", icon: ThermometerSnowflake, color: "bg-blue-100 text-blue-700" },
-  warm: { label: "Morno", icon: Thermometer, color: "bg-amber-100 text-amber-700" },
-  hot: { label: "Quente", icon: Flame, color: "bg-red-100 text-red-700" },
+  cold: { label: "Frio", icon: ThermometerSnowflake, color: "text-blue-500" },
+  warm: { label: "Morno", icon: Thermometer, color: "text-amber-500" },
+  hot: { label: "Quente", icon: Flame, color: "text-red-500" },
 };
 
 const statusConfig: Record<string, { label: string; color: string }> = {
-  new: { label: "Novo", color: "bg-blue-100 text-blue-700" },
-  qualified: { label: "Qualificado", color: "bg-purple-100 text-purple-700" },
-  negotiating: { label: "Negociando", color: "bg-orange-100 text-orange-700" },
-  meeting: { label: "Reunião", color: "bg-cyan-100 text-cyan-700" },
-  converted: { label: "Cliente", color: "bg-green-100 text-green-700" },
-  discarded: { label: "Descartado", color: "bg-gray-100 text-gray-700" },
+  new: { label: "Novo", color: "bg-blue-500/10 text-blue-600 border-blue-200" },
+  qualified: { label: "Qualificado", color: "bg-purple-500/10 text-purple-600 border-purple-200" },
+  negotiating: { label: "Negociando", color: "bg-orange-500/10 text-orange-600 border-orange-200" },
+  meeting: { label: "Reunião", color: "bg-cyan-500/10 text-cyan-600 border-cyan-200" },
+  converted: { label: "Cliente", color: "bg-green-500/10 text-green-600 border-green-200" },
+  discarded: { label: "Descartado", color: "bg-gray-500/10 text-gray-600 border-gray-200" },
 };
 
 export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQualification, onOpenMessage }: LeadDetailModalProps) {
@@ -235,228 +234,303 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
   const nextSend = calculateNextSend(lead.source, nurturingStep, lead.last_contact_at);
   const temp = lead.temperature ? temperatureConfig[lead.temperature] : null;
   const statusInfo = statusConfig[lead.status || "new"];
+  const nurturingProgress = sequenceInfo.maxStep > 0 ? (nurturingStep / sequenceInfo.maxStep) * 100 : 0;
+
+  const hasQualificationData = lead.pain_points?.length || lead.mentoring_goals || lead.practice_area || lead.product_interest || lead.investment_range;
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 gap-0 overflow-hidden rounded-none border-0">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-muted/30">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <span className="text-primary font-bold text-lg">{lead.full_name.charAt(0).toUpperCase()}</span>
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold">{lead.full_name}</h2>
-              <p className="text-sm text-muted-foreground">{lead.email}</p>
+        {/* Compact Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b bg-background">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" onClick={onClose} className="gap-1.5">
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Voltar</span>
+            </Button>
+            
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <span className="text-primary font-bold">{lead.full_name.charAt(0).toUpperCase()}</span>
+              </div>
+              <div className="min-w-0">
+                <h2 className="font-semibold truncate">{lead.full_name}</h2>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">{lead.source || "Direto"}</Badge>
+                  <span className="hidden sm:inline">•</span>
+                  <span className="hidden sm:inline">Há {formatDistanceToNow(new Date(lead.created_at), { locale: ptBR })}</span>
+                </div>
+              </div>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
-
-        <div className="flex flex-1 overflow-hidden">
-          {/* Sidebar */}
-          <div className="w-72 border-r bg-muted/20 p-4 overflow-y-auto flex flex-col">
-            {/* Contact Info */}
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="w-4 h-4 text-muted-foreground" />
-                <span className="truncate">{lead.email}</span>
+          
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5" />
+                <span className="truncate max-w-[150px]">{lead.email}</span>
               </div>
               {lead.phone && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="w-4 h-4 text-muted-foreground" />
+                <div className="flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5" />
                   <span>{lead.phone}</span>
                 </div>
               )}
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="w-4 h-4 text-muted-foreground" />
-                <span>{lead.source || "Direto"}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="w-4 h-4 text-muted-foreground" />
-                <span>Capturado {format(new Date(lead.created_at), "dd/MM/yy", { locale: ptBR })}</span>
-              </div>
             </div>
+            
+            {/* Score Badge */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10">
+              <TrendingUp className="w-3.5 h-3.5 text-primary" />
+              <span className="text-sm font-medium text-primary">{lead.score || 0}</span>
+            </div>
+            
+            <Button variant="ghost" size="icon" onClick={onClose} className="shrink-0">
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+        </div>
 
-            <Separator className="my-3" />
-
-            {/* Stats */}
-            <div className="flex items-center gap-4 mb-4 text-sm">
-              <div className="flex items-center gap-1.5">
-                <MessageCircle className="w-4 h-4 text-muted-foreground" />
-                <span>{lead.messages_sent || 0} msgs</span>
-              </div>
-              {lead.last_contact_at && (
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-4 h-4 text-muted-foreground" />
-                  <span>{formatDistanceToNow(new Date(lead.last_contact_at), { locale: ptBR })}</span>
+        <div className="flex flex-1 overflow-hidden">
+          {/* Sidebar - Fixed Width */}
+          <div className="w-[280px] border-r bg-muted/30 flex flex-col overflow-hidden">
+            <ScrollArea className="flex-1">
+              <div className="p-4 space-y-4">
+                {/* Status & Temperature in Grid */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <p className="text-[10px] font-medium text-muted-foreground uppercase mb-1.5">Status</p>
+                    <Select value={status} onValueChange={(v) => handleStatusChange(v as LeadStatus)}>
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(statusConfig).map(([key, config]) => (
+                          <SelectItem key={key} value={key} className="text-xs">{config.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-medium text-muted-foreground uppercase mb-1.5">Temperatura</p>
+                    <Select value={temperature} onValueChange={(v) => handleTemperatureChange(v as LeadTemperature)}>
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cold" className="text-xs">❄️ Frio</SelectItem>
+                        <SelectItem value="warm" className="text-xs">🌡️ Morno</SelectItem>
+                        <SelectItem value="hot" className="text-xs">🔥 Quente</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-              )}
-            </div>
 
-            <Separator className="my-3" />
+                {/* Nurturing Card */}
+                <div className="bg-background rounded-lg p-3 border">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      {isNurturingActive ? (
+                        <Zap className="w-4 h-4 text-amber-500" />
+                      ) : (
+                        <ZapOff className="w-4 h-4 text-muted-foreground" />
+                      )}
+                      <span className="text-xs font-medium">Nurturing</span>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 px-2 text-xs"
+                      onClick={handleToggleNurturing}
+                    >
+                      {isNurturingActive ? (
+                        <>
+                          <Pause className="w-3 h-3 mr-1" />
+                          Pausar
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-3 h-3 mr-1" />
+                          Ativar
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Etapa {nurturingStep}/{sequenceInfo.maxStep}</span>
+                      <span className="text-muted-foreground">{Math.round(nurturingProgress)}%</span>
+                    </div>
+                    <Progress value={nurturingProgress} className="h-1.5" />
+                    
+                    {isNurturingActive && nextSend && (
+                      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground pt-1">
+                        <Send className="w-3 h-3" />
+                        <span>Próximo envio: {nextSend.text}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-            {/* Nurturing Status */}
-            <div className="space-y-3 mb-4">
-              <p className="text-xs font-semibold text-muted-foreground uppercase">Nurturing</p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {isNurturingActive ? (
-                    <Zap className="w-4 h-4 text-amber-500" />
-                  ) : (
-                    <ZapOff className="w-4 h-4 text-muted-foreground" />
+                {/* Metrics */}
+                <div className="bg-background rounded-lg p-3 border">
+                  <div className="flex items-center gap-2 mb-3">
+                    <BarChart3 className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-xs font-medium">Métricas</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <p className="text-lg font-semibold">{lead.messages_sent || 0}</p>
+                      <p className="text-[10px] text-muted-foreground">Mensagens</p>
+                    </div>
+                    <div>
+                      <p className="text-lg font-semibold">{lead.behavior_score || 0}</p>
+                      <p className="text-[10px] text-muted-foreground">Engajamento</p>
+                    </div>
+                  </div>
+                  {lead.last_contact_at && (
+                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-3 pt-2 border-t">
+                      <Clock className="w-3 h-3" />
+                      <span>Último contato: {formatDistanceToNow(new Date(lead.last_contact_at), { locale: ptBR, addSuffix: true })}</span>
+                    </div>
                   )}
-                  <span className="text-sm">Step {nurturingStep}/{sequenceInfo.maxStep}</span>
                 </div>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleToggleNurturing}>
-                  {isNurturingActive ? <Pause className="w-3.5 h-3.5 text-amber-500" /> : <Play className="w-3.5 h-3.5 text-green-500" />}
-                </Button>
-              </div>
-              {isNurturingActive && nextSend && (
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Send className="w-3 h-3" />
-                  <span>Próximo: {nextSend.text}</span>
+
+                {/* Quick Notes */}
+                <div className="space-y-2">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase">Notas Rápidas</p>
+                  <Textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Adicione observações..."
+                    className="min-h-[80px] resize-none text-sm"
+                  />
+                  <Button size="sm" className="w-full h-8" onClick={handleSaveNotes} disabled={savingNotes}>
+                    {savingNotes ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Save className="w-3.5 h-3.5 mr-1.5" />}
+                    Salvar
+                  </Button>
                 </div>
-              )}
-            </div>
-
-            <Separator className="my-3" />
-
-            {/* Status & Temperature */}
-            <div className="space-y-3 mb-4">
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Status</p>
-                <Select value={status} onValueChange={(v) => handleStatusChange(v as LeadStatus)}>
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(statusConfig).map(([key, config]) => (
-                      <SelectItem key={key} value={key}>{config.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Temperatura</p>
-                <Select value={temperature} onValueChange={(v) => handleTemperatureChange(v as LeadTemperature)}>
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="cold">Frio</SelectItem>
-                    <SelectItem value="warm">Morno</SelectItem>
-                    <SelectItem value="hot">Quente</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            </ScrollArea>
 
-            <Separator className="my-3" />
-
-            {/* Quick Actions */}
-            <div className="space-y-2 mt-auto">
-              <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Ações Rápidas</p>
+            {/* Fixed Quick Actions */}
+            <div className="p-3 border-t bg-background">
+              <p className="text-[10px] font-medium text-muted-foreground uppercase mb-2">Ações Rápidas</p>
               <div className="grid grid-cols-3 gap-2">
-                <Button variant="outline" size="sm" className="h-9 flex-col gap-1" onClick={handleEmailClick}>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-12 flex-col gap-1 text-xs"
+                  onClick={handleEmailClick}
+                >
                   <Mail className="w-4 h-4" />
-                  <span className="text-[10px]">Email</span>
+                  Email
                 </Button>
                 {lead.phone && (
-                  <Button variant="outline" size="sm" className="h-9 flex-col gap-1 border-green-200 text-green-700 hover:bg-green-50" onClick={handleWhatsAppClick}>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-12 flex-col gap-1 text-xs border-green-200 text-green-600 hover:bg-green-50 hover:text-green-700"
+                    onClick={handleWhatsAppClick}
+                  >
                     <MessageCircle className="w-4 h-4" />
-                    <span className="text-[10px]">WhatsApp</span>
+                    WhatsApp
                   </Button>
                 )}
-                <Button variant="outline" size="sm" className="h-9 flex-col gap-1 border-secondary/50 text-secondary hover:bg-secondary/10" onClick={onOpenMessage}>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-12 flex-col gap-1 text-xs border-secondary/50 text-secondary hover:bg-secondary/10"
+                  onClick={onOpenMessage}
+                >
                   <FileText className="w-4 h-4" />
-                  <span className="text-[10px]">Templates</span>
+                  Templates
                 </Button>
               </div>
             </div>
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-hidden flex flex-col bg-muted/10">
             <Tabs defaultValue="info" className="flex-1 flex flex-col">
-              <TabsList className="mx-4 mt-4 w-fit">
-                <TabsTrigger value="info" className="gap-2">
-                  <User className="w-4 h-4" />
-                  Informações
-                </TabsTrigger>
-                <TabsTrigger value="behavior" className="gap-2">
-                  <Target className="w-4 h-4" />
-                  Comportamento
-                </TabsTrigger>
-              </TabsList>
+              <div className="px-4 pt-4">
+                <TabsList className="w-fit">
+                  <TabsTrigger value="info" className="gap-1.5 text-xs">
+                    <User className="w-3.5 h-3.5" />
+                    Informações
+                  </TabsTrigger>
+                  <TabsTrigger value="behavior" className="gap-1.5 text-xs">
+                    <Target className="w-3.5 h-3.5" />
+                    Comportamento
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-              <TabsContent value="info" className="flex-1 overflow-y-auto p-4 space-y-6">
-                {/* Qualification Data */}
-                <div className="bg-muted/30 rounded-lg p-4 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold flex items-center gap-2">
+              <TabsContent value="info" className="flex-1 overflow-y-auto p-4 space-y-4 mt-0">
+                {/* Qualification Data - Table Format */}
+                <div className="bg-background rounded-lg border overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
+                    <h3 className="text-sm font-medium flex items-center gap-2">
                       <Target className="w-4 h-4 text-primary" />
                       Dados de Qualificação
                     </h3>
                     {onOpenQualification && (
-                      <Button variant="ghost" size="sm" onClick={onOpenQualification}>
-                        <Pencil className="w-3.5 h-3.5 mr-1" />
+                      <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={onOpenQualification}>
+                        <Pencil className="w-3 h-3 mr-1" />
                         Editar
                       </Button>
                     )}
                   </div>
                   
-                  {(lead.pain_points?.length || lead.mentoring_goals || lead.practice_area || lead.product_interest || lead.investment_range) ? (
-                    <div className="grid grid-cols-2 gap-4">
+                  {hasQualificationData ? (
+                    <div className="divide-y">
                       {lead.pain_points && lead.pain_points.length > 0 && (
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1">Dores</p>
+                        <div className="flex px-4 py-2.5">
+                          <span className="w-32 text-xs text-muted-foreground shrink-0">Dores</span>
                           <div className="flex flex-wrap gap-1">
                             {lead.pain_points.map((pain, i) => (
-                              <Badge key={i} variant="secondary" className="text-xs">{pain}</Badge>
+                              <Badge key={i} variant="secondary" className="text-[10px] px-1.5 py-0">{pain}</Badge>
                             ))}
                           </div>
                         </div>
                       )}
                       {lead.mentoring_goals && (
-                        <div className="col-span-2">
-                          <p className="text-xs text-muted-foreground mb-1">Objetivos</p>
-                          <p className="text-sm">{lead.mentoring_goals}</p>
+                        <div className="flex px-4 py-2.5">
+                          <span className="w-32 text-xs text-muted-foreground shrink-0">Objetivos</span>
+                          <span className="text-sm">{lead.mentoring_goals}</span>
                         </div>
                       )}
                       {lead.practice_area && (
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-                            <Briefcase className="w-3 h-3" /> Área de Atuação
-                          </p>
-                          <p className="text-sm font-medium">{lead.practice_area}</p>
+                        <div className="flex px-4 py-2.5">
+                          <span className="w-32 text-xs text-muted-foreground shrink-0 flex items-center gap-1">
+                            <Briefcase className="w-3 h-3" /> Área
+                          </span>
+                          <span className="text-sm font-medium">{lead.practice_area}</span>
                         </div>
                       )}
                       {lead.product_interest && (
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-                            <Target className="w-3 h-3" /> Interesse em Produto
-                          </p>
-                          <p className="text-sm font-medium">{lead.product_interest}</p>
+                        <div className="flex px-4 py-2.5">
+                          <span className="w-32 text-xs text-muted-foreground shrink-0 flex items-center gap-1">
+                            <Target className="w-3 h-3" /> Produto
+                          </span>
+                          <span className="text-sm font-medium">{lead.product_interest}</span>
                         </div>
                       )}
                       {lead.investment_range && (
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-                            <DollarSign className="w-3 h-3" /> Faixa de Investimento
-                          </p>
-                          <p className="text-sm font-medium">{lead.investment_range}</p>
+                        <div className="flex px-4 py-2.5">
+                          <span className="w-32 text-xs text-muted-foreground shrink-0 flex items-center gap-1">
+                            <DollarSign className="w-3 h-3" /> Investimento
+                          </span>
+                          <span className="text-sm font-medium">{lead.investment_range}</span>
                         </div>
                       )}
                     </div>
                   ) : (
-                    <div className="text-center py-4 text-muted-foreground">
-                      <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">Nenhum dado de qualificação preenchido</p>
+                    <div className="text-center py-6 text-muted-foreground">
+                      <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                      <p className="text-sm">Nenhum dado de qualificação</p>
                       {onOpenQualification && (
-                        <Button variant="link" size="sm" onClick={onOpenQualification} className="mt-1">
+                        <Button variant="link" size="sm" onClick={onOpenQualification} className="mt-1 text-xs">
                           Preencher agora
                         </Button>
                       )}
@@ -464,66 +538,54 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
                   )}
                 </div>
 
-                {/* Notes */}
-                <div className="space-y-3">
-                  <h3 className="font-semibold flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-primary" />
-                    Notas
-                  </h3>
-                  <Textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Adicione observações sobre este lead..."
-                    className="min-h-[100px] resize-none"
-                  />
-                  <Button size="sm" onClick={handleSaveNotes} disabled={savingNotes}>
-                    {savingNotes ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Save className="w-4 h-4 mr-1" />}
-                    Salvar Notas
-                  </Button>
-                </div>
-
-                {/* Communication History */}
-                <div className="space-y-3">
-                  <h3 className="font-semibold flex items-center gap-2">
-                    <History className="w-4 h-4 text-primary" />
-                    Histórico de Comunicações
-                  </h3>
+                {/* Communication History - Compact */}
+                <div className="bg-background rounded-lg border overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
+                    <h3 className="text-sm font-medium flex items-center gap-2">
+                      <History className="w-4 h-4 text-primary" />
+                      Histórico de Comunicações
+                    </h3>
+                    <span className="text-[10px] text-muted-foreground">{communicationHistory.length} registros</span>
+                  </div>
                   
                   {loadingHistory ? (
-                    <div className="text-center py-4 text-muted-foreground">Carregando...</div>
+                    <div className="text-center py-6 text-muted-foreground text-sm">
+                      <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
+                      Carregando...
+                    </div>
                   ) : communicationHistory.length === 0 ? (
-                    <div className="text-center py-4 text-muted-foreground text-sm">
+                    <div className="text-center py-6 text-muted-foreground text-sm">
                       Nenhuma comunicação registrada
                     </div>
                   ) : (
-                    <ScrollArea className="h-[200px]">
-                      <div className="space-y-2 pr-4">
-                        {communicationHistory.map((item) => (
-                          <div key={item.id} className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
-                            <div className={cn(
-                              "p-1.5 rounded-full",
-                              item.channel === "email" ? "bg-blue-100 text-blue-600" :
-                              item.channel === "whatsapp" ? "bg-green-100 text-green-600" :
-                              "bg-gray-100 text-gray-600"
-                            )}>
-                              {item.channel === "whatsapp" ? <MessageCircle className="w-3.5 h-3.5" /> : <Mail className="w-3.5 h-3.5" />}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              {item.subject && <p className="font-medium text-sm truncate">{item.subject}</p>}
-                              <p className="text-xs text-muted-foreground line-clamp-2">{item.message}</p>
-                            </div>
-                            <span className="text-xs text-muted-foreground whitespace-nowrap">
-                              {format(new Date(item.sent_at), "dd/MM HH:mm")}
-                            </span>
+                    <div className="divide-y max-h-[300px] overflow-y-auto">
+                      {communicationHistory.map((item) => (
+                        <div key={item.id} className="flex items-start gap-3 px-4 py-3 hover:bg-muted/30 transition-colors">
+                          <div className={cn(
+                            "p-1.5 rounded-full shrink-0 mt-0.5",
+                            item.channel === "email" ? "bg-blue-100 text-blue-600" :
+                            item.channel === "whatsapp" ? "bg-green-100 text-green-600" :
+                            "bg-gray-100 text-gray-600"
+                          )}>
+                            {item.channel === "whatsapp" ? <MessageCircle className="w-3 h-3" /> : <Mail className="w-3 h-3" />}
                           </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2 mb-0.5">
+                              <p className="text-xs font-medium truncate">{item.subject || (item.channel === "whatsapp" ? "WhatsApp" : "Email")}</p>
+                              <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                                {format(new Date(item.sent_at), "dd/MM HH:mm")}
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground line-clamp-1">{item.message}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </TabsContent>
 
-              <TabsContent value="behavior" className="flex-1 overflow-y-auto p-4">
+              <TabsContent value="behavior" className="flex-1 overflow-y-auto p-4 mt-0">
                 <LeadBehaviorTab leadId={lead.id} behaviorScore={lead.behavior_score || 0} />
               </TabsContent>
             </Tabs>
