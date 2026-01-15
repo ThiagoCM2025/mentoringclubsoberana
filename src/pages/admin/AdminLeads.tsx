@@ -31,6 +31,7 @@ import { LeadTemplatesTab } from "@/components/admin/leads/LeadTemplatesTab";
 import { LeadHistoryTab } from "@/components/admin/leads/LeadHistoryTab";
 import { CampaignSelector } from "@/components/admin/leads/CampaignSelector";
 import { CampaignDispatchDialog } from "@/components/admin/leads/CampaignDispatchDialog";
+import { LeadMessageModal } from "@/components/admin/leads/LeadMessageModal";
 import { ScheduledMessagesPanel } from "@/components/admin/leads/ScheduledMessagesPanel";
 import { useNurturingSequences } from "@/hooks/useNurturingSequences";
 import { cn } from "@/lib/utils";
@@ -124,6 +125,8 @@ const AdminLeads = () => {
   const [mainTab, setMainTab] = useState<"crm" | "automacao" | "templates" | "historico">("crm");
   const [importing, setImporting] = useState(false);
   const [campaignDispatchOpen, setCampaignDispatchOpen] = useState(false);
+  const [messageModalOpen, setMessageModalOpen] = useState(false);
+  const [selectedLeadForMessage, setSelectedLeadForMessage] = useState<Lead | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
@@ -921,8 +924,10 @@ const AdminLeads = () => {
                         className="h-9 text-sm gap-1.5"
                         onClick={() => {
                           if (selectedLead.phone) {
-                            const cleanPhone = selectedLead.phone.replace(/\D/g, "");
-                            window.open(`https://wa.me/55${cleanPhone}`, "_blank");
+                            // Abrir modal de templates em vez de wa.me
+                            setDialogOpen(false);
+                            setSelectedLeadForMessage(selectedLead);
+                            setMessageModalOpen(true);
                           }
                         }}
                         disabled={!selectedLead.phone}
@@ -1036,6 +1041,24 @@ const AdminLeads = () => {
           onOpenChange={setCampaignDispatchOpen}
           onSuccess={fetchLeads}
         />
+
+        {/* Lead Message Modal */}
+        {selectedLeadForMessage && (
+          <LeadMessageModal
+            open={messageModalOpen}
+            onClose={() => {
+              setMessageModalOpen(false);
+              setSelectedLeadForMessage(null);
+            }}
+            lead={{
+              id: selectedLeadForMessage.id,
+              full_name: selectedLeadForMessage.full_name,
+              email: selectedLeadForMessage.email,
+              phone: selectedLeadForMessage.phone,
+            }}
+            onMessageSent={fetchLeads}
+          />
+        )}
           </TabsContent>
 
           <TabsContent value="automacao">

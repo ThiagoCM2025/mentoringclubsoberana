@@ -218,20 +218,51 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
 
         const { data: session } = await supabase.auth.getSession();
         
-        const response = await supabase.functions.invoke('send-bulk-email', {
-          body: {
-            recipients,
-            subject: channel === 'email' ? subject : undefined,
-            message,
-            channel,
-            recipientType: 'lead',
-            templateId: selectedTemplateId
+        if (channel === 'whatsapp') {
+          // Enviar via Evolution API
+          const recipientsWithPhone = recipients.filter(r => r.phone);
+          
+          if (recipientsWithPhone.length === 0) {
+            toast.error('Nenhum lead possui telefone cadastrado');
+            setLoading(false);
+            return;
           }
-        });
 
-        if (response.error) throw response.error;
+          const response = await supabase.functions.invoke('send-bulk-whatsapp', {
+            body: {
+              recipients: recipientsWithPhone.map(r => ({
+                id: r.id,
+                name: r.name,
+                phone: r.phone,
+                type: 'lead'
+              })),
+              message,
+              templateId: selectedTemplateId
+            }
+          });
 
-        toast.success(`${response.data?.sentCount || 0} e-mails enviados com sucesso!`);
+          if (response.error) throw response.error;
+
+          const result = response.data;
+          toast.success(`${result?.sent || 0} mensagens WhatsApp enviadas${result?.failed > 0 ? `, ${result.failed} falha(s)` : ''}!`);
+        } else {
+          // Enviar via email
+          const response = await supabase.functions.invoke('send-bulk-email', {
+            body: {
+              recipients,
+              subject: channel === 'email' ? subject : undefined,
+              message,
+              channel,
+              recipientType: 'lead',
+              templateId: selectedTemplateId
+            }
+          });
+
+          if (response.error) throw response.error;
+
+          toast.success(`${response.data?.sentCount || 0} e-mails enviados com sucesso!`);
+        }
+        
         handleClose();
         onSuccess?.();
       } else {

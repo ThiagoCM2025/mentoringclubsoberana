@@ -213,32 +213,11 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
     }
   };
 
-  const handleWhatsAppClick = async () => {
-    if (!lead?.phone) return;
-    
-    try {
-      const { error } = await supabase.functions.invoke("send-whatsapp", {
-        body: {
-          phone: lead.phone,
-          message: `Olá ${lead.full_name}! Tudo bem?`,
-          leadId: lead.id,
-          leadName: lead.full_name,
-        }
-      });
-      
-      if (error) throw error;
-      toast({ title: "Mensagem enviada via WhatsApp!" });
-    } catch (err) {
-      console.error("WhatsApp API error:", err);
-      // Fallback para wa.me caso a API falhe
-      const cleanPhone = lead.phone.replace(/\D/g, "");
-      window.open(`https://wa.me/55${cleanPhone}`, "_blank");
-      toast({ 
-        title: "Abrindo WhatsApp Web", 
-        description: "API indisponível, abrindo via wa.me" 
-      });
-    }
+  const handleWhatsAppClick = () => {
+    // Abre o modal de templates ao clicar no WhatsApp
+    onOpenMessage?.();
   };
+
 
   const handleEmailClick = () => {
     if (lead?.email) {
@@ -260,7 +239,11 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 gap-0 overflow-hidden rounded-none border-0 z-[100]">
+      <DialogContent 
+        className="fixed top-0 right-0 bottom-0 h-full max-h-full w-full max-w-none lg:left-[var(--admin-sidebar-offset,208px)] lg:w-auto p-0 gap-0 overflow-hidden rounded-none border-0 translate-x-0 translate-y-0 z-40 data-[state=open]:slide-in-from-right-0 data-[state=closed]:slide-out-to-right-0"
+        overlayClassName="lg:left-[var(--admin-sidebar-offset,208px)] z-30 bg-black/50"
+        hideClose
+      >
         {/* Compact Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b bg-background">
           <div className="flex items-center gap-4">

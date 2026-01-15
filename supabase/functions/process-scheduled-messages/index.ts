@@ -2,6 +2,9 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const EVOLUTION_API_URL = Deno.env.get("EVOLUTION_API_URL");
+const EVOLUTION_API_KEY = Deno.env.get("EVOLUTION_API_KEY");
+const EVOLUTION_INSTANCE = Deno.env.get("EVOLUTION_INSTANCE");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -209,6 +212,96 @@ const handler = async (req: Request): Promise<Response> => {
                 metadata: { 
                   scheduled_message_id: scheduledMsg.id,
                   error: emailError.message 
+                },
+              });
+            }
+          }
+        } else if (scheduledMsg.channel === "whatsapp") {
+          // Enviar WhatsApp via Evolution API
+          if (!EVOLUTION_API_URL || !EVOLUTION_API_KEY || !EVOLUTION_INSTANCE) {
+            console.error("[process-scheduled-messages] Evolution API not configured");
+            throw new Error("Evolution API not configured");
+          }
+
+          const evolutionUrl = `${EVOLUTION_API_URL}/message/sendText/${EVOLUTION_INSTANCE}`;
+
+          for (const lead of leads) {
+            if (!lead.phone) {
+              console.log(`[process-scheduled-messages] Lead ${lead.full_name} has no phone, skipping`);
+              continue;
+            }
+
+            try {
+              const personalizedMessage = replaceVariables(scheduledMsg.message, lead.full_name);
+
+              // Format phone number
+              let formattedPhone = lead.phone.replace(/\D/g, "");
+              if (!formattedPhone.startsWith("55")) {
+                formattedPhone = "55" + formattedPhone;
+              }
+
+              console.log(`[process-scheduled-messages] Sending WhatsApp to ${formattedPhone}`);
+
+              const evolutionResponse = await fetch(evolutionUrl, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "apikey": EVOLUTION_API_KEY,
+                },
+                body: JSON.stringify({
+                  number: formattedPhone,
+                  text: personalizedMessage,
+                  delay: 1200 + Math.random() * 800,
+                }),
+              });
+
+              const evolutionData = await evolutionResponse.json();
+
+              if (!evolutionResponse.ok) {
+                throw new Error(evolutionData?.message || `Evolution error: ${evolutionResponse.status}`);
+              }
+
+              console.log(`[process-scheduled-messages] WhatsApp sent to ${lead.full_name}`);
+
+              // Registrar na tabela communication_history
+              await supabase.from("communication_history").insert({
+                recipient_id: lead.id,
+                recipient_type: "lead",
+                recipient_name: lead.full_name,
+                recipient_phone: lead.phone,
+                channel: "whatsapp",
+                message: personalizedMessage,
+                status: "sent",
+                template_id: scheduledMsg.template_id,
+                metadata: { 
+                  scheduled_message_id: scheduledMsg.id,
+                  sent_via: "evolution_api_scheduled",
+                  evolution_response: evolutionData,
+                },
+              });
+
+              sentCount++;
+
+              // Small delay between messages
+              await new Promise(resolve => setTimeout(resolve, 500));
+
+            } catch (whatsappError: any) {
+              console.error(`[process-scheduled-messages] Error sending WhatsApp to ${lead.full_name}:`, whatsappError);
+              failedCount++;
+
+              await supabase.from("communication_history").insert({
+                recipient_id: lead.id,
+                recipient_type: "lead",
+                recipient_name: lead.full_name,
+                recipient_phone: lead.phone,
+                channel: "whatsapp",
+                message: scheduledMsg.message,
+                status: "failed",
+                template_id: scheduledMsg.template_id,
+                metadata: { 
+                  scheduled_message_id: scheduledMsg.id,
+                  sent_via: "evolution_api_scheduled",
+                  error: whatsappError.message,
                 },
               });
             }

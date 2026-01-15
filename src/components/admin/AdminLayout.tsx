@@ -91,7 +91,12 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-background font-admin admin-light-theme">
+    <div 
+      className="min-h-screen bg-background font-admin admin-light-theme"
+      style={{
+        "--admin-sidebar-offset": isSidebarOpen ? "208px" : "64px"
+      } as React.CSSProperties}
+    >
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-b border-secondary/20 shadow-sm p-4 z-50 flex items-center justify-between">
         <div className="flex items-center gap-3">
