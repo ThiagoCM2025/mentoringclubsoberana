@@ -76,33 +76,13 @@ export function LeadCard({ lead, onClick, onOpenDetails, onOpenTemplates, onDrag
   const sequenceInfo = getSequenceInfo(lead.source, nurturingStep);
   const nextSend = calculateNextSend(lead.source, nurturingStep, lead.last_contact_at);
 
-  const handleWhatsAppClick = async (e: React.MouseEvent) => {
+  const handleWhatsAppClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!lead.phone) return;
-    
-    try {
-      const { error } = await supabase.functions.invoke("send-whatsapp", {
-        body: {
-          phone: lead.phone,
-          message: `Olá ${lead.full_name}! Tudo bem?`,
-          leadId: lead.id,
-          leadName: lead.full_name,
-        }
-      });
-      
-      if (error) throw error;
-      toast({ title: "Mensagem enviada via WhatsApp!" });
-    } catch (err) {
-      console.error("WhatsApp API error:", err);
-      // Fallback para wa.me caso a API falhe
-      const cleanPhone = lead.phone.replace(/\D/g, "");
-      window.open(`https://wa.me/55${cleanPhone}`, "_blank");
-      toast({ 
-        title: "Abrindo WhatsApp Web", 
-        description: "API indisponível, abrindo via wa.me" 
-      });
-    }
+    // Abre o modal de templates ao clicar no WhatsApp
+    onOpenTemplates();
   };
+
 
   const handleEmailClick = (e: React.MouseEvent) => {
     e.stopPropagation();

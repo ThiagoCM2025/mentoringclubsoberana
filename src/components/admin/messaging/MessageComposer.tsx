@@ -152,40 +152,43 @@ export function MessageComposer({
 
     try {
       if (channel === "whatsapp") {
-        // Open WhatsApp links for each recipient
-        for (const recipient of recipients) {
-          if (recipient.phone) {
-            const personalizedMessage = replaceVariablesForWhatsApp(message, recipient);
-            const phone = recipient.phone.replace(/\D/g, "");
-            const fullPhone = phone.startsWith("55") ? phone : `55${phone}`;
-            const waUrl = `https://wa.me/${fullPhone}?text=${encodeURIComponent(personalizedMessage)}`;
-            window.open(waUrl, "_blank");
-          }
+        // Send via Evolution API
+        const recipientsWithPhone = recipients
+          .filter(r => r.phone)
+          .map(r => ({
+            id: r.id,
+            name: r.name,
+            phone: r.phone!,
+            type: r.type,
+          }));
+
+        if (recipientsWithPhone.length === 0) {
+          toast({
+            title: "Erro",
+            description: "Nenhum destinatário possui telefone",
+            variant: "destructive",
+          });
+          setSending(false);
+          return;
         }
 
-        // Log to history
-        const { data: { user } } = await supabase.auth.getUser();
-        for (const recipient of recipients) {
-          if (recipient.phone) {
-            await supabase.from("communication_history").insert({
-              recipient_type: recipient.type,
-              recipient_id: recipient.id,
-              recipient_name: recipient.name,
-              recipient_email: recipient.email,
-              recipient_phone: recipient.phone,
-              channel: "whatsapp",
-              template_id: selectedTemplate?.id || null,
-              message: replaceVariablesForWhatsApp(message, recipient),
-              status: "sent",
-              sent_by: user?.id,
-            });
-          }
+        const { data: result, error } = await supabase.functions.invoke("send-bulk-whatsapp", {
+          body: {
+            recipients: recipientsWithPhone,
+            message,
+            templateId: selectedTemplate?.id,
+          },
+        });
+
+        if (error) {
+          throw new Error(error.message || "Erro ao enviar WhatsApp");
         }
 
         toast({
-          title: "WhatsApp aberto",
-          description: `${recipients.filter(r => r.phone).length} conversa(s) abertas no WhatsApp`,
+          title: "WhatsApp enviado!",
+          description: `${result.sent} mensagem(ns) enviada(s)${result.failed > 0 ? `, ${result.failed} falha(s)` : ""}`,
         });
+
 
       } else {
         // Send via edge function (email or notification)
