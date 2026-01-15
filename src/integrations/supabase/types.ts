@@ -1785,6 +1785,44 @@ export type Database = {
           },
         ]
       }
+      lead_tracking_tokens: {
+        Row: {
+          clicked_at: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          lead_id: string | null
+          target_url: string | null
+          token: string
+        }
+        Insert: {
+          clicked_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          lead_id?: string | null
+          target_url?: string | null
+          token: string
+        }
+        Update: {
+          clicked_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          lead_id?: string | null
+          target_url?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_tracking_tokens_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           behavior_score: number | null

@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ScenarioCards } from "@/components/admin/messaging/ScenarioCards";
 import { Mail, MessageCircle, Bell, Send, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { replaceTrackingVariable } from "@/lib/trackingUtils";
 import type { Database } from "@/integrations/supabase/types";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
@@ -130,8 +131,13 @@ export function LeadMessageModal({ open, onClose, lead, onMessageSent }: LeadMes
     setSending(true);
 
     try {
-      const finalMessage = replaceVariables(message);
-      const finalSubject = replaceVariables(subject);
+      // Primeiro substituir variáveis normais
+      let finalMessage = replaceVariables(message);
+      let finalSubject = replaceVariables(subject);
+      
+      // Depois substituir {{link_tracking}} se existir
+      finalMessage = await replaceTrackingVariable(finalMessage, lead.id, "/");
+      finalSubject = await replaceTrackingVariable(finalSubject, lead.id, "/");
 
       if (channel === "whatsapp") {
         // Enviar via Evolution API
@@ -284,7 +290,7 @@ export function LeadMessageModal({ open, onClose, lead, onMessageSent }: LeadMes
               className="bg-card border-border resize-none"
             />
             <p className="text-xs text-muted-foreground mt-2">
-              Variáveis: {"{{nome}}"}, {"{{nome_completo}}"}, {"{{email}}"}
+              Variáveis: {"{{nome}}"}, {"{{nome_completo}}"}, {"{{email}}"}, {"{{link_tracking}}"}
             </p>
           </div>
 
