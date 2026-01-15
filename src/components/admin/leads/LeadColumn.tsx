@@ -46,6 +46,8 @@ interface LeadColumnProps {
   config: ColumnConfig;
   leads: Lead[];
   onLeadClick: (lead: Lead) => void;
+  onOpenDetails: (lead: Lead) => void;
+  onOpenTemplates: (lead: Lead) => void;
   onDragStart: (e: React.DragEvent, leadId: string) => void;
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, status: LeadStatus) => void;
@@ -61,6 +63,8 @@ export function LeadColumn({
   config,
   leads,
   onLeadClick,
+  onOpenDetails,
+  onOpenTemplates,
   onDragStart,
   onDragOver,
   onDrop,
@@ -111,6 +115,8 @@ export function LeadColumn({
               key={lead.id}
               lead={lead}
               onClick={() => onLeadClick(lead)}
+              onOpenDetails={() => onOpenDetails(lead)}
+              onOpenTemplates={() => onOpenTemplates(lead)}
               onDragStart={onDragStart}
               onNurturingToggle={onNurturingToggle}
               isSelectionMode={isSelectionMode}

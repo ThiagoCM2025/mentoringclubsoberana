@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { LeadColumn } from "./LeadColumn";
 import { LeadMessageModal } from "./LeadMessageModal";
+import { LeadDetailModal } from "./LeadDetailModal";
 import { LeadConversionDialog } from "./LeadConversionDialog";
 import { LeadQualificationModal } from "./LeadQualificationModal";
 import { LeadMeetingModal } from "./LeadMeetingModal";
@@ -90,6 +91,10 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
   
   const [studentDialogOpen, setStudentDialogOpen] = useState(false);
   const [studentLead, setStudentLead] = useState<Lead | null>(null);
+
+  // Detail modal
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [detailLead, setDetailLead] = useState<Lead | null>(null);
 
   // Selection handlers
   const handleSelectionChange = useCallback((leadId: string, selected: boolean) => {
@@ -213,6 +218,16 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
     setMessageModalOpen(true);
   }, []);
 
+  const handleOpenDetails = useCallback((lead: Lead) => {
+    setDetailLead(lead);
+    setDetailModalOpen(true);
+  }, []);
+
+  const handleOpenTemplates = useCallback((lead: Lead) => {
+    setSelectedLead(lead);
+    setMessageModalOpen(true);
+  }, []);
+
   const handleMakeStudent = useCallback((lead: Lead) => {
     setStudentLead(lead);
     setStudentDialogOpen(true);
@@ -248,6 +263,8 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
               config={column}
               leads={getLeadsByStatus(column.status)}
               onLeadClick={handleLeadClick}
+              onOpenDetails={handleOpenDetails}
+              onOpenTemplates={handleOpenTemplates}
               onDragStart={handleDragStart}
               onDragOver={handleDragOver}
               onDrop={handleDrop}
@@ -271,6 +288,29 @@ export function LeadPipelineView({ leads, onRefresh }: LeadPipelineViewProps) {
         }}
         lead={selectedLead}
         onMessageSent={onRefresh}
+      />
+
+      {/* Detail Modal */}
+      <LeadDetailModal
+        open={detailModalOpen}
+        onClose={() => {
+          setDetailModalOpen(false);
+          setDetailLead(null);
+        }}
+        lead={detailLead}
+        onLeadUpdated={onRefresh}
+        onOpenQualification={() => {
+          if (detailLead) {
+            setQualifyingLead(detailLead);
+            setQualificationModalOpen(true);
+          }
+        }}
+        onOpenMessage={() => {
+          if (detailLead) {
+            setSelectedLead(detailLead);
+            setMessageModalOpen(true);
+          }
+        }}
       />
 
       {/* Bulk Message Composer */}
