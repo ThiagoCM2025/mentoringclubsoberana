@@ -137,7 +137,8 @@ const VideoPlayer = ({ url, onTimeUpdate, onEnded, initialTime = 0 }: VideoPlaye
   }, [volume, isMuted]);
 
   const detectVideoType = (videoUrl: string): { type: VideoType; embed: string | null } => {
-    const youtubeRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    // YouTube detection (includes live and shorts)
+    const youtubeRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|live\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const youtubeMatch = videoUrl.match(youtubeRegex);
     if (youtubeMatch) {
       const videoId = youtubeMatch[1];
