@@ -520,9 +520,12 @@ export default function AgentEditor() {
                       setAgent((prev) => ({ ...prev, thumbnail_url: url }))
                     }
                     agentSlug={agent.slug}
+                    agentTitle={agent.title}
+                    categoryName={categories.find(c => c.id === agent.category_id)?.name}
+                    categoryColor={categories.find(c => c.id === agent.category_id)?.color}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Faça upload de uma imagem ou deixe em branco para usar o ícone
+                    Faça upload manual ou gere automaticamente com IA
                   </p>
                 </div>
 
