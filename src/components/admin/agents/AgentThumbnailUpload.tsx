@@ -2,20 +2,27 @@ import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, X, Loader2, ImageIcon } from "lucide-react";
+import { Upload, X, Loader2, ImageIcon, Sparkles } from "lucide-react";
 
 interface AgentThumbnailUploadProps {
   value: string;
   onChange: (url: string) => void;
   agentSlug?: string;
+  agentTitle?: string;
+  categoryName?: string;
+  categoryColor?: string;
 }
 
 export function AgentThumbnailUpload({
   value,
   onChange,
   agentSlug,
+  agentTitle,
+  categoryName,
+  categoryColor,
 }: AgentThumbnailUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [preview, setPreview] = useState<string>(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -90,6 +97,53 @@ export function AgentThumbnailUpload({
     }
   };
 
+  const handleGenerateWithAI = async () => {
+    if (!agentTitle) {
+      toast({
+        variant: "destructive",
+        title: "Título obrigatório",
+        description: "Preencha o título do agente antes de gerar a imagem.",
+      });
+      return;
+    }
+
+    setGenerating(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-agent-thumbnail", {
+        body: {
+          agentTitle,
+          categoryName: categoryName || "Assistente IA",
+          categoryColor: categoryColor || "purple",
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      if (data?.thumbnail_url) {
+        setPreview(data.thumbnail_url);
+        onChange(data.thumbnail_url);
+        toast({
+          title: "Imagem gerada!",
+          description: "A thumbnail foi criada com IA e salva automaticamente.",
+        });
+      }
+    } catch (error) {
+      console.error("AI generation error:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro na geração",
+        description: error instanceof Error ? error.message : "Não foi possível gerar a imagem com IA.",
+      });
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   const handleRemove = () => {
     setPreview("");
     onChange("");
@@ -123,7 +177,7 @@ export function AgentThumbnailUpload({
               size="sm"
               variant="secondary"
               onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
+              disabled={uploading || generating}
             >
               {uploading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -135,9 +189,24 @@ export function AgentThumbnailUpload({
             <Button
               type="button"
               size="sm"
+              variant="outline"
+              onClick={handleGenerateWithAI}
+              disabled={uploading || generating}
+              className="bg-secondary/20 border-secondary/50 hover:bg-secondary/30"
+            >
+              {generating ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Sparkles className="w-4 h-4" />
+              )}
+              <span className="ml-2">Regenerar</span>
+            </Button>
+            <Button
+              type="button"
+              size="sm"
               variant="destructive"
               onClick={handleRemove}
-              disabled={uploading}
+              disabled={uploading || generating}
             >
               <X className="w-4 h-4" />
               <span className="ml-2">Remover</span>
@@ -145,27 +214,50 @@ export function AgentThumbnailUpload({
           </div>
         </div>
       ) : (
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          className="w-full max-w-sm aspect-video rounded-lg border-2 border-dashed border-border hover:border-secondary/50 bg-muted/50 hover:bg-muted transition-colors flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
-        >
-          {uploading ? (
-            <>
-              <Loader2 className="w-8 h-8 animate-spin" />
-              <span className="text-sm">Enviando...</span>
-            </>
-          ) : (
-            <>
-              <ImageIcon className="w-8 h-8" />
-              <span className="text-sm">Clique para fazer upload</span>
-              <span className="text-xs text-muted-foreground">
-                JPG, PNG ou WEBP (máx. 2MB)
-              </span>
-            </>
-          )}
-        </button>
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading || generating}
+              className="flex-1 aspect-video max-w-[200px] rounded-lg border-2 border-dashed border-border hover:border-secondary/50 bg-muted/50 hover:bg-muted transition-colors flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
+            >
+              {uploading ? (
+                <>
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  <span className="text-xs">Enviando...</span>
+                </>
+              ) : (
+                <>
+                  <ImageIcon className="w-6 h-6" />
+                  <span className="text-xs">Upload manual</span>
+                </>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleGenerateWithAI}
+              disabled={uploading || generating}
+              className="flex-1 aspect-video max-w-[200px] rounded-lg border-2 border-dashed border-secondary/30 hover:border-secondary/60 bg-secondary/5 hover:bg-secondary/10 transition-colors flex flex-col items-center justify-center gap-2 text-secondary hover:text-secondary"
+            >
+              {generating ? (
+                <>
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  <span className="text-xs">Gerando...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-6 h-6" />
+                  <span className="text-xs font-medium">✨ Gerar com IA</span>
+                </>
+              )}
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            JPG, PNG ou WEBP (máx. 2MB) ou gere automaticamente com IA
+          </p>
+        </div>
       )}
     </div>
   );

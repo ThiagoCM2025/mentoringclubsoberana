@@ -66,5 +66,5 @@ verify_jwt = true
 [functions.send-bulk-whatsapp]
 verify_jwt = true
 
-[functions.send-whatsapp]
+[functions.generate-agent-thumbnail]
 verify_jwt = true

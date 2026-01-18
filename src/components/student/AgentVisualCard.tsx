@@ -15,6 +15,8 @@ import agentTrafego from "@/assets/agents/agent-trafego.png";
 import agentPeticoes from "@/assets/agents/agent-peticoes.png";
 import agentArtigos from "@/assets/agents/agent-artigos.png";
 import agentVendasImob from "@/assets/agents/agent-vendas-imob.png";
+import agentEstrategiaNicho from "@/assets/agents/agent-estrategia-nicho.png";
+import agentMapaImobiliario from "@/assets/agents/agent-mapa-imobiliario.png";
 
 interface AgentCategory {
   id: string;
@@ -54,6 +56,8 @@ const agentImages: Record<string, string> = {
   "peticoes-pecas": agentPeticoes,
   "criacao-artigos": agentArtigos,
   "vendas-imobiliaria": agentVendasImob,
+  "estrategica-de-nicho-para-advogadas": agentEstrategiaNicho,
+  "ia-mapa-imobiliario": agentMapaImobiliario,
 };
 
 const categoryColors: Record<string, string> = {
