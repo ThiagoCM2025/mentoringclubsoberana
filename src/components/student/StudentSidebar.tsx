@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home,
@@ -12,12 +12,14 @@ import {
   Flame,
   Trophy,
   Star,
-  BarChart2
+  BarChart2,
+  RefreshCw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
+import { APP_VERSION } from "@/App";
 
 interface StudentSidebarProps {
   onSignOut: () => void;
@@ -38,6 +40,7 @@ const menuItems = [
 const StudentSidebar = ({ onSignOut, studentName, xp = 0, streak = 0 }: StudentSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <motion.aside
@@ -147,10 +150,35 @@ const StudentSidebar = ({ onSignOut, studentName, xp = 0, streak = 0 }: StudentS
 
       {/* Footer */}
       <div className="relative p-3 border-t border-secondary/20 space-y-1">
+        {/* Update button */}
+        <button
+          onClick={() => navigate('/clear-cache')}
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-lg w-full transition-all duration-200",
+            "text-cream/60 hover:bg-secondary/10 hover:text-secondary"
+          )}
+          title="Atualizar App"
+        >
+          <RefreshCw className="w-4 h-4 flex-shrink-0" />
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-sm"
+              >
+                Atualizar App
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </button>
+        
+        {/* Logout button */}
         <button
           onClick={onSignOut}
           className={cn(
-            "flex items-center gap-3 px-3 py-3 rounded-lg w-full transition-all duration-200",
+            "flex items-center gap-3 px-3 py-2 rounded-lg w-full transition-all duration-200",
             "text-cream/60 hover:bg-red-500/10 hover:text-red-400"
           )}
         >
@@ -168,6 +196,20 @@ const StudentSidebar = ({ onSignOut, studentName, xp = 0, streak = 0 }: StudentS
             )}
           </AnimatePresence>
         </button>
+        
+        {/* Version */}
+        <AnimatePresence>
+          {!collapsed && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center pt-2 border-t border-secondary/10"
+            >
+              <span className="text-[10px] text-cream/30">v{APP_VERSION}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Collapse Toggle */}

@@ -20,6 +20,7 @@ import {
   FileText,
   ClipboardCheck,
   Search,
+  RefreshCw,
 } from "lucide-react";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
@@ -32,6 +33,7 @@ import { AdminBreadcrumbs } from "./AdminBreadcrumbs";
 import { DensityToggle } from "./DensityToggle";
 import { NewLeadDialog } from "./NewLeadDialog";
 import { BulkNotificationDialog } from "./BulkNotificationDialog";
+import { APP_VERSION } from "@/App";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -267,17 +269,38 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         </nav>
 
         {/* Footer */}
-        <div className="relative p-4 border-t border-secondary/15">
+        <div className="relative p-4 border-t border-secondary/15 space-y-2">
+          {/* Force Update Button */}
+          <button
+            onClick={() => navigate('/clear-cache')}
+            className={cn(
+              "flex items-center gap-3 px-4 py-2 rounded-lg w-full text-muted-foreground hover:bg-secondary/10 hover:text-secondary transition-colors",
+              !isSidebarOpen && "justify-center px-2"
+            )}
+            title="Forçar atualização do app"
+          >
+            <RefreshCw className="w-4 h-4" />
+            {isSidebarOpen && <span className="text-sm">Atualizar</span>}
+          </button>
+          
+          {/* Logout */}
           <button
             onClick={handleSignOut}
             className={cn(
-              "flex items-center gap-3 px-4 py-3 rounded-lg w-full text-muted-foreground hover:bg-red-500/10 hover:text-red-400 transition-colors",
+              "flex items-center gap-3 px-4 py-2 rounded-lg w-full text-muted-foreground hover:bg-red-500/10 hover:text-red-400 transition-colors",
               !isSidebarOpen && "justify-center px-2"
             )}
           >
             <LogOut className="w-5 h-5" />
             {isSidebarOpen && <span>Sair</span>}
           </button>
+          
+          {/* Version indicator */}
+          {isSidebarOpen && (
+            <div className="text-center pt-2 border-t border-secondary/10">
+              <span className="text-[10px] text-muted-foreground/50">v{APP_VERSION}</span>
+            </div>
+          )}
         </div>
       </aside>
 
