@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import isotipoGold from "@/assets/brand/isotipo-gold.png";
 import { SoberanaLogoMark } from "./SoberanaLogoMark";
+import { APP_VERSION } from "@/App";
 
 const socialLinks = [
   { icon: Instagram, href: "https://instagram.com/fabianaduarte.adv", label: "Instagram" },
@@ -164,9 +165,18 @@ export const Footer = () => {
             <p className="tracking-wide">
               © {currentYear} Soberana Mentoring Club. Todos os direitos reservados.
             </p>
-            <p className="tracking-wide">
-              Feito com <span className="text-secondary">♥</span> para advogadas extraordinárias
-            </p>
+            <div className="flex items-center gap-4">
+              <p className="tracking-wide">
+                Feito com <span className="text-secondary">♥</span> para advogadas extraordinárias
+              </p>
+              <Link 
+                to="/clear-cache" 
+                className="text-[10px] text-background/30 hover:text-secondary transition-colors"
+                title="Limpar cache e atualizar"
+              >
+                v{APP_VERSION}
+              </Link>
+            </div>
           </div>
         </div>
       </div>

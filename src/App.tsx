@@ -11,11 +11,13 @@ import { Analytics } from "@/components/Analytics";
 import { CookieBanner } from "@/components/CookieBanner";
 import ScrollToTop from "@/components/ScrollToTop";
 import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
+import { VersionChecker } from "@/components/VersionChecker";
 
 const queryClient = new QueryClient();
 
 // Version for cache busting - increment on each significant deploy
-const APP_VERSION = '2026.01.12.4';
+// IMPORTANT: Also update public/version.json and src/components/VersionChecker.tsx
+export const APP_VERSION = '2026.01.18.1';
 
 // Detecta WebView do Instagram/Facebook para evitar problemas de cache
 const isInAppBrowser = () => {
@@ -86,6 +88,7 @@ const App = () => (
             <AnimatedRoutes />
             <CookieBanner />
             <PWAUpdatePrompt />
+            <VersionChecker />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
