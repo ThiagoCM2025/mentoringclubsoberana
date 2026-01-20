@@ -158,7 +158,7 @@ export function WhatsAppInboxModal({
           </div>
 
           {/* Main content - responsive layout */}
-          <div className="flex flex-1 overflow-hidden relative">
+          <div className="flex flex-1 min-h-0 overflow-hidden relative">
             {/* Conversation list - left panel */}
             <div className={cn(
               "w-full sm:w-80 border-r border-border flex-shrink-0 transition-all duration-200",
