@@ -48,8 +48,13 @@ export function WhatsAppInboxModal({
   // Handle initial contact when modal opens
   const handleOpenChange = async (isOpen: boolean) => {
     if (isOpen && initialPhone) {
+      // Format phone with country code if needed
+      const formattedPhone = initialPhone.startsWith('55') 
+        ? initialPhone 
+        : `55${initialPhone.replace(/\D/g, '')}`;
+      
       const conversation = await getOrCreateConversation(
-        initialPhone,
+        formattedPhone,
         initialContactName,
         initialContactType,
         initialContactId
@@ -57,6 +62,9 @@ export function WhatsAppInboxModal({
       if (conversation) {
         selectConversation(conversation);
       }
+    } else if (!isOpen) {
+      // Reset selection when closing
+      selectConversation(null as any);
     }
     onOpenChange(isOpen);
   };
@@ -113,7 +121,7 @@ export function WhatsAppInboxModal({
   return (
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-w-5xl w-[95vw] sm:w-full h-[90vh] sm:h-[85vh] p-0 gap-0 overflow-hidden rounded-xl">
+        <DialogContent className="max-w-5xl w-[95vw] sm:w-full h-[90vh] sm:h-[85vh] p-0 gap-0 overflow-hidden rounded-xl" hideClose>
           {/* Custom header */}
           <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-[#00a884] to-[#128C7E]">
             <div className="flex items-center gap-2">
