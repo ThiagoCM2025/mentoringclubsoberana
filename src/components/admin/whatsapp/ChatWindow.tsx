@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, FileText, MoreVertical, Phone, Archive, User } from "lucide-react";
+import { Send, FileText, MoreVertical, Archive, User, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,6 +15,7 @@ import {
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { MessageBubble } from "./MessageBubble";
+import { EmojiPicker } from "./EmojiPicker";
 import type { WhatsAppConversation, WhatsAppMessage } from "@/hooks/useWhatsAppConversations";
 
 interface ChatWindowProps {
@@ -25,6 +26,8 @@ interface ChatWindowProps {
   onOpenTemplates: () => void;
   onArchive: () => void;
   onViewContact: () => void;
+  soundEnabled?: boolean;
+  onToggleSound?: () => void;
 }
 
 export function ChatWindow({
@@ -35,6 +38,8 @@ export function ChatWindow({
   onOpenTemplates,
   onArchive,
   onViewContact,
+  soundEnabled = true,
+  onToggleSound,
 }: ChatWindowProps) {
   const [inputValue, setInputValue] = useState("");
   const [sending, setSending] = useState(false);
@@ -68,6 +73,11 @@ export function ChatWindow({
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const handleEmojiSelect = (emoji: string) => {
+    setInputValue((prev) => prev + emoji);
+    inputRef.current?.focus();
   };
 
   const formatPhone = (phone: string) => {
@@ -117,29 +127,30 @@ export function ChatWindow({
 
   if (!conversation) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-muted/30 text-center p-8">
-        <div className="w-64 h-64 mb-6 opacity-20">
-          <svg viewBox="0 0 303 172" className="w-full h-full fill-current text-muted-foreground">
-            <path d="M229.565 160.229c-1.471-.599-3.037-1.144-4.687-1.629-2.604-.773-5.398-1.418-8.347-1.943-3.027-.541-6.216-.959-9.533-1.258-3.439-.312-7.024-.475-10.724-.494-3.725.019-7.31.182-10.748.494-3.318.299-6.506.717-9.533 1.258-2.949.525-5.743 1.17-8.347 1.943-1.65.485-3.217 1.03-4.687 1.629-1.457.596-2.831 1.24-4.111 1.926-1.263.683-2.435 1.405-3.505 2.161-.349.246-.683.497-1.006.75l62.487.003c-.323-.253-.659-.504-1.008-.753-1.07-.756-2.242-1.478-3.505-2.161-1.28-.686-2.654-1.33-4.111-1.926h-.001z" />
-            <path d="M229.565 160.229c-1.471-.599-3.037-1.144-4.687-1.629-2.604-.773-5.398-1.418-8.347-1.943-3.027-.541-6.216-.959-9.533-1.258-3.439-.312-7.024-.475-10.724-.494-3.725.019-7.31.182-10.748.494-3.318.299-6.506.717-9.533 1.258-2.949.525-5.743 1.17-8.347 1.943-1.65.485-3.217 1.03-4.687 1.629-1.457.596-2.831 1.24-4.111 1.926-1.263.683-2.435 1.405-3.505 2.161-.349.246-.683.497-1.006.75l62.487.003c-.323-.253-.659-.504-1.008-.753-1.07-.756-2.242-1.478-3.505-2.161-1.28-.686-2.654-1.33-4.111-1.926h-.001zM197.892 135.333c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20z" />
-          </svg>
+      <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-muted/30 to-muted/50">
+        <div className="text-center text-muted-foreground">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-[#25D366]/10 flex items-center justify-center">
+            <svg
+              viewBox="0 0 24 24"
+              className="w-10 h-10 text-[#25D366]"
+              fill="currentColor"
+            >
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.984-3.595c-.607-1.052-.927-2.246-.926-3.468.001-3.825 3.113-6.937 6.937-6.937 1.856.001 3.598.723 4.907 2.034 1.31 1.311 2.031 3.054 2.03 4.908-.001 3.825-3.113 6.938-6.937 6.938z" />
+            </svg>
+          </div>
+          <p className="text-lg font-medium">Selecione uma conversa</p>
+          <p className="text-sm mt-1">Escolha uma conversa à esquerda para começar</p>
         </div>
-        <h3 className="text-xl font-medium text-muted-foreground mb-2">
-          WhatsApp Business
-        </h3>
-        <p className="text-sm text-muted-foreground max-w-sm">
-          Selecione uma conversa para visualizar as mensagens ou inicie uma nova conversa.
-        </p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-[#efeae2] dark:bg-[#0b141a]">
+    <div className="flex-1 flex flex-col bg-[#efeae2] dark:bg-zinc-900">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-2 bg-card border-b border-border">
-        <Avatar className="h-10 w-10">
-          <AvatarFallback className="bg-primary/10 text-primary text-sm font-medium">
+      <div className="flex items-center gap-3 px-4 py-2.5 bg-card border-b border-border shadow-sm">
+        <Avatar className="h-10 w-10 ring-2 ring-[#25D366]/20">
+          <AvatarFallback className="bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white text-sm font-semibold">
             {getInitials(conversation.contact_name, conversation.phone)}
           </AvatarFallback>
         </Avatar>
@@ -158,71 +169,102 @@ export function ChatWindow({
             {formatPhone(conversation.phone)}
           </p>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
-              <MoreVertical className="h-5 w-5" />
+        <div className="flex items-center gap-1">
+          {onToggleSound && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onToggleSound}
+              className="h-9 w-9 text-muted-foreground hover:text-foreground"
+            >
+              {soundEnabled ? (
+                <Volume2 className="h-5 w-5" />
+              ) : (
+                <VolumeX className="h-5 w-5" />
+              )}
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={onViewContact}>
-              <User className="h-4 w-4 mr-2" />
-              Ver contato
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onArchive}>
-              <Archive className="h-4 w-4 mr-2" />
-              Arquivar conversa
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <MoreVertical className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onViewContact}>
+                <User className="h-4 w-4 mr-2" />
+                Ver contato
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onArchive}>
+                <Archive className="h-4 w-4 mr-2" />
+                Arquivar conversa
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-        {loading ? (
-          <div className="space-y-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className={`flex ${i % 2 === 0 ? "justify-end" : "justify-start"}`}
-              >
-                <Skeleton className="h-12 w-48 rounded-lg" />
-              </div>
-            ))}
-          </div>
-        ) : messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <p className="text-sm text-muted-foreground">
-              Nenhuma mensagem ainda. Envie a primeira!
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {groupedMessages.map((group, groupIndex) => (
-              <div key={groupIndex}>
-                {/* Date separator */}
-                <div className="flex justify-center my-4">
-                  <span className="px-3 py-1 rounded-lg bg-card/80 text-xs text-muted-foreground shadow-sm">
-                    {getDateLabel(group.date)}
-                  </span>
+      <ScrollArea 
+        className="flex-1 px-4" 
+        ref={scrollRef}
+      >
+        <div 
+          className="py-4 min-h-full"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        >
+          {loading ? (
+            <div className="space-y-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className={`flex ${i % 2 === 0 ? "justify-end" : "justify-start"}`}
+                >
+                  <Skeleton className="h-12 w-48 rounded-lg" />
                 </div>
-                {/* Messages */}
-                {group.messages.map((message) => (
-                  <MessageBubble key={message.id} message={message} />
-                ))}
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          ) : messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center py-20">
+              <p className="text-sm text-muted-foreground">
+                Nenhuma mensagem ainda. Envie a primeira!
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {groupedMessages.map((group, groupIndex) => (
+                <div key={groupIndex}>
+                  {/* Date separator */}
+                  <div className="flex justify-center my-4">
+                    <span className="px-3 py-1.5 rounded-full bg-card/90 backdrop-blur-sm text-xs text-muted-foreground shadow-sm">
+                      {getDateLabel(group.date)}
+                    </span>
+                  </div>
+                  {/* Messages */}
+                  {group.messages.map((message, index) => (
+                    <MessageBubble 
+                      key={message.id} 
+                      message={message} 
+                      isNew={groupIndex === groupedMessages.length - 1 && index === group.messages.length - 1}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </ScrollArea>
 
       {/* Input */}
       <div className="p-3 bg-card border-t border-border">
         <div className="flex items-center gap-2">
+          <EmojiPicker onEmojiSelect={handleEmojiSelect} />
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 shrink-0"
+            className="h-9 w-9 shrink-0 text-muted-foreground hover:text-foreground"
             onClick={onOpenTemplates}
           >
             <FileText className="h-5 w-5" />
@@ -233,12 +275,12 @@ export function ChatWindow({
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Digite uma mensagem..."
-            className="flex-1 h-10"
+            className="flex-1 h-10 rounded-full bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-[#25D366]/50"
             disabled={sending}
           />
           <Button
             size="icon"
-            className="h-10 w-10 shrink-0 bg-[#25D366] hover:bg-[#128C7E]"
+            className="h-10 w-10 shrink-0 rounded-full bg-[#25D366] hover:bg-[#128C7E] shadow-md transition-all hover:scale-105"
             onClick={handleSend}
             disabled={!inputValue.trim() || sending}
           >

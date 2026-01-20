@@ -6,9 +6,10 @@ import type { WhatsAppMessage } from "@/hooks/useWhatsAppConversations";
 
 interface MessageBubbleProps {
   message: WhatsAppMessage;
+  isNew?: boolean;
 }
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({ message, isNew = false }: MessageBubbleProps) {
   const isOutgoing = message.direction === "outgoing";
   const time = format(new Date(message.created_at), "HH:mm", { locale: ptBR });
 
@@ -21,7 +22,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       case "delivered":
         return <CheckCheck className="h-3 w-3 text-muted-foreground" />;
       case "read":
-        return <CheckCheck className="h-3 w-3 text-blue-500" />;
+        return <CheckCheck className="h-3 w-3 text-[#53bdeb]" />;
       case "failed":
         return <AlertCircle className="h-3 w-3 text-destructive" />;
       default:
@@ -32,22 +33,23 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   return (
     <div
       className={cn(
-        "flex w-full mb-1",
-        isOutgoing ? "justify-end" : "justify-start"
+        "flex w-full mb-1.5",
+        isOutgoing ? "justify-end" : "justify-start",
+        isNew && "animate-fade-in"
       )}
     >
       <div
         className={cn(
-          "max-w-[70%] rounded-lg px-3 py-2 shadow-sm",
+          "max-w-[70%] rounded-xl px-3 py-2 shadow-sm transition-all",
           isOutgoing
-            ? "bg-[#d9fdd3] dark:bg-[#005c4b] text-foreground rounded-tr-none"
-            : "bg-card text-foreground rounded-tl-none"
+            ? "bg-[#d9fdd3] dark:bg-[#005c4b] text-foreground rounded-tr-sm"
+            : "bg-white dark:bg-zinc-800 text-foreground rounded-tl-sm shadow-md"
         )}
       >
-        <p className="text-sm whitespace-pre-wrap break-words">{message.message}</p>
+        <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.message}</p>
         <div
           className={cn(
-            "flex items-center gap-1 mt-1",
+            "flex items-center gap-1 mt-0.5",
             isOutgoing ? "justify-end" : "justify-start"
           )}
         >
@@ -55,7 +57,9 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           {isOutgoing && getStatusIcon()}
         </div>
         {message.status === "failed" && message.error_message && (
-          <p className="text-[10px] text-destructive mt-1">{message.error_message}</p>
+          <p className="text-[10px] text-destructive mt-1 bg-destructive/10 px-2 py-1 rounded">
+            {message.error_message}
+          </p>
         )}
       </div>
     </div>

@@ -122,18 +122,24 @@ export function ConversationList({
                 key={conversation.id}
                 onClick={() => onSelect(conversation)}
                 className={cn(
-                  "w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left",
-                  selectedId === conversation.id && "bg-muted"
+                  "w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-all text-left",
+                  selectedId === conversation.id && "bg-[#25D366]/10 border-l-2 border-[#25D366]"
                 )}
               >
                 <div className="relative">
-                  <Avatar className="h-12 w-12">
-                    <AvatarFallback className="bg-primary/10 text-primary text-sm font-medium">
+                  <Avatar className="h-12 w-12 ring-2 ring-transparent transition-all group-hover:ring-[#25D366]/20">
+                    <AvatarFallback className={cn(
+                      "text-sm font-medium transition-colors",
+                      selectedId === conversation.id 
+                        ? "bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white"
+                        : "bg-primary/10 text-primary"
+                    )}>
                       {getInitials(conversation.contact_name, conversation.phone)}
                     </AvatarFallback>
                   </Avatar>
-                  {conversation.unread_count > 0 && (
-                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-[#25D366] text-white text-xs flex items-center justify-center font-medium">
+                  {/* Badge only shows when not selected and has unread */}
+                  {conversation.unread_count > 0 && selectedId !== conversation.id && (
+                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-[#25D366] text-white text-xs flex items-center justify-center font-medium animate-pulse shadow-md">
                       {conversation.unread_count > 9 ? "9+" : conversation.unread_count}
                     </span>
                   )}
@@ -141,7 +147,12 @@ export function ConversationList({
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-medium text-foreground truncate">
+                    <span className={cn(
+                      "font-medium truncate transition-colors",
+                      conversation.unread_count > 0 && selectedId !== conversation.id
+                        ? "text-foreground"
+                        : "text-foreground"
+                    )}>
                       {conversation.contact_name || formatPhone(conversation.phone)}
                     </span>
                     <span className="text-[10px] text-muted-foreground whitespace-nowrap">
@@ -152,7 +163,12 @@ export function ConversationList({
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-sm text-muted-foreground truncate flex-1">
+                    <p className={cn(
+                      "text-sm truncate flex-1",
+                      conversation.unread_count > 0 && selectedId !== conversation.id
+                        ? "text-foreground font-medium"
+                        : "text-muted-foreground"
+                    )}>
                       {conversation.last_message_preview || "Nova conversa"}
                     </p>
                     {conversation.contact_type === "student" && (

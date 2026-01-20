@@ -181,6 +181,16 @@ serve(async (req) => {
         throw msgError;
       }
 
+      // Create admin notification for incoming messages
+      if (!isFromMe) {
+        await supabase.from("admin_notifications").insert({
+          event_type: "whatsapp_message",
+          title: `Nova mensagem de ${contactName || phone}`,
+          message: messageText.substring(0, 100) + (messageText.length > 100 ? "..." : ""),
+          metadata: { conversation_id: conversation.id, phone },
+        });
+      }
+
       console.log("Message saved successfully with type:", mappedMessageType);
       return new Response(
         JSON.stringify({ success: true, conversation_id: conversation.id }),
