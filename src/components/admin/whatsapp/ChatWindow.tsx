@@ -59,7 +59,7 @@ export function ChatWindow({
   // Scroll to bottom when messages change
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   }, [messages]);
 
@@ -239,10 +239,7 @@ export function ChatWindow({
       </div>
 
       {/* Messages */}
-      <ScrollArea 
-        className="flex-1 px-2 sm:px-4" 
-        ref={scrollRef}
-      >
+      <ScrollArea className="flex-1 px-2 sm:px-4">
         <div 
           className="py-3 sm:py-4 min-h-full"
           style={{
@@ -286,6 +283,8 @@ export function ChatWindow({
                   ))}
                 </div>
               ))}
+              {/* Scroll anchor */}
+              <div ref={scrollRef} />
             </div>
           )}
         </div>

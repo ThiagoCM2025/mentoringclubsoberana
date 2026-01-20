@@ -15,7 +15,7 @@ export function useUnreadWhatsAppCount() {
       const { data, error } = await untypedClient
         .from("whatsapp_conversations")
         .select("unread_count")
-        .eq("is_archived", false);
+        .eq("status", "active");
 
       if (!error && data) {
         let total = 0;
