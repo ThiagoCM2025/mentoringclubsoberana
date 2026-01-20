@@ -65,10 +65,12 @@ export function WhatsAppInboxModal({
   // Handle initial contact when modal opens
   const handleOpenChange = async (isOpen: boolean) => {
     if (isOpen && initialPhone) {
+      // Clean phone number - remove all non-numeric characters first
+      const cleanPhone = initialPhone.replace(/\D/g, '');
       // Format phone with country code if needed
-      const formattedPhone = initialPhone.startsWith('55') 
-        ? initialPhone 
-        : `55${initialPhone.replace(/\D/g, '')}`;
+      const formattedPhone = cleanPhone.startsWith('55') 
+        ? cleanPhone 
+        : `55${cleanPhone}`;
       
       const conversation = await getOrCreateConversation(
         formattedPhone,
