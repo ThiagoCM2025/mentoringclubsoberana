@@ -19,10 +19,21 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
@@ -31,7 +42,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { Search, Users, UserPlus, Loader2, Eye, EyeOff, GraduationCap, User, CheckCircle2, AlertCircle, Bot } from "lucide-react";
+import { Search, Users, UserPlus, Loader2, Eye, EyeOff, GraduationCap, User, CheckCircle2, AlertCircle, Bot, Pencil, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -71,16 +82,23 @@ const AdminStudents = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEnrollDialogOpen, setIsEnrollDialogOpen] = useState(false);
   const [isAgentDialogOpen, setIsAgentDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
   const [selectedAgentId, setSelectedAgentId] = useState<string>("");
   const [grantAllAgents, setGrantAllAgents] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
     password: "",
+    phone: "",
+  });
+  const [editFormData, setEditFormData] = useState({
+    full_name: "",
     phone: "",
   });
   const { toast } = useToast();
@@ -272,6 +290,84 @@ const AdminStudents = () => {
     setSelectedAgentId("");
     setGrantAllAgents(false);
     setIsAgentDialogOpen(true);
+  };
+
+  const openEditDialog = (student: Student) => {
+    setSelectedStudent(student);
+    setEditFormData({
+      full_name: student.full_name || "",
+      phone: student.phone || "",
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const openDeleteDialog = (student: Student) => {
+    setSelectedStudent(student);
+    setDeleteConfirmText("");
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleUpdateStudent = async () => {
+    if (!selectedStudent) return;
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: editFormData.full_name.trim(),
+          phone: editFormData.phone.trim() || null,
+        })
+        .eq("user_id", selectedStudent.user_id);
+
+      if (error) throw error;
+
+      toast({ title: "Sucesso!", description: "Dados atualizados com sucesso." });
+      setIsEditDialogOpen(false);
+      setSelectedStudent(null);
+      fetchStudents();
+    } catch (error: any) {
+      toast({ 
+        title: "Erro", 
+        description: error.message || "Não foi possível atualizar os dados.", 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteStudent = async () => {
+    if (!selectedStudent || deleteConfirmText !== "EXCLUIR") return;
+    setIsSubmitting(true);
+
+    try {
+      const response = await supabase.functions.invoke('delete-student', {
+        body: { user_id: selectedStudent.user_id },
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || 'Erro ao excluir aluna');
+      }
+
+      if (response.data?.error) {
+        throw new Error(response.data.error);
+      }
+
+      toast({ title: "Aluna excluída", description: "A conta foi removida com sucesso." });
+      setIsDeleteDialogOpen(false);
+      setSelectedStudent(null);
+      setDeleteConfirmText("");
+      fetchStudents();
+    } catch (error: any) {
+      toast({ 
+        title: "Erro", 
+        description: error.message || "Não foi possível excluir a aluna.", 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleGrantAgentAccess = async () => {
@@ -614,6 +710,127 @@ const AdminStudents = () => {
           </DialogContent>
         </Dialog>
 
+        {/* Edit Student Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Pencil className="w-5 h-5 text-secondary" />
+                Editar Dados da Aluna
+              </DialogTitle>
+              <DialogDescription>
+                Editando: <strong>{selectedStudent?.full_name || "Aluna"}</strong>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit_full_name">Nome completo</Label>
+                <Input
+                  id="edit_full_name"
+                  placeholder="Nome da aluna"
+                  value={editFormData.full_name}
+                  onChange={(e) => setEditFormData({ ...editFormData, full_name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit_phone">Telefone</Label>
+                <Input
+                  id="edit_phone"
+                  type="tel"
+                  placeholder="(00) 00000-0000"
+                  value={editFormData.phone}
+                  onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                />
+              </div>
+              <DialogFooter className="pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditDialogOpen(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={handleUpdateStudent} 
+                  disabled={isSubmitting || !editFormData.full_name.trim()}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Salvando...
+                    </>
+                  ) : (
+                    "Salvar Alterações"
+                  )}
+                </Button>
+              </DialogFooter>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Student AlertDialog */}
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent className="border-destructive/20">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+                <Trash2 className="w-5 h-5" />
+                Excluir Aluna
+              </AlertDialogTitle>
+              <AlertDialogDescription className="space-y-3">
+                <p>
+                  Você está prestes a excluir permanentemente a conta de{" "}
+                  <strong className="text-foreground">{selectedStudent?.full_name || "esta aluna"}</strong>.
+                </p>
+                <p className="text-destructive font-medium">
+                  Esta ação é irreversível e irá remover:
+                </p>
+                <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
+                  <li>Todas as matrículas e progresso nos cursos</li>
+                  <li>Diagnósticos e certificados</li>
+                  <li>Acesso aos agentes de IA</li>
+                  <li>Posts e comentários na comunidade</li>
+                  <li>Todas as conquistas e XP</li>
+                </ul>
+                <div className="pt-3">
+                  <Label htmlFor="delete-confirm" className="text-sm">
+                    Digite <strong className="text-destructive">EXCLUIR</strong> para confirmar:
+                  </Label>
+                  <Input
+                    id="delete-confirm"
+                    placeholder="EXCLUIR"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value.toUpperCase())}
+                    className="mt-2"
+                  />
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isSubmitting}>
+                Cancelar
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteStudent}
+                disabled={isSubmitting || deleteConfirmText !== "EXCLUIR"}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Excluindo...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Excluir Permanentemente
+                  </>
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         {/* Search */}
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -693,23 +910,32 @@ const AdminStudents = () => {
                       {new Date(student.created_at).toLocaleDateString("pt-BR")}
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openEditDialog(student)}
+                          className="gap-1 text-muted-foreground hover:text-foreground hover:bg-muted h-8 px-2"
+                          title="Editar dados"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => navigate(`/admin/students/${student.user_id}`)}
-                          className="gap-2 text-muted-foreground hover:text-foreground hover:bg-muted"
+                          className="gap-1 text-muted-foreground hover:text-foreground hover:bg-muted h-8 px-2"
+                          title="Ver perfil"
                         >
-                          <User className="w-4 h-4" />
-                          Ver Perfil
+                          <User className="w-3.5 h-3.5" />
                         </Button>
                         <Button
                           size="sm"
                           onClick={() => openEnrollDialog(student)}
-                          className="gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/90"
+                          className="gap-1 bg-secondary text-secondary-foreground hover:bg-secondary/90 h-8 px-2"
+                          title="Matricular"
                         >
-                          <GraduationCap className="w-4 h-4" />
-                          Matricular
+                          <GraduationCap className="w-3.5 h-3.5" />
                         </Button>
                         {(() => {
                           const accessCount = agentAccessCounts[student.user_id] || 0;
@@ -720,17 +946,27 @@ const AdminStudents = () => {
                               size="sm"
                               variant={hasAgentAccess ? "default" : "outline"}
                               onClick={() => openAgentDialog(student)}
-                              className={`gap-2 ${
+                              className={`gap-1 h-8 px-2 ${
                                 hasAgentAccess 
                                   ? "bg-green-600 hover:bg-green-700 text-white border-green-600" 
                                   : "border-secondary/30 text-secondary hover:bg-secondary/10"
                               }`}
+                              title="Agentes de IA"
                             >
-                              <Bot className="w-4 h-4" />
-                              Agentes {hasAgentAccess && `(${accessCount})`}
+                              <Bot className="w-3.5 h-3.5" />
+                              {hasAgentAccess && <span className="text-xs">{accessCount}</span>}
                             </Button>
                           );
                         })()}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openDeleteDialog(student)}
+                          className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2"
+                          title="Excluir aluna"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
