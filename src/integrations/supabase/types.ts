@@ -3748,6 +3748,11 @@ export type Database = {
           error_message: string | null
           evolution_id: string | null
           id: string
+          media_filename: string | null
+          media_mimetype: string | null
+          media_size: number | null
+          media_type: string | null
+          media_url: string | null
           message: string
           message_type: string
           phone: string
@@ -3762,6 +3767,11 @@ export type Database = {
           error_message?: string | null
           evolution_id?: string | null
           id?: string
+          media_filename?: string | null
+          media_mimetype?: string | null
+          media_size?: number | null
+          media_type?: string | null
+          media_url?: string | null
           message: string
           message_type?: string
           phone: string
@@ -3776,6 +3786,11 @@ export type Database = {
           error_message?: string | null
           evolution_id?: string | null
           id?: string
+          media_filename?: string | null
+          media_mimetype?: string | null
+          media_size?: number | null
+          media_type?: string | null
+          media_url?: string | null
           message?: string
           message_type?: string
           phone?: string

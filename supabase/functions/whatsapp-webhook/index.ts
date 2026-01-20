@@ -21,11 +21,47 @@ interface EvolutionWebhookPayload {
       extendedTextMessage?: {
         text: string;
       };
+      imageMessage?: {
+        url?: string;
+        caption?: string;
+        mimetype?: string;
+        base64?: string;
+      };
+      audioMessage?: {
+        url?: string;
+        mimetype?: string;
+        base64?: string;
+      };
+      videoMessage?: {
+        url?: string;
+        caption?: string;
+        mimetype?: string;
+        base64?: string;
+      };
+      documentMessage?: {
+        url?: string;
+        fileName?: string;
+        mimetype?: string;
+        base64?: string;
+      };
+      stickerMessage?: {
+        url?: string;
+        mimetype?: string;
+        base64?: string;
+      };
     };
     messageType?: string;
     messageTimestamp?: number;
     status?: string;
   };
+}
+
+interface MediaInfo {
+  mediaUrl: string | null;
+  mediaType: string | null;
+  mediaFilename: string | null;
+  mediaMimetype: string | null;
+  caption: string | null;
 }
 
 function normalizePhone(phone: string): string {
@@ -53,8 +89,78 @@ function extractMessageText(data: EvolutionWebhookPayload["data"]): string {
   return "";
 }
 
+function extractMediaInfo(data: EvolutionWebhookPayload["data"]): MediaInfo {
+  const msg = data.message;
+  
+  if (!msg) {
+    return { mediaUrl: null, mediaType: null, mediaFilename: null, mediaMimetype: null, caption: null };
+  }
+
+  // Image message
+  if (msg.imageMessage) {
+    return {
+      mediaUrl: msg.imageMessage.url || null,
+      mediaType: "image",
+      mediaFilename: null,
+      mediaMimetype: msg.imageMessage.mimetype || "image/jpeg",
+      caption: msg.imageMessage.caption || null,
+    };
+  }
+
+  // Audio message
+  if (msg.audioMessage) {
+    return {
+      mediaUrl: msg.audioMessage.url || null,
+      mediaType: "audio",
+      mediaFilename: null,
+      mediaMimetype: msg.audioMessage.mimetype || "audio/ogg",
+      caption: null,
+    };
+  }
+
+  // Video message
+  if (msg.videoMessage) {
+    return {
+      mediaUrl: msg.videoMessage.url || null,
+      mediaType: "video",
+      mediaFilename: null,
+      mediaMimetype: msg.videoMessage.mimetype || "video/mp4",
+      caption: msg.videoMessage.caption || null,
+    };
+  }
+
+  // Document message
+  if (msg.documentMessage) {
+    return {
+      mediaUrl: msg.documentMessage.url || null,
+      mediaType: "document",
+      mediaFilename: msg.documentMessage.fileName || null,
+      mediaMimetype: msg.documentMessage.mimetype || "application/octet-stream",
+      caption: null,
+    };
+  }
+
+  // Sticker message
+  if (msg.stickerMessage) {
+    return {
+      mediaUrl: msg.stickerMessage.url || null,
+      mediaType: "sticker",
+      mediaFilename: null,
+      mediaMimetype: msg.stickerMessage.mimetype || "image/webp",
+      caption: null,
+    };
+  }
+
+  return { mediaUrl: null, mediaType: null, mediaFilename: null, mediaMimetype: null, caption: null };
+}
+
 // Map Evolution API message types to our internal types
-function mapMessageType(evolutionType: string | undefined): string {
+function mapMessageType(evolutionType: string | undefined, mediaInfo: MediaInfo): string {
+  // If we have media, use the media type
+  if (mediaInfo.mediaType) {
+    return mediaInfo.mediaType;
+  }
+  
   const typeMap: Record<string, string> = {
     "conversation": "text",
     "extendedTextMessage": "text",
@@ -117,15 +223,22 @@ serve(async (req) => {
     if (event === "messages.upsert" || event === "MESSAGE_RECEIVED") {
       const phone = normalizePhone(data.key.remoteJid);
       const messageText = extractMessageText(data);
+      const mediaInfo = extractMediaInfo(data);
       const isFromMe = data.key.fromMe;
       const contactName = data.pushName || null;
 
-      if (!messageText) {
-        console.log("No text message found, skipping");
+      // Check if we have any content (text OR media)
+      const hasContent = messageText || mediaInfo.mediaUrl;
+      
+      if (!hasContent) {
+        console.log("No content found (text or media), skipping");
         return new Response(JSON.stringify({ success: true, skipped: true }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+
+      // Determine the message content to save
+      const finalMessage = messageText || mediaInfo.caption || `[${mediaInfo.mediaType?.toUpperCase() || "MEDIA"}]`;
 
       // Find or create conversation
       let { data: conversation, error: convError } = await supabase
@@ -142,7 +255,7 @@ serve(async (req) => {
         // Check if it's a lead
         const { data: lead } = await supabase
           .from("leads")
-          .select("id, name")
+          .select("id, full_name")
           .eq("phone", phone)
           .single();
 
@@ -153,13 +266,13 @@ serve(async (req) => {
           // Check if it's a student (profile)
           const { data: profile } = await supabase
             .from("profiles")
-            .select("id, full_name")
+            .select("user_id, full_name")
             .eq("phone", phone)
             .single();
 
           if (profile) {
             contactType = "student";
-            contactId = profile.id;
+            contactId = profile.user_id;
           }
         }
 
@@ -168,7 +281,7 @@ serve(async (req) => {
           .from("whatsapp_conversations")
           .insert({
             phone,
-            contact_name: contactName || lead?.name || null,
+            contact_name: contactName || lead?.full_name || null,
             contact_type: contactType,
             contact_id: contactId,
           })
@@ -194,14 +307,18 @@ serve(async (req) => {
           .eq("id", conversation.id);
       }
 
-      // Insert message with mapped type
-      const mappedMessageType = mapMessageType(data.messageType);
+      // Insert message with media info
+      const mappedMessageType = mapMessageType(data.messageType, mediaInfo);
       const { error: msgError } = await supabase.from("whatsapp_messages").insert({
         conversation_id: conversation.id,
         phone,
         direction: isFromMe ? "outgoing" : "incoming",
-        message: messageText,
+        message: finalMessage,
         message_type: mappedMessageType,
+        media_url: mediaInfo.mediaUrl,
+        media_type: mediaInfo.mediaType,
+        media_filename: mediaInfo.mediaFilename,
+        media_mimetype: mediaInfo.mediaMimetype,
         status: "delivered",
         evolution_id: data.key.id,
       });
@@ -213,15 +330,38 @@ serve(async (req) => {
 
       // Create admin notification for incoming messages
       if (!isFromMe) {
+        // Format notification message based on content type
+        let notificationMessage = finalMessage;
+        if (mediaInfo.mediaType && !messageText) {
+          const mediaLabels: Record<string, string> = {
+            image: "📷 Imagem",
+            audio: "🎵 Áudio",
+            video: "🎬 Vídeo",
+            document: "📄 Documento",
+            sticker: "😀 Sticker",
+          };
+          notificationMessage = mediaLabels[mediaInfo.mediaType] || "📎 Mídia";
+          if (mediaInfo.caption) {
+            notificationMessage += `: ${mediaInfo.caption.substring(0, 80)}`;
+          }
+        } else {
+          notificationMessage = finalMessage.substring(0, 100) + (finalMessage.length > 100 ? "..." : "");
+        }
+
         await supabase.from("admin_notifications").insert({
           event_type: "whatsapp_message",
           title: `Nova mensagem de ${contactName || phone}`,
-          message: messageText.substring(0, 100) + (messageText.length > 100 ? "..." : ""),
-          metadata: { conversation_id: conversation.id, phone },
+          message: notificationMessage,
+          metadata: { 
+            conversation_id: conversation.id, 
+            phone,
+            has_media: !!mediaInfo.mediaUrl,
+            media_type: mediaInfo.mediaType,
+          },
         });
       }
 
-      console.log("Message saved successfully with type:", mappedMessageType);
+      console.log("Message saved successfully with type:", mappedMessageType, "media:", mediaInfo.mediaType);
       return new Response(
         JSON.stringify({ success: true, conversation_id: conversation.id }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
