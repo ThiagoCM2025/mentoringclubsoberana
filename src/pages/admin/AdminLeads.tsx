@@ -195,12 +195,24 @@ const AdminLeads = () => {
         const headers = rows[0].map(h => String(h || "").toLowerCase());
         const nameCol = headers.findIndex(h => h.includes("nome"));
         const emailCol = headers.findIndex(h => h.includes("mail") || h.includes("e-mail"));
-        const phoneCol = headers.findIndex(h => h.includes("whatsapp") || h.includes("telefone") || h.includes("celular"));
+        const phoneCol = headers.findIndex(h => h.includes("whatsapp") || h.includes("telefone") || h.includes("celular") || h.includes("phone"));
         
-        if (nameCol === -1 || emailCol === -1) {
+        // Name is required, but email is now optional if phone exists
+        if (nameCol === -1) {
           toast({ 
-            title: "Colunas não encontradas", 
-            description: "A planilha precisa ter colunas com 'nome' e 'email' no cabeçalho",
+            title: "Coluna não encontrada", 
+            description: "A planilha precisa ter uma coluna com 'nome' no cabeçalho",
+            variant: "destructive" 
+          });
+          setImporting(false);
+          return;
+        }
+
+        // Need at least email OR phone
+        if (emailCol === -1 && phoneCol === -1) {
+          toast({ 
+            title: "Colunas de contato não encontradas", 
+            description: "A planilha precisa ter coluna de 'email' ou 'telefone/whatsapp'",
             variant: "destructive" 
           });
           setImporting(false);
@@ -210,14 +222,15 @@ const AdminLeads = () => {
         let imported = 0;
         let duplicates = 0;
         let errors = 0;
-        let noEmail = 0;
+        let noContact = 0;
+        let phoneOnly = 0;
 
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
           if (!row || row.length === 0) continue;
 
           const full_name = String(row[nameCol] || "").trim();
-          const rawEmail = String(row[emailCol] || "").trim().toLowerCase();
+          const rawEmail = emailCol !== -1 ? String(row[emailCol] || "").trim().toLowerCase() : "";
           let phone = phoneCol !== -1 ? String(row[phoneCol] || "").replace(/['"]/g, "").trim() : null;
           
           // Normalize phone: keep only numbers
@@ -229,39 +242,81 @@ const AdminLeads = () => {
           // Validate email format with regex
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           const looksLikePhone = /^[\+\(\)\d\s\-]+$/.test(rawEmail);
+          const hasValidEmail = rawEmail && emailRegex.test(rawEmail) && !looksLikePhone;
           
-          // Skip if no valid email or if it looks like a phone number
-          if (!rawEmail || !emailRegex.test(rawEmail) || looksLikePhone) {
-            if (full_name) {
-              noEmail++;
-              console.log(`Lead "${full_name}": e-mail inválido ou telefone detectado: "${rawEmail}"`);
-            }
+          // Skip if no name
+          if (!full_name) continue;
+          
+          // Skip if no contact info at all
+          if (!hasValidEmail && !phone) {
+            noContact++;
+            console.log(`Lead "${full_name}": sem email válido ou telefone`);
             continue;
           }
-          
-          const email = rawEmail;
 
-          if (full_name) {
-            // Use upsert RPC to avoid duplicates
-            const { data, error } = await supabase.rpc('upsert_lead_and_return_id', {
-              p_full_name: full_name,
-              p_email: email,
-              p_phone: phone,
-              p_source: 'importação_excel'
-            });
+          // Determine email to use
+          let emailToUse: string;
+          if (hasValidEmail) {
+            emailToUse = rawEmail;
+          } else if (phone) {
+            // Generate placeholder email based on phone
+            emailToUse = `lead+${phone}@import.local`;
+            phoneOnly++;
+            console.log(`Lead "${full_name}": usando email gerado a partir do telefone`);
+          } else {
+            noContact++;
+            continue;
+          }
+
+          // Check for duplicates by phone first (if phone exists)
+          if (phone) {
+            const { data: existingByPhone } = await supabase
+              .from("leads")
+              .select("id, email")
+              .eq("phone", phone)
+              .limit(1);
             
-            if (error) {
-              console.error("Import error:", error);
-              errors++;
-            } else {
-              imported++;
+            if (existingByPhone && existingByPhone.length > 0) {
+              // Update existing lead instead of creating duplicate
+              const { error } = await supabase
+                .from("leads")
+                .update({
+                  full_name: full_name,
+                  source: 'importação_excel',
+                  updated_at: new Date().toISOString()
+                })
+                .eq("id", existingByPhone[0].id);
+              
+              if (error) {
+                errors++;
+              } else {
+                duplicates++;
+              }
+              continue;
             }
+          }
+
+          // Use upsert RPC to avoid email duplicates
+          const { data, error } = await supabase.rpc('upsert_lead_and_return_id', {
+            p_full_name: full_name,
+            p_email: emailToUse,
+            p_phone: phone,
+            p_source: 'importação_excel'
+          });
+          
+          if (error) {
+            console.error("Import error:", error);
+            errors++;
+          } else {
+            imported++;
           }
         }
 
         const messages = [];
         if (imported > 0) messages.push(`${imported} importados`);
-        if (noEmail > 0) messages.push(`${noEmail} ignorados (e-mail inválido)`);
+        if (duplicates > 0) messages.push(`${duplicates} atualizados (duplicados)`);
+        if (phoneOnly > 0) messages.push(`${phoneOnly} sem email (usando telefone)`);
+        if (noContact > 0) messages.push(`${noContact} ignorados (sem contato)`);
         if (errors > 0) messages.push(`${errors} erros`);
 
         toast({
@@ -270,20 +325,49 @@ const AdminLeads = () => {
         });
         fetchLeads();
       } else {
-        // Process CSV file (original logic)
+        // Process CSV file - now also supports Name + Phone only
         const reader = new FileReader();
         reader.onload = async (e) => {
           const text = e.target?.result as string;
-          const lines = text.split("\n").slice(1);
+          const lines = text.split("\n");
+          const headerLine = lines[0]?.toLowerCase() || "";
+          const dataLines = lines.slice(1);
+          
           let imported = 0;
           let errors = 0;
+          let phoneOnly = 0;
 
-          for (const line of lines) {
+          // Detect columns
+          const hasEmail = headerLine.includes("email") || headerLine.includes("mail");
+          
+          for (const line of dataLines) {
             if (!line.trim()) continue;
             const parts = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
             const cleanParts = parts.map(p => p.replace(/^"|"$/g, "").trim());
             
-            const [full_name, email, phone, source] = cleanParts;
+            let full_name: string, email: string | null, phone: string | null, source: string | null;
+            
+            if (hasEmail) {
+              // Format: Name, Email, Phone?, Source?
+              [full_name, email, phone, source] = cleanParts;
+            } else {
+              // Format: Name, Phone
+              [full_name, phone] = cleanParts;
+              email = null;
+              source = "importação";
+            }
+            
+            // Normalize phone
+            if (phone) {
+              phone = phone.replace(/\D/g, "");
+              if (phone.length < 10) phone = null;
+            }
+            
+            // If no email, generate from phone
+            if (!email && phone) {
+              email = `lead+${phone}@import.local`;
+              phoneOnly++;
+            }
             
             if (full_name && email) {
               const { error } = await supabase.from("leads").insert({
@@ -299,9 +383,14 @@ const AdminLeads = () => {
             }
           }
 
+          const messages = [];
+          if (imported > 0) messages.push(`${imported} leads importados`);
+          if (phoneOnly > 0) messages.push(`${phoneOnly} sem email`);
+          if (errors > 0) messages.push(`${errors} erros`);
+
           toast({
             title: "Importação concluída",
-            description: `${imported} leads importados, ${errors} erros`,
+            description: messages.join(", "),
           });
           fetchLeads();
           setImporting(false);

@@ -55,6 +55,32 @@ export function WhatsAppInboxModal({
     }
   }, [open, fetchArchivedConversations]);
 
+  // Handle conversation selection when initialPhone changes (even if modal already open)
+  useEffect(() => {
+    const selectInitialConversation = async () => {
+      if (!open || !initialPhone) return;
+      
+      // Clean phone number - remove all non-numeric characters
+      const cleanPhone = initialPhone.replace(/\D/g, '');
+      // Format phone with country code if needed
+      const formattedPhone = cleanPhone.startsWith('55') 
+        ? cleanPhone 
+        : `55${cleanPhone}`;
+      
+      const conversation = await getOrCreateConversation(
+        formattedPhone,
+        initialContactName,
+        initialContactType,
+        initialContactId
+      );
+      if (conversation) {
+        selectConversation(conversation);
+      }
+    };
+    
+    selectInitialConversation();
+  }, [open, initialPhone, initialContactName, initialContactType, initialContactId]);
+
   const handleUnarchive = async (conversationId: string) => {
     await unarchiveConversation(conversationId);
     // Refresh archived list
