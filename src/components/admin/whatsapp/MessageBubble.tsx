@@ -16,7 +16,7 @@ export function MessageBubble({ message, isNew = false }: MessageBubbleProps) {
   const getStatusIcon = () => {
     switch (message.status) {
       case "pending":
-        return <Clock className="h-3 w-3 text-muted-foreground" />;
+        return <Clock className="h-3 w-3 text-muted-foreground animate-pulse" />;
       case "sent":
         return <Check className="h-3 w-3 text-muted-foreground" />;
       case "delivered":
@@ -33,31 +33,37 @@ export function MessageBubble({ message, isNew = false }: MessageBubbleProps) {
   return (
     <div
       className={cn(
-        "flex w-full mb-1.5",
+        "flex w-full mb-1.5 px-1",
         isOutgoing ? "justify-end" : "justify-start",
         isNew && "animate-fade-in"
       )}
     >
       <div
         className={cn(
-          "max-w-[70%] rounded-xl px-3 py-2 shadow-sm transition-all",
+          "max-w-[75%] sm:max-w-[70%] rounded-2xl px-3 py-2 transition-all duration-200",
           isOutgoing
-            ? "bg-[#d9fdd3] dark:bg-[#005c4b] text-foreground rounded-tr-sm"
-            : "bg-white dark:bg-zinc-800 text-foreground rounded-tl-sm shadow-md"
+            ? "bg-[#d9fdd3] dark:bg-[#005c4b] text-foreground rounded-br-md shadow-sm"
+            : "bg-white dark:bg-zinc-800 text-foreground rounded-bl-md shadow-md"
         )}
       >
-        <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.message}</p>
+        <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
+          {message.message}
+        </p>
         <div
           className={cn(
             "flex items-center gap-1 mt-0.5",
             isOutgoing ? "justify-end" : "justify-start"
           )}
         >
-          <span className="text-[10px] text-muted-foreground">{time}</span>
-          {isOutgoing && getStatusIcon()}
+          <span className="text-[10px] text-muted-foreground/70">{time}</span>
+          {isOutgoing && (
+            <span className="flex items-center">
+              {getStatusIcon()}
+            </span>
+          )}
         </div>
         {message.status === "failed" && message.error_message && (
-          <p className="text-[10px] text-destructive mt-1 bg-destructive/10 px-2 py-1 rounded">
+          <p className="text-[10px] text-destructive mt-1.5 bg-destructive/10 px-2 py-1 rounded-md">
             {message.error_message}
           </p>
         )}

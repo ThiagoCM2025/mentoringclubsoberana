@@ -9,6 +9,7 @@ import { ChatWindow } from "./ChatWindow";
 import { TemplateDrawer } from "./TemplateDrawer";
 import { NewConversationDialog } from "./NewConversationDialog";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface WhatsAppInboxModalProps {
   open: boolean;
@@ -105,32 +106,39 @@ export function WhatsAppInboxModal({
     await archiveConversation(selectedConversation.id);
   };
 
+  const handleBackToList = () => {
+    selectConversation(null as any);
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-w-5xl h-[85vh] p-0 gap-0 overflow-hidden rounded-xl">
+        <DialogContent className="max-w-5xl w-[95vw] sm:w-full h-[90vh] sm:h-[85vh] p-0 gap-0 overflow-hidden rounded-xl">
           {/* Custom header */}
-          <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[#00a884] to-[#128C7E]">
+          <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-[#00a884] to-[#128C7E]">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                <MessageCircle className="h-4 w-4 text-white" />
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/10 flex items-center justify-center">
+                <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
               </div>
-              <h2 className="font-semibold text-white">WhatsApp Business</h2>
+              <h2 className="font-semibold text-white text-sm sm:text-base">WhatsApp Business</h2>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => onOpenChange(false)}
-              className="h-8 w-8 text-white hover:bg-white/20 rounded-full"
+              className="h-7 w-7 sm:h-8 sm:w-8 text-white hover:bg-white/20 rounded-full"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </div>
 
-          {/* Main content */}
+          {/* Main content - responsive layout */}
           <div className="flex flex-1 overflow-hidden relative">
             {/* Conversation list - left panel */}
-            <div className="w-80 border-r border-border flex-shrink-0">
+            <div className={cn(
+              "w-full sm:w-80 border-r border-border flex-shrink-0 transition-all duration-200",
+              selectedConversation && "hidden sm:block"
+            )}>
               <ConversationList
                 conversations={conversations}
                 loading={loading}
@@ -141,17 +149,23 @@ export function WhatsAppInboxModal({
             </div>
 
             {/* Chat window - right panel */}
-            <ChatWindow
-              conversation={selectedConversation}
-              messages={messages}
-              loading={messagesLoading}
-              onSendMessage={handleSendMessage}
-              onOpenTemplates={() => setShowTemplates(true)}
-              onArchive={handleArchive}
-              onViewContact={handleViewContact}
-              soundEnabled={soundEnabled}
-              onToggleSound={toggleSound}
-            />
+            <div className={cn(
+              "flex-1 flex flex-col",
+              !selectedConversation && "hidden sm:flex"
+            )}>
+              <ChatWindow
+                conversation={selectedConversation}
+                messages={messages}
+                loading={messagesLoading}
+                onSendMessage={handleSendMessage}
+                onOpenTemplates={() => setShowTemplates(true)}
+                onArchive={handleArchive}
+                onViewContact={handleViewContact}
+                soundEnabled={soundEnabled}
+                onToggleSound={toggleSound}
+                onBack={handleBackToList}
+              />
+            </div>
 
             {/* Template drawer */}
             <TemplateDrawer
