@@ -12,9 +12,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, UserPlus, Phone as PhoneIcon } from "lucide-react";
+import { Search, UserPlus, Phone as PhoneIcon, Users, GraduationCap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface Contact {
   id: string;
@@ -29,6 +30,8 @@ interface NewConversationDialogProps {
   onSelectContact: (phone: string, name: string, type: "lead" | "student", id: string) => void;
 }
 
+type ContactTypeFilter = "all" | "lead" | "student";
+
 export function NewConversationDialog({
   open,
   onOpenChange,
@@ -38,6 +41,7 @@ export function NewConversationDialog({
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [manualPhone, setManualPhone] = useState("");
+  const [contactTypeFilter, setContactTypeFilter] = useState<ContactTypeFilter>("all");
 
   useEffect(() => {
     if (open) {
@@ -89,10 +93,9 @@ export function NewConversationDialog({
 
   const filteredContacts = contacts.filter((c) => {
     const searchLower = search.toLowerCase();
-    return (
-      c.name.toLowerCase().includes(searchLower) ||
-      c.phone.includes(search)
-    );
+    const matchesSearch = c.name.toLowerCase().includes(searchLower) || c.phone.includes(search);
+    const matchesType = contactTypeFilter === "all" || c.type === contactTypeFilter;
+    return matchesSearch && matchesType;
   });
 
   const handleSelectContact = (contact: Contact) => {
@@ -141,7 +144,7 @@ export function NewConversationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[95vw] sm:max-w-md">
+      <DialogContent className="max-w-[95vw] sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <UserPlus className="h-5 w-5 text-primary" />
@@ -157,7 +160,7 @@ export function NewConversationDialog({
           <div className="space-y-2">
             <Label className="text-xs text-muted-foreground">Novo número</Label>
             <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative flex-1">
+              <div className="relative flex-1 min-w-0">
                 <PhoneIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="(11) 99999-9999"
@@ -166,7 +169,7 @@ export function NewConversationDialog({
                   className="pl-9"
                 />
               </div>
-              <Button onClick={handleManualPhone} disabled={!manualPhone.trim()} className="w-full sm:w-auto">
+              <Button onClick={handleManualPhone} disabled={!manualPhone.trim()} className="w-full sm:w-auto shrink-0">
                 Iniciar
               </Button>
             </div>
@@ -182,18 +185,60 @@ export function NewConversationDialog({
           </div>
 
           {/* Search contacts */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar contatos..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
+          <div className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar contatos..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            
+            {/* Contact type filter */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setContactTypeFilter("all")}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md border transition-colors",
+                  contactTypeFilter === "all"
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                )}
+              >
+                <Users className="h-3.5 w-3.5" />
+                Todos
+              </button>
+              <button
+                onClick={() => setContactTypeFilter("lead")}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md border transition-colors",
+                  contactTypeFilter === "lead"
+                    ? "bg-amber-500 text-white border-amber-500"
+                    : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                )}
+              >
+                <Users className="h-3.5 w-3.5" />
+                Leads
+              </button>
+              <button
+                onClick={() => setContactTypeFilter("student")}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md border transition-colors",
+                  contactTypeFilter === "student"
+                    ? "bg-emerald-500 text-white border-emerald-500"
+                    : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                )}
+              >
+                <GraduationCap className="h-3.5 w-3.5" />
+                Alunas
+              </button>
+            </div>
           </div>
 
           {/* Contacts list */}
-          <ScrollArea className="h-56 rounded-md border border-border">
+          <ScrollArea className="h-64 rounded-md border border-border">
             {loading ? (
               <div className="p-2 space-y-2">
                 {[1, 2, 3, 4, 5].map((i) => (

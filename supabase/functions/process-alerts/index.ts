@@ -310,6 +310,60 @@ async function checkNewEnrollments(supabase: any): Promise<AlertData[]> {
   return alerts;
 }
 
+async function checkNewWhatsAppMessages(supabase: any): Promise<AlertData[]> {
+  const alerts: AlertData[] = [];
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  
+  // Count incoming messages from last hour
+  const { data: newMessages, error } = await supabase
+    .from('whatsapp_messages')
+    .select('id, conversation_id, message, created_at')
+    .eq('direction', 'incoming')
+    .gte('created_at', oneHourAgo);
+
+  if (error) {
+    console.error('Error checking new WhatsApp messages:', error);
+    return alerts;
+  }
+
+  if (!newMessages || newMessages.length === 0) {
+    return alerts;
+  }
+
+  // Get unique conversations with unread messages
+  const conversationIds = [...new Set(newMessages.map((m: any) => m.conversation_id))];
+  
+  const { data: conversations } = await supabase
+    .from('whatsapp_conversations')
+    .select('id, contact_name, phone, unread_count')
+    .in('id', conversationIds)
+    .gt('unread_count', 0);
+
+  if (!conversations || conversations.length === 0) {
+    return alerts;
+  }
+
+  // Create consolidated alert
+  const totalUnread = conversations.reduce((sum: number, c: any) => sum + (c.unread_count || 0), 0);
+  const contactNames = conversations.slice(0, 3).map((c: any) => c.contact_name || c.phone).join(', ');
+  const moreCount = conversations.length > 3 ? ` e mais ${conversations.length - 3}` : '';
+
+  alerts.push({
+    type: 'whatsapp_new_messages',
+    title: `${totalUnread} Novas Mensagens no WhatsApp`,
+    message: `Você tem ${totalUnread} mensagens não lidas de ${conversations.length} contato(s): ${contactNames}${moreCount}. Acesse o painel para responder.`,
+    severity: 'warning',
+    details: {
+      'Total de mensagens': totalUnread,
+      'Conversas com mensagens': conversations.length,
+      'Contatos': contactNames + moreCount,
+      'Período': 'Última hora',
+    },
+  });
+
+  return alerts;
+}
+
 async function checkReportedPosts(supabase: any): Promise<AlertData[]> {
   const alerts: AlertData[] = [];
   
@@ -457,6 +511,7 @@ const handler = async (req: Request): Promise<Response> => {
       missionAlerts,
       conversionAlerts,
       enrollmentAlerts,
+      whatsAppAlerts,
       reportedPostAlerts,
     ] = await Promise.all([
       checkLeadInactive(supabase, thresholds.lead_inactive),
@@ -464,6 +519,7 @@ const handler = async (req: Request): Promise<Response> => {
       checkMissionsPending(supabase, thresholds.mission_pending),
       checkLowConversion(supabase, thresholds.low_conversion),
       checkNewEnrollments(supabase),
+      checkNewWhatsAppMessages(supabase),
       checkReportedPosts(supabase),
     ]);
 
@@ -473,6 +529,7 @@ const handler = async (req: Request): Promise<Response> => {
       ...missionAlerts,
       ...conversionAlerts,
       ...enrollmentAlerts,
+      ...whatsAppAlerts,
       ...reportedPostAlerts
     );
 
