@@ -236,7 +236,7 @@ export function ChatWindow({
 
   return (
     <div className={cn(
-      "flex-1 flex flex-col bg-[#efeae2] dark:bg-zinc-900 relative",
+      "flex-1 flex flex-col min-h-0 overflow-hidden bg-[#efeae2] dark:bg-zinc-900 relative",
       !conversation && "hidden sm:flex"
     )}>
       {/* Header */}
@@ -401,7 +401,7 @@ export function ChatWindow({
 
       {/* Messages */}
       <ScrollArea className={cn(
-        "flex-1 px-2 sm:px-4",
+        "flex-1 min-h-0 px-2 sm:px-4",
         isSearchOpen && "pt-12"
       )}>
         <div 
@@ -473,7 +473,7 @@ export function ChatWindow({
       </ScrollArea>
 
       {/* Input - Modern design */}
-      <div className="p-2 sm:p-3 bg-gradient-to-t from-card via-card to-card/80 border-t border-border">
+      <div className="flex-shrink-0 p-2 sm:p-3 bg-gradient-to-t from-card via-card to-card/80 border-t border-border">
         <div className="flex items-center gap-1 sm:gap-2 bg-muted/60 rounded-2xl p-1 sm:p-1.5">
           <EmojiPicker onEmojiSelect={handleEmojiSelect} className="flex-shrink-0" />
           

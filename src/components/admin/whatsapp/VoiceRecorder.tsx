@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, Trash2, Send, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ interface VoiceRecorderProps {
   disabled?: boolean;
 }
 
+const WAVEFORM_BARS = 12;
+
 export function VoiceRecorder({
   conversationId,
   phone,
@@ -26,6 +28,7 @@ export function VoiceRecorder({
     duration,
     audioBlob,
     isSupported,
+    audioData,
     startRecording,
     stopRecording,
     cancelRecording,
@@ -34,6 +37,26 @@ export function VoiceRecorder({
 
   const [isSending, setIsSending] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+
+  // Process audio data for waveform visualization
+  const waveformBars = useMemo(() => {
+    if (!audioData || audioData.length === 0) {
+      return Array(WAVEFORM_BARS).fill(4);
+    }
+    
+    // Sample the frequency data to get the desired number of bars
+    const step = Math.floor(audioData.length / WAVEFORM_BARS);
+    const bars: number[] = [];
+    
+    for (let i = 0; i < WAVEFORM_BARS; i++) {
+      const index = Math.min(i * step, audioData.length - 1);
+      // Normalize value from 0-255 to 4-28 (min-max height in pixels)
+      const normalized = Math.max(4, Math.floor((audioData[index] / 255) * 28));
+      bars.push(normalized);
+    }
+    
+    return bars;
+  }, [audioData]);
 
   // When we have an audio blob, show preview
   useEffect(() => {
@@ -178,20 +201,20 @@ export function VoiceRecorder({
             </span>
           </div>
           
-          {/* Waveform animation */}
-          <div className="flex items-center gap-0.5 h-6">
-            {[...Array(5)].map((_, i) => (
+          {/* Real-time Waveform animation */}
+          <div className="flex items-center justify-center gap-[2px] h-7 min-w-[60px]">
+            {waveformBars.map((height, i) => (
               <motion.div
                 key={i}
-                className="w-0.5 bg-red-500 rounded-full"
-                animate={{
-                  height: [8, 20, 8],
+                className="w-[3px] bg-red-500 rounded-full"
+                animate={{ height }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 400, 
+                  damping: 25,
+                  mass: 0.5
                 }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 0.5,
-                  delay: i * 0.1,
-                }}
+                style={{ minHeight: 4 }}
               />
             ))}
           </div>

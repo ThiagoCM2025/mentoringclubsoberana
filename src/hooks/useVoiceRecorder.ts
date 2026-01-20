@@ -5,6 +5,7 @@ interface UseVoiceRecorderReturn {
   duration: number;
   audioBlob: Blob | null;
   isSupported: boolean;
+  audioData: Uint8Array | null;
   startRecording: () => Promise<boolean>;
   stopRecording: () => void;
   cancelRecording: () => void;
@@ -16,11 +17,17 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
   const [duration, setDuration] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [isSupported, setIsSupported] = useState(false);
+  const [audioData, setAudioData] = useState<Uint8Array | null>(null);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const intervalRef = useRef<number | null>(null);
+  
+  // Web Audio API refs for waveform
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     // Check if browser supports getUserMedia
@@ -29,6 +36,16 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
       navigator.mediaDevices &&
       typeof navigator.mediaDevices.getUserMedia === "function"
     );
+  }, []);
+
+  const updateWaveform = useCallback(() => {
+    if (!analyserRef.current) return;
+    
+    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+    analyserRef.current.getByteFrequencyData(dataArray);
+    setAudioData(dataArray);
+    
+    animationFrameRef.current = requestAnimationFrame(updateWaveform);
   }, []);
 
   const startRecording = useCallback(async (): Promise<boolean> => {
@@ -41,6 +58,7 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
       chunksRef.current = [];
       setAudioBlob(null);
       setDuration(0);
+      setAudioData(null);
 
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
@@ -51,6 +69,21 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
       });
       
       streamRef.current = stream;
+      
+      // Setup Web Audio API for waveform visualization
+      const audioContext = new AudioContext();
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 64; // 32 frequency bins
+      analyser.smoothingTimeConstant = 0.5;
+      
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+      
+      // Start waveform animation
+      animationFrameRef.current = requestAnimationFrame(updateWaveform);
       
       // Try to use webm with opus, fallback to other formats
       let mimeType = "audio/webm;codecs=opus";
@@ -88,6 +121,18 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
         }
+        
+        // Cleanup audio context
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+          animationFrameRef.current = null;
+        }
+        if (audioContextRef.current) {
+          audioContextRef.current.close();
+          audioContextRef.current = null;
+        }
+        analyserRef.current = null;
+        setAudioData(null);
       };
 
       mediaRecorder.onerror = (event) => {
@@ -110,7 +155,7 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
       console.error("Error starting recording:", error);
       return false;
     }
-  }, [isSupported]);
+  }, [isSupported, updateWaveform]);
 
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && isRecording) {
@@ -137,11 +182,23 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
       intervalRef.current = null;
     }
     
+    // Cleanup audio context
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+    analyserRef.current = null;
+    
     // Reset state
     chunksRef.current = [];
     setAudioBlob(null);
     setDuration(0);
     setIsRecording(false);
+    setAudioData(null);
   }, []);
 
   const clearAudio = useCallback(() => {
@@ -158,6 +215,12 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
     };
   }, []);
 
@@ -166,6 +229,7 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
     duration,
     audioBlob,
     isSupported,
+    audioData,
     startRecording,
     stopRecording,
     cancelRecording,
