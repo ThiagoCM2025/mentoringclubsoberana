@@ -47,6 +47,7 @@ interface LeadCardProps {
   onSelectionChange?: (leadId: string, selected: boolean) => void;
   onMakeStudent?: () => void;
   columnStatus?: LeadStatus;
+  onOpenWhatsAppInbox?: (phone?: string) => void;
 }
 
 const temperatureConfig = {
@@ -63,7 +64,7 @@ const meetingStatusConfig: Record<string, { label: string; color: string }> = {
   cancelada: { label: "Cancelada", color: "bg-gray-100 text-gray-700" },
 };
 
-export function LeadCard({ lead, onClick, onOpenDetails, onOpenTemplates, onDragStart, onNurturingToggle, isSelectionMode = false, isSelected = false, onSelectionChange, onMakeStudent, columnStatus }: LeadCardProps) {
+export function LeadCard({ lead, onClick, onOpenDetails, onOpenTemplates, onDragStart, onNurturingToggle, isSelectionMode = false, isSelected = false, onSelectionChange, onMakeStudent, columnStatus, onOpenWhatsAppInbox }: LeadCardProps) {
   const { toast } = useToast();
   const { getCampaignInfo, getSequenceInfo, calculateNextSend } = useNurturingSequences();
   
@@ -79,11 +80,14 @@ export function LeadCard({ lead, onClick, onOpenDetails, onOpenTemplates, onDrag
   const handleWhatsAppClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!lead.phone) return;
-    // Abre o modal de templates ao clicar no WhatsApp
-    onOpenTemplates();
+    // Se temos o callback do inbox, abre o inbox com o telefone
+    if (onOpenWhatsAppInbox) {
+      onOpenWhatsAppInbox(lead.phone);
+    } else {
+      // Fallback para abrir templates
+      onOpenTemplates();
+    }
   };
-
-
   const handleEmailClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     window.open(`mailto:${lead.email}`, "_blank");

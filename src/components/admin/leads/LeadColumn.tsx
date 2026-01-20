@@ -57,6 +57,7 @@ interface LeadColumnProps {
   selectedLeadIds?: Set<string>;
   onSelectionChange?: (leadId: string, selected: boolean) => void;
   onMakeStudent?: (lead: Lead) => void;
+  onOpenWhatsAppInbox?: (phone?: string) => void;
 }
 
 export function LeadColumn({
@@ -74,6 +75,7 @@ export function LeadColumn({
   selectedLeadIds = new Set(),
   onSelectionChange,
   onMakeStudent,
+  onOpenWhatsAppInbox,
 }: LeadColumnProps) {
   const Icon = config.icon;
   
@@ -124,6 +126,7 @@ export function LeadColumn({
               onSelectionChange={onSelectionChange}
               onMakeStudent={onMakeStudent ? () => onMakeStudent(lead) : undefined}
               columnStatus={config.status}
+              onOpenWhatsAppInbox={onOpenWhatsAppInbox}
             />
           ))
         )}

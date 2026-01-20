@@ -33,7 +33,9 @@ import { CampaignSelector } from "@/components/admin/leads/CampaignSelector";
 import { CampaignDispatchDialog } from "@/components/admin/leads/CampaignDispatchDialog";
 import { LeadMessageModal } from "@/components/admin/leads/LeadMessageModal";
 import { ScheduledMessagesPanel } from "@/components/admin/leads/ScheduledMessagesPanel";
+import { WhatsAppInboxModal } from "@/components/admin/whatsapp/WhatsAppInboxModal";
 import { useNurturingSequences } from "@/hooks/useNurturingSequences";
+import { useUnreadWhatsAppCount } from "@/hooks/useUnreadWhatsAppCount";
 import { cn } from "@/lib/utils";
 import * as XLSX from "xlsx";
 
@@ -108,6 +110,7 @@ const getNurturingColor = (step: number) => {
 const AdminLeads = () => {
   const { toast } = useToast();
   const { getCampaignInfo, getSequenceInfo, calculateNextSend } = useNurturingSequences();
+  const unreadWhatsAppCount = useUnreadWhatsAppCount();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -127,7 +130,15 @@ const AdminLeads = () => {
   const [campaignDispatchOpen, setCampaignDispatchOpen] = useState(false);
   const [messageModalOpen, setMessageModalOpen] = useState(false);
   const [selectedLeadForMessage, setSelectedLeadForMessage] = useState<Lead | null>(null);
+  const [whatsAppInboxOpen, setWhatsAppInboxOpen] = useState(false);
+  const [whatsAppInitialPhone, setWhatsAppInitialPhone] = useState<string | undefined>();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Função para abrir WhatsApp inbox com telefone específico
+  const openWhatsAppInbox = (phone?: string) => {
+    setWhatsAppInitialPhone(phone);
+    setWhatsAppInboxOpen(true);
+  };
 
   const handleExport = () => {
     const csvContent = [
@@ -485,6 +496,18 @@ const AdminLeads = () => {
             Disparo por Campanha
           </Button>
           <Button 
+            onClick={() => openWhatsAppInbox()}
+            className="h-8 text-sm gap-1.5 bg-green-600 hover:bg-green-700 text-white relative"
+          >
+            <MessageCircle className="w-3.5 h-3.5" />
+            Abrir WhatsApp
+            {unreadWhatsAppCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center">
+                {unreadWhatsAppCount > 9 ? "9+" : unreadWhatsAppCount}
+              </span>
+            )}
+          </Button>
+          <Button 
             onClick={async () => {
               toast({ title: "Disparando nutrição...", description: "Aguarde o processamento" });
               try {
@@ -580,7 +603,11 @@ const AdminLeads = () => {
 
         {/* Pipeline View */}
         {viewMode === "pipeline" && (
-          <LeadPipelineView leads={filteredLeads} onRefresh={fetchLeads} />
+          <LeadPipelineView 
+            leads={filteredLeads} 
+            onRefresh={fetchLeads}
+            onOpenWhatsAppInbox={openWhatsAppInbox}
+          />
         )}
 
         {/* Table View */}
@@ -1076,6 +1103,16 @@ const AdminLeads = () => {
             <LeadHistoryTab />
           </TabsContent>
         </Tabs>
+
+        {/* WhatsApp Inbox Modal */}
+        <WhatsAppInboxModal
+          open={whatsAppInboxOpen}
+          onOpenChange={(open) => {
+            setWhatsAppInboxOpen(open);
+            if (!open) setWhatsAppInitialPhone(undefined);
+          }}
+          initialPhone={whatsAppInitialPhone}
+        />
       </div>
     </AdminLayout>
   );
