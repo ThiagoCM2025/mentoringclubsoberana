@@ -416,30 +416,67 @@ async function sendAlertEmails(resendApiKey: string, recipients: EmailRecipient[
   }
 }
 
-async function recordAlertOccurrences(supabase: any, alerts: AlertData[]): Promise<void> {
+// Filter alerts that were already notified in the last hour
+async function filterNewAlerts(supabase: any, alerts: AlertData[]): Promise<AlertData[]> {
+  const newAlerts: AlertData[] = [];
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  
   for (const alert of alerts) {
-    // Check if similar alert was already recorded recently (avoid duplicates)
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-    
-    const { data: existingAlert } = await supabase
+    let query = supabase
       .from('admin_alert_occurrences')
       .select('id')
       .eq('alert_type', alert.type)
-      .eq('entity_id', alert.entity_id || null)
-      .gte('created_at', oneHourAgo)
-      .single();
-
-    if (!existingAlert) {
-      await supabase.from('admin_alert_occurrences').insert({
-        alert_type: alert.type,
-        severity: alert.severity,
-        title: alert.title,
-        message: alert.message,
-        entity_id: alert.entity_id,
-        entity_type: alert.entity_type,
-        metadata: alert.details,
-      });
+      .gte('created_at', oneHourAgo);
+    
+    // For alerts with entity_id (specific entities like leads, students)
+    if (alert.entity_id) {
+      query = query.eq('entity_id', alert.entity_id);
+    } else {
+      // For consolidated alerts (whatsapp, conversion), use null entity_id
+      query = query.is('entity_id', null);
     }
+    
+    const { data: existingAlert, error } = await query.maybeSingle();
+    
+    if (error) {
+      console.error(`Error checking existing alert for ${alert.type}:`, error);
+      // In case of error, include the alert to be safe
+      newAlerts.push(alert);
+      continue;
+    }
+    
+    if (!existingAlert) {
+      newAlerts.push(alert);
+    } else {
+      console.log(`Alert already notified in last hour: ${alert.type} - ${alert.entity_id || 'consolidated'}`);
+    }
+  }
+  
+  return newAlerts;
+}
+
+// Record alert occurrences (only called for new alerts)
+async function recordAlertOccurrences(supabase: any, alerts: AlertData[]): Promise<void> {
+  if (alerts.length === 0) return;
+  
+  const records = alerts.map(alert => ({
+    alert_type: alert.type,
+    severity: alert.severity,
+    title: alert.title,
+    message: alert.message,
+    entity_id: alert.entity_id || null,
+    entity_type: alert.entity_type || null,
+    metadata: alert.details,
+  }));
+  
+  const { error } = await supabase
+    .from('admin_alert_occurrences')
+    .insert(records);
+  
+  if (error) {
+    console.error('Error recording alert occurrences:', error);
+  } else {
+    console.log(`Recorded ${records.length} new alert occurrences`);
   }
 }
 
@@ -533,35 +570,47 @@ const handler = async (req: Request): Promise<Response> => {
       ...reportedPostAlerts
     );
 
-    console.log(`Found ${allAlerts.length} alerts to process`);
+    console.log(`Found ${allAlerts.length} potential alerts`);
 
-    // Record alert occurrences
-    await recordAlertOccurrences(supabase, allAlerts);
+    // Filter out alerts that were already notified in the last hour
+    const newAlerts = await filterNewAlerts(supabase, allAlerts);
+    console.log(`New alerts (not notified yet): ${newAlerts.length} of ${allAlerts.length}`);
 
-    // Send emails if Resend is configured
-    if (resendApiKey && allAlerts.length > 0) {
-      await sendAlertEmails(resendApiKey, recipients, allAlerts);
-      console.log('Alert emails sent successfully');
+    // Record occurrences ONLY for new alerts
+    if (newAlerts.length > 0) {
+      await recordAlertOccurrences(supabase, newAlerts);
+    }
+
+    // Send emails ONLY for new alerts
+    if (resendApiKey && newAlerts.length > 0) {
+      await sendAlertEmails(resendApiKey, recipients, newAlerts);
+      console.log(`Alert emails sent successfully for ${newAlerts.length} new alerts`);
     } else if (!resendApiKey) {
       console.warn('RESEND_API_KEY not configured - skipping email notifications');
+    } else if (newAlerts.length === 0) {
+      console.log('No new alerts to send - all already notified in last hour');
     }
 
     // Log execution
     await supabase.from('nurturing_executions').insert({
       type: 'alerts',
-      emails_sent: allAlerts.length,
+      emails_sent: newAlerts.length,
       emails_failed: 0,
       details: {
-        alerts_processed: allAlerts.length,
-        alert_types: [...new Set(allAlerts.map(a => a.type))],
+        total_alerts_found: allAlerts.length,
+        new_alerts_sent: newAlerts.length,
+        filtered_duplicates: allAlerts.length - newAlerts.length,
+        alert_types: [...new Set(newAlerts.map(a => a.type))],
       },
     });
 
     return new Response(
       JSON.stringify({
         success: true,
-        alerts_processed: allAlerts.length,
-        alerts: allAlerts.map(a => ({ type: a.type, title: a.title, severity: a.severity })),
+        total_alerts_found: allAlerts.length,
+        new_alerts_sent: newAlerts.length,
+        filtered_duplicates: allAlerts.length - newAlerts.length,
+        alerts: newAlerts.map(a => ({ type: a.type, title: a.title, severity: a.severity })),
       }),
       {
         status: 200,
