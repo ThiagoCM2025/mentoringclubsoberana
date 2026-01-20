@@ -54,7 +54,7 @@ export function NewConversationDialog({
         .select("id, full_name, phone")
         .not("phone", "is", null)
         .neq("phone", "")
-        .order("name");
+        .order("full_name");
 
       // Fetch students with phone
       const { data: profiles } = await supabase

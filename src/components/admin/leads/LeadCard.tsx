@@ -82,7 +82,9 @@ export function LeadCard({ lead, onClick, onOpenDetails, onOpenTemplates, onDrag
     if (!lead.phone) return;
     // Se temos o callback do inbox, abre o inbox com telefone e dados do lead
     if (onOpenWhatsAppInbox) {
-      onOpenWhatsAppInbox(lead.phone, lead.full_name, "lead", lead.id);
+      // Limpar telefone removendo caracteres não numéricos antes de enviar
+      const cleanPhone = lead.phone.replace(/\D/g, '');
+      onOpenWhatsAppInbox(cleanPhone, lead.full_name, "lead", lead.id);
     } else {
       // Fallback para abrir templates
       onOpenTemplates();
