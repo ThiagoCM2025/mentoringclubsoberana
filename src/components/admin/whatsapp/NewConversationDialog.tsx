@@ -141,7 +141,7 @@ export function NewConversationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-[95vw] sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <UserPlus className="h-5 w-5 text-primary" />
@@ -156,7 +156,7 @@ export function NewConversationDialog({
           {/* Manual phone input */}
           <div className="space-y-2">
             <Label className="text-xs text-muted-foreground">Novo número</Label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <div className="relative flex-1">
                 <PhoneIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -166,7 +166,7 @@ export function NewConversationDialog({
                   className="pl-9"
                 />
               </div>
-              <Button onClick={handleManualPhone} disabled={!manualPhone.trim()}>
+              <Button onClick={handleManualPhone} disabled={!manualPhone.trim()} className="w-full sm:w-auto">
                 Iniciar
               </Button>
             </div>
@@ -193,7 +193,7 @@ export function NewConversationDialog({
           </div>
 
           {/* Contacts list */}
-          <ScrollArea className="h-64 rounded-md border border-border">
+          <ScrollArea className="h-56 rounded-md border border-border">
             {loading ? (
               <div className="p-2 space-y-2">
                 {[1, 2, 3, 4, 5].map((i) => (

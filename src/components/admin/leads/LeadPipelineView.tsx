@@ -48,7 +48,7 @@ interface Lead {
 interface LeadPipelineViewProps {
   leads: Lead[];
   onRefresh: () => void;
-  onOpenWhatsAppInbox?: (phone?: string) => void;
+  onOpenWhatsAppInbox?: (phone?: string, name?: string, type?: "lead" | "student", id?: string) => void;
 }
 
 const columns = [

@@ -132,11 +132,17 @@ const AdminLeads = () => {
   const [selectedLeadForMessage, setSelectedLeadForMessage] = useState<Lead | null>(null);
   const [whatsAppInboxOpen, setWhatsAppInboxOpen] = useState(false);
   const [whatsAppInitialPhone, setWhatsAppInitialPhone] = useState<string | undefined>();
+  const [whatsAppInitialName, setWhatsAppInitialName] = useState<string | undefined>();
+  const [whatsAppInitialType, setWhatsAppInitialType] = useState<"lead" | "student" | undefined>();
+  const [whatsAppInitialId, setWhatsAppInitialId] = useState<string | undefined>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // Função para abrir WhatsApp inbox com telefone específico
-  const openWhatsAppInbox = (phone?: string) => {
+  // Função para abrir WhatsApp inbox com telefone e dados do contato
+  const openWhatsAppInbox = (phone?: string, name?: string, type?: "lead" | "student", id?: string) => {
     setWhatsAppInitialPhone(phone);
+    setWhatsAppInitialName(name);
+    setWhatsAppInitialType(type);
+    setWhatsAppInitialId(id);
     setWhatsAppInboxOpen(true);
   };
 
@@ -1109,9 +1115,17 @@ const AdminLeads = () => {
           open={whatsAppInboxOpen}
           onOpenChange={(open) => {
             setWhatsAppInboxOpen(open);
-            if (!open) setWhatsAppInitialPhone(undefined);
+            if (!open) {
+              setWhatsAppInitialPhone(undefined);
+              setWhatsAppInitialName(undefined);
+              setWhatsAppInitialType(undefined);
+              setWhatsAppInitialId(undefined);
+            }
           }}
           initialPhone={whatsAppInitialPhone}
+          initialContactName={whatsAppInitialName}
+          initialContactType={whatsAppInitialType}
+          initialContactId={whatsAppInitialId}
         />
       </div>
     </AdminLayout>
