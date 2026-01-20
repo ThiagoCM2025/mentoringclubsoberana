@@ -28,6 +28,12 @@ export interface WhatsAppMessage {
   sent_by: string | null;
   error_message: string | null;
   created_at: string;
+  // Media fields
+  media_url: string | null;
+  media_type: string | null;
+  media_filename: string | null;
+  media_mimetype: string | null;
+  media_size: number | null;
 }
 
 export function useWhatsAppConversations() {
