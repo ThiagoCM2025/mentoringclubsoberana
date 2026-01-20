@@ -10,6 +10,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -24,7 +25,10 @@ import {
   Loader2,
   AlertTriangle,
   Video,
-  CheckCircle
+  CheckCircle,
+  Phone,
+  PhoneOff,
+  Info
 } from 'lucide-react';
 import { getBrazilNow, getBrazilToday, BRAZIL_TIMEZONE } from '@/lib/dateUtils';
 
@@ -41,6 +45,12 @@ interface CampaignDispatchDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+}
+
+interface LeadPhoneStats {
+  total: number;
+  withPhone: number;
+  withoutPhone: number;
 }
 
 // Campanhas pré-definidas com filtros
@@ -84,6 +94,9 @@ const HOURS = Array.from({ length: 24 }, (_, i) => ({
 
 const MINUTES = ['00', '15', '30', '45'];
 
+// Tempo de envio por mensagem (ms)
+const MESSAGE_DELAY_MS = 500;
+
 export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: CampaignDispatchDialogProps) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -92,6 +105,7 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
   // Step 1: Campanha
   const [selectedCampaign, setSelectedCampaign] = useState<string>('');
   const [leadCount, setLeadCount] = useState<number>(0);
+  const [phoneStats, setPhoneStats] = useState<LeadPhoneStats>({ total: 0, withPhone: 0, withoutPhone: 0 });
   const [countLoading, setCountLoading] = useState(false);
   
   // Step 2: Template
@@ -151,11 +165,13 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
     
     if (!campaign) {
       setLeadCount(0);
+      setPhoneStats({ total: 0, withPhone: 0, withoutPhone: 0 });
       setCountLoading(false);
       return;
     }
 
-    let query = supabase.from('leads').select('id', { count: 'exact', head: true });
+    // Buscar leads com informação de telefone para estatísticas
+    let query = supabase.from('leads').select('id, phone');
     
     if (campaign.sourceFilter) {
       if (campaign.sourceFilter.includes('%')) {
@@ -165,12 +181,35 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
       }
     }
 
-    const { count, error } = await query;
+    const { data, error } = await query;
     
-    if (!error) {
-      setLeadCount(count || 0);
+    if (!error && data) {
+      const total = data.length;
+      const withPhone = data.filter(lead => lead.phone && lead.phone.trim() !== '').length;
+      const withoutPhone = total - withPhone;
+      
+      setLeadCount(total);
+      setPhoneStats({ total, withPhone, withoutPhone });
     }
     setCountLoading(false);
+  }
+
+  // Calcular tempo estimado de envio
+  function getEstimatedTime(count: number): string {
+    const totalMs = count * MESSAGE_DELAY_MS;
+    const seconds = Math.ceil(totalMs / 1000);
+    
+    if (seconds < 60) {
+      return `~${seconds} segundos`;
+    } else {
+      const minutes = Math.ceil(seconds / 60);
+      return `~${minutes} minuto${minutes > 1 ? 's' : ''}`;
+    }
+  }
+
+  // Preview da mensagem com variáveis substituídas
+  function getMessagePreview(msg: string): string {
+    return msg.replace(/\{\{nome\}\}/gi, 'Maria Silva');
   }
 
   async function handleSubmit() {
@@ -391,7 +430,7 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
 
             {selectedCampaign && (
               <Card className="bg-muted/50">
-                <CardContent className="p-4">
+                <CardContent className="p-4 space-y-3">
                   <div className="flex items-center gap-3">
                     <Users className="w-8 h-8 text-primary" />
                     <div>
@@ -405,6 +444,26 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Estatísticas de telefone */}
+                  {!countLoading && phoneStats.total > 0 && (
+                    <div className="pt-2 border-t border-border/50 space-y-2">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Phone className="w-4 h-4 text-green-500" />
+                        <span className="text-muted-foreground">Com telefone:</span>
+                        <span className="font-medium text-green-600">{phoneStats.withPhone}</span>
+                        <span className="text-muted-foreground">
+                          ({Math.round((phoneStats.withPhone / phoneStats.total) * 100)}%)
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <PhoneOff className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-muted-foreground">Sem telefone:</span>
+                        <span className="font-medium">{phoneStats.withoutPhone}</span>
+                        <span className="text-xs text-muted-foreground">(ignorados no WhatsApp)</span>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -493,18 +552,61 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
             )}
 
             {selectedTemplateId && (
-              <div>
-                <Label htmlFor="message">Mensagem</Label>
-                <Textarea
-                  id="message"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows={5}
-                  className="mt-1.5"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Variável disponível: {'{{nome}}'} - será substituído pelo nome do lead
-                </p>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="message">Mensagem</Label>
+                  <Textarea
+                    id="message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    rows={5}
+                    className="mt-1.5"
+                  />
+                  <div className="flex items-center justify-between mt-1">
+                    <p className="text-xs text-muted-foreground">
+                      Variável disponível: {'{{nome}}'} - será substituído pelo nome do lead
+                    </p>
+                    {channel === 'whatsapp' && (
+                      <span className="text-xs text-muted-foreground">
+                        {message.length} caracteres
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Preview WhatsApp */}
+                {channel === 'whatsapp' && message && (
+                  <div className="space-y-2">
+                    <Label className="text-muted-foreground">Preview da mensagem</Label>
+                    <div className="bg-[#0b141a] p-4 rounded-lg">
+                      <div className="flex justify-end">
+                        <div className="max-w-[85%] bg-[#005c4b] rounded-lg rounded-tr-none px-3 py-2 shadow-sm">
+                          <p className="text-sm text-white whitespace-pre-wrap break-words">
+                            {getMessagePreview(message)}
+                          </p>
+                          <div className="flex items-center justify-end gap-1 mt-1">
+                            <span className="text-[10px] text-white/60">
+                              {format(new Date(), 'HH:mm')}
+                            </span>
+                            <CheckCircle className="w-3 h-3 text-blue-400" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Rate limiting warning */}
+                    <Alert className="border-amber-500/50 bg-amber-500/10">
+                      <Info className="h-4 w-4 text-amber-500" />
+                      <AlertDescription className="text-sm">
+                        <strong>{phoneStats.withPhone} mensagens</strong> serão enviadas com intervalo de 500ms.
+                        <br />
+                        <span className="text-muted-foreground">
+                          Tempo estimado: {getEstimatedTime(phoneStats.withPhone)}
+                        </span>
+                      </AlertDescription>
+                    </Alert>
+                  </div>
+                )}
               </div>
             )}
 
