@@ -154,26 +154,47 @@ export const MissionDeliveryModal = ({
 
       const filteredLinks = links.filter(l => l.trim() !== "");
 
-      const { error } = await supabase
-        .from("user_mission_completions")
-        .upsert({
-          user_id: user.id,
-          mission_id: mission.id,
-          proof_content: content.trim(),
-          proof_links: filteredLinks.length > 0 ? filteredLinks : null,
-          proof_file_url: imageUrl,
-          status: 'submitted',
-          submitted_at: new Date().toISOString(),
-          // Limpar campos de revisão anterior (importante para reenvios)
-          reviewed_at: null,
-          reviewed_by: null,
-          admin_feedback: null,
-          xp_earned: 0
-        }, {
-          onConflict: 'user_id,mission_id'
-        });
+      const submissionData = {
+        proof_content: content.trim(),
+        proof_links: filteredLinks.length > 0 ? filteredLinks : null,
+        proof_file_url: imageUrl,
+        status: 'submitted' as const,
+        submitted_at: new Date().toISOString(),
+        reviewed_at: null,
+        reviewed_by: null,
+        admin_feedback: null,
+        xp_earned: 0
+      };
 
-      if (error) throw error;
+      // Check if this is a resubmission by querying for existing completion
+      const { data: existingCompletion } = await supabase
+        .from("user_mission_completions")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("mission_id", mission.id)
+        .maybeSingle();
+
+      if (existingCompletion) {
+        // Resubmission - use UPDATE
+        const { error } = await supabase
+          .from("user_mission_completions")
+          .update(submissionData)
+          .eq("user_id", user.id)
+          .eq("mission_id", mission.id);
+
+        if (error) throw error;
+      } else {
+        // First submission - use INSERT
+        const { error } = await supabase
+          .from("user_mission_completions")
+          .insert({
+            user_id: user.id,
+            mission_id: mission.id,
+            ...submissionData
+          });
+
+        if (error) throw error;
+      }
 
       setSubmitted(true);
       

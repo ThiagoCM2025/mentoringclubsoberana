@@ -95,19 +95,38 @@ const TextLessonContent = ({
         ? [`avatar-form:${lesson.id}:${avatarFormId}`]
         : [`avatar-form:${lesson.id}:pending`];
       
-      await supabase.from("user_mission_completions").upsert({
-        user_id: user.id,
-        mission_id: missionId,
-        status: "submitted",
+      const submissionData = {
+        status: "submitted" as const,
         proof_content: `Formulário Mapa do Avatar preenchido e finalizado`,
         proof_links: proofLinks,
         submitted_at: new Date().toISOString(),
-        // Limpar campos de revisão anterior (importante para reenvios)
         reviewed_at: null,
         reviewed_by: null,
         admin_feedback: null,
         xp_earned: 0
-      }, { onConflict: "user_id,mission_id" });
+      };
+      
+      // Se já existe uma completion (reenvio), usar UPDATE ao invés de UPSERT
+      if (missionCompletion) {
+        const { error } = await supabase
+          .from("user_mission_completions")
+          .update(submissionData)
+          .eq("user_id", user.id)
+          .eq("mission_id", missionId);
+        
+        if (error) throw error;
+      } else {
+        // Primeira submissão, usar INSERT
+        const { error } = await supabase
+          .from("user_mission_completions")
+          .insert({
+            user_id: user.id,
+            mission_id: missionId,
+            ...submissionData
+          });
+        
+        if (error) throw error;
+      }
       
       toast.success("Missão entregue com sucesso!");
       onMissionSubmit?.(missionId);
