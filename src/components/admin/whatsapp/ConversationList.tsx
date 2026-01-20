@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Search, Archive, MessageSquarePlus, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,9 +7,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, isToday, isThisWeek, isThisMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn, shortenName } from "@/lib/utils";
+import { ConversationFiltersPopover, type ConversationFilters } from "./ConversationFilters";
+import { PushNotificationToggle } from "./PushNotificationToggle";
 import type { WhatsAppConversation } from "@/hooks/useWhatsAppConversations";
 
 interface ConversationListProps {
@@ -33,24 +35,55 @@ export function ConversationList({
 }: ConversationListProps) {
   const [search, setSearch] = useState("");
   const [showArchived, setShowArchived] = useState(false);
-
-  const filteredConversations = conversations.filter((c) => {
-    const searchLower = search.toLowerCase();
-    return (
-      c.contact_name?.toLowerCase().includes(searchLower) ||
-      c.phone.includes(search) ||
-      c.last_message_preview?.toLowerCase().includes(searchLower)
-    );
+  const [filters, setFilters] = useState<ConversationFilters>({
+    contactType: "all",
+    dateRange: "all",
+    hasUnread: false,
   });
 
-  const filteredArchived = archivedConversations.filter((c) => {
-    const searchLower = search.toLowerCase();
-    return (
-      c.contact_name?.toLowerCase().includes(searchLower) ||
-      c.phone.includes(search) ||
-      c.last_message_preview?.toLowerCase().includes(searchLower)
-    );
-  });
+  // Apply filters
+  const filteredConversations = useMemo(() => {
+    return conversations.filter((c) => {
+      const searchLower = search.toLowerCase();
+      
+      // Text search
+      const matchesSearch =
+        c.contact_name?.toLowerCase().includes(searchLower) ||
+        c.phone.includes(search) ||
+        c.last_message_preview?.toLowerCase().includes(searchLower);
+
+      // Contact type filter
+      const matchesType =
+        filters.contactType === "all" || c.contact_type === filters.contactType;
+
+      // Date range filter
+      const messageDate = new Date(c.last_message_at);
+      let matchesDate = true;
+      if (filters.dateRange === "today") {
+        matchesDate = isToday(messageDate);
+      } else if (filters.dateRange === "week") {
+        matchesDate = isThisWeek(messageDate, { weekStartsOn: 0 });
+      } else if (filters.dateRange === "month") {
+        matchesDate = isThisMonth(messageDate);
+      }
+
+      // Unread filter
+      const matchesUnread = !filters.hasUnread || c.unread_count > 0;
+
+      return matchesSearch && matchesType && matchesDate && matchesUnread;
+    });
+  }, [conversations, search, filters]);
+
+  const filteredArchived = useMemo(() => {
+    return archivedConversations.filter((c) => {
+      const searchLower = search.toLowerCase();
+      return (
+        c.contact_name?.toLowerCase().includes(searchLower) ||
+        c.phone.includes(search) ||
+        c.last_message_preview?.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [archivedConversations, search]);
 
   const getInitials = (name: string | null, phone: string) => {
     if (name) {
@@ -199,14 +232,21 @@ export function ConversationList({
       <div className="p-3 border-b border-border space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-foreground">Conversas</h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onNewConversation}
-            className="h-8 w-8"
-          >
-            <MessageSquarePlus className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <PushNotificationToggle />
+            <ConversationFiltersPopover
+              filters={filters}
+              onFiltersChange={setFilters}
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onNewConversation}
+              className="h-8 w-8"
+            >
+              <MessageSquarePlus className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

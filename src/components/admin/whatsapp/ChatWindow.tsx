@@ -24,6 +24,7 @@ import { EmojiPicker } from "./EmojiPicker";
 import { TypingIndicator } from "./TypingIndicator";
 import { MediaUploadButton } from "./MediaUploadButton";
 import { ConversationTagPicker } from "./ConversationTagPicker";
+import { VoiceRecorder } from "./VoiceRecorder";
 import { cn, shortenName } from "@/lib/utils";
 import { useTypingStatus } from "@/hooks/useTypingStatus";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -512,22 +513,30 @@ export function ChatWindow({
             disabled={sending}
           />
           
-          <Button
-            size="icon"
-            className={cn(
-              "h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0 rounded-full shadow-md transition-all duration-200",
-              inputValue.trim() 
-                ? "bg-[#25D366] hover:bg-[#128C7E] hover:scale-105 hover:shadow-lg" 
-                : "bg-[#25D366]/50 cursor-not-allowed"
-            )}
-            onClick={handleSend}
-            disabled={!inputValue.trim() || sending}
-          >
-            <Send className={cn(
-              "h-4 w-4 sm:h-5 sm:w-5 transition-transform",
-              sending && "animate-pulse"
-            )} />
-          </Button>
+          {/* Show Send button or Voice Recorder based on input */}
+          {inputValue.trim() ? (
+            <Button
+              size="icon"
+              className={cn(
+                "h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0 rounded-full shadow-md transition-all duration-200",
+                "bg-[#25D366] hover:bg-[#128C7E] hover:scale-105 hover:shadow-lg"
+              )}
+              onClick={handleSend}
+              disabled={sending}
+            >
+              <Send className={cn(
+                "h-4 w-4 sm:h-5 sm:w-5 transition-transform",
+                sending && "animate-pulse"
+              )} />
+            </Button>
+          ) : conversation ? (
+            <VoiceRecorder
+              conversationId={conversation.id}
+              phone={conversation.phone}
+              onMessageSent={onMediaSent || (() => {})}
+              disabled={sending}
+            />
+          ) : null}
         </div>
       </div>
     </div>
