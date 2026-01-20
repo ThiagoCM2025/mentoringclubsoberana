@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+import { cn, shortenName } from "@/lib/utils";
 import type { WhatsAppConversation } from "@/hooks/useWhatsAppConversations";
 
 interface ConversationListProps {
@@ -116,70 +116,86 @@ export function ConversationList({
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-border">
-            {filteredConversations.map((conversation) => (
-              <button
-                key={conversation.id}
-                onClick={() => onSelect(conversation)}
-                className={cn(
-                  "w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-all text-left",
-                  selectedId === conversation.id && "bg-[#25D366]/10 border-l-2 border-[#25D366]"
-                )}
-              >
-                <div className="relative">
-                  <Avatar className="h-12 w-12 ring-2 ring-transparent transition-all group-hover:ring-[#25D366]/20">
-                    <AvatarFallback className={cn(
-                      "text-sm font-medium transition-colors",
-                      selectedId === conversation.id 
-                        ? "bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white"
-                        : "bg-primary/10 text-primary"
-                    )}>
-                      {getInitials(conversation.contact_name, conversation.phone)}
-                    </AvatarFallback>
-                  </Avatar>
-                  {/* Badge only shows when not selected and has unread */}
-                  {conversation.unread_count > 0 && selectedId !== conversation.id && (
-                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-[#25D366] text-white text-xs flex items-center justify-center font-medium animate-pulse shadow-md">
-                      {conversation.unread_count > 9 ? "9+" : conversation.unread_count}
-                    </span>
+          <div className="divide-y divide-border/50">
+            {filteredConversations.map((conversation) => {
+              const hasUnread = conversation.unread_count > 0 && selectedId !== conversation.id;
+              const isSelected = selectedId === conversation.id;
+              const displayName = shortenName(conversation.contact_name, 22) || formatPhone(conversation.phone);
+              
+              return (
+                <button
+                  key={conversation.id}
+                  onClick={() => onSelect(conversation)}
+                  className={cn(
+                    "w-full flex items-center gap-3 p-3 text-left",
+                    "transition-all duration-200 ease-out",
+                    "hover:bg-muted/60 hover:-translate-y-[1px] hover:shadow-sm",
+                    isSelected && "bg-[#25D366]/10 border-l-2 border-[#25D366] shadow-sm"
                   )}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className={cn(
-                      "font-medium truncate transition-colors",
-                      conversation.unread_count > 0 && selectedId !== conversation.id
-                        ? "text-foreground"
-                        : "text-foreground"
+                >
+                  <div className="relative flex-shrink-0">
+                    <Avatar className={cn(
+                      "h-12 w-12 transition-all duration-200",
+                      hasUnread && "ring-2 ring-[#25D366]/50 ring-offset-2 ring-offset-background"
                     )}>
-                      {conversation.contact_name || formatPhone(conversation.phone)}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                      {formatDistanceToNow(new Date(conversation.last_message_at), {
-                        addSuffix: false,
-                        locale: ptBR,
-                      })}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <p className={cn(
-                      "text-sm truncate flex-1",
-                      conversation.unread_count > 0 && selectedId !== conversation.id
-                        ? "text-foreground font-medium"
-                        : "text-muted-foreground"
-                    )}>
-                      {conversation.last_message_preview || "Nova conversa"}
-                    </p>
-                    {conversation.contact_type === "student" && (
-                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                        Aluna
-                      </Badge>
+                      <AvatarFallback className={cn(
+                        "text-sm font-semibold transition-colors",
+                        isSelected 
+                          ? "bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white"
+                          : hasUnread
+                            ? "bg-[#25D366]/20 text-[#128C7E]"
+                            : "bg-primary/10 text-primary"
+                      )}>
+                        {getInitials(conversation.contact_name, conversation.phone)}
+                      </AvatarFallback>
+                    </Avatar>
+                    {hasUnread && (
+                      <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-[#25D366] text-white text-xs flex items-center justify-center font-bold shadow-lg shadow-[#25D366]/30 animate-pulse">
+                        {conversation.unread_count > 9 ? "9+" : conversation.unread_count}
+                      </span>
                     )}
                   </div>
-                </div>
-              </button>
-            ))}
+
+                  <div className="flex-1 min-w-0 overflow-hidden">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className={cn(
+                        "font-medium truncate max-w-[140px]",
+                        hasUnread ? "text-foreground" : "text-foreground"
+                      )}>
+                        {displayName}
+                      </span>
+                      <span className={cn(
+                        "text-[10px] whitespace-nowrap flex-shrink-0",
+                        hasUnread ? "text-[#25D366] font-semibold" : "text-muted-foreground"
+                      )}>
+                        {formatDistanceToNow(new Date(conversation.last_message_at), {
+                          addSuffix: false,
+                          locale: ptBR,
+                        })}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <p className={cn(
+                        "text-sm truncate flex-1",
+                        hasUnread
+                          ? "text-foreground font-medium"
+                          : "text-muted-foreground"
+                      )}>
+                        {conversation.last_message_preview || "Nova conversa"}
+                      </p>
+                      {conversation.contact_type === "student" && (
+                        <Badge 
+                          variant="secondary" 
+                          className="text-[9px] px-1.5 py-0 h-4 flex-shrink-0 bg-primary/10 text-primary"
+                        >
+                          Aluna
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
       </ScrollArea>

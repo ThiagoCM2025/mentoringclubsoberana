@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, FileText, MoreVertical, Archive, User, Volume2, VolumeX } from "lucide-react";
+import { Send, FileText, MoreVertical, Archive, User, Volume2, VolumeX, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,10 +12,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { MessageBubble } from "./MessageBubble";
 import { EmojiPicker } from "./EmojiPicker";
+import { cn, shortenName } from "@/lib/utils";
 import type { WhatsAppConversation, WhatsAppMessage } from "@/hooks/useWhatsAppConversations";
 
 interface ChatWindowProps {
@@ -28,6 +34,7 @@ interface ChatWindowProps {
   onViewContact: () => void;
   soundEnabled?: boolean;
   onToggleSound?: () => void;
+  onBack?: () => void;
 }
 
 export function ChatWindow({
@@ -40,11 +47,14 @@ export function ChatWindow({
   onViewContact,
   soundEnabled = true,
   onToggleSound,
+  onBack,
 }: ChatWindowProps) {
   const [inputValue, setInputValue] = useState("");
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const displayName = shortenName(conversation?.contact_name, 28);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -146,48 +156,72 @@ export function ChatWindow({
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-[#efeae2] dark:bg-zinc-900">
+    <div className={cn(
+      "flex-1 flex flex-col bg-[#efeae2] dark:bg-zinc-900",
+      !conversation && "hidden sm:flex"
+    )}>
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-2.5 bg-card border-b border-border shadow-sm">
-        <Avatar className="h-10 w-10 ring-2 ring-[#25D366]/20">
-          <AvatarFallback className="bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white text-sm font-semibold">
+      <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-2.5 bg-card border-b border-border shadow-sm">
+        {/* Back button - mobile only */}
+        {onBack && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onBack}
+            className="h-9 w-9 sm:hidden text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        )}
+        
+        <Avatar className="h-9 w-9 sm:h-10 sm:w-10 ring-2 ring-[#25D366]/20 flex-shrink-0">
+          <AvatarFallback className="bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white text-xs sm:text-sm font-semibold">
             {getInitials(conversation.contact_name, conversation.phone)}
           </AvatarFallback>
         </Avatar>
+        
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="font-medium text-foreground truncate">
-              {conversation.contact_name || formatPhone(conversation.phone)}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <h3 className="font-medium text-foreground text-sm sm:text-base truncate max-w-[140px] sm:max-w-none">
+              {displayName || formatPhone(conversation.phone)}
             </h3>
             {conversation.contact_type === "student" && (
-              <Badge variant="secondary" className="text-[10px]">
+              <Badge variant="secondary" className="text-[9px] sm:text-[10px] h-4 px-1.5 flex-shrink-0">
                 Aluna
               </Badge>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
             {formatPhone(conversation.phone)}
           </p>
         </div>
-        <div className="flex items-center gap-1">
+        
+        <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
           {onToggleSound && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onToggleSound}
-              className="h-9 w-9 text-muted-foreground hover:text-foreground"
-            >
-              {soundEnabled ? (
-                <Volume2 className="h-5 w-5" />
-              ) : (
-                <VolumeX className="h-5 w-5" />
-              )}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onToggleSound}
+                  className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground hover:text-foreground"
+                >
+                  {soundEnabled ? (
+                    <Volume2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                  ) : (
+                    <VolumeX className="h-4 w-4 sm:h-5 sm:w-5" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">
+                {soundEnabled ? "Som ativado" : "Som desativado"}
+              </TooltipContent>
+            </Tooltip>
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9">
-                <MoreVertical className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
+                <MoreVertical className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -206,11 +240,11 @@ export function ChatWindow({
 
       {/* Messages */}
       <ScrollArea 
-        className="flex-1 px-4" 
+        className="flex-1 px-2 sm:px-4" 
         ref={scrollRef}
       >
         <div 
-          className="py-4 min-h-full"
+          className="py-3 sm:py-4 min-h-full"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
@@ -222,7 +256,7 @@ export function ChatWindow({
                   key={i}
                   className={`flex ${i % 2 === 0 ? "justify-end" : "justify-start"}`}
                 >
-                  <Skeleton className="h-12 w-48 rounded-lg" />
+                  <Skeleton className="h-12 w-48 rounded-2xl" />
                 </div>
               ))}
             </div>
@@ -233,12 +267,12 @@ export function ChatWindow({
               </p>
             </div>
           ) : (
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {groupedMessages.map((group, groupIndex) => (
                 <div key={groupIndex}>
                   {/* Date separator */}
-                  <div className="flex justify-center my-4">
-                    <span className="px-3 py-1.5 rounded-full bg-card/90 backdrop-blur-sm text-xs text-muted-foreground shadow-sm">
+                  <div className="flex justify-center my-3 sm:my-4">
+                    <span className="px-3 py-1 rounded-full bg-card/90 backdrop-blur-sm text-[10px] sm:text-xs text-muted-foreground shadow-sm border border-border/30">
                       {getDateLabel(group.date)}
                     </span>
                   </div>
@@ -257,34 +291,52 @@ export function ChatWindow({
         </div>
       </ScrollArea>
 
-      {/* Input */}
-      <div className="p-3 bg-card border-t border-border">
-        <div className="flex items-center gap-2">
-          <EmojiPicker onEmojiSelect={handleEmojiSelect} />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 shrink-0 text-muted-foreground hover:text-foreground"
-            onClick={onOpenTemplates}
-          >
-            <FileText className="h-5 w-5" />
-          </Button>
+      {/* Input - Modern design */}
+      <div className="p-2 sm:p-3 bg-gradient-to-t from-card via-card to-card/80 border-t border-border">
+        <div className="flex items-center gap-1 sm:gap-2 bg-muted/60 rounded-2xl p-1 sm:p-1.5">
+          <EmojiPicker onEmojiSelect={handleEmojiSelect} className="flex-shrink-0" />
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 sm:h-10 sm:w-10 rounded-full flex-shrink-0 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                onClick={onOpenTemplates}
+              >
+                <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="text-xs">
+              Templates
+            </TooltipContent>
+          </Tooltip>
+          
           <Input
             ref={inputRef}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Digite uma mensagem..."
-            className="flex-1 h-10 rounded-full bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-[#25D366]/50"
+            className="flex-1 h-9 sm:h-10 rounded-full bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60 text-sm"
             disabled={sending}
           />
+          
           <Button
             size="icon"
-            className="h-10 w-10 shrink-0 rounded-full bg-[#25D366] hover:bg-[#128C7E] shadow-md transition-all hover:scale-105"
+            className={cn(
+              "h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0 rounded-full shadow-md transition-all duration-200",
+              inputValue.trim() 
+                ? "bg-[#25D366] hover:bg-[#128C7E] hover:scale-105 hover:shadow-lg" 
+                : "bg-[#25D366]/50 cursor-not-allowed"
+            )}
             onClick={handleSend}
             disabled={!inputValue.trim() || sending}
           >
-            <Send className="h-5 w-5" />
+            <Send className={cn(
+              "h-4 w-4 sm:h-5 sm:w-5 transition-transform",
+              sending && "animate-pulse"
+            )} />
           </Button>
         </div>
       </div>
