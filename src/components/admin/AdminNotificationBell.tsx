@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, Users, Target, UserCheck, MessageSquare, Check, CheckCheck, ShieldCheck, ClipboardCheck, MessageCircle } from "lucide-react";
+import { Bell, Users, Target, UserCheck, MessageSquare, Check, CheckCheck, ShieldCheck, ClipboardCheck, MessageCircle, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -49,6 +49,10 @@ export function AdminNotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const stored = localStorage.getItem('admin_notification_sound');
+    return stored !== 'false'; // Default to true
+  });
   const { playNotification } = useWhatsAppSound();
 
   useEffect(() => {
@@ -69,8 +73,8 @@ export function AdminNotificationBell() {
           setNotifications(prev => [newNotification, ...prev]);
           setUnreadCount(prev => prev + 1);
           
-          // Play sound for WhatsApp messages
-          if (newNotification.event_type === 'whatsapp_message') {
+          // Play sound for all notification types when enabled
+          if (soundEnabled) {
             playNotification();
           }
         }
@@ -80,7 +84,13 @@ export function AdminNotificationBell() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [soundEnabled, playNotification]);
+
+  const toggleSound = () => {
+    const newValue = !soundEnabled;
+    setSoundEnabled(newValue);
+    localStorage.setItem('admin_notification_sound', String(newValue));
+  };
 
   const fetchNotifications = async () => {
     setLoading(true);
@@ -128,23 +138,38 @@ export function AdminNotificationBell() {
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10"
-        >
-          <Bell className="w-5 h-5" />
-          {unreadCount > 0 && (
-            <Badge
-              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 text-white border-0"
-            >
-              {unreadCount > 9 ? '9+' : unreadCount}
-            </Badge>
-          )}
-        </Button>
-      </PopoverTrigger>
+    <div className="flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggleSound}
+        className="relative text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 h-8 w-8"
+        title={soundEnabled ? "Som ativado - clique para desativar" : "Som desativado - clique para ativar"}
+      >
+        {soundEnabled ? (
+          <Volume2 className="w-4 h-4" />
+        ) : (
+          <VolumeX className="w-4 h-4 opacity-50" />
+        )}
+      </Button>
+      
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10"
+          >
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <Badge
+                className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 text-white border-0"
+              >
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </Badge>
+            )}
+          </Button>
+        </PopoverTrigger>
       <PopoverContent className="w-96 p-0" align="end">
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <h3 className="font-semibold">Notificações</h3>
@@ -225,6 +250,7 @@ export function AdminNotificationBell() {
           )}
         </ScrollArea>
       </PopoverContent>
-    </Popover>
+      </Popover>
+    </div>
   );
 }
