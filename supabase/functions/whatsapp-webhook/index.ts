@@ -53,6 +53,20 @@ function extractMessageText(data: EvolutionWebhookPayload["data"]): string {
   return "";
 }
 
+// Map Evolution API message types to our internal types
+function mapMessageType(evolutionType: string | undefined): string {
+  const typeMap: Record<string, string> = {
+    "conversation": "text",
+    "extendedTextMessage": "text",
+    "imageMessage": "image",
+    "audioMessage": "audio",
+    "videoMessage": "video",
+    "documentMessage": "document",
+    "stickerMessage": "sticker",
+  };
+  return typeMap[evolutionType || ""] || "text";
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -150,13 +164,14 @@ serve(async (req) => {
           .eq("id", conversation.id);
       }
 
-      // Insert message
+      // Insert message with mapped type
+      const mappedMessageType = mapMessageType(data.messageType);
       const { error: msgError } = await supabase.from("whatsapp_messages").insert({
         conversation_id: conversation.id,
         phone,
         direction: isFromMe ? "outgoing" : "incoming",
         message: messageText,
-        message_type: data.messageType || "text",
+        message_type: mappedMessageType,
         status: "delivered",
         evolution_id: data.key.id,
       });
@@ -166,7 +181,7 @@ serve(async (req) => {
         throw msgError;
       }
 
-      console.log("Message saved successfully");
+      console.log("Message saved successfully with type:", mappedMessageType);
       return new Response(
         JSON.stringify({ success: true, conversation_id: conversation.id }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }

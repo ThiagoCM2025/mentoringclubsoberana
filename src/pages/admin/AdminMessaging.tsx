@@ -8,10 +8,13 @@ import { MessageHistory } from "@/components/admin/messaging/MessageHistory";
 import { TemplatesManager } from "@/components/admin/messaging/TemplatesManager";
 import { WhatsAppInboxModal } from "@/components/admin/whatsapp/WhatsAppInboxModal";
 import { Button } from "@/components/ui/button";
+import { useUnreadWhatsAppCount } from "@/hooks/useUnreadWhatsAppCount";
+import { Badge } from "@/components/ui/badge";
 
 export default function AdminMessaging() {
   const [activeTab, setActiveTab] = useState("send");
   const [whatsappOpen, setWhatsappOpen] = useState(false);
+  const unreadCount = useUnreadWhatsAppCount();
 
   return (
     <AdminLayout>
@@ -32,10 +35,18 @@ export default function AdminMessaging() {
           </div>
           <Button
             onClick={() => setWhatsappOpen(true)}
-            className="bg-[#25D366] hover:bg-[#128C7E] text-white gap-2"
+            className="bg-[#25D366] hover:bg-[#128C7E] text-white gap-2 relative"
           >
             <MessageCircle className="h-4 w-4" />
             Abrir WhatsApp
+            {unreadCount > 0 && (
+              <Badge 
+                variant="destructive" 
+                className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center p-0 text-xs"
+              >
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </Badge>
+            )}
           </Button>
         </div>
 
