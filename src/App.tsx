@@ -17,7 +17,7 @@ const queryClient = new QueryClient();
 
 // Version for cache busting - increment on each significant deploy
 // IMPORTANT: Also update public/version.json and src/components/VersionChecker.tsx
-export const APP_VERSION = '2026.01.18.1';
+export const APP_VERSION = '2026.01.20.1';
 
 // Detecta WebView do Instagram/Facebook para evitar problemas de cache
 const isInAppBrowser = () => {
