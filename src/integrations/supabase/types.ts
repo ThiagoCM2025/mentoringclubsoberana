@@ -3800,6 +3800,38 @@ export type Database = {
           },
         ]
       }
+      whatsapp_typing_status: {
+        Row: {
+          conversation_id: string | null
+          id: string
+          is_typing: boolean | null
+          phone: string
+          updated_at: string | null
+        }
+        Insert: {
+          conversation_id?: string | null
+          id?: string
+          is_typing?: boolean | null
+          phone: string
+          updated_at?: string | null
+        }
+        Update: {
+          conversation_id?: string | null
+          id?: string
+          is_typing?: boolean | null
+          phone?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_typing_status_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: true
+            referencedRelation: "whatsapp_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
