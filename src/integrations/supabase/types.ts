@@ -2437,6 +2437,59 @@ export type Database = {
           },
         ]
       }
+      mission_submission_history: {
+        Row: {
+          admin_feedback: string | null
+          created_at: string | null
+          id: string
+          mission_id: string
+          proof_content: string | null
+          proof_file_url: string | null
+          proof_links: string[] | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitted_at: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_feedback?: string | null
+          created_at?: string | null
+          id?: string
+          mission_id: string
+          proof_content?: string | null
+          proof_file_url?: string | null
+          proof_links?: string[] | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status: string
+          submitted_at?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_feedback?: string | null
+          created_at?: string | null
+          id?: string
+          mission_id?: string
+          proof_content?: string | null
+          proof_file_url?: string | null
+          proof_links?: string[] | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mission_submission_history_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       module_completions: {
         Row: {
           completed_at: string

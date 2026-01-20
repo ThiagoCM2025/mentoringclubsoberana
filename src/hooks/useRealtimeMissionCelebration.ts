@@ -3,11 +3,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { useConfetti } from "./useConfetti";
 import { toast } from "sonner";
 
+
 export interface CelebrationData {
   missionTitle: string;
   weekNumber: number;
   xpEarned: number;
   emoji: string;
+}
+
+export interface RejectionData {
+  missionTitle: string;
+  weekNumber: number;
+  feedback: string | null;
 }
 
 const getMotivationalMessage = (week: number): string => {
@@ -27,10 +34,15 @@ export const useRealtimeMissionCelebration = (
   courseId: string | undefined
 ) => {
   const [celebration, setCelebration] = useState<CelebrationData | null>(null);
+  const [rejection, setRejection] = useState<RejectionData | null>(null);
   const { fireGoldConfetti, fireCelebration } = useConfetti();
 
   const clearCelebration = useCallback(() => {
     setCelebration(null);
+  }, []);
+
+  const clearRejection = useCallback(() => {
+    setRejection(null);
   }, []);
 
   useEffect(() => {
@@ -50,7 +62,7 @@ export const useRealtimeMissionCelebration = (
           const newData = payload.new as any;
           const oldData = payload.old as any;
 
-          // Only trigger celebration when status changes to 'approved'
+          // Trigger celebration when status changes to 'approved'
           if (newData.status === "approved" && oldData?.status !== "approved") {
             console.log("Mission approved! Triggering celebration:", newData);
 
@@ -58,22 +70,13 @@ export const useRealtimeMissionCelebration = (
               // Fetch mission details
               const { data: mission, error } = await supabase
                 .from("weekly_missions")
-                .select("title, week_number, xp_reward, gamification_emoji")
+                .select("title, week_number, xp_reward, gamification_emoji, course_id")
                 .eq("id", newData.mission_id)
                 .single();
 
               if (error) throw error;
 
-              if (mission) {
-                // Only celebrate if it's for the current course
-                const { data: missionCheck } = await supabase
-                  .from("weekly_missions")
-                  .select("course_id")
-                  .eq("id", newData.mission_id)
-                  .single();
-
-                if (missionCheck?.course_id !== courseId) return;
-
+              if (mission && mission.course_id === courseId) {
                 // Fire confetti!
                 fireGoldConfetti();
                 setTimeout(() => fireCelebration(), 500);
@@ -99,6 +102,44 @@ export const useRealtimeMissionCelebration = (
               console.error("Error fetching mission details:", error);
             }
           }
+
+          // Trigger alert when status changes to 'rejected'
+          if (newData.status === "rejected" && oldData?.status !== "rejected") {
+            console.log("Mission rejected! Triggering alert:", newData);
+
+            try {
+              // Fetch mission details
+              const { data: mission, error } = await supabase
+                .from("weekly_missions")
+                .select("title, week_number, course_id")
+                .eq("id", newData.mission_id)
+                .single();
+
+              if (error) throw error;
+
+              if (mission && mission.course_id === courseId) {
+                // Set rejection data
+                setRejection({
+                  missionTitle: mission.title,
+                  weekNumber: mission.week_number,
+                  feedback: newData.admin_feedback,
+                });
+
+                // Show warning toast
+                toast.warning(
+                  `📝 Semana ${mission.week_number}: Ajustes necessários`,
+                  {
+                    description: newData.admin_feedback 
+                      ? `"${newData.admin_feedback.substring(0, 100)}${newData.admin_feedback.length > 100 ? '...' : ''}"`
+                      : "Veja o feedback da mentora e reenvie sua missão.",
+                    duration: 8000,
+                  }
+                );
+              }
+            } catch (error) {
+              console.error("Error fetching mission details:", error);
+            }
+          }
         }
       )
       .subscribe();
@@ -108,5 +149,5 @@ export const useRealtimeMissionCelebration = (
     };
   }, [userId, courseId, fireGoldConfetti, fireCelebration]);
 
-  return { celebration, clearCelebration };
+  return { celebration, clearCelebration, rejection, clearRejection };
 };

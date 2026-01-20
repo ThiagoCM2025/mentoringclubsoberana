@@ -15,11 +15,14 @@ import {
   ChevronRight,
   Lock,
   Flame,
-  Sparkles
+  Sparkles,
+  History
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WeeklyMission } from "./WeeklyMissionCard";
 import { MissionArena } from "./MissionArena";
+import { MissionSubmissionHistory } from "./MissionSubmissionHistory";
+import { useMissionSubmissionCount } from "@/hooks/useMissionSubmissionCount";
 
 interface CurrentMissionSectionProps {
   missions: WeeklyMission[];
@@ -45,9 +48,12 @@ export const CurrentMissionSection = ({
   userId
 }: CurrentMissionSectionProps) => {
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
+  const [showHistory, setShowHistory] = useState(false);
   
   const mission = missions.find(m => m.week_number === selectedWeek);
   const completion = mission ? missionCompletions[mission.id] : null;
+  
+  const { count: submissionCount } = useMissionSubmissionCount(mission?.id, userId);
   
   const status = completion?.status;
   const adminFeedback = completion?.admin_feedback;
@@ -379,6 +385,19 @@ export const CurrentMissionSection = ({
                         </p>
                       </div>
                     </div>
+                    
+                    {/* Botão Ver Histórico */}
+                    {submissionCount > 1 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setShowHistory(true)}
+                        className="mt-3 text-xs text-cream/60 hover:text-cream hover:bg-secondary/10"
+                      >
+                        <History className="w-3 h-3 mr-1" />
+                        Ver {submissionCount} tentativas anteriores
+                      </Button>
+                    )}
                   </div>
                 )}
 
@@ -440,6 +459,17 @@ export const CurrentMissionSection = ({
             courseId={courseId}
           />
         </motion.div>
+      )}
+
+      {/* Mission Submission History Modal */}
+      {mission && (
+        <MissionSubmissionHistory
+          open={showHistory}
+          onOpenChange={setShowHistory}
+          missionId={mission.id}
+          userId={userId}
+          weekNumber={mission.week_number}
+        />
       )}
     </motion.div>
   );
