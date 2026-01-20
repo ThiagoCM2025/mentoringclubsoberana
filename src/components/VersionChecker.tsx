@@ -3,8 +3,8 @@ import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Must match APP_VERSION in App.tsx
-const LOCAL_VERSION = '2026.01.18.1';
-const CHECK_INTERVAL = 60000; // 60 seconds
+const LOCAL_VERSION = '2026.01.20.1';
+const CHECK_INTERVAL = 30000; // 30 seconds (more aggressive)
 
 export const VersionChecker = () => {
   const [newVersionAvailable, setNewVersionAvailable] = useState(false);
@@ -42,7 +42,14 @@ export const VersionChecker = () => {
     // Then check periodically
     const interval = setInterval(checkVersion, CHECK_INTERVAL);
 
-    return () => clearInterval(interval);
+    // Also check when window gains focus (user returns to tab)
+    const handleFocus = () => checkVersion();
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const handleUpdate = async () => {
