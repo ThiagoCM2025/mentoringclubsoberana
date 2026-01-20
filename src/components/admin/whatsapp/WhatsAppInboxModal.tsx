@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useWhatsAppConversations } from "@/hooks/useWhatsAppConversations";
+import { useWhatsAppConversations, type WhatsAppConversation } from "@/hooks/useWhatsAppConversations";
 import { useWhatsAppSound } from "@/hooks/useWhatsAppSound";
 import { ConversationList } from "./ConversationList";
 import { ChatWindow } from "./ChatWindow";
@@ -31,6 +31,7 @@ export function WhatsAppInboxModal({
   const navigate = useNavigate();
   const [showTemplates, setShowTemplates] = useState(false);
   const [showNewConversation, setShowNewConversation] = useState(false);
+  const [archivedConversations, setArchivedConversations] = useState<WhatsAppConversation[]>([]);
   const { soundEnabled, toggleSound } = useWhatsAppSound();
   
   const {
@@ -43,7 +44,23 @@ export function WhatsAppInboxModal({
     sendMessage,
     getOrCreateConversation,
     archiveConversation,
+    unarchiveConversation,
+    fetchArchivedConversations,
   } = useWhatsAppConversations();
+
+  // Fetch archived conversations when modal opens
+  useEffect(() => {
+    if (open) {
+      fetchArchivedConversations().then(setArchivedConversations);
+    }
+  }, [open, fetchArchivedConversations]);
+
+  const handleUnarchive = async (conversationId: string) => {
+    await unarchiveConversation(conversationId);
+    // Refresh archived list
+    const archived = await fetchArchivedConversations();
+    setArchivedConversations(archived);
+  };
 
   // Handle initial contact when modal opens
   const handleOpenChange = async (isOpen: boolean) => {
@@ -149,10 +166,12 @@ export function WhatsAppInboxModal({
             )}>
               <ConversationList
                 conversations={conversations}
+                archivedConversations={archivedConversations}
                 loading={loading}
                 selectedId={selectedConversation?.id || null}
                 onSelect={selectConversation}
                 onNewConversation={() => setShowNewConversation(true)}
+                onUnarchive={handleUnarchive}
               />
             </div>
 

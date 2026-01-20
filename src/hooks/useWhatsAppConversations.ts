@@ -216,6 +216,42 @@ export function useWhatsAppConversations() {
     }
   }, [selectedConversation]);
 
+  // Unarchive a conversation
+  const unarchiveConversation = useCallback(async (conversationId: string) => {
+    try {
+      const { error } = await supabase
+        .from("whatsapp_conversations")
+        .update({ status: "active" })
+        .eq("id", conversationId);
+
+      if (error) throw error;
+
+      toast.success("Conversa restaurada");
+      fetchConversations();
+    } catch (error) {
+      console.error("Error unarchiving conversation:", error);
+      toast.error("Erro ao restaurar conversa");
+    }
+  }, [fetchConversations]);
+
+  // Fetch archived conversations
+  const fetchArchivedConversations = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("whatsapp_conversations")
+        .select("*")
+        .eq("status", "archived")
+        .order("last_message_at", { ascending: false });
+
+      if (error) throw error;
+      return data as WhatsAppConversation[];
+    } catch (error) {
+      console.error("Error fetching archived conversations:", error);
+      toast.error("Erro ao carregar conversas arquivadas");
+      return [];
+    }
+  }, []);
+
   // Select a conversation
   const selectConversation = useCallback(
     (conversation: WhatsAppConversation | null) => {
@@ -293,6 +329,8 @@ export function useWhatsAppConversations() {
     sendMessage,
     getOrCreateConversation,
     archiveConversation,
+    unarchiveConversation,
+    fetchArchivedConversations,
     refreshConversations: fetchConversations,
   };
 }
