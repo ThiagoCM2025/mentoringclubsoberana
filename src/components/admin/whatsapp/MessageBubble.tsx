@@ -2,14 +2,22 @@ import { Check, CheckCheck, Clock, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { HighlightedText } from "./HighlightedText";
 import type { WhatsAppMessage } from "@/hooks/useWhatsAppConversations";
 
 interface MessageBubbleProps {
   message: WhatsAppMessage;
+  searchQuery?: string;
+  isCurrentSearchResult?: boolean;
   isNew?: boolean;
 }
 
-export function MessageBubble({ message, isNew = false }: MessageBubbleProps) {
+export function MessageBubble({ 
+  message, 
+  searchQuery = "",
+  isCurrentSearchResult = false,
+  isNew = false 
+}: MessageBubbleProps) {
   const isOutgoing = message.direction === "outgoing";
   const time = format(new Date(message.created_at), "HH:mm", { locale: ptBR });
 
@@ -43,11 +51,20 @@ export function MessageBubble({ message, isNew = false }: MessageBubbleProps) {
           "max-w-[75%] sm:max-w-[70%] rounded-2xl px-3 py-2 transition-all duration-200",
           isOutgoing
             ? "bg-[#d9fdd3] dark:bg-[#005c4b] text-foreground rounded-br-md shadow-sm"
-            : "bg-white dark:bg-zinc-800 text-foreground rounded-bl-md shadow-md"
+            : "bg-white dark:bg-zinc-800 text-foreground rounded-bl-md shadow-md",
+          isCurrentSearchResult && "ring-2 ring-orange-500 ring-offset-2 ring-offset-background"
         )}
       >
         <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
-          {message.message}
+          {searchQuery.trim() ? (
+            <HighlightedText 
+              text={message.message} 
+              searchQuery={searchQuery}
+              isCurrentResult={isCurrentSearchResult}
+            />
+          ) : (
+            message.message
+          )}
         </p>
         <div
           className={cn(
