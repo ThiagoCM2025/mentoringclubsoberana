@@ -3698,6 +3698,108 @@ export type Database = {
           },
         ]
       }
+      whatsapp_conversations: {
+        Row: {
+          contact_id: string | null
+          contact_name: string | null
+          contact_type: string
+          created_at: string
+          id: string
+          last_message_at: string | null
+          last_message_preview: string | null
+          phone: string
+          status: string
+          unread_count: number
+          updated_at: string
+        }
+        Insert: {
+          contact_id?: string | null
+          contact_name?: string | null
+          contact_type?: string
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          phone: string
+          status?: string
+          unread_count?: number
+          updated_at?: string
+        }
+        Update: {
+          contact_id?: string | null
+          contact_name?: string | null
+          contact_type?: string
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          phone?: string
+          status?: string
+          unread_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      whatsapp_messages: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          direction: string
+          error_message: string | null
+          evolution_id: string | null
+          id: string
+          message: string
+          message_type: string
+          phone: string
+          sent_by: string | null
+          status: string
+          template_id: string | null
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          direction: string
+          error_message?: string | null
+          evolution_id?: string | null
+          id?: string
+          message: string
+          message_type?: string
+          phone: string
+          sent_by?: string | null
+          status?: string
+          template_id?: string | null
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          direction?: string
+          error_message?: string | null
+          evolution_id?: string | null
+          id?: string
+          message?: string
+          message_type?: string
+          phone?: string
+          sent_by?: string | null
+          status?: string
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_messages_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

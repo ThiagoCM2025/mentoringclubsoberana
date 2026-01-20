@@ -2,13 +2,16 @@ import { useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import SEO from "@/components/SEO";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, FileText, History } from "lucide-react";
+import { Mail, FileText, History, MessageCircle } from "lucide-react";
 import { StudentRecipientSelector } from "@/components/admin/messaging/StudentRecipientSelector";
 import { MessageHistory } from "@/components/admin/messaging/MessageHistory";
 import { TemplatesManager } from "@/components/admin/messaging/TemplatesManager";
+import { WhatsAppInboxModal } from "@/components/admin/whatsapp/WhatsAppInboxModal";
+import { Button } from "@/components/ui/button";
 
 export default function AdminMessaging() {
   const [activeTab, setActiveTab] = useState("send");
+  const [whatsappOpen, setWhatsappOpen] = useState(false);
 
   return (
     <AdminLayout>
@@ -18,13 +21,22 @@ export default function AdminMessaging() {
       />
 
       <div className="p-6 lg:p-8 space-y-6">
-        <div>
-          <h1 className="text-3xl font-serif font-bold text-foreground title-premium">
-            Comunicação com Alunas
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Envie emails e notificações para alunas matriculadas
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-serif font-bold text-foreground title-premium">
+              Comunicação com Alunas
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Envie emails e notificações para alunas matriculadas
+            </p>
+          </div>
+          <Button
+            onClick={() => setWhatsappOpen(true)}
+            className="bg-[#25D366] hover:bg-[#128C7E] text-white gap-2"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Abrir WhatsApp
+          </Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -56,6 +68,8 @@ export default function AdminMessaging() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <WhatsAppInboxModal open={whatsappOpen} onOpenChange={setWhatsappOpen} />
     </AdminLayout>
   );
 }
