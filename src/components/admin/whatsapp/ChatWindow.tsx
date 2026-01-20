@@ -22,6 +22,8 @@ import { ptBR } from "date-fns/locale";
 import { MessageBubble } from "./MessageBubble";
 import { EmojiPicker } from "./EmojiPicker";
 import { TypingIndicator } from "./TypingIndicator";
+import { MediaUploadButton } from "./MediaUploadButton";
+import { ConversationTagPicker } from "./ConversationTagPicker";
 import { cn, shortenName } from "@/lib/utils";
 import { useTypingStatus } from "@/hooks/useTypingStatus";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -39,6 +41,7 @@ interface ChatWindowProps {
   soundEnabled?: boolean;
   onToggleSound?: () => void;
   onBack?: () => void;
+  onMediaSent?: () => void;
 }
 
 export function ChatWindow({
@@ -52,6 +55,7 @@ export function ChatWindow({
   soundEnabled = true,
   onToggleSound,
   onBack,
+  onMediaSent,
 }: ChatWindowProps) {
   const [inputValue, setInputValue] = useState("");
   const [sending, setSending] = useState(false);
@@ -271,6 +275,11 @@ export function ChatWindow({
         </div>
         
         <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
+          {/* Tags picker */}
+          {conversation && (
+            <ConversationTagPicker conversationId={conversation.id} compact />
+          )}
+          
           {/* Search button */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -466,6 +475,16 @@ export function ChatWindow({
       <div className="p-2 sm:p-3 bg-gradient-to-t from-card via-card to-card/80 border-t border-border">
         <div className="flex items-center gap-1 sm:gap-2 bg-muted/60 rounded-2xl p-1 sm:p-1.5">
           <EmojiPicker onEmojiSelect={handleEmojiSelect} className="flex-shrink-0" />
+          
+          {/* Media upload button */}
+          {conversation && (
+            <MediaUploadButton
+              conversationId={conversation.id}
+              phone={conversation.phone}
+              onMediaSent={onMediaSent || (() => {})}
+              disabled={sending}
+            />
+          )}
           
           <Tooltip>
             <TooltipTrigger asChild>
