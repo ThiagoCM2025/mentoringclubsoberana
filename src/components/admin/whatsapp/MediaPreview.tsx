@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { FileText, Download, Play, ExternalLink, Image as ImageIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { MediaLightbox } from "./MediaLightbox";
+import { AudioPlayer } from "./AudioPlayer";
 
 interface MediaPreviewProps {
   mediaUrl: string;
@@ -72,18 +72,7 @@ export function MediaPreview({
   }
 
   if (mediaType === "audio") {
-    return (
-      <div className="max-w-[280px]">
-        <audio 
-          controls 
-          className="w-full h-10"
-          preload="metadata"
-        >
-          <source src={mediaUrl} type={mediaMimetype || "audio/mpeg"} />
-          Seu navegador não suporta áudio.
-        </audio>
-      </div>
-    );
+    return <AudioPlayer audioUrl={mediaUrl} isOutgoing={isOutgoing} />;
   }
 
   if (mediaType === "video") {
