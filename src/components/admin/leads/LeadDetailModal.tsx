@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { useNurturingSequences } from "@/hooks/useNurturingSequences";
-import { LeadBehaviorTab } from "./LeadBehaviorTab";
-import { format, formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
   X,
@@ -22,7 +24,6 @@ import {
   FileText,
   User,
   Phone,
-  Calendar,
   Clock,
   Send,
   Zap,
@@ -43,6 +44,14 @@ import {
   TrendingUp,
   BarChart3,
 } from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { LeadBehaviorTab } from "./LeadBehaviorTab";
+import { WhatsAppInboxModal } from "@/components/admin/whatsapp/WhatsAppInboxModal";
+import { useNurturingSequences } from "@/hooks/useNurturingSequences";
 import type { Database } from "@/integrations/supabase/types";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
@@ -112,7 +121,6 @@ const statusConfig: Record<string, { label: string; color: string }> = {
 };
 
 export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQualification, onOpenMessage }: LeadDetailModalProps) {
-  const { toast } = useToast();
   const { getSequenceInfo, calculateNextSend } = useNurturingSequences();
   
   const [notes, setNotes] = useState("");
@@ -121,6 +129,7 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
   const [temperature, setTemperature] = useState<LeadTemperature>("warm");
   const [communicationHistory, setCommunicationHistory] = useState<CommunicationHistory[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [whatsappOpen, setWhatsappOpen] = useState(false);
 
   useEffect(() => {
     if (lead && open) {
@@ -155,9 +164,9 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
     
     setSavingNotes(false);
     if (error) {
-      toast({ title: "Erro ao salvar notas", variant: "destructive" });
+      toast.error("Erro ao salvar notas");
     } else {
-      toast({ title: "Notas salvas!" });
+      toast.success("Notas salvas!");
       onLeadUpdated();
     }
   };
@@ -172,9 +181,9 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
       .eq("id", lead.id);
     
     if (error) {
-      toast({ title: "Erro ao atualizar status", variant: "destructive" });
+      toast.error("Erro ao atualizar status");
     } else {
-      toast({ title: "Status atualizado!" });
+      toast.success("Status atualizado!");
       onLeadUpdated();
     }
   };
@@ -189,9 +198,9 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
       .eq("id", lead.id);
     
     if (error) {
-      toast({ title: "Erro ao atualizar temperatura", variant: "destructive" });
+      toast.error("Erro ao atualizar temperatura");
     } else {
-      toast({ title: "Temperatura atualizada!" });
+      toast.success("Temperatura atualizada!");
       onLeadUpdated();
     }
   };
@@ -206,16 +215,16 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
       .eq("id", lead.id);
     
     if (error) {
-      toast({ title: "Erro ao atualizar nurturing", variant: "destructive" });
+      toast.error("Erro ao atualizar nurturing");
     } else {
-      toast({ title: newStatus ? "Nurturing ativado!" : "Nurturing pausado!" });
+      toast.success(newStatus ? "Nurturing ativado!" : "Nurturing pausado!");
       onLeadUpdated();
     }
   };
 
   const handleWhatsAppClick = () => {
-    // Abre o modal de templates ao clicar no WhatsApp
-    onOpenMessage?.();
+    // Abre o modal de WhatsApp direto na conversa do lead
+    setWhatsappOpen(true);
   };
 
 
@@ -595,6 +604,18 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
           </div>
         </div>
       </DialogContent>
+
+      {/* WhatsApp Inbox Modal */}
+      {lead?.phone && (
+        <WhatsAppInboxModal
+          open={whatsappOpen}
+          onOpenChange={setWhatsappOpen}
+          initialPhone={lead.phone}
+          initialContactName={lead.full_name}
+          initialContactType="lead"
+          initialContactId={lead.id}
+        />
+      )}
     </Dialog>
   );
 }
