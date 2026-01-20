@@ -3,6 +3,7 @@ import { X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useWhatsAppConversations } from "@/hooks/useWhatsAppConversations";
+import { useWhatsAppSound } from "@/hooks/useWhatsAppSound";
 import { ConversationList } from "./ConversationList";
 import { ChatWindow } from "./ChatWindow";
 import { TemplateDrawer } from "./TemplateDrawer";
@@ -29,6 +30,7 @@ export function WhatsAppInboxModal({
   const navigate = useNavigate();
   const [showTemplates, setShowTemplates] = useState(false);
   const [showNewConversation, setShowNewConversation] = useState(false);
+  const { soundEnabled, toggleSound } = useWhatsAppSound();
   
   const {
     conversations,
@@ -106,18 +108,20 @@ export function WhatsAppInboxModal({
   return (
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-w-5xl h-[80vh] p-0 gap-0 overflow-hidden">
+        <DialogContent className="max-w-5xl h-[85vh] p-0 gap-0 overflow-hidden rounded-xl">
           {/* Custom header */}
-          <div className="flex items-center justify-between px-4 py-3 bg-[#00a884] dark:bg-[#00a884]">
+          <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[#00a884] to-[#128C7E]">
             <div className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5 text-white" />
+              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                <MessageCircle className="h-4 w-4 text-white" />
+              </div>
               <h2 className="font-semibold text-white">WhatsApp Business</h2>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => onOpenChange(false)}
-              className="h-8 w-8 text-white hover:bg-white/20"
+              className="h-8 w-8 text-white hover:bg-white/20 rounded-full"
             >
               <X className="h-5 w-5" />
             </Button>
@@ -145,6 +149,8 @@ export function WhatsAppInboxModal({
               onOpenTemplates={() => setShowTemplates(true)}
               onArchive={handleArchive}
               onViewContact={handleViewContact}
+              soundEnabled={soundEnabled}
+              onToggleSound={toggleSound}
             />
 
             {/* Template drawer */}

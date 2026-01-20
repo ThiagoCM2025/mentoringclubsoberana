@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, Users, Target, UserCheck, MessageSquare, Check, CheckCheck, ShieldCheck, ClipboardCheck } from "lucide-react";
+import { Bell, Users, Target, UserCheck, MessageSquare, Check, CheckCheck, ShieldCheck, ClipboardCheck, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { useWhatsAppSound } from "@/hooks/useWhatsAppSound";
 
 interface AdminNotification {
   id: string;
@@ -29,7 +30,8 @@ const EVENT_ICONS: Record<string, any> = {
   new_enrollment: UserCheck,
   community_post: MessageSquare,
   new_admin: ShieldCheck,
-  mission_submission: ClipboardCheck
+  mission_submission: ClipboardCheck,
+  whatsapp_message: MessageCircle
 };
 
 const EVENT_COLORS: Record<string, string> = {
@@ -38,7 +40,8 @@ const EVENT_COLORS: Record<string, string> = {
   new_enrollment: "bg-violet-100 text-violet-600",
   community_post: "bg-blue-100 text-blue-600",
   new_admin: "bg-red-100 text-red-600",
-  mission_submission: "bg-amber-100 text-amber-600"
+  mission_submission: "bg-amber-100 text-amber-600",
+  whatsapp_message: "bg-green-100 text-green-600"
 };
 
 export function AdminNotificationBell() {
@@ -46,6 +49,7 @@ export function AdminNotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { playNotification } = useWhatsAppSound();
 
   useEffect(() => {
     fetchNotifications();
@@ -64,6 +68,11 @@ export function AdminNotificationBell() {
           const newNotification = payload.new as AdminNotification;
           setNotifications(prev => [newNotification, ...prev]);
           setUnreadCount(prev => prev + 1);
+          
+          // Play sound for WhatsApp messages
+          if (newNotification.event_type === 'whatsapp_message') {
+            playNotification();
+          }
         }
       )
       .subscribe();
