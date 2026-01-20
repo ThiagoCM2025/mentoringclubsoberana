@@ -83,6 +83,36 @@ serve(async (req) => {
 
     const { event, data } = payload;
 
+    // Handle typing events
+    if (event === "presence.update" || event === "PRESENCE_UPDATE") {
+      const phone = normalizePhone(data.key?.remoteJid || "");
+      const isTyping = data.status === "composing";
+      
+      if (phone) {
+        // Find conversation by phone
+        const { data: conversation } = await supabase
+          .from("whatsapp_conversations")
+          .select("id")
+          .eq("phone", phone)
+          .single();
+        
+        if (conversation) {
+          await supabase
+            .from("whatsapp_typing_status")
+            .upsert({
+              conversation_id: conversation.id,
+              phone,
+              is_typing: isTyping,
+              updated_at: new Date().toISOString()
+            }, { onConflict: "conversation_id" });
+        }
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Handle incoming messages
     if (event === "messages.upsert" || event === "MESSAGE_RECEIVED") {
       const phone = normalizePhone(data.key.remoteJid);

@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { Send, FileText, MoreVertical, Archive, User, Volume2, VolumeX, ArrowLeft } from "lucide-react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { Send, FileText, MoreVertical, Archive, User, Volume2, VolumeX, ArrowLeft, Search, ChevronUp, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,7 +21,11 @@ import { format, isToday, isYesterday, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { MessageBubble } from "./MessageBubble";
 import { EmojiPicker } from "./EmojiPicker";
+import { TypingIndicator } from "./TypingIndicator";
 import { cn, shortenName } from "@/lib/utils";
+import { useTypingStatus } from "@/hooks/useTypingStatus";
+import { useDebounce } from "@/hooks/useDebounce";
+import { motion, AnimatePresence } from "framer-motion";
 import type { WhatsAppConversation, WhatsAppMessage } from "@/hooks/useWhatsAppConversations";
 
 interface ChatWindowProps {
@@ -51,17 +55,87 @@ export function ChatWindow({
 }: ChatWindowProps) {
   const [inputValue, setInputValue] = useState("");
   const [sending, setSending] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentResultIndex, setCurrentResultIndex] = useState(0);
+  
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   const displayName = shortenName(conversation?.contact_name, 28);
+  const { isContactTyping } = useTypingStatus(conversation?.id ?? null);
+  
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  // Scroll to bottom when messages change
+  // Find messages that match the search query
+  const searchResults = useMemo(() => {
+    if (!debouncedSearchQuery.trim()) return [];
+    
+    const query = debouncedSearchQuery.toLowerCase();
+    return messages
+      .filter(msg => msg.message.toLowerCase().includes(query))
+      .map(msg => msg.id);
+  }, [messages, debouncedSearchQuery]);
+
+  // Current result message ID
+  const currentResultId = searchResults[currentResultIndex] ?? null;
+
+  // Scroll to current search result
   useEffect(() => {
-    if (scrollRef.current) {
+    if (currentResultId && messageRefs.current.has(currentResultId)) {
+      const element = messageRefs.current.get(currentResultId);
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [currentResultId]);
+
+  // Scroll to bottom when messages change (only if not searching)
+  useEffect(() => {
+    if (!isSearchOpen && scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
-  }, [messages]);
+  }, [messages, isSearchOpen]);
+
+  // Reset search when conversation changes
+  useEffect(() => {
+    setIsSearchOpen(false);
+    setSearchQuery("");
+    setCurrentResultIndex(0);
+  }, [conversation?.id]);
+
+  // Focus search input when opened
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchOpen]);
+
+  // Reset current index when search results change
+  useEffect(() => {
+    setCurrentResultIndex(0);
+  }, [searchResults.length]);
+
+  const navigateResults = (direction: number) => {
+    if (searchResults.length === 0) return;
+    
+    setCurrentResultIndex(prev => {
+      const newIndex = prev + direction;
+      if (newIndex < 0) return searchResults.length - 1;
+      if (newIndex >= searchResults.length) return 0;
+      return newIndex;
+    });
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      navigateResults(e.shiftKey ? -1 : 1);
+    }
+  };
 
   const handleSend = async () => {
     if (!inputValue.trim() || sending) return;
@@ -157,11 +231,11 @@ export function ChatWindow({
 
   return (
     <div className={cn(
-      "flex-1 flex flex-col bg-[#efeae2] dark:bg-zinc-900",
+      "flex-1 flex flex-col bg-[#efeae2] dark:bg-zinc-900 relative",
       !conversation && "hidden sm:flex"
     )}>
       {/* Header */}
-      <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-2.5 bg-card border-b border-border shadow-sm">
+      <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-2.5 bg-card border-b border-border shadow-sm relative z-10">
         {/* Back button - mobile only */}
         {onBack && (
           <Button
@@ -197,6 +271,23 @@ export function ChatWindow({
         </div>
         
         <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
+          {/* Search button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSearchOpen(true)}
+                className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground hover:text-foreground"
+              >
+                <Search className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">
+              Buscar mensagens
+            </TooltipContent>
+          </Tooltip>
+          
           {onToggleSound && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -238,8 +329,71 @@ export function ChatWindow({
         </div>
       </div>
 
+      {/* Search Bar */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="absolute inset-x-0 top-[52px] sm:top-[56px] bg-card border-b border-border shadow-lg z-20 overflow-hidden"
+          >
+            <div className="flex items-center gap-2 p-2 sm:p-3">
+              <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <Input
+                ref={searchInputRef}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+                placeholder="Buscar mensagens..."
+                className="flex-1 h-8 text-sm"
+              />
+              <span className="text-xs text-muted-foreground whitespace-nowrap min-w-[70px] text-center">
+                {searchResults.length > 0
+                  ? `${currentResultIndex + 1} de ${searchResults.length}`
+                  : debouncedSearchQuery.trim() ? "0 resultados" : ""}
+              </span>
+              <div className="flex items-center gap-0.5">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigateResults(-1)}
+                  disabled={searchResults.length === 0}
+                  className="h-7 w-7"
+                >
+                  <ChevronUp className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigateResults(1)}
+                  disabled={searchResults.length === 0}
+                  className="h-7 w-7"
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  setIsSearchOpen(false);
+                  setSearchQuery("");
+                }}
+                className="h-7 w-7"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Messages */}
-      <ScrollArea className="flex-1 px-2 sm:px-4">
+      <ScrollArea className={cn(
+        "flex-1 px-2 sm:px-4",
+        isSearchOpen && "pt-12"
+      )}>
         <div 
           className="py-3 sm:py-4 min-h-full"
           style={{
@@ -275,14 +429,32 @@ export function ChatWindow({
                   </div>
                   {/* Messages */}
                   {group.messages.map((message, index) => (
-                    <MessageBubble 
-                      key={message.id} 
-                      message={message} 
-                      isNew={groupIndex === groupedMessages.length - 1 && index === group.messages.length - 1}
-                    />
+                    <div
+                      key={message.id}
+                      ref={(el) => {
+                        if (el) {
+                          messageRefs.current.set(message.id, el);
+                        } else {
+                          messageRefs.current.delete(message.id);
+                        }
+                      }}
+                    >
+                      <MessageBubble 
+                        message={message}
+                        searchQuery={debouncedSearchQuery}
+                        isCurrentSearchResult={message.id === currentResultId}
+                        isNew={groupIndex === groupedMessages.length - 1 && index === group.messages.length - 1}
+                      />
+                    </div>
                   ))}
                 </div>
               ))}
+              
+              {/* Typing indicator */}
+              <AnimatePresence>
+                {isContactTyping && <TypingIndicator />}
+              </AnimatePresence>
+              
               {/* Scroll anchor */}
               <div ref={scrollRef} />
             </div>
