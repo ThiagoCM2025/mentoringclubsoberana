@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Soberana Mentoring Club</title>
     
+    <!-- Global Error Handler - Prevents GTM errors from causing blank screen -->
+    <script>
+      window.addEventListener('error', function(e) {
+        if (e.filename && (e.filename.includes('googletagmanager.com') || e.filename.includes('gtm.js'))) {
+          console.warn('GTM Error caught and suppressed:', e.message);
+          e.preventDefault();
+          return true;
+        }
+      }, true);
+    </script>
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
