@@ -180,25 +180,27 @@ export function WhatsAppInboxModal({
   return (
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-w-5xl w-[95vw] sm:w-full h-[90vh] sm:h-[85vh] p-0 gap-0 overflow-hidden rounded-xl" hideClose aria-describedby={undefined}>
+        <DialogContent 
+          className="fixed inset-0 w-full h-full max-w-none max-h-none p-0 gap-0 overflow-hidden border-0 rounded-none data-[state=open]:animate-none data-[state=closed]:animate-none translate-x-0 translate-y-0 sm:translate-x-0 sm:translate-y-0" 
+          hideClose 
+          aria-describedby={undefined}
+        >
           <VisuallyHidden>
             <DialogTitle>WhatsApp Business Inbox</DialogTitle>
           </VisuallyHidden>
-          {/* Custom header */}
-          <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-[#00a884] to-[#128C7E]">
+          {/* Compact modern header */}
+          <div className="flex items-center justify-between px-4 py-2 bg-[#00a884]">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/10 flex items-center justify-center">
-                <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
-              </div>
-              <h2 className="font-semibold text-white text-sm sm:text-base">WhatsApp Business</h2>
+              <MessageCircle className="h-4 w-4 text-white" />
+              <span className="font-medium text-white text-sm">WhatsApp Business</span>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => onOpenChange(false)}
-              className="h-7 w-7 sm:h-8 sm:w-8 text-white hover:bg-white/20 rounded-full"
+              className="h-7 w-7 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors"
             >
-              <X className="h-4 w-4 sm:h-5 sm:w-5" />
+              <X className="h-4 w-4" />
             </Button>
           </div>
 
@@ -206,7 +208,7 @@ export function WhatsAppInboxModal({
           <div className="flex flex-1 min-h-0 overflow-hidden relative">
             {/* Conversation list - left panel */}
             <div className={cn(
-              "w-full sm:w-80 border-r border-border flex-shrink-0 transition-all duration-200",
+              "w-full sm:w-[340px] lg:w-[380px] border-r border-border/50 flex-shrink-0 transition-all duration-300 bg-background",
               selectedConversation && "hidden sm:block"
             )}>
               <ConversationList
