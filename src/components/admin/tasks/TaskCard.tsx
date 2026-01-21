@@ -10,7 +10,8 @@ import {
   Trash2,
   Edit,
   Play,
-  XCircle
+  XCircle,
+  Eye
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ interface TaskCardProps {
   task: AdminTask;
   currentUserId?: string;
   onStatusChange: (id: string, status: TaskStatus) => void;
+  onView?: (task: AdminTask) => void;
   onEdit?: (task: AdminTask) => void;
   onDelete: (id: string) => void;
   onViewLead?: (leadId: string) => void;
@@ -53,6 +55,7 @@ export function TaskCard({
   task,
   currentUserId,
   onStatusChange,
+  onView,
   onEdit,
   onDelete,
   onViewLead,
@@ -71,8 +74,9 @@ export function TaskCard({
 
   return (
     <div
+      onClick={() => onView?.(task)}
       className={cn(
-        "p-4 rounded-lg border transition-all hover:shadow-md",
+        "p-4 rounded-lg border transition-all hover:shadow-md cursor-pointer",
         isCompleted && "opacity-60 bg-muted/30",
         isCancelled && "opacity-40",
         isOverdue && !isCompleted && "border-destructive/50 bg-destructive/5"
@@ -177,7 +181,11 @@ export function TaskCard({
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+              <DropdownMenuItem onClick={() => onView?.(task)}>
+                <Eye className="h-4 w-4 mr-2" />
+                Visualizar
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEdit?.(task)}>
                 <Edit className="h-4 w-4 mr-2" />
                 Editar

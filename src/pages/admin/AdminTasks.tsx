@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { TaskCalendar } from "@/components/admin/tasks/TaskCalendar";
 import { TaskCard } from "@/components/admin/tasks/TaskCard";
 import { TaskDialog } from "@/components/admin/tasks/TaskDialog";
+import { TaskViewDialog } from "@/components/admin/tasks/TaskViewDialog";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminTasks() {
@@ -29,6 +30,7 @@ export default function AdminTasks() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [newTaskOpen, setNewTaskOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<AdminTask | null>(null);
+  const [viewingTask, setViewingTask] = useState<AdminTask | null>(null);
   const [viewFilter, setViewFilter] = useState<"all" | "mine">("mine");
   const [statusFilter, setStatusFilter] = useState<"active" | "completed" | "all">("active");
 
@@ -61,6 +63,10 @@ export default function AdminTasks() {
 
   const handleStatusChange = (id: string, status: TaskStatus) => {
     updateTask(id, { status });
+  };
+
+  const handleView = (task: AdminTask) => {
+    setViewingTask(task);
   };
 
   const handleEdit = (task: AdminTask) => {
@@ -254,6 +260,7 @@ export default function AdminTasks() {
                             task={task}
                             currentUserId={user?.id}
                             onStatusChange={handleStatusChange}
+                            onView={handleView}
                             onEdit={handleEdit}
                             onDelete={handleDelete}
                             onViewLead={(leadId) => navigate(`/admin/leads?lead=${leadId}`)}
@@ -305,6 +312,7 @@ export default function AdminTasks() {
                           task={task}
                           currentUserId={user?.id}
                           onStatusChange={handleStatusChange}
+                          onView={handleView}
                           onEdit={handleEdit}
                           onDelete={handleDelete}
                           onViewLead={(leadId) => navigate(`/admin/leads?lead=${leadId}`)}
@@ -339,6 +347,17 @@ export default function AdminTasks() {
         onUpdate={handleUpdate}
         mode="edit"
         task={editingTask || undefined}
+      />
+
+      {/* View Task Dialog */}
+      <TaskViewDialog
+        open={!!viewingTask}
+        onOpenChange={(open) => !open && setViewingTask(null)}
+        task={viewingTask}
+        currentUserId={user?.id}
+        onEdit={handleEdit}
+        onViewLead={(leadId) => navigate(`/admin/leads?lead=${leadId}`)}
+        onViewStudent={(studentId) => navigate(`/admin/alunos/${studentId}`)}
       />
     </AdminLayout>
   );
