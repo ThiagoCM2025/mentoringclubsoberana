@@ -150,21 +150,70 @@ export function WhatsAppInboxModal({
   const handleViewContact = async () => {
     if (!selectedConversation) return;
     
-    if (selectedConversation.contact_type === "lead" && selectedConversation.contact_id) {
-      // Fetch lead data and open modal
-      const { data: lead } = await supabase
-        .from("leads")
-        .select("*")
-        .eq("id", selectedConversation.contact_id)
-        .maybeSingle();
+    const { phone, contact_type, contact_id } = selectedConversation;
+    
+    if (contact_type === "lead") {
+      let leadId = contact_id;
       
-      if (lead) {
-        setLeadData(lead);
-        setLeadDetailOpen(true);
+      // Fallback: buscar pelo telefone se não tiver contact_id
+      if (!leadId) {
+        const normalizedPhone = phone.replace(/^55/, '');
+        const { data: foundLead } = await supabase
+          .from("leads")
+          .select("id")
+          .or(`phone.eq.${phone},phone.eq.${normalizedPhone},phone.eq.55${normalizedPhone}`)
+          .maybeSingle();
+        
+        if (foundLead) {
+          leadId = foundLead.id;
+          // Atualizar conversa para futuras consultas
+          await supabase
+            .from("whatsapp_conversations")
+            .update({ contact_id: foundLead.id })
+            .eq("id", selectedConversation.id);
+        }
       }
-    } else if (selectedConversation.contact_type === "student" && selectedConversation.contact_id) {
-      onOpenChange(false);
-      navigate(`/admin/alunos/${selectedConversation.contact_id}`);
+      
+      if (leadId) {
+        const { data: lead } = await supabase
+          .from("leads")
+          .select("*")
+          .eq("id", leadId)
+          .maybeSingle();
+        
+        if (lead) {
+          setLeadData(lead);
+          setLeadDetailOpen(true);
+          return;
+        }
+      }
+      
+    } else if (contact_type === "student") {
+      let studentId = contact_id;
+      
+      // Fallback: buscar pelo telefone se não tiver contact_id
+      if (!studentId) {
+        const normalizedPhone = phone.replace(/^55/, '');
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("user_id")
+          .or(`phone.eq.${phone},phone.eq.${normalizedPhone},phone.eq.55${normalizedPhone}`)
+          .maybeSingle();
+        
+        if (profile) {
+          studentId = profile.user_id;
+          await supabase
+            .from("whatsapp_conversations")
+            .update({ contact_id: profile.user_id })
+            .eq("id", selectedConversation.id);
+        }
+      }
+      
+      if (studentId) {
+        onOpenChange(false);
+        navigate(`/admin/alunos/${studentId}`);
+        return;
+      }
     }
   };
 
