@@ -23,16 +23,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, Mail, MessageSquare, Bell, Eye, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, Mail, MessageSquare, Bell, Eye, CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { toast } from "sonner";
 
 interface HistoryItem {
   id: string;
+  recipient_id: string;
   recipient_type: string;
   recipient_name: string | null;
   recipient_email: string | null;
+  recipient_phone: string | null;
   channel: string;
   subject: string | null;
   message: string;
@@ -45,11 +58,14 @@ export function MessageHistory() {
   const [loading, setLoading] = useState(true);
   const [channelFilter, setChannelFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedMessage, setSelectedMessage] = useState<HistoryItem | null>(null);
+  const [resendDialogOpen, setResendDialogOpen] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
     fetchHistory();
-  }, [channelFilter, typeFilter]);
+  }, [channelFilter, typeFilter, statusFilter]);
 
   async function fetchHistory() {
     setLoading(true);
@@ -68,6 +84,10 @@ export function MessageHistory() {
         query = query.eq("recipient_type", typeFilter);
       }
 
+      if (statusFilter !== "all") {
+        query = query.eq("status", statusFilter);
+      }
+
       const { data, error } = await query;
 
       if (error) throw error;
@@ -78,6 +98,69 @@ export function MessageHistory() {
       setLoading(false);
     }
   }
+
+  const failedWhatsappMessages = history.filter(
+    (h) => h.status === "failed" && h.channel === "whatsapp" && h.recipient_phone
+  );
+
+  const handleResendFailed = async () => {
+    if (failedWhatsappMessages.length === 0) return;
+
+    setIsResending(true);
+    setResendDialogOpen(false);
+
+    try {
+      // Group messages by their content to resend in batches
+      const messageGroups = new Map<string, HistoryItem[]>();
+      
+      failedWhatsappMessages.forEach((msg) => {
+        const key = msg.message;
+        if (!messageGroups.has(key)) {
+          messageGroups.set(key, []);
+        }
+        messageGroups.get(key)!.push(msg);
+      });
+
+      let totalSuccess = 0;
+      let totalFailed = 0;
+
+      for (const [message, messages] of messageGroups) {
+        const recipients = messages.map((msg) => ({
+          id: msg.recipient_id,
+          name: msg.recipient_name || "Sem nome",
+          phone: msg.recipient_phone,
+          type: msg.recipient_type,
+        }));
+
+        const { data, error } = await supabase.functions.invoke("send-bulk-whatsapp", {
+          body: { recipients, message },
+        });
+
+        if (error) {
+          console.error("Resend error:", error);
+          totalFailed += recipients.length;
+        } else if (data) {
+          totalSuccess += data.successCount || 0;
+          totalFailed += data.failedCount || 0;
+        }
+      }
+
+      if (totalSuccess > 0) {
+        toast.success(`${totalSuccess} mensagens reenviadas com sucesso!`);
+      }
+      if (totalFailed > 0) {
+        toast.error(`${totalFailed} mensagens falharam novamente`);
+      }
+
+      // Refresh history
+      fetchHistory();
+    } catch (error) {
+      console.error("Error resending messages:", error);
+      toast.error("Erro ao reenviar mensagens");
+    } finally {
+      setIsResending(false);
+    }
+  };
 
   const getChannelIcon = (channel: string) => {
     switch (channel) {
@@ -129,15 +212,15 @@ export function MessageHistory() {
     <>
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle className="text-lg">Histórico de Envios</CardTitle>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Select value={channelFilter} onValueChange={setChannelFilter}>
-                <SelectTrigger className="w-[150px]">
+                <SelectTrigger className="w-[130px]">
                   <SelectValue placeholder="Canal" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos os canais</SelectItem>
+                  <SelectItem value="all">Todos canais</SelectItem>
                   <SelectItem value="email">Email</SelectItem>
                   <SelectItem value="whatsapp">WhatsApp</SelectItem>
                   <SelectItem value="notification">Notificação</SelectItem>
@@ -145,7 +228,7 @@ export function MessageHistory() {
               </Select>
 
               <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-[150px]">
+                <SelectTrigger className="w-[120px]">
                   <SelectValue placeholder="Tipo" />
                 </SelectTrigger>
                 <SelectContent>
@@ -154,6 +237,34 @@ export function MessageHistory() {
                   <SelectItem value="lead">Leads</SelectItem>
                 </SelectContent>
               </Select>
+
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[120px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="sent">Enviados</SelectItem>
+                  <SelectItem value="failed">Falhos</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {failedWhatsappMessages.length > 0 && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setResendDialogOpen(true)}
+                  disabled={isResending}
+                  className="gap-2"
+                >
+                  {isResending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4" />
+                  )}
+                  Reenviar {failedWhatsappMessages.length} Falhas
+                </Button>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -192,7 +303,7 @@ export function MessageHistory() {
                           {item.recipient_name || "Sem nome"}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {item.recipient_email}
+                          {item.recipient_email || item.recipient_phone}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -240,7 +351,9 @@ export function MessageHistory() {
                 <div>
                   <span className="text-muted-foreground">Destinatário:</span>
                   <p className="font-medium">{selectedMessage.recipient_name}</p>
-                  <p className="text-muted-foreground">{selectedMessage.recipient_email}</p>
+                  <p className="text-muted-foreground">
+                    {selectedMessage.recipient_email || selectedMessage.recipient_phone}
+                  </p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Enviado em:</span>
@@ -274,6 +387,30 @@ export function MessageHistory() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Resend Confirmation Dialog */}
+      <AlertDialog open={resendDialogOpen} onOpenChange={setResendDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reenviar Mensagens Falhas</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>
+                Você vai reenviar <strong>{failedWhatsappMessages.length}</strong> mensagens 
+                WhatsApp que falharam anteriormente.
+              </p>
+              <p className="text-amber-600 dark:text-amber-400">
+                ⚠️ Certifique-se que o WhatsApp está conectado antes de continuar.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleResendFailed}>
+              Reenviar Mensagens
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
