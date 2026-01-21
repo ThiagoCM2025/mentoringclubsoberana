@@ -126,15 +126,15 @@ export function LeadConversionDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
+      <DialogContent className="max-w-md max-h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Target className="w-5 h-5 text-green-600" />
             Registrar Conversão
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="flex-1 overflow-y-auto min-h-0 space-y-4 py-4 pr-1">
           <p className="text-sm text-muted-foreground">
             Registrar conversão do lead <span className="font-medium text-foreground">{leadName}</span>
           </p>
@@ -195,7 +195,7 @@ export function LeadConversionDialog({
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0 pt-4 border-t">
           <Button 
             variant="outline" 
             onClick={onClose}

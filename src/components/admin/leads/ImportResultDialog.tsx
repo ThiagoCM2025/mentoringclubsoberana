@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CheckCircle2, XCircle, RefreshCw, FileText, Download } from "lucide-react";
+import { CheckCircle2, XCircle, RefreshCw, FileText, Download, Send } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -29,6 +29,7 @@ interface ImportResultDialogProps {
   onOpenChange: (open: boolean) => void;
   result: ImportResult | null;
   onViewImported?: () => void;
+  onDispatchCampaign?: () => void;
 }
 
 export const ImportResultDialog = ({
@@ -36,6 +37,7 @@ export const ImportResultDialog = ({
   onOpenChange,
   result,
   onViewImported,
+  onDispatchCampaign,
 }: ImportResultDialogProps) => {
   if (!result) return null;
 
@@ -64,10 +66,12 @@ export const ImportResultDialog = ({
     link.click();
   };
 
+  const successCount = result.imported + result.updated;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-lg max-h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             {hasErrors ? (
               <RefreshCw className="h-5 w-5 text-yellow-500" />
@@ -81,7 +85,7 @@ export const ImportResultDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="flex-1 overflow-y-auto min-h-0 space-y-4 pr-1">
           {/* Summary Stats */}
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 text-center">
@@ -176,26 +180,43 @@ export const ImportResultDialog = ({
           )}
         </div>
 
-        <div className="flex gap-2 pt-2">
-          <Button
-            variant="outline"
-            className="flex-1"
-            onClick={() => onOpenChange(false)}
-          >
-            Fechar
-          </Button>
-          {onViewImported && (result.imported > 0 || result.updated > 0) && (
+        <div className="flex-shrink-0 flex flex-col gap-2 pt-4 border-t">
+          {/* Primary action: Dispatch campaign */}
+          {onDispatchCampaign && successCount > 0 && (
             <Button
-              className="flex-1"
+              className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground"
               onClick={() => {
                 onOpenChange(false);
-                onViewImported();
+                onDispatchCampaign();
               }}
             >
-              <FileText className="h-4 w-4 mr-2" />
-              Ver Importados
+              <Send className="h-4 w-4 mr-2" />
+              Disparar Campanha para {successCount} Leads
             </Button>
           )}
+          
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => onOpenChange(false)}
+            >
+              Fechar
+            </Button>
+            {onViewImported && successCount > 0 && (
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  onOpenChange(false);
+                  onViewImported();
+                }}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Ver Importados
+              </Button>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

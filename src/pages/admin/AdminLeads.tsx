@@ -1377,6 +1377,9 @@ const AdminLeads = () => {
             // Could add filter by batch_id here in the future
             fetchLeads();
           }}
+          onDispatchCampaign={() => {
+            setCampaignDispatchOpen(true);
+          }}
         />
       </div>
     </AdminLayout>

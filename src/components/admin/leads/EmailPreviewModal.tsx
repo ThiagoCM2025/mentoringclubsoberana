@@ -144,7 +144,7 @@ export function EmailPreviewModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
+      <DialogContent className="max-w-6xl max-h-[85vh] flex flex-col overflow-hidden">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-3">
             <Mail className="h-5 w-5 text-primary" />
@@ -158,9 +158,9 @@ export function EmailPreviewModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 grid grid-cols-2 gap-6 overflow-hidden">
+        <div className="flex-1 grid grid-cols-2 gap-6 min-h-0 overflow-hidden">
           {/* Editor Column */}
-          <div className="flex flex-col gap-4 overflow-y-auto pr-2">
+          <div className="flex flex-col gap-4 overflow-y-auto pr-2 min-h-0">
             <div className="flex items-center gap-2">
               <Pencil className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium text-sm">Editor</span>
@@ -223,7 +223,7 @@ export function EmailPreviewModal({
           </div>
 
           {/* Preview Column */}
-          <div className="flex flex-col gap-4 overflow-hidden border-l pl-6">
+          <div className="flex flex-col gap-4 overflow-hidden border-l pl-6 min-h-0">
             <div className="flex items-center gap-2">
               <Eye className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium text-sm">Preview</span>
@@ -274,7 +274,7 @@ export function EmailPreviewModal({
 
         <Separator />
 
-        <DialogFooter className="flex-shrink-0 gap-2">
+        <DialogFooter className="flex-shrink-0 gap-2 pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>

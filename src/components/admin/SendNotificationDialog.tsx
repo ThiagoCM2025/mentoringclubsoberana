@@ -125,8 +125,8 @@ export function SendNotificationDialog({ studentId, studentName }: SendNotificat
           Enviar Notificação
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className="max-h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>Enviar Notificação</DialogTitle>
           <DialogDescription>
             Enviar notificação para <strong>{studentName}</strong>
@@ -134,10 +134,11 @@ export function SendNotificationDialog({ studentId, studentName }: SendNotificat
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-            <TemplateSelector onSelect={handleTemplateSelect} />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0 overflow-hidden mt-4">
+            <div className="flex-1 overflow-y-auto min-h-0 space-y-4 pr-1">
+              <TemplateSelector onSelect={handleTemplateSelect} />
 
-            <FormField
+              <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
@@ -212,8 +213,9 @@ export function SendNotificationDialog({ studentId, studentName }: SendNotificat
                 </FormItem>
               )}
             />
+            </div>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex-shrink-0 flex justify-end gap-3 pt-4 border-t">
               <Button
                 type="button"
                 variant="outline"
