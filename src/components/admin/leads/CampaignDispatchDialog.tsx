@@ -28,9 +28,14 @@ import {
   CheckCircle,
   Phone,
   PhoneOff,
-  Info
+  Info,
+  FileSpreadsheet,
+  Megaphone,
+  Home,
+  Sparkles,
+  BookOpen
 } from 'lucide-react';
-import { getBrazilNow, getBrazilToday, BRAZIL_TIMEZONE } from '@/lib/dateUtils';
+import { getBrazilNow, getBrazilToday } from '@/lib/dateUtils';
 
 interface Template {
   id: string;
@@ -45,6 +50,7 @@ interface CampaignDispatchDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  preselectedBatchId?: string;
 }
 
 interface LeadPhoneStats {
@@ -53,39 +59,16 @@ interface LeadPhoneStats {
   withoutPhone: number;
 }
 
-// Campanhas pré-definidas com filtros
-const CAMPAIGNS = [
-  { 
-    id: 'convite_jornada', 
-    label: 'Convite Jornada (Importação Excel)', 
-    sourceFilter: 'importação_excel',
-    description: 'Leads importados via planilha'
-  },
-  { 
-    id: 'jornada_cadastrados', 
-    label: 'Jornada - Cadastrados', 
-    sourceFilter: 'jornada%',
-    description: 'Leads que se cadastraram na Jornada'
-  },
-  { 
-    id: 'exit_intent', 
-    label: 'Exit Intent Popup', 
-    sourceFilter: 'exit_intent%',
-    description: 'Leads capturados no popup de saída'
-  },
-  { 
-    id: 'ebook', 
-    label: 'E-book Downloads', 
-    sourceFilter: 'ebook%',
-    description: 'Leads que baixaram e-books'
-  },
-  { 
-    id: 'todos', 
-    label: 'Todos os Leads', 
-    sourceFilter: null,
-    description: 'Enviar para todos os leads cadastrados'
-  },
-];
+interface DynamicCampaign {
+  id: string;
+  label: string;
+  description: string;
+  type: 'batch' | 'source';
+  batchId?: string;
+  sourceFilter?: string | null;
+  leadCount?: number;
+  createdAt?: string;
+}
 
 const HOURS = Array.from({ length: 24 }, (_, i) => ({
   value: i.toString().padStart(2, '0'),
@@ -97,10 +80,24 @@ const MINUTES = ['00', '15', '30', '45'];
 // Tempo de envio por mensagem (ms)
 const MESSAGE_DELAY_MS = 500;
 
-export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: CampaignDispatchDialogProps) {
+// Helper to get icon for campaign type
+function getCampaignIcon(campaign: DynamicCampaign) {
+  if (campaign.type === 'batch') {
+    return <FileSpreadsheet className="w-4 h-4 text-purple-500" />;
+  }
+  const source = campaign.sourceFilter?.toLowerCase() || '';
+  if (source.includes('jornada')) return <Home className="w-4 h-4 text-yellow-500" />;
+  if (source.includes('ebook')) return <BookOpen className="w-4 h-4 text-blue-500" />;
+  if (source.includes('operacao') || source.includes('operação')) return <Megaphone className="w-4 h-4 text-green-500" />;
+  return <Sparkles className="w-4 h-4 text-amber-500" />;
+}
+
+export function CampaignDispatchDialog({ open, onOpenChange, onSuccess, preselectedBatchId }: CampaignDispatchDialogProps) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [templates, setTemplates] = useState<Template[]>([]);
+  const [campaigns, setCampaigns] = useState<DynamicCampaign[]>([]);
+  const [campaignsLoading, setCampaignsLoading] = useState(false);
   
   // Step 1: Campanha
   const [selectedCampaign, setSelectedCampaign] = useState<string>('');
@@ -120,12 +117,23 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
   const [selectedHour, setSelectedHour] = useState('09');
   const [selectedMinute, setSelectedMinute] = useState('00');
 
-  // Carregar templates
+  // Carregar templates e campanhas dinâmicas
   useEffect(() => {
     if (open) {
       fetchTemplates();
+      fetchCampaigns();
     }
   }, [open]);
+
+  // Pre-select campaign if batchId provided
+  useEffect(() => {
+    if (preselectedBatchId && campaigns.length > 0) {
+      const campaign = campaigns.find(c => c.batchId === preselectedBatchId);
+      if (campaign) {
+        setSelectedCampaign(campaign.id);
+      }
+    }
+  }, [preselectedBatchId, campaigns]);
 
   // Contar leads quando campanha muda
   useEffect(() => {
@@ -159,9 +167,99 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
     }
   }
 
+  async function fetchCampaigns() {
+    setCampaignsLoading(true);
+    const allCampaigns: DynamicCampaign[] = [];
+
+    try {
+      // 1. Buscar listas nomeadas da tabela import_lists
+      const { data: importLists } = await supabase
+        .from('import_lists')
+        .select('id, name, batch_id, lead_count, created_at')
+        .order('created_at', { ascending: false });
+
+      if (importLists) {
+        importLists.forEach(list => {
+          allCampaigns.push({
+            id: `batch_${list.batch_id}`,
+            label: list.name,
+            description: `${list.lead_count} leads - ${format(new Date(list.created_at), 'dd/MM/yyyy')}`,
+            type: 'batch',
+            batchId: list.batch_id,
+            leadCount: list.lead_count,
+            createdAt: list.created_at
+          });
+        });
+      }
+
+      // 2. Buscar sources únicos para campanhas automáticas
+      const { data: sources } = await supabase
+        .from('leads')
+        .select('source')
+        .not('source', 'is', null);
+
+      if (sources) {
+        // Agrupar e contar por source
+        const sourceCounts: Record<string, number> = {};
+        sources.forEach(lead => {
+          if (lead.source) {
+            sourceCounts[lead.source] = (sourceCounts[lead.source] || 0) + 1;
+          }
+        });
+
+        // Criar campanhas para sources que começam com padrões conhecidos
+        const knownPatterns = ['jornada', 'ebook', 'operacao', 'operação', 'exit_intent', 'nurturing'];
+        
+        Object.entries(sourceCounts).forEach(([source, count]) => {
+          const lowerSource = source.toLowerCase();
+          const isKnownPattern = knownPatterns.some(p => lowerSource.includes(p));
+          
+          // Só incluir se for padrão conhecido e não for importação (já coberto por import_lists)
+          if (isKnownPattern && !lowerSource.includes('importação') && !lowerSource.includes('importacao')) {
+            // Format label nicely
+            const label = source
+              .replace(/_/g, ' ')
+              .split(' ')
+              .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+              .join(' ');
+
+            allCampaigns.push({
+              id: `source_${source}`,
+              label,
+              description: `${count} leads`,
+              type: 'source',
+              sourceFilter: source,
+              leadCount: count
+            });
+          }
+        });
+      }
+
+      // 3. Adicionar opção "Todos os Leads"
+      const { count: totalLeads } = await supabase
+        .from('leads')
+        .select('*', { count: 'exact', head: true });
+
+      allCampaigns.push({
+        id: 'all_leads',
+        label: 'Todos os Leads',
+        description: `${totalLeads || 0} leads no total`,
+        type: 'source',
+        sourceFilter: null,
+        leadCount: totalLeads || 0
+      });
+
+      setCampaigns(allCampaigns);
+    } catch (error) {
+      console.error('Error fetching campaigns:', error);
+    } finally {
+      setCampaignsLoading(false);
+    }
+  }
+
   async function countLeads() {
     setCountLoading(true);
-    const campaign = CAMPAIGNS.find(c => c.id === selectedCampaign);
+    const campaign = campaigns.find(c => c.id === selectedCampaign);
     
     if (!campaign) {
       setLeadCount(0);
@@ -170,26 +268,34 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
       return;
     }
 
-    // Buscar leads com informação de telefone para estatísticas
-    let query = supabase.from('leads').select('id, phone');
-    
-    if (campaign.sourceFilter) {
-      if (campaign.sourceFilter.includes('%')) {
-        query = query.ilike('source', campaign.sourceFilter);
-      } else {
-        query = query.eq('source', campaign.sourceFilter);
-      }
-    }
-
-    const { data, error } = await query;
-    
-    if (!error && data) {
-      const total = data.length;
-      const withPhone = data.filter(lead => lead.phone && lead.phone.trim() !== '').length;
-      const withoutPhone = total - withPhone;
+    try {
+      let query = supabase.from('leads').select('id, phone');
       
-      setLeadCount(total);
-      setPhoneStats({ total, withPhone, withoutPhone });
+      if (campaign.type === 'batch' && campaign.batchId) {
+        // Filtrar por batch_id
+        query = query.eq('import_batch_id', campaign.batchId);
+      } else if (campaign.sourceFilter) {
+        // Filtrar por source
+        if (campaign.sourceFilter.includes('%')) {
+          query = query.ilike('source', campaign.sourceFilter);
+        } else {
+          query = query.eq('source', campaign.sourceFilter);
+        }
+      }
+      // Se sourceFilter é null, busca todos
+
+      const { data, error } = await query;
+      
+      if (!error && data) {
+        const total = data.length;
+        const withPhone = data.filter(lead => lead.phone && lead.phone.trim() !== '').length;
+        const withoutPhone = total - withPhone;
+        
+        setLeadCount(total);
+        setPhoneStats({ total, withPhone, withoutPhone });
+      }
+    } catch (error) {
+      console.error('Error counting leads:', error);
     }
     setCountLoading(false);
   }
@@ -218,31 +324,31 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
       return;
     }
 
-    const campaign = CAMPAIGNS.find(c => c.id === selectedCampaign);
+    const campaign = campaigns.find(c => c.id === selectedCampaign);
     if (!campaign) return;
 
     setLoading(true);
 
     try {
       if (scheduleNow) {
-        // Enviar agora via send-bulk-email
-        const { data: leads, error: leadsError } = await supabase
-          .from('leads')
-          .select('id, full_name, email, phone');
+        // Buscar leads baseado no tipo de campanha
+        let query = supabase.from('leads').select('id, full_name, email, phone');
+        
+        if (campaign.type === 'batch' && campaign.batchId) {
+          query = query.eq('import_batch_id', campaign.batchId);
+        } else if (campaign.sourceFilter) {
+          if (campaign.sourceFilter.includes('%')) {
+            query = query.ilike('source', campaign.sourceFilter);
+          } else {
+            query = query.eq('source', campaign.sourceFilter);
+          }
+        }
+
+        const { data: filteredLeads, error: leadsError } = await query;
         
         if (leadsError) throw leadsError;
 
-        let filteredLeads = leads || [];
-        if (campaign.sourceFilter) {
-          // Filtrar leads pela campanha
-          const { data: filtered } = await supabase
-            .from('leads')
-            .select('id, full_name, email, phone')
-            .ilike('source', campaign.sourceFilter.includes('%') ? campaign.sourceFilter : campaign.sourceFilter);
-          filteredLeads = filtered || [];
-        }
-
-        if (filteredLeads.length === 0) {
+        if (!filteredLeads || filteredLeads.length === 0) {
           toast.error('Nenhum lead encontrado para esta campanha');
           setLoading(false);
           return;
@@ -326,6 +432,11 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
 
         const { data: session } = await supabase.auth.getSession();
 
+        // Para campanhas de batch, salvar batch_id no metadata
+        const metadata = campaign.type === 'batch' && campaign.batchId 
+          ? { batch_id: campaign.batchId }
+          : null;
+
         const { error } = await supabase
           .from('scheduled_messages')
           .insert({
@@ -333,7 +444,7 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
             channel,
             subject: channel === 'email' ? subject : null,
             message,
-            source_filter: campaign.sourceFilter,
+            source_filter: campaign.type === 'batch' ? `batch:${campaign.batchId}` : campaign.sourceFilter,
             recipient_count: leadCount,
             scheduled_for: scheduledDate.toISOString(),
             status: 'pending',
@@ -413,21 +524,36 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
             <div className="space-y-4">
             <div>
               <Label>Selecionar Campanha</Label>
-              <Select value={selectedCampaign} onValueChange={setSelectedCampaign}>
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Escolha uma campanha..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {CAMPAIGNS.map((campaign) => (
-                    <SelectItem key={campaign.id} value={campaign.id}>
-                      <div className="flex flex-col">
-                        <span>{campaign.label}</span>
-                        <span className="text-xs text-muted-foreground">{campaign.description}</span>
+              {campaignsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : (
+                <Select value={selectedCampaign} onValueChange={setSelectedCampaign}>
+                  <SelectTrigger className="mt-1.5">
+                    <SelectValue placeholder="Escolha uma campanha..." />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {campaigns.length === 0 ? (
+                      <div className="p-4 text-center text-muted-foreground text-sm">
+                        Nenhuma campanha disponível
                       </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    ) : (
+                      campaigns.map((campaign) => (
+                        <SelectItem key={campaign.id} value={campaign.id}>
+                          <div className="flex items-center gap-2">
+                            {getCampaignIcon(campaign)}
+                            <div className="flex flex-col">
+                              <span>{campaign.label}</span>
+                              <span className="text-xs text-muted-foreground">{campaign.description}</span>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             {selectedCampaign && (
