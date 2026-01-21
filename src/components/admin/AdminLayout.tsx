@@ -21,11 +21,13 @@ import {
   ClipboardCheck,
   Search,
   RefreshCw,
+  ListTodo,
 } from "lucide-react";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import { AdminNotificationBell } from "./AdminNotificationBell";
 import { PendingMissionsBadge } from "./PendingMissionsBadge";
+import { PendingTasksBadge } from "./tasks/PendingTasksBadge";
 import { CommandPalette } from "./CommandPalette";
 import { QuickActionsCenter } from "./QuickActionsCenter";
 import { QuickEnrollDialog } from "./QuickEnrollDialog";
@@ -41,13 +43,14 @@ interface AdminLayoutProps {
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin", hasBadge: false },
+  { icon: ListTodo, label: "Tarefas", href: "/admin/tasks", hasBadge: true, badgeType: "tasks" },
   { icon: BookOpen, label: "Cursos", href: "/admin/courses", hasBadge: false },
   { icon: Target, label: "Agentes IA", href: "/admin/agents", hasBadge: false },
   { icon: FileText, label: "Blog", href: "/admin/blog", hasBadge: false },
   { icon: Users, label: "Alunos", href: "/admin/students", hasBadge: false },
   { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments", hasBadge: false },
   { icon: Target, label: "Leads", href: "/admin/leads", hasBadge: false },
-  { icon: ClipboardCheck, label: "Revisar Missões", href: "/admin/mission-reviews", hasBadge: true },
+  { icon: ClipboardCheck, label: "Revisar Missões", href: "/admin/mission-reviews", hasBadge: true, badgeType: "missions" },
   { icon: Mail, label: "Comunicação", href: "/admin/messaging", hasBadge: false },
   { icon: Activity, label: "Engajamento", href: "/admin/engagement", hasBadge: false },
   { icon: Bell, label: "Notificações", href: "/admin/notifications", hasBadge: false },
@@ -153,9 +156,10 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
                     : "text-muted-foreground hover:bg-secondary/10 hover:text-foreground"
                 )}
               >
-                <item.icon className="w-5 h-5" />
+              <item.icon className="w-5 h-5" />
                 <span className="flex-1">{item.label}</span>
-                {item.hasBadge && <PendingMissionsBadge />}
+                {item.hasBadge && item.badgeType === "missions" && <PendingMissionsBadge />}
+                {item.hasBadge && item.badgeType === "tasks" && <PendingTasksBadge />}
               </Link>
             ))}
             <button
@@ -263,7 +267,8 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
                 (location.pathname === item.href || location.pathname.startsWith(item.href + "/")) && "text-secondary"
               )} />
               {isSidebarOpen && <span className="flex-1">{item.label}</span>}
-              {isSidebarOpen && item.hasBadge && <PendingMissionsBadge />}
+              {isSidebarOpen && item.hasBadge && item.badgeType === "missions" && <PendingMissionsBadge />}
+              {isSidebarOpen && item.hasBadge && item.badgeType === "tasks" && <PendingTasksBadge />}
             </Link>
           ))}
         </nav>
