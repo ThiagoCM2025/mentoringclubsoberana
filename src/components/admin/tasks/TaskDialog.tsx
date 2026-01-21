@@ -26,15 +26,18 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon, User, Target, GraduationCap, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Admin, CreateTaskInput, TaskPriority } from "@/hooks/useTasks";
+import { Admin, AdminTask, CreateTaskInput, TaskPriority } from "@/hooks/useTasks";
 import { supabase } from "@/integrations/supabase/client";
 
-interface NewTaskDialogProps {
+interface TaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   admins: Admin[];
   currentUserId?: string;
   onSubmit: (input: CreateTaskInput) => Promise<unknown>;
+  onUpdate?: (id: string, updates: Partial<AdminTask>) => Promise<void>;
+  mode?: "create" | "edit";
+  task?: AdminTask;
   defaultLeadId?: string;
   defaultLeadName?: string;
   defaultStudentId?: string;
@@ -56,17 +59,20 @@ const reminderOptions = [
   { value: "1440", label: "1 dia antes" },
 ];
 
-export function NewTaskDialog({
+export function TaskDialog({
   open,
   onOpenChange,
   admins,
   currentUserId,
   onSubmit,
+  onUpdate,
+  mode = "create",
+  task,
   defaultLeadId,
   defaultLeadName,
   defaultStudentId,
   defaultStudentName,
-}: NewTaskDialogProps) {
+}: TaskDialogProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [assignedTo, setAssignedTo] = useState(currentUserId || "");
@@ -82,22 +88,40 @@ export function NewTaskDialog({
   const [studentResults, setStudentResults] = useState<Array<{ user_id: string; full_name: string }>>([]);
   const [submitting, setSubmitting] = useState(false);
 
+  // Initialize form when dialog opens
   useEffect(() => {
-    if (currentUserId && !assignedTo) {
-      setAssignedTo(currentUserId);
-    }
-  }, [currentUserId]);
+    if (!open) return;
 
-  useEffect(() => {
-    if (defaultLeadId) {
-      setLeadId(defaultLeadId);
-      setLeadSearch(defaultLeadName || "");
+    if (mode === "edit" && task) {
+      // Edit mode: fill with task data
+      setTitle(task.title);
+      setDescription(task.description || "");
+      setAssignedTo(task.assigned_to);
+      const taskDate = new Date(task.due_date);
+      setDueDate(taskDate);
+      setDueTime(format(taskDate, "HH:mm"));
+      setPriority(task.priority);
+      setReminderMinutes("0"); // Reset reminder for edit
+      setLeadId(task.related_lead_id || "");
+      setStudentId(task.related_student_id || "");
+      setLeadSearch(task.lead?.full_name || "");
+      setStudentSearch(task.student?.full_name || "");
+    } else {
+      // Create mode: reset form or use defaults
+      resetForm();
+      if (currentUserId && !assignedTo) {
+        setAssignedTo(currentUserId);
+      }
+      if (defaultLeadId) {
+        setLeadId(defaultLeadId);
+        setLeadSearch(defaultLeadName || "");
+      }
+      if (defaultStudentId) {
+        setStudentId(defaultStudentId);
+        setStudentSearch(defaultStudentName || "");
+      }
     }
-    if (defaultStudentId) {
-      setStudentId(defaultStudentId);
-      setStudentSearch(defaultStudentName || "");
-    }
-  }, [defaultLeadId, defaultLeadName, defaultStudentId, defaultStudentName]);
+  }, [open, mode, task, currentUserId, defaultLeadId, defaultLeadName, defaultStudentId, defaultStudentName]);
 
   // Search leads
   useEffect(() => {
@@ -147,26 +171,40 @@ export function NewTaskDialog({
     const dueDateWithTime = new Date(dueDate);
     dueDateWithTime.setHours(hours, minutes, 0, 0);
 
-    // Calculate reminder time
-    let reminderAt: string | undefined;
-    if (reminderMinutes !== "0") {
-      const reminderDate = new Date(dueDateWithTime);
-      reminderDate.setMinutes(reminderDate.getMinutes() - parseInt(reminderMinutes));
-      reminderAt = reminderDate.toISOString();
+    if (mode === "edit" && task && onUpdate) {
+      // Update existing task
+      await onUpdate(task.id, {
+        title: title.trim(),
+        description: description.trim() || null,
+        assigned_to: assignedTo,
+        due_date: dueDateWithTime.toISOString(),
+        priority,
+        related_lead_id: leadId || null,
+        related_student_id: studentId || null,
+      });
+    } else {
+      // Create new task
+      let reminderAt: string | undefined;
+      if (reminderMinutes !== "0") {
+        const reminderDate = new Date(dueDateWithTime);
+        reminderDate.setMinutes(reminderDate.getMinutes() - parseInt(reminderMinutes));
+        reminderAt = reminderDate.toISOString();
+      }
+
+      const input: CreateTaskInput = {
+        title: title.trim(),
+        description: description.trim() || undefined,
+        assigned_to: assignedTo,
+        due_date: dueDateWithTime.toISOString(),
+        priority,
+        related_lead_id: leadId || undefined,
+        related_student_id: studentId || undefined,
+        reminder_at: reminderAt,
+      };
+
+      await onSubmit(input);
     }
 
-    const input: CreateTaskInput = {
-      title: title.trim(),
-      description: description.trim() || undefined,
-      assigned_to: assignedTo,
-      due_date: dueDateWithTime.toISOString(),
-      priority,
-      related_lead_id: leadId || undefined,
-      related_student_id: studentId || undefined,
-      reminder_at: reminderAt,
-    };
-
-    await onSubmit(input);
     setSubmitting(false);
     resetForm();
     onOpenChange(false);
@@ -175,6 +213,7 @@ export function NewTaskDialog({
   const resetForm = () => {
     setTitle("");
     setDescription("");
+    setAssignedTo(currentUserId || "");
     setDueDate(undefined);
     setDueTime("12:00");
     setPriority("medium");
@@ -185,11 +224,13 @@ export function NewTaskDialog({
     setStudentSearch("");
   };
 
+  const isEdit = mode === "edit";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Nova Tarefa</DialogTitle>
+          <DialogTitle>{isEdit ? "Editar Tarefa" : "Nova Tarefa"}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
@@ -298,21 +339,23 @@ export function NewTaskDialog({
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label>Lembrete</Label>
-              <Select value={reminderMinutes} onValueChange={setReminderMinutes}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {reminderOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {!isEdit && (
+              <div className="space-y-2">
+                <Label>Lembrete</Label>
+                <Select value={reminderMinutes} onValueChange={setReminderMinutes}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {reminderOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           {/* Link to Lead */}
@@ -395,10 +438,16 @@ export function NewTaskDialog({
             onClick={handleSubmit} 
             disabled={!title.trim() || !dueDate || !assignedTo || submitting}
           >
-            {submitting ? "Criando..." : "Criar Tarefa"}
+            {submitting 
+              ? (isEdit ? "Salvando..." : "Criando...") 
+              : (isEdit ? "Salvar Alterações" : "Criar Tarefa")
+            }
           </Button>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
+
+// Re-export for backward compatibility
+export { TaskDialog as NewTaskDialog };

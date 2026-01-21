@@ -29,6 +29,7 @@ interface TaskCardProps {
   task: AdminTask;
   currentUserId?: string;
   onStatusChange: (id: string, status: TaskStatus) => void;
+  onEdit?: (task: AdminTask) => void;
   onDelete: (id: string) => void;
   onViewLead?: (leadId: string) => void;
   onViewStudent?: (studentId: string) => void;
@@ -52,6 +53,7 @@ export function TaskCard({
   task,
   currentUserId,
   onStatusChange,
+  onEdit,
   onDelete,
   onViewLead,
   onViewStudent,
@@ -176,6 +178,11 @@ export function TaskCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onEdit?.(task)}>
+                <Edit className="h-4 w-4 mr-2" />
+                Editar
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               {task.status === "pending" && (
                 <DropdownMenuItem onClick={() => onStatusChange(task.id, "in_progress")}>
                   <Play className="h-4 w-4 mr-2" />
