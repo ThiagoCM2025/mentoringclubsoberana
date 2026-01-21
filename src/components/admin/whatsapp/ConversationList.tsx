@@ -87,6 +87,12 @@ export function ConversationList({
     });
   }, [archivedConversations, search]);
 
+  const truncateMessage = (message: string | null, maxLength: number = 35) => {
+    if (!message) return "Nova conversa";
+    if (message.length <= maxLength) return message;
+    return message.substring(0, maxLength) + "...";
+  };
+
   const getInitials = (name: string | null, phone: string) => {
     if (name) {
       return name
@@ -178,7 +184,7 @@ export function ConversationList({
                 ? "text-foreground font-medium"
                 : "text-muted-foreground"
             )}>
-              {conversation.last_message_preview || "Nova conversa"}
+              {truncateMessage(conversation.last_message_preview)}
             </p>
             {conversation.contact_type === "student" && (
               <Badge 
