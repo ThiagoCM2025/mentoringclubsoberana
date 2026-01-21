@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
 import { X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useWhatsAppConversations, type WhatsAppConversation } from "@/hooks/useWhatsAppConversations";
 import { useWhatsAppSound } from "@/hooks/useWhatsAppSound";
 import { ConversationList } from "./ConversationList";
 import { ChatWindow } from "./ChatWindow";
 import { TemplateDrawer } from "./TemplateDrawer";
 import { NewConversationDialog } from "./NewConversationDialog";
+import { LeadDetailModal } from "@/components/admin/leads/LeadDetailModal";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface WhatsAppInboxModalProps {
   open: boolean;
@@ -32,6 +35,8 @@ export function WhatsAppInboxModal({
   const [showTemplates, setShowTemplates] = useState(false);
   const [showNewConversation, setShowNewConversation] = useState(false);
   const [archivedConversations, setArchivedConversations] = useState<WhatsAppConversation[]>([]);
+  const [leadDetailOpen, setLeadDetailOpen] = useState(false);
+  const [leadData, setLeadData] = useState<any>(null);
   const { soundEnabled, toggleSound } = useWhatsAppSound();
   
   const {
@@ -141,15 +146,23 @@ export function WhatsAppInboxModal({
     }
   };
 
-  const handleViewContact = () => {
+  const handleViewContact = async () => {
     if (!selectedConversation) return;
     
-    onOpenChange(false);
-    
     if (selectedConversation.contact_type === "lead" && selectedConversation.contact_id) {
-      // Navigate to leads page (the detail modal can be opened from there)
-      navigate("/admin/leads");
+      // Fetch lead data and open modal
+      const { data: lead } = await supabase
+        .from("leads")
+        .select("*")
+        .eq("id", selectedConversation.contact_id)
+        .maybeSingle();
+      
+      if (lead) {
+        setLeadData(lead);
+        setLeadDetailOpen(true);
+      }
     } else if (selectedConversation.contact_type === "student" && selectedConversation.contact_id) {
+      onOpenChange(false);
       navigate(`/admin/alunos/${selectedConversation.contact_id}`);
     }
   };
@@ -166,7 +179,10 @@ export function WhatsAppInboxModal({
   return (
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-w-5xl w-[95vw] sm:w-full h-[90vh] sm:h-[85vh] p-0 gap-0 overflow-hidden rounded-xl" hideClose>
+        <DialogContent className="max-w-5xl w-[95vw] sm:w-full h-[90vh] sm:h-[85vh] p-0 gap-0 overflow-hidden rounded-xl" hideClose aria-describedby={undefined}>
+          <VisuallyHidden>
+            <DialogTitle>WhatsApp Business Inbox</DialogTitle>
+          </VisuallyHidden>
           {/* Custom header */}
           <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-[#00a884] to-[#128C7E]">
             <div className="flex items-center gap-2">
@@ -238,6 +254,19 @@ export function WhatsAppInboxModal({
         open={showNewConversation}
         onOpenChange={setShowNewConversation}
         onSelectContact={handleNewConversation}
+      />
+
+      {/* Lead detail modal */}
+      <LeadDetailModal
+        open={leadDetailOpen}
+        onClose={() => {
+          setLeadDetailOpen(false);
+          setLeadData(null);
+        }}
+        lead={leadData}
+        onLeadUpdated={() => {
+          // Optionally refresh conversation data
+        }}
       />
     </>
   );
