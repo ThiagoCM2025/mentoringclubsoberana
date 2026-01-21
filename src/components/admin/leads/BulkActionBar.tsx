@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Mail, X, CheckSquare, Users } from "lucide-react";
+import { Mail, X, CheckSquare, Users, Trash2, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface BulkActionBarProps {
   selectedCount: number;
   onSendMessage: () => void;
+  onDeleteSelected: () => void;
+  isDeleting?: boolean;
   onClearSelection: () => void;
   isSelectionMode: boolean;
   onToggleSelectionMode: () => void;
@@ -16,6 +18,8 @@ interface BulkActionBarProps {
 export function BulkActionBar({
   selectedCount,
   onSendMessage,
+  onDeleteSelected,
+  isDeleting,
   onClearSelection,
   isSelectionMode,
   onToggleSelectionMode,
@@ -71,6 +75,21 @@ export function BulkActionBar({
               >
                 <Mail className="h-4 w-4" />
                 Enviar Mensagem
+              </Button>
+
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={onDeleteSelected}
+                disabled={isDeleting}
+                className="gap-2"
+              >
+                {isDeleting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Trash2 className="h-4 w-4" />
+                )}
+                {isDeleting ? "Excluindo..." : "Excluir"}
               </Button>
 
               <Button

@@ -13,6 +13,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
 import { UserPlus, UserCheck, Handshake, Calendar, Trophy, XCircle } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
@@ -69,6 +79,10 @@ export function LeadPipelineView({ leads, onRefresh, onOpenWhatsAppInbox, onDele
   // Selection state
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set());
+  
+  // Bulk delete state
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   
   // Message composer for bulk sending
   const [bulkMessageOpen, setBulkMessageOpen] = useState(false);
@@ -133,6 +147,43 @@ export function LeadPipelineView({ leads, onRefresh, onOpenWhatsAppInbox, onDele
       setBulkMessageOpen(true);
     }
   }, [selectedLeadIds]);
+
+  const handleOpenBulkDelete = useCallback(() => {
+    if (selectedLeadIds.size > 0) {
+      setDeleteConfirmOpen(true);
+    }
+  }, [selectedLeadIds]);
+
+  const handleBulkDelete = useCallback(async () => {
+    if (!onDeleteLead) return;
+    
+    setIsDeleting(true);
+    setDeleteConfirmOpen(false);
+    
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const leadId of selectedLeadIds) {
+      try {
+        await onDeleteLead(leadId);
+        successCount++;
+      } catch {
+        errorCount++;
+      }
+    }
+
+    setIsDeleting(false);
+    handleClearSelection();
+    setIsSelectionMode(false);
+
+    toast({
+      title: `${successCount} lead${successCount > 1 ? "s" : ""} excluído${successCount > 1 ? "s" : ""}`,
+      description: errorCount > 0 ? `${errorCount} erro(s) durante a exclusão` : undefined,
+      variant: errorCount > 0 ? "destructive" : "default",
+    });
+    
+    onRefresh();
+  }, [selectedLeadIds, onDeleteLead, handleClearSelection, toast, onRefresh]);
 
   // Get selected leads as recipients for MessageComposer
   const selectedRecipients = leads
@@ -245,6 +296,8 @@ export function LeadPipelineView({ leads, onRefresh, onOpenWhatsAppInbox, onDele
       <BulkActionBar
         selectedCount={selectedLeadIds.size}
         onSendMessage={handleOpenBulkMessage}
+        onDeleteSelected={handleOpenBulkDelete}
+        isDeleting={isDeleting}
         onClearSelection={handleClearSelection}
         isSelectionMode={isSelectionMode}
         onToggleSelectionMode={handleToggleSelectionMode}
@@ -396,6 +449,28 @@ export function LeadPipelineView({ leads, onRefresh, onOpenWhatsAppInbox, onDele
         leadPhone={studentLead?.phone}
         onConversionComplete={onRefresh}
       />
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão em lote</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você está prestes a excluir <strong>{selectedLeadIds.size} lead{selectedLeadIds.size > 1 ? "s" : ""}</strong>. 
+              Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleBulkDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Excluir {selectedLeadIds.size} lead{selectedLeadIds.size > 1 ? "s" : ""}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
