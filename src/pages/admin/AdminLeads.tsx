@@ -405,13 +405,18 @@ const AdminLeads = () => {
 
         // Create named import list for campaign dispatch
         const { data: session } = await supabase.auth.getSession();
-        await supabase.from("import_lists").insert({
+        const { error: listError } = await supabase.from("import_lists").insert({
           name: listName,
           batch_id: batchId,
           source_filter: `batch:${batchId}`,
           lead_count: imported + updated,
           created_by: session?.session?.user?.id
         });
+        
+        if (listError) {
+          console.error("Erro ao criar import_list:", listError);
+          // Continue anyway - not critical for import
+        }
 
         // Set import result and open dialog
         setImportResult({
