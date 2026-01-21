@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,14 @@ import * as XLSX from "xlsx";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
+
+interface ImportLog {
+  batch_id: string;
+  filename: string | null;
+  created_at: string;
+  imported: number | null;
+  updated: number | null;
+}
 
 interface Lead {
   id: string;
@@ -110,6 +119,8 @@ const getNurturingColor = (step: number) => {
 
 const AdminLeads = () => {
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { getCampaignInfo, getSequenceInfo, calculateNextSend } = useNurturingSequences();
   const unreadWhatsAppCount = useUnreadWhatsAppCount();
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -119,6 +130,8 @@ const AdminLeads = () => {
   const [filterTemp, setFilterTemp] = useState<string>("all");
   const [filterNurturing, setFilterNurturing] = useState<string>("all");
   const [filterNurturingStep, setFilterNurturingStep] = useState<string>("all");
+  const [filterBatch, setFilterBatch] = useState<string>(searchParams.get("batch") || "all");
+  const [importLogs, setImportLogs] = useState<ImportLog[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [communicationHistory, setCommunicationHistory] = useState<CommunicationHistory[]>([]);
@@ -486,17 +499,53 @@ const AdminLeads = () => {
 
   useEffect(() => {
     fetchLeads();
-  }, []);
+    fetchImportLogs();
+  }, [filterBatch]);
+
+  // Sync URL params with state
+  useEffect(() => {
+    const batchFromUrl = searchParams.get("batch");
+    if (batchFromUrl && batchFromUrl !== filterBatch) {
+      setFilterBatch(batchFromUrl);
+    }
+  }, [searchParams]);
+
+  const fetchImportLogs = async () => {
+    const { data } = await supabase
+      .from("import_logs")
+      .select("batch_id, filename, created_at, imported, updated")
+      .order("created_at", { ascending: false })
+      .limit(20);
+    
+    if (data) setImportLogs(data);
+  };
 
   const fetchLeads = async () => {
-    const { data, error } = await supabase
+    let query = supabase
       .from("leads")
       .select("*")
       .order("created_at", { ascending: false });
 
+    // Filter by batch if selected
+    if (filterBatch !== "all") {
+      query = query.eq("import_batch_id", filterBatch);
+    }
+
+    const { data, error } = await query;
+
     if (data) setLeads(data);
     if (error) console.error("Error fetching leads:", error);
     setLoading(false);
+  };
+
+  const handleBatchFilterChange = (value: string) => {
+    setFilterBatch(value);
+    if (value === "all") {
+      searchParams.delete("batch");
+    } else {
+      searchParams.set("batch", value);
+    }
+    setSearchParams(searchParams);
   };
 
   const updateLead = async (id: string, updates: Partial<Lead>) => {
@@ -770,6 +819,32 @@ const AdminLeads = () => {
               <SelectItem value="5">Completo</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={filterBatch} onValueChange={handleBatchFilterChange}>
+            <SelectTrigger className={cn(
+              "w-[170px] h-9 text-sm bg-card border-border text-foreground",
+              filterBatch !== "all" && "border-secondary bg-secondary/10"
+            )}>
+              <SelectValue placeholder="Importação" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas importações</SelectItem>
+              {importLogs.map((log) => (
+                <SelectItem key={log.batch_id} value={log.batch_id}>
+                  {log.filename ? log.filename.slice(0, 20) : "Importação"} ({format(new Date(log.created_at), "dd/MM")})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {filterBatch !== "all" && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => handleBatchFilterChange("all")}
+              className="h-9 text-xs text-muted-foreground hover:text-foreground"
+            >
+              Limpar filtro
+            </Button>
+          )}
         </div>
 
         {/* Pipeline View */}

@@ -1,6 +1,6 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import PageTransition from "@/components/PageTransition";
 
@@ -44,6 +44,7 @@ import AdminVideos from "@/pages/admin/AdminVideos";
 import AdminAgents from "@/pages/admin/AdminAgents";
 import AgentEditor from "@/pages/admin/AgentEditor";
 import AdminTasks from "@/pages/admin/AdminTasks";
+import AdminImportHistory from "@/pages/admin/AdminImportHistory";
 import StudentAgents from "@/pages/student/StudentAgents";
 import ExperienceStartLanding from "@/pages/ExperienceStartLanding";
 import OperacaoRegularizacaoLanding from "@/pages/OperacaoRegularizacaoLanding";
@@ -232,6 +233,14 @@ export const AnimatedRoutes = () => {
           element={
             <ProtectedRoute requireAdmin>
               <PageTransition><AdminTasks /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/import-history"
+          element={
+            <ProtectedRoute requireAdmin>
+              <PageTransition><AdminImportHistory /></PageTransition>
             </ProtectedRoute>
           }
         />
