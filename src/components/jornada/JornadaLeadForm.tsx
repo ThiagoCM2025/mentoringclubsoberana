@@ -51,8 +51,11 @@ export const JornadaLeadForm = ({ variant = "section", ctaText = "QUERO ME INSCR
         throw leadError;
       }
 
-      if (leadId) {
-        localStorage.setItem("soberana_lead_id", leadId);
+      // Extract lead_id from the returned table (RPC now returns TABLE)
+      const actualLeadId = Array.isArray(leadId) && leadId.length > 0 ? leadId[0].lead_id : null;
+      
+      if (actualLeadId) {
+        localStorage.setItem("soberana_lead_id", actualLeadId);
       }
 
       // Track form completion
@@ -62,7 +65,7 @@ export const JornadaLeadForm = ({ variant = "section", ctaText = "QUERO ME INSCR
       await supabase.from("ebook_downloads").insert({
         email: emailNormalized,
         ebook_name: "Mapa Advocacia Imobiliária 2026",
-        lead_id: leadId || null,
+        lead_id: actualLeadId || null,
       });
 
       // Send confirmation email with Jornada materials

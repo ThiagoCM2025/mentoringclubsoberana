@@ -34,6 +34,7 @@ import { CampaignDispatchDialog } from "@/components/admin/leads/CampaignDispatc
 import { LeadMessageModal } from "@/components/admin/leads/LeadMessageModal";
 import { ScheduledMessagesPanel } from "@/components/admin/leads/ScheduledMessagesPanel";
 import { WhatsAppInboxModal } from "@/components/admin/whatsapp/WhatsAppInboxModal";
+import { ImportResultDialog } from "@/components/admin/leads/ImportResultDialog";
 import { useNurturingSequences } from "@/hooks/useNurturingSequences";
 import { useUnreadWhatsAppCount } from "@/hooks/useUnreadWhatsAppCount";
 import { cn } from "@/lib/utils";
@@ -136,6 +137,21 @@ const AdminLeads = () => {
   const [whatsAppInitialType, setWhatsAppInitialType] = useState<"lead" | "student" | undefined>();
   const [whatsAppInitialId, setWhatsAppInitialId] = useState<string | undefined>();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Import result dialog state
+  const [importResultOpen, setImportResultOpen] = useState(false);
+  const [importResult, setImportResult] = useState<{
+    batchId: string;
+    filename: string;
+    totalRows: number;
+    imported: number;
+    updated: number;
+    errors: number;
+    phoneOnly: number;
+    noContact: number;
+    errorDetails: Array<{ row: number; name: string; reason: string }>;
+    completedAt: Date;
+  } | null>(null);
   
   // Função para abrir WhatsApp inbox com telefone e dados do contato
   const openWhatsAppInbox = (phone?: string, name?: string, type?: "lead" | "student", id?: string) => {
@@ -248,8 +264,12 @@ const AdminLeads = () => {
           return;
         }
 
+        // Generate batch ID for this import
+        const batchId = crypto.randomUUID();
+        const errorDetails: Array<{ row: number; name: string; reason: string }> = [];
+
         let imported = 0;
-        let duplicates = 0;
+        let updated = 0;
         let errors = 0;
         let noContact = 0;
         let phoneOnly = 0;
@@ -279,6 +299,7 @@ const AdminLeads = () => {
           // Skip if no contact info at all
           if (!hasValidEmail && !phone) {
             noContact++;
+            errorDetails.push({ row: i + 1, name: full_name, reason: "Sem email ou telefone válido" });
             console.log(`Lead "${full_name}": sem email válido ou telefone`);
             continue;
           }
@@ -294,64 +315,60 @@ const AdminLeads = () => {
             console.log(`Lead "${full_name}": usando email gerado a partir do telefone`);
           } else {
             noContact++;
+            errorDetails.push({ row: i + 1, name: full_name, reason: "Sem contato válido" });
             continue;
           }
 
-          // Check for duplicates by phone first (if phone exists)
-          if (phone) {
-            const { data: existingByPhone } = await supabase
-              .from("leads")
-              .select("id, email")
-              .eq("phone", phone)
-              .limit(1);
-            
-            if (existingByPhone && existingByPhone.length > 0) {
-              // Update existing lead instead of creating duplicate
-              const { error } = await supabase
-                .from("leads")
-                .update({
-                  full_name: full_name,
-                  source: 'importação_excel',
-                  updated_at: new Date().toISOString()
-                })
-                .eq("id", existingByPhone[0].id);
-              
-              if (error) {
-                errors++;
-              } else {
-                duplicates++;
-              }
-              continue;
-            }
-          }
-
-          // Use upsert RPC to avoid email duplicates
+          // Use updated upsert RPC with batch tracking
           const { data, error } = await supabase.rpc('upsert_lead_and_return_id', {
             p_full_name: full_name,
             p_email: emailToUse,
             p_phone: phone,
-            p_source: 'importação_excel'
+            p_source: 'importação_excel',
+            p_batch_id: batchId
           });
           
           if (error) {
             console.error("Import error:", error);
             errors++;
+            errorDetails.push({ row: i + 1, name: full_name, reason: error.message || "Erro no banco de dados" });
+          } else if (data && Array.isArray(data) && data.length > 0) {
+            if (data[0].was_updated) {
+              updated++;
+            } else {
+              imported++;
+            }
           } else {
             imported++;
           }
         }
 
-        const messages = [];
-        if (imported > 0) messages.push(`${imported} importados`);
-        if (duplicates > 0) messages.push(`${duplicates} atualizados (duplicados)`);
-        if (phoneOnly > 0) messages.push(`${phoneOnly} sem email (usando telefone)`);
-        if (noContact > 0) messages.push(`${noContact} ignorados (sem contato)`);
-        if (errors > 0) messages.push(`${errors} erros`);
-
-        toast({
-          title: "Importação concluída",
-          description: messages.join(", ") || "Nenhum lead processado",
+        // Log the import to import_logs table
+        await supabase.from("import_logs").insert({
+          batch_id: batchId,
+          filename: file.name,
+          total_rows: rows.length - 1,
+          imported,
+          updated,
+          errors: errors + noContact,
+          error_details: errorDetails.slice(0, 100) // Limit to 100 errors
         });
+
+        // Set import result and open dialog
+        setImportResult({
+          batchId,
+          filename: file.name,
+          totalRows: rows.length - 1,
+          imported,
+          updated,
+          errors,
+          phoneOnly,
+          noContact,
+          errorDetails,
+          completedAt: new Date()
+        });
+        setImportResultOpen(true);
+        
         fetchLeads();
       } else {
         // Process CSV file - now also supports Name + Phone only
@@ -362,14 +379,18 @@ const AdminLeads = () => {
           const headerLine = lines[0]?.toLowerCase() || "";
           const dataLines = lines.slice(1);
           
+          const batchId = crypto.randomUUID();
+          const errorDetails: Array<{ row: number; name: string; reason: string }> = [];
           let imported = 0;
+          let updated = 0;
           let errors = 0;
           let phoneOnly = 0;
 
           // Detect columns
           const hasEmail = headerLine.includes("email") || headerLine.includes("mail");
           
-          for (const line of dataLines) {
+          for (let i = 0; i < dataLines.length; i++) {
+            const line = dataLines[i];
             if (!line.trim()) continue;
             const parts = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
             const cleanParts = parts.map(p => p.replace(/^"|"$/g, "").trim());
@@ -399,28 +420,54 @@ const AdminLeads = () => {
             }
             
             if (full_name && email) {
-              const { error } = await supabase.from("leads").insert({
-                full_name,
-                email,
-                phone: phone || null,
-                source: source || "importação",
-                status: "new" as LeadStatus,
-                temperature: "cold" as LeadTemperature,
+              const { data, error } = await supabase.rpc('upsert_lead_and_return_id', {
+                p_full_name: full_name,
+                p_email: email,
+                p_phone: phone,
+                p_source: source || 'importação_csv',
+                p_batch_id: batchId
               });
-              if (error) errors++;
-              else imported++;
+              
+              if (error) {
+                errors++;
+                errorDetails.push({ row: i + 2, name: full_name, reason: error.message || "Erro" });
+              } else if (data && Array.isArray(data) && data.length > 0) {
+                if (data[0].was_updated) {
+                  updated++;
+                } else {
+                  imported++;
+                }
+              } else {
+                imported++;
+              }
             }
           }
 
-          const messages = [];
-          if (imported > 0) messages.push(`${imported} leads importados`);
-          if (phoneOnly > 0) messages.push(`${phoneOnly} sem email`);
-          if (errors > 0) messages.push(`${errors} erros`);
-
-          toast({
-            title: "Importação concluída",
-            description: messages.join(", "),
+          // Log the import
+          await supabase.from("import_logs").insert({
+            batch_id: batchId,
+            filename: file.name,
+            total_rows: dataLines.filter(l => l.trim()).length,
+            imported,
+            updated,
+            errors,
+            error_details: errorDetails.slice(0, 100)
           });
+
+          setImportResult({
+            batchId,
+            filename: file.name,
+            totalRows: dataLines.filter(l => l.trim()).length,
+            imported,
+            updated,
+            errors,
+            phoneOnly,
+            noContact: 0,
+            errorDetails,
+            completedAt: new Date()
+          });
+          setImportResultOpen(true);
+          
           fetchLeads();
           setImporting(false);
         };
@@ -1244,6 +1291,17 @@ const AdminLeads = () => {
           initialContactName={whatsAppInitialName}
           initialContactType={whatsAppInitialType}
           initialContactId={whatsAppInitialId}
+        />
+        
+        {/* Import Result Dialog */}
+        <ImportResultDialog
+          open={importResultOpen}
+          onOpenChange={setImportResultOpen}
+          result={importResult}
+          onViewImported={() => {
+            // Could add filter by batch_id here in the future
+            fetchLeads();
+          }}
         />
       </div>
     </AdminLayout>

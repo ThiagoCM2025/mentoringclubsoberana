@@ -65,11 +65,14 @@ export const LeadCaptureSection = () => {
         p_source: "landing_page_ebook"
       });
 
+      // Extract lead_id from the returned table (RPC now returns TABLE)
+      const actualLeadId = Array.isArray(leadId) && leadId.length > 0 ? leadId[0].lead_id : null;
+      
       if (leadError) {
         console.error("Lead upsert error:", leadError);
-      } else if (leadId) {
+      } else if (actualLeadId) {
         // Save lead_id to localStorage for tracking
-        localStorage.setItem("soberana_lead_id", leadId);
+        localStorage.setItem("soberana_lead_id", actualLeadId);
         localStorage.setItem("leadSubmitted", "true");
       }
 
@@ -83,7 +86,7 @@ export const LeadCaptureSection = () => {
       await supabase.from("ebook_downloads").insert({
         email: emailNormalized,
         ebook_name: ebookName,
-        lead_id: leadId || null
+        lead_id: actualLeadId || null
       });
 
       // Send ebook email via edge function
