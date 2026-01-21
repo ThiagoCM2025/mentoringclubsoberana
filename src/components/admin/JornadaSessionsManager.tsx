@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Save, Video, Calendar, FileText, ExternalLink, Play, Lock, Mail, Send, Users } from "lucide-react";
+import { Loader2, Save, Video, FileText, ExternalLink, Play, Lock, Mail, Send, Users, Upload } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -37,9 +37,11 @@ export const JornadaSessionsManager = () => {
   const [sessions, setSessions] = useState<JornadaSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
+  const [uploading, setUploading] = useState<string | null>(null);
   const [sendingReminders, setSendingReminders] = useState(false);
   const [leadsCount, setLeadsCount] = useState(0);
   const [pendingReminders, setPendingReminders] = useState<Record<string, number>>({});
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
     fetchSessions();
@@ -159,6 +161,59 @@ export const JornadaSessionsManager = () => {
     }
     
     setSaving(null);
+  };
+
+  const handleFileUpload = async (sessionId: string, file: File) => {
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Tipo de arquivo não permitido. Use PDF, DOC, DOCX, XLS, XLSX, PPT ou PPTX.");
+      return;
+    }
+
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    if (file.size > maxSize) {
+      toast.error("Arquivo muito grande. Máximo 50MB.");
+      return;
+    }
+
+    setUploading(sessionId);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${sessionId}-${Date.now()}.${fileExt}`;
+      const filePath = `jornada/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('course-materials')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('course-materials')
+        .getPublicUrl(filePath);
+
+      // Update local state
+      setSessions(prev =>
+        prev.map(s => s.id === sessionId ? { ...s, materials_url: publicUrl } : s)
+      );
+
+      toast.success("Arquivo enviado com sucesso!");
+    } catch (error: any) {
+      console.error("Error uploading file:", error);
+      toast.error("Erro ao enviar arquivo: " + error.message);
+    } finally {
+      setUploading(null);
+    }
   };
 
   const handleSendReminders = async (sessionId?: string) => {
@@ -313,13 +368,44 @@ export const JornadaSessionsManager = () => {
                 <div className="space-y-2 min-w-0">
                   <Label className="flex items-center gap-2">
                     <FileText className="w-4 h-4" />
-                    URL do Material (PDF, etc.)
+                    Material (PDF, DOC, etc.)
                   </Label>
-                  <Input
-                    placeholder="https://exemplo.com/material.pdf"
-                    value={session.materials_url || ""}
-                    onChange={(e) => handleUpdateSession(session, "materials_url", e.target.value)}
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="https://exemplo.com/material.pdf"
+                      value={session.materials_url || ""}
+                      onChange={(e) => handleUpdateSession(session, "materials_url", e.target.value)}
+                      className="flex-1"
+                    />
+                    <input
+                      type="file"
+                      ref={(el) => { fileInputRefs.current[session.id] = el; }}
+                      accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFileUpload(session.id, file);
+                        e.target.value = '';
+                      }}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => fileInputRefs.current[session.id]?.click()}
+                      disabled={uploading === session.id}
+                      title="Upload de arquivo"
+                    >
+                      {uploading === session.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Upload className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Cole uma URL ou faça upload (PDF, DOC, XLS, PPT - máx 50MB)
+                  </p>
                   {session.materials_url && (
                     <a
                       href={session.materials_url}
