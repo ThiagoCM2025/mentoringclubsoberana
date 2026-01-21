@@ -50,6 +50,7 @@ export function WhatsAppInboxModal({
     getOrCreateConversation,
     archiveConversation,
     unarchiveConversation,
+    deleteConversation,
     fetchArchivedConversations,
   } = useWhatsAppConversations();
 
@@ -216,6 +217,7 @@ export function WhatsAppInboxModal({
                 onSelect={selectConversation}
                 onNewConversation={() => setShowNewConversation(true)}
                 onUnarchive={handleUnarchive}
+                onDelete={deleteConversation}
               />
             </div>
 

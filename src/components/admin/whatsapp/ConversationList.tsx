@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Search, Archive, MessageSquarePlus, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, Archive, MessageSquarePlus, RotateCcw, ChevronDown, ChevronUp, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -22,6 +22,7 @@ interface ConversationListProps {
   onSelect: (conversation: WhatsAppConversation) => void;
   onNewConversation: () => void;
   onUnarchive: (conversationId: string) => void;
+  onDelete?: (conversationId: string) => void;
 }
 
 export function ConversationList({
@@ -32,6 +33,7 @@ export function ConversationList({
   onSelect,
   onNewConversation,
   onUnarchive,
+  onDelete,
 }: ConversationListProps) {
   const [search, setSearch] = useState("");
   const [showArchived, setShowArchived] = useState(false);
@@ -112,11 +114,13 @@ export function ConversationList({
     const isSelected = selectedId === conversation.id;
     const displayName = shortenName(conversation.contact_name, 22) || formatPhone(conversation.phone);
     
+    const isEmptyConversation = !conversation.last_message_preview;
+    
     return (
       <div
         key={conversation.id}
         className={cn(
-          "w-full flex items-center gap-3 p-3 text-left",
+          "w-full flex items-center gap-3 p-3 text-left group",
           "transition-all duration-200 ease-out",
           isArchived ? "opacity-70" : "",
           !isArchived && "hover:bg-muted/60 hover:-translate-y-[1px] hover:shadow-sm cursor-pointer",
@@ -186,6 +190,22 @@ export function ConversationList({
             )}
           </div>
         </div>
+
+        {/* Delete button for empty conversations */}
+        {!isArchived && isEmptyConversation && onDelete && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 flex-shrink-0 opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-opacity"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(conversation.id);
+            }}
+            title="Remover conversa vazia"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
 
         {isArchived && (
           <Button
