@@ -522,10 +522,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Default thresholds if no rules defined
     const defaultThresholds = {
-      lead_inactive: 24, // hours
-      student_inactive: 7, // days
-      mission_pending: 48, // hours
-      low_conversion: 10, // percentage
+      lead_inactive: 24, // hours - leads quentes sem contato
     };
 
     // Get thresholds from rules or use defaults
@@ -541,20 +538,14 @@ const handler = async (req: Request): Promise<Response> => {
     // Collect all alerts
     const allAlerts: AlertData[] = [];
 
-    // Run all checks in parallel
+    // Run all checks in parallel (focused on actionable alerts only)
     const [
       leadAlerts,
-      studentAlerts,
-      missionAlerts,
-      conversionAlerts,
       enrollmentAlerts,
       whatsAppAlerts,
       reportedPostAlerts,
     ] = await Promise.all([
       checkLeadInactive(supabase, thresholds.lead_inactive),
-      checkStudentInactive(supabase, thresholds.student_inactive),
-      checkMissionsPending(supabase, thresholds.mission_pending),
-      checkLowConversion(supabase, thresholds.low_conversion),
       checkNewEnrollments(supabase),
       checkNewWhatsAppMessages(supabase),
       checkReportedPosts(supabase),
@@ -562,9 +553,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     allAlerts.push(
       ...leadAlerts,
-      ...studentAlerts,
-      ...missionAlerts,
-      ...conversionAlerts,
       ...enrollmentAlerts,
       ...whatsAppAlerts,
       ...reportedPostAlerts
