@@ -1517,6 +1517,45 @@ export type Database = {
           },
         ]
       }
+      import_logs: {
+        Row: {
+          admin_id: string | null
+          batch_id: string
+          created_at: string
+          error_details: Json | null
+          errors: number | null
+          filename: string | null
+          id: string
+          imported: number | null
+          total_rows: number | null
+          updated: number | null
+        }
+        Insert: {
+          admin_id?: string | null
+          batch_id: string
+          created_at?: string
+          error_details?: Json | null
+          errors?: number | null
+          filename?: string | null
+          id?: string
+          imported?: number | null
+          total_rows?: number | null
+          updated?: number | null
+        }
+        Update: {
+          admin_id?: string | null
+          batch_id?: string
+          created_at?: string
+          error_details?: Json | null
+          errors?: number | null
+          filename?: string | null
+          id?: string
+          imported?: number | null
+          total_rows?: number | null
+          updated?: number | null
+        }
+        Relationships: []
+      }
       jornada_access: {
         Row: {
           access_token: string | null
@@ -1942,6 +1981,8 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          import_batch_id: string | null
+          imported_at: string | null
           investment_range: string | null
           last_contact_at: string | null
           meeting_link: string | null
@@ -1972,6 +2013,8 @@ export type Database = {
           email: string
           full_name: string
           id?: string
+          import_batch_id?: string | null
+          imported_at?: string | null
           investment_range?: string | null
           last_contact_at?: string | null
           meeting_link?: string | null
@@ -2002,6 +2045,8 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          import_batch_id?: string | null
+          imported_at?: string | null
           investment_range?: string | null
           last_contact_at?: string | null
           meeting_link?: string | null
@@ -4085,15 +4130,29 @@ export type Database = {
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       notify_weekly_content: { Args: never; Returns: undefined }
       notify_weekly_missions: { Args: never; Returns: undefined }
-      upsert_lead_and_return_id: {
-        Args: {
-          p_email: string
-          p_full_name: string
-          p_phone?: string
-          p_source?: string
-        }
-        Returns: string
-      }
+      upsert_lead_and_return_id:
+        | {
+            Args: {
+              p_email: string
+              p_full_name: string
+              p_phone?: string
+              p_source?: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_batch_id?: string
+              p_email: string
+              p_full_name: string
+              p_phone?: string
+              p_source?: string
+            }
+            Returns: {
+              lead_id: string
+              was_updated: boolean
+            }[]
+          }
     }
     Enums: {
       action_type: "calendar" | "whatsapp" | "form" | "external" | "diagnostic"
