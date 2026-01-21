@@ -146,6 +146,39 @@ const LessonPlayer = () => {
     }
   }, [lessonId, user]);
 
+  // Realtime subscription for mission status updates (enables resubmission after rejection)
+  useEffect(() => {
+    if (!relatedMission?.id || !user?.id) return;
+
+    const channel = supabase
+      .channel(`mission-status-${relatedMission.id}-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "user_mission_completions",
+          filter: `mission_id=eq.${relatedMission.id}`,
+        },
+        (payload) => {
+          const newData = payload.new as any;
+          if (newData.user_id === user.id) {
+            console.log("Mission status updated:", newData.status);
+            setMissionCompletion({
+              id: newData.id,
+              status: newData.status,
+              admin_feedback: newData.admin_feedback,
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [relatedMission?.id, user?.id]);
+
   const fetchLessonData = async () => {
     if (!lessonId || !user) return;
 
