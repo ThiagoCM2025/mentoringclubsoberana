@@ -13,6 +13,7 @@ import { format, formatDistanceToNow, addHours } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { EmailPreviewModal } from "./EmailPreviewModal";
 import { NewCampaignDialog } from "./NewCampaignDialog";
+import { CampaignAnalyticsDashboard } from "./CampaignAnalyticsDashboard";
 import { 
   Zap, 
   Mail, 
@@ -30,9 +31,21 @@ import {
   Target,
   Layers,
   Plus,
-  Pencil
+  Pencil,
+  Trash2
 } from "lucide-react";
 import { CronJobsStatus } from "./CronJobsStatus";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface NurturingSequence {
   id: string;
@@ -119,6 +132,7 @@ export const LeadNurturingTab = () => {
   const [lastExecutions, setLastExecutions] = useState<NurturingExecution[]>([]);
   const [campaignGroups, setCampaignGroups] = useState<CampaignGroup[]>([]);
   const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
+  const [deletingCampaign, setDeletingCampaign] = useState<string | null>(null);
 
   useEffect(() => {
     fetchSequences();
@@ -345,6 +359,34 @@ export const LeadNurturingTab = () => {
     setTesting(null);
   };
 
+  const handleDeleteCampaign = async (sourceFilter: string | null) => {
+    const filterValue = sourceFilter || null;
+    setDeletingCampaign(sourceFilter || 'default');
+    
+    try {
+      let query = supabase.from("nurturing_sequences").delete();
+      
+      if (filterValue === null) {
+        query = query.is("source_filter", null);
+      } else {
+        query = query.eq("source_filter", filterValue);
+      }
+      
+      const { error } = await query;
+      
+      if (error) throw error;
+      
+      toast({ title: "Campanha excluída com sucesso!" });
+      fetchSequences();
+      fetchStats();
+      setSelectedCampaign("all");
+    } catch (error: any) {
+      toast({ title: "Erro ao excluir campanha", description: error.message, variant: "destructive" });
+    } finally {
+      setDeletingCampaign(null);
+    }
+  };
+
   const getStepColor = (step: number) => {
     const colors = [
       "bg-blue-100 text-blue-700 border-blue-200",
@@ -559,6 +601,9 @@ export const LeadNurturingTab = () => {
         <CronJobsStatus />
       </div>
 
+      {/* Campaign Analytics Dashboard */}
+      <CampaignAnalyticsDashboard />
+
       {/* Last Executions */}
       {lastExecutions.length > 0 && (
         <Card>
@@ -635,6 +680,43 @@ export const LeadNurturingTab = () => {
                   <Badge variant="secondary" className="text-xs">
                     {group.sequences.length} etapas
                   </Badge>
+                  
+                  {/* Delete Campaign Button */}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-7 w-7 hover:bg-destructive/20 hover:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Excluir Campanha "{group.label}"?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta ação irá excluir <strong>{group.sequences.length} etapas</strong> permanentemente.
+                          Os leads não serão afetados, mas deixarão de receber emails desta sequência.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction 
+                          onClick={() => handleDeleteCampaign(group.source_filter)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          disabled={deletingCampaign === (group.source_filter || 'default')}
+                        >
+                          {deletingCampaign === (group.source_filter || 'default') ? (
+                            <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                          ) : (
+                            <Trash2 className="w-4 h-4 mr-2" />
+                          )}
+                          Excluir Campanha
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
 
