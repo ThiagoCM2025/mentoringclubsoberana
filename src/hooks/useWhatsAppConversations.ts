@@ -212,7 +212,49 @@ export function useWhatsAppConversations() {
       toast.success("Conversa arquivada");
     } catch (error) {
       console.error("Error archiving conversation:", error);
-      toast.error("Erro ao arquivar conversa");
+    toast.error("Erro ao arquivar conversa");
+    }
+  }, [selectedConversation]);
+
+  // Delete empty conversation (only if no messages)
+  const deleteConversation = useCallback(async (conversationId: string) => {
+    try {
+      // First check if there are no messages
+      const { count } = await supabase
+        .from("whatsapp_messages")
+        .select("*", { count: "exact", head: true })
+        .eq("conversation_id", conversationId);
+
+      if (count && count > 0) {
+        toast.error("Não é possível excluir conversa com mensagens");
+        return;
+      }
+
+      // Delete conversation tags first
+      await supabase
+        .from("entity_tags")
+        .delete()
+        .eq("entity_id", conversationId)
+        .eq("entity_type", "conversation");
+
+      // Delete the conversation
+      const { error } = await supabase
+        .from("whatsapp_conversations")
+        .delete()
+        .eq("id", conversationId);
+
+      if (error) throw error;
+
+      setConversations((prev) => prev.filter((c) => c.id !== conversationId));
+      if (selectedConversation?.id === conversationId) {
+        setSelectedConversation(null);
+        setMessages([]);
+      }
+
+      toast.success("Conversa removida");
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+      toast.error("Erro ao excluir conversa");
     }
   }, [selectedConversation]);
 
@@ -330,6 +372,7 @@ export function useWhatsAppConversations() {
     getOrCreateConversation,
     archiveConversation,
     unarchiveConversation,
+    deleteConversation,
     fetchArchivedConversations,
     refreshConversations: fetchConversations,
   };
