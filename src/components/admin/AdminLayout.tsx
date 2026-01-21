@@ -22,6 +22,7 @@ import {
   Search,
   RefreshCw,
   ListTodo,
+  History,
 } from "lucide-react";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
@@ -50,6 +51,7 @@ const menuItems = [
   { icon: Users, label: "Alunos", href: "/admin/students", hasBadge: false },
   { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments", hasBadge: false },
   { icon: Target, label: "Leads", href: "/admin/leads", hasBadge: false },
+  { icon: History, label: "Histórico Importações", href: "/admin/import-history", hasBadge: false },
   { icon: ClipboardCheck, label: "Revisar Missões", href: "/admin/mission-reviews", hasBadge: true, badgeType: "missions" },
   { icon: Mail, label: "Comunicação", href: "/admin/messaging", hasBadge: false },
   { icon: Activity, label: "Engajamento", href: "/admin/engagement", hasBadge: false },
