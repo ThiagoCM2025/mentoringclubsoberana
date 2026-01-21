@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,8 +31,12 @@ import {
   FileSpreadsheet,
   ArrowUpRight,
   Eye,
-  MousePointerClick
+  MousePointerClick,
+  FileDown
 } from "lucide-react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { toast } from "sonner";
 
 interface CampaignStats {
   totalSent: number;
@@ -64,7 +68,9 @@ interface CampaignOption {
 }
 
 export function CampaignAnalyticsDashboard() {
+  const dashboardRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const [stats, setStats] = useState<CampaignStats>({
     totalSent: 0,
     deliveryRate: 0,
@@ -78,6 +84,53 @@ export function CampaignAnalyticsDashboard() {
   const [campaigns, setCampaigns] = useState<CampaignOption[]>([]);
   const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
   const [dateRange, setDateRange] = useState<string>("30");
+
+  const handleExportPDF = async () => {
+    if (!dashboardRef.current) return;
+    
+    setExporting(true);
+    try {
+      const canvas = await html2canvas(dashboardRef.current, { 
+        scale: 2,
+        backgroundColor: "#ffffff",
+        useCORS: true,
+      });
+      
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      
+      // Header
+      pdf.setFontSize(18);
+      pdf.setTextColor(30, 30, 30);
+      pdf.text("Relatório de Performance de Campanhas", 20, 20);
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`Gerado em: ${format(new Date(), "dd/MM/yyyy 'às' HH:mm")}`, 20, 28);
+      pdf.text(`Período: Últimos ${dateRange} dias`, 20, 34);
+      
+      const campaignLabel = campaigns.find(c => 
+        (c.sourceFilter || "all") === selectedCampaign
+      )?.label || "Todas";
+      pdf.text(`Campanha: ${campaignLabel}`, 20, 40);
+      
+      // Add image
+      const imgWidth = 170;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const maxHeight = 230;
+      const finalHeight = Math.min(imgHeight, maxHeight);
+      
+      pdf.addImage(imgData, "PNG", 20, 50, imgWidth, finalHeight);
+      
+      pdf.save(`relatorio-campanhas-${format(new Date(), "yyyy-MM-dd")}.pdf`);
+      toast.success("PDF exportado com sucesso!");
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+      toast.error("Erro ao exportar PDF");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   useEffect(() => {
     fetchCampaigns();
@@ -263,7 +316,7 @@ export function CampaignAnalyticsDashboard() {
   }
 
   return (
-    <div className="space-y-4">
+    <div ref={dashboardRef} className="space-y-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
@@ -275,7 +328,23 @@ export function CampaignAnalyticsDashboard() {
             Métricas de envio, entrega e conversão
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Select value={selectedCampaign} onValueChange={setSelectedCampaign}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Campanha" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as Campanhas</SelectItem>
+              {campaigns.slice(1).map((campaign) => (
+                <SelectItem 
+                  key={campaign.sourceFilter || "default"} 
+                  value={campaign.sourceFilter || "default"}
+                >
+                  {campaign.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={dateRange} onValueChange={setDateRange}>
             <SelectTrigger className="w-[140px]">
               <SelectValue />
@@ -288,6 +357,19 @@ export function CampaignAnalyticsDashboard() {
           </Select>
           <Button variant="outline" size="icon" onClick={fetchAnalytics}>
             <RefreshCw className="w-4 h-4" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleExportPDF}
+            disabled={exporting}
+          >
+            {exporting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <FileDown className="w-4 h-4 mr-2" />
+            )}
+            {!exporting && "PDF"}
           </Button>
         </div>
       </div>

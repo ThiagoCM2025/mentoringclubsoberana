@@ -149,7 +149,7 @@ export function NewCampaignDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[85vh] flex flex-col overflow-hidden">
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Plus className="h-5 w-5 text-primary" />
@@ -261,27 +261,27 @@ export function NewCampaignDialog({
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              Delay por Etapa (horas após etapa anterior)
+              Delay por Etapa (horas)
             </Label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {Array.from({ length: stepsCount }, (_, i) => (
-                <div key={i} className="flex items-center gap-2 p-2 rounded-lg border bg-muted/30">
-                  <span className="text-xs font-medium text-muted-foreground w-14">
-                    Etapa {i + 1}:
+                <div key={i} className="flex items-center gap-1 p-2 rounded-lg border bg-muted/30">
+                  <span className="text-xs font-semibold text-muted-foreground">
+                    {i + 1}:
                   </span>
                   <Input
                     type="number"
                     min={0}
                     value={stepDelays[i] || 0}
                     onChange={(e) => updateStepDelay(i, parseInt(e.target.value) || 0)}
-                    className="w-16 h-7 text-xs"
+                    className="w-14 h-7 text-xs text-center"
                   />
                   <span className="text-xs text-muted-foreground">h</span>
                 </div>
               ))}
             </div>
             <p className="text-xs text-muted-foreground">
-              Etapa 1 geralmente é 0h (envia imediatamente). Etapas seguintes aguardam X horas após a etapa anterior.
+              Etapa 1 = 0h (imediato). Demais etapas aguardam X horas após a anterior.
             </p>
           </div>
 
