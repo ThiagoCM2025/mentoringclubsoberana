@@ -52,7 +52,7 @@ import { LeadBehaviorTab } from "./LeadBehaviorTab";
 import { LeadActionNotes } from "./LeadActionNotes";
 import { LeadTasksSection } from "./LeadTasksSection";
 import { WhatsAppInboxModal } from "@/components/admin/whatsapp/WhatsAppInboxModal";
-import { NewTaskDialog } from "@/components/admin/tasks/NewTaskDialog";
+import { NewTaskDialog } from "@/components/admin/tasks/TaskDialog";
 import { useNurturingSequences } from "@/hooks/useNurturingSequences";
 import { useTasks } from "@/hooks/useTasks";
 import type { Database } from "@/integrations/supabase/types";

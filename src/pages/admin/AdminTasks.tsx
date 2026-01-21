@@ -14,11 +14,11 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTasks, TaskStatus } from "@/hooks/useTasks";
+import { useTasks, TaskStatus, AdminTask } from "@/hooks/useTasks";
 import { useAuth } from "@/hooks/useAuth";
 import { TaskCalendar } from "@/components/admin/tasks/TaskCalendar";
 import { TaskCard } from "@/components/admin/tasks/TaskCard";
-import { NewTaskDialog } from "@/components/admin/tasks/NewTaskDialog";
+import { TaskDialog } from "@/components/admin/tasks/TaskDialog";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminTasks() {
@@ -28,6 +28,7 @@ export default function AdminTasks() {
   
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [newTaskOpen, setNewTaskOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<AdminTask | null>(null);
   const [viewFilter, setViewFilter] = useState<"all" | "mine">("mine");
   const [statusFilter, setStatusFilter] = useState<"active" | "completed" | "all">("active");
 
@@ -60,6 +61,15 @@ export default function AdminTasks() {
 
   const handleStatusChange = (id: string, status: TaskStatus) => {
     updateTask(id, { status });
+  };
+
+  const handleEdit = (task: AdminTask) => {
+    setEditingTask(task);
+  };
+
+  const handleUpdate = async (id: string, updates: Partial<AdminTask>) => {
+    await updateTask(id, updates);
+    setEditingTask(null);
   };
 
   const handleDelete = (id: string) => {
@@ -244,6 +254,7 @@ export default function AdminTasks() {
                             task={task}
                             currentUserId={user?.id}
                             onStatusChange={handleStatusChange}
+                            onEdit={handleEdit}
                             onDelete={handleDelete}
                             onViewLead={(leadId) => navigate(`/admin/leads?lead=${leadId}`)}
                             onViewStudent={(studentId) => navigate(`/admin/alunos/${studentId}`)}
@@ -294,6 +305,7 @@ export default function AdminTasks() {
                           task={task}
                           currentUserId={user?.id}
                           onStatusChange={handleStatusChange}
+                          onEdit={handleEdit}
                           onDelete={handleDelete}
                           onViewLead={(leadId) => navigate(`/admin/leads?lead=${leadId}`)}
                           onViewStudent={(studentId) => navigate(`/admin/alunos/${studentId}`)}
@@ -309,12 +321,24 @@ export default function AdminTasks() {
       </div>
 
       {/* New Task Dialog */}
-      <NewTaskDialog
+      <TaskDialog
         open={newTaskOpen}
         onOpenChange={setNewTaskOpen}
         admins={admins}
         currentUserId={user?.id}
         onSubmit={createTask}
+      />
+
+      {/* Edit Task Dialog */}
+      <TaskDialog
+        open={!!editingTask}
+        onOpenChange={(open) => !open && setEditingTask(null)}
+        admins={admins}
+        currentUserId={user?.id}
+        onSubmit={createTask}
+        onUpdate={handleUpdate}
+        mode="edit"
+        task={editingTask || undefined}
       />
     </AdminLayout>
   );
