@@ -378,8 +378,8 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Send className="w-5 h-5 text-primary" />
             Disparo por Campanha
@@ -389,26 +389,28 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
           </DialogDescription>
         </DialogHeader>
 
-        {/* Stepper */}
-        <div className="flex items-center gap-2 mb-6">
-          {[1, 2, 3].map((s) => (
-            <div key={s} className="flex items-center gap-2 flex-1">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-                step >= s ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-              }`}>
-                {step > s ? <CheckCircle className="w-4 h-4" /> : s}
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto min-h-0 pr-1">
+          {/* Stepper */}
+          <div className="flex items-center gap-2 mb-6">
+            {[1, 2, 3].map((s) => (
+              <div key={s} className="flex items-center gap-2 flex-1">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                  step >= s ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                }`}>
+                  {step > s ? <CheckCircle className="w-4 h-4" /> : s}
+                </div>
+                <span className={`text-sm hidden sm:block ${step >= s ? 'text-foreground' : 'text-muted-foreground'}`}>
+                  {s === 1 ? 'Destinatários' : s === 2 ? 'Template' : 'Agendamento'}
+                </span>
+                {s < 3 && <div className="flex-1 h-px bg-border" />}
               </div>
-              <span className={`text-sm hidden sm:block ${step >= s ? 'text-foreground' : 'text-muted-foreground'}`}>
-                {s === 1 ? 'Destinatários' : s === 2 ? 'Template' : 'Agendamento'}
-              </span>
-              {s < 3 && <div className="flex-1 h-px bg-border" />}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        {/* Step 1: Selecionar Campanha */}
-        {step === 1 && (
-          <div className="space-y-4">
+          {/* Step 1: Selecionar Campanha */}
+          {step === 1 && (
+            <div className="space-y-4">
             <div>
               <Label>Selecionar Campanha</Label>
               <Select value={selectedCampaign} onValueChange={setSelectedCampaign}>
@@ -734,6 +736,7 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess }: Campai
             </div>
           </div>
         )}
+        </div>
       </DialogContent>
     </Dialog>
   );

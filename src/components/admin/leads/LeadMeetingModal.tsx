@@ -113,15 +113,15 @@ export function LeadMeetingModal({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && resetAndClose()}>
-      <DialogContent className="max-w-md bg-card border-border">
-        <DialogHeader>
+      <DialogContent className="max-w-md max-h-[85vh] flex flex-col overflow-hidden bg-card border-border">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-lg font-semibold flex items-center gap-2">
             <Calendar className="w-5 h-5 text-cyan-600" />
             Agendar Reunião: {leadName}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-2">
+        <div className="flex-1 overflow-y-auto min-h-0 space-y-4 py-2 pr-1">
           {/* Meeting Date/Time */}
           <div className="space-y-2">
             <Label className="text-sm font-medium flex items-center gap-2">
@@ -183,7 +183,7 @@ export function LeadMeetingModal({
           </div>
         </div>
 
-        <DialogFooter className="gap-2">
+        <DialogFooter className="flex-shrink-0 gap-2 pt-4 border-t">
           <Button variant="outline" onClick={resetAndClose} disabled={saving}>
             Cancelar
           </Button>

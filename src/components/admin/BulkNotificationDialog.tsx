@@ -52,14 +52,12 @@ export function BulkNotificationDialog() {
   const fetchCoursesWithStudents = async () => {
     setLoading(true);
     
-    // Fetch all courses
     const { data: coursesData } = await supabase
       .from("courses")
       .select("id, title")
       .order("title");
 
     if (coursesData) {
-      // Fetch enrollment counts for each course
       const { data: enrollments } = await supabase
         .from("enrollments")
         .select("course_id");
@@ -87,7 +85,6 @@ export function BulkNotificationDialog() {
     setSending(true);
 
     try {
-      // Get all students enrolled in the selected course
       const { data: enrollments, error: enrollmentsError } = await supabase
         .from("enrollments")
         .select("user_id")
@@ -101,7 +98,6 @@ export function BulkNotificationDialog() {
         return;
       }
 
-      // Create notifications for all enrolled students
       const notifications = enrollments.map(enrollment => ({
         user_id: enrollment.user_id,
         title: formData.title,
@@ -163,8 +159,8 @@ export function BulkNotificationDialog() {
           Notificação em Massa
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[500px] max-h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Megaphone className="h-5 w-5" />
             Notificação em Massa
@@ -174,119 +170,106 @@ export function BulkNotificationDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSend} className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <Label>Selecione o Curso *</Label>
-            <Select
-              value={selectedCourseId}
-              onValueChange={setSelectedCourseId}
-              disabled={loading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={loading ? "Carregando cursos..." : "Escolha um curso..."} />
-              </SelectTrigger>
-              <SelectContent>
-                {courses.map((course) => (
-                  <SelectItem key={course.id} value={course.id}>
-                    <div className="flex items-center justify-between w-full gap-4">
-                      <span>{course.title}</span>
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Users className="h-3 w-3" />
-                        {course.student_count}
-                      </span>
+        <form onSubmit={handleSend} className="flex-1 flex flex-col min-h-0 overflow-hidden mt-4">
+          <div className="flex-1 overflow-y-auto min-h-0 space-y-4 pr-1">
+            <div className="space-y-2">
+              <Label>Selecione o Curso *</Label>
+              <Select value={selectedCourseId} onValueChange={setSelectedCourseId} disabled={loading}>
+                <SelectTrigger>
+                  <SelectValue placeholder={loading ? "Carregando cursos..." : "Escolha um curso..."} />
+                </SelectTrigger>
+                <SelectContent>
+                  {courses.map((course) => (
+                    <SelectItem key={course.id} value={course.id}>
+                      <div className="flex items-center justify-between w-full gap-4">
+                        <span>{course.title}</span>
+                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          {course.student_count}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedCourse && selectedCourse.student_count > 0 && (
+                <p className="text-sm text-muted-foreground">
+                  Esta notificação será enviada para <strong>{selectedCourse.student_count}</strong> aluno(s).
+                </p>
+              )}
+              {selectedCourse && selectedCourse.student_count === 0 && (
+                <p className="text-sm text-yellow-600">
+                  Este curso não possui alunos matriculados.
+                </p>
+              )}
+            </div>
+
+            <TemplateSelector onSelect={handleTemplateSelect} />
+
+            <div className="space-y-2">
+              <Label htmlFor="bulk-title">Título *</Label>
+              <Input
+                id="bulk-title"
+                placeholder="Ex: Nova aula disponível!"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="bulk-message">Mensagem *</Label>
+              <Textarea
+                id="bulk-message"
+                placeholder="Escreva sua mensagem aqui..."
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                rows={4}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Tipo de Notificação</Label>
+              <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="info">
+                    <div className="flex items-center gap-2">
+                      {getTypeIcon('info')}
+                      <span>Informação</span>
                     </div>
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {selectedCourse && selectedCourse.student_count > 0 && (
-              <p className="text-sm text-muted-foreground">
-                Esta notificação será enviada para <strong>{selectedCourse.student_count}</strong> aluno(s).
-              </p>
-            )}
-            {selectedCourse && selectedCourse.student_count === 0 && (
-              <p className="text-sm text-yellow-600">
-                Este curso não possui alunos matriculados.
-              </p>
-            )}
+                  <SelectItem value="success">
+                    <div className="flex items-center gap-2">
+                      {getTypeIcon('success')}
+                      <span>Sucesso</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="warning">
+                    <div className="flex items-center gap-2">
+                      {getTypeIcon('warning')}
+                      <span>Aviso</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="alert">
+                    <div className="flex items-center gap-2">
+                      {getTypeIcon('alert')}
+                      <span>Alerta</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          <TemplateSelector onSelect={handleTemplateSelect} />
-
-          <div className="space-y-2">
-            <Label htmlFor="bulk-title">Título *</Label>
-            <Input
-              id="bulk-title"
-              placeholder="Ex: Nova aula disponível!"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="bulk-message">Mensagem *</Label>
-            <Textarea
-              id="bulk-message"
-              placeholder="Escreva sua mensagem aqui..."
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              rows={4}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Tipo de Notificação</Label>
-            <Select
-              value={formData.type}
-              onValueChange={(value) => setFormData({ ...formData, type: value })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="info">
-                  <div className="flex items-center gap-2">
-                    {getTypeIcon('info')}
-                    <span>Informação</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="success">
-                  <div className="flex items-center gap-2">
-                    {getTypeIcon('success')}
-                    <span>Sucesso</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="warning">
-                  <div className="flex items-center gap-2">
-                    {getTypeIcon('warning')}
-                    <span>Aviso</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="alert">
-                  <div className="flex items-center gap-2">
-                    {getTypeIcon('alert')}
-                    <span>Alerta</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={sending}
-            >
+          <div className="flex-shrink-0 flex justify-end gap-3 pt-4 border-t mt-4">
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={sending}>
               Cancelar
             </Button>
-            <Button 
-              type="submit" 
-              disabled={sending || !selectedCourseId || (selectedCourse?.student_count === 0)}
-            >
+            <Button type="submit" disabled={sending || !selectedCourseId || (selectedCourse?.student_count === 0)}>
               {sending ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />

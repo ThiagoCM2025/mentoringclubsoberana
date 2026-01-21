@@ -216,15 +216,15 @@ export function LeadMessageModal({ open, onClose, lead, onMessageSent }: LeadMes
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-secondary" />
             Enviar Mensagem para {lead?.full_name}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 pt-4">
+        <div className="flex-1 overflow-y-auto min-h-0 space-y-6 pt-4 pr-1">
           {/* Templates */}
           {templates.length > 0 && (
             <div>
@@ -294,24 +294,25 @@ export function LeadMessageModal({ open, onClose, lead, onMessageSent }: LeadMes
             </p>
           </div>
 
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-border">
-            <Button variant="outline" onClick={onClose} className="bg-card border-border text-foreground hover:bg-muted">
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleSend}
-              disabled={sending || !message.trim()}
-              className="bg-secondary text-secondary-foreground hover:bg-secondary/90"
-            >
-              {sending ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Send className="w-4 h-4 mr-2" />
-              )}
-              Enviar
-            </Button>
-          </div>
+        </div>
+
+        {/* Actions - Fixed at bottom */}
+        <div className="flex-shrink-0 flex justify-end gap-3 pt-4 border-t border-border">
+          <Button variant="outline" onClick={onClose} className="bg-card border-border text-foreground hover:bg-muted">
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSend}
+            disabled={sending || !message.trim()}
+            className="bg-secondary text-secondary-foreground hover:bg-secondary/90"
+          >
+            {sending ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4 mr-2" />
+            )}
+            Enviar
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
