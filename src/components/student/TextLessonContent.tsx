@@ -14,13 +14,15 @@ import {
   Trophy,
   Lightbulb,
   Send,
-  Clock
+  Clock,
+  RotateCcw
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AvatarMapForm } from "./AvatarMapForm";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { useMissionSubmissionCount } from "@/hooks/useMissionSubmissionCount";
 
 interface Material {
   id: string;
@@ -71,6 +73,9 @@ const TextLessonContent = ({
   const { user } = useAuth();
   const [avatarFormId, setAvatarFormId] = useState<string | null>(null);
   const [isSubmittingMission, setIsSubmittingMission] = useState(false);
+  
+  // Fetch submission attempt count
+  const { count: submissionCount } = useMissionSubmissionCount(relatedMission?.id, user?.id);
   
   // Determine mission status
   const missionIsApproved = missionCompletion?.status === 'approved';
@@ -193,6 +198,12 @@ const TextLessonContent = ({
                       <div>
                         <p className="text-xs text-cream/50 uppercase">Semana {relatedMission.week_number}</p>
                         <h4 className="font-serif font-bold text-cream">{relatedMission.title}</h4>
+                        {submissionCount > 0 && (
+                          <p className="text-xs text-cream/50 flex items-center gap-1 mt-1">
+                            <RotateCcw className="w-3 h-3" />
+                            {submissionCount} tentativa{submissionCount > 1 ? 's' : ''} realizada{submissionCount > 1 ? 's' : ''}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <Badge variant="outline" className={cn(
@@ -428,6 +439,12 @@ const TextLessonContent = ({
                         <div>
                           <p className="text-xs text-cream/50 uppercase">Semana {relatedMission.week_number}</p>
                           <h4 className="font-serif font-bold text-cream">{relatedMission.title}</h4>
+                          {submissionCount > 0 && (
+                            <p className="text-xs text-cream/50 flex items-center gap-1 mt-1">
+                              <RotateCcw className="w-3 h-3" />
+                              {submissionCount} tentativa{submissionCount > 1 ? 's' : ''} realizada{submissionCount > 1 ? 's' : ''}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <Badge variant="outline" className={cn(
