@@ -141,7 +141,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const emailPromises = adminEmails.map(email =>
       resend.emails.send({
-        from: "Soberana <onboarding@resend.dev>",
+        from: "Soberana <notificacoes@soberanamentoria.com.br>",
         to: [email],
         subject: `[Soberana] ${payload.title}`,
         html

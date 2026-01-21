@@ -402,7 +402,7 @@ async function sendAlertEmails(resendApiKey: string, recipients: EmailRecipient[
     try {
       const resend = new Resend(resendApiKey);
       const emailResponse = await resend.emails.send({
-        from: 'Soberana Alertas <alertas@resend.dev>',
+        from: 'Soberana Alertas <alertas@soberanamentoria.com.br>',
         to: [primaryRecipient.email],
         cc: ccRecipients.length > 0 ? ccRecipients : undefined,
         subject: `${severityConfig[alert.severity].emoji} [${severityConfig[alert.severity].label}] ${alert.title}`,
