@@ -5,7 +5,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -37,12 +36,12 @@ import {
   DollarSign,
   Briefcase,
   AlertCircle,
-  Save,
   Loader2,
   Pencil,
   History,
   TrendingUp,
   BarChart3,
+  CheckCircle2,
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -50,8 +49,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { LeadBehaviorTab } from "./LeadBehaviorTab";
+import { LeadActionNotes } from "./LeadActionNotes";
+import { LeadTasksSection } from "./LeadTasksSection";
 import { WhatsAppInboxModal } from "@/components/admin/whatsapp/WhatsAppInboxModal";
+import { NewTaskDialog } from "@/components/admin/tasks/NewTaskDialog";
 import { useNurturingSequences } from "@/hooks/useNurturingSequences";
+import { useTasks } from "@/hooks/useTasks";
 import type { Database } from "@/integrations/supabase/types";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
@@ -122,18 +125,24 @@ const statusConfig: Record<string, { label: string; color: string }> = {
 
 export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQualification, onOpenMessage }: LeadDetailModalProps) {
   const { getSequenceInfo, calculateNextSend } = useNurturingSequences();
+  const { admins, createTask } = useTasks();
   
-  const [notes, setNotes] = useState("");
-  const [savingNotes, setSavingNotes] = useState(false);
   const [status, setStatus] = useState<LeadStatus>("new");
   const [temperature, setTemperature] = useState<LeadTemperature>("warm");
   const [communicationHistory, setCommunicationHistory] = useState<CommunicationHistory[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [whatsappOpen, setWhatsappOpen] = useState(false);
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setCurrentUserId(data.user?.id);
+    });
+  }, []);
 
   useEffect(() => {
     if (lead && open) {
-      setNotes(lead.notes || "");
       setStatus((lead.status as LeadStatus) || "new");
       setTemperature(lead.temperature || "warm");
       fetchCommunicationHistory(lead.id);
@@ -151,24 +160,6 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
     
     setCommunicationHistory(data || []);
     setLoadingHistory(false);
-  };
-
-  const handleSaveNotes = async () => {
-    if (!lead) return;
-    setSavingNotes(true);
-    
-    const { error } = await supabase
-      .from("leads")
-      .update({ notes })
-      .eq("id", lead.id);
-    
-    setSavingNotes(false);
-    if (error) {
-      toast.error("Erro ao salvar notas");
-    } else {
-      toast.success("Notas salvas!");
-      onLeadUpdated();
-    }
   };
 
   const handleStatusChange = async (newStatus: LeadStatus) => {
@@ -408,27 +399,15 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
                   )}
                 </div>
 
-                {/* Quick Notes */}
-                <div className="space-y-2">
-                  <p className="text-[10px] font-medium text-muted-foreground uppercase">Notas Rápidas</p>
-                  <Textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Adicione observações..."
-                    className="min-h-[80px] resize-none text-sm"
-                  />
-                  <Button size="sm" className="w-full h-8" onClick={handleSaveNotes} disabled={savingNotes}>
-                    {savingNotes ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Save className="w-3.5 h-3.5 mr-1.5" />}
-                    Salvar
-                  </Button>
-                </div>
+                {/* Action Notes - Multiple notes system */}
+                <LeadActionNotes leadId={lead.id} />
               </div>
             </ScrollArea>
 
             {/* Fixed Quick Actions */}
             <div className="p-3 border-t bg-background">
               <p className="text-[10px] font-medium text-muted-foreground uppercase mb-2">Ações Rápidas</p>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -458,6 +437,15 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
                   <FileText className="w-4 h-4" />
                   Templates
                 </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-12 flex-col gap-1 text-xs border-primary/50 text-primary hover:bg-primary/10"
+                  onClick={() => setTaskDialogOpen(true)}
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  Tarefa
+                </Button>
               </div>
             </div>
           </div>
@@ -479,6 +467,17 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
               </div>
 
               <TabsContent value="info" className="flex-1 overflow-y-auto p-4 space-y-4 mt-0">
+                {/* Tasks Section */}
+                <div className="bg-background rounded-lg border overflow-hidden">
+                  <div className="p-4">
+                    <LeadTasksSection 
+                      leadId={lead.id} 
+                      leadName={lead.full_name}
+                      onCreateTask={() => setTaskDialogOpen(true)} 
+                    />
+                  </div>
+                </div>
+
                 {/* Qualification Data - Table Format */}
                 <div className="bg-background rounded-lg border overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
@@ -616,6 +615,17 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
           initialContactId={lead.id}
         />
       )}
+
+      {/* New Task Dialog */}
+      <NewTaskDialog
+        open={taskDialogOpen}
+        onOpenChange={setTaskDialogOpen}
+        admins={admins}
+        currentUserId={currentUserId}
+        onSubmit={createTask}
+        defaultLeadId={lead?.id}
+        defaultLeadName={lead?.full_name}
+      />
     </Dialog>
   );
 }

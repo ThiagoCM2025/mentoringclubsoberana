@@ -1695,6 +1695,41 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_action_notes: {
+        Row: {
+          action_type: string | null
+          admin_user_id: string
+          content: string
+          created_at: string
+          id: string
+          lead_id: string
+        }
+        Insert: {
+          action_type?: string | null
+          admin_user_id: string
+          content: string
+          created_at?: string
+          id?: string
+          lead_id: string
+        }
+        Update: {
+          action_type?: string | null
+          admin_user_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          lead_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_action_notes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_conversions: {
         Row: {
           converted_at: string
