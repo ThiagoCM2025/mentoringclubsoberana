@@ -191,13 +191,42 @@ const AdminLeads = () => {
           return;
         }
 
-        // Detect columns by header name
-        const headers = rows[0].map(h => String(h || "").toLowerCase());
-        const nameCol = headers.findIndex(h => h.includes("nome"));
-        const emailCol = headers.findIndex(h => h.includes("mail") || h.includes("e-mail"));
-        const phoneCol = headers.findIndex(h => h.includes("whatsapp") || h.includes("telefone") || h.includes("celular") || h.includes("phone"));
+        // Detect columns by header name with flexible patterns
+        const headers = rows[0].map(h => String(h || "").toLowerCase().trim());
         
-        // Name is required, but email is now optional if phone exists
+        let nameCol = headers.findIndex(h => 
+          h.includes("nome") || h.includes("name") || h.includes("cliente") || h.includes("pessoa")
+        );
+        let emailCol = headers.findIndex(h => 
+          h.includes("mail") || h.includes("e-mail") || h.includes("email") || h.includes("correio")
+        );
+        let phoneCol = headers.findIndex(h => 
+          h.includes("whatsapp") || h.includes("telefone") || h.includes("celular") || 
+          h.includes("phone") || h.includes("fone") || h.includes("tel") || 
+          h.includes("número") || h.includes("numero") || h.includes("contato") ||
+          h.includes("mobile") || h.includes("zap") || h.includes("cel")
+        );
+        
+        // Fallback by position: if only 2 columns and couldn't detect by name
+        if (headers.length === 2) {
+          if (nameCol === -1) nameCol = 0; // First column = name
+          if (phoneCol === -1 && emailCol === -1) {
+            // Check if second column looks like a phone number (sample from first data row)
+            const sampleValue = String(rows[1]?.[1] || "").replace(/\D/g, "");
+            if (sampleValue.length >= 8) {
+              phoneCol = 1;
+              console.log("Detecção automática: coluna 2 identificada como telefone");
+            }
+          }
+        }
+        
+        // Fallback for 3+ columns without proper headers
+        if (nameCol === -1 && headers.length >= 1) {
+          nameCol = 0;
+          console.log("Detecção automática: coluna 1 identificada como nome");
+        }
+        
+        // Name is required
         if (nameCol === -1) {
           toast({ 
             title: "Coluna não encontrada", 
@@ -212,7 +241,7 @@ const AdminLeads = () => {
         if (emailCol === -1 && phoneCol === -1) {
           toast({ 
             title: "Colunas de contato não encontradas", 
-            description: "A planilha precisa ter coluna de 'email' ou 'telefone/whatsapp'",
+            description: "A planilha precisa ter coluna de 'email' ou 'telefone/whatsapp/contato'",
             variant: "destructive" 
           });
           setImporting(false);
