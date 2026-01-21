@@ -43,6 +43,7 @@ import AdminMissionReviews from "@/pages/admin/AdminMissionReviews";
 import AdminVideos from "@/pages/admin/AdminVideos";
 import AdminAgents from "@/pages/admin/AdminAgents";
 import AgentEditor from "@/pages/admin/AgentEditor";
+import AdminTasks from "@/pages/admin/AdminTasks";
 import StudentAgents from "@/pages/student/StudentAgents";
 import ExperienceStartLanding from "@/pages/ExperienceStartLanding";
 import OperacaoRegularizacaoLanding from "@/pages/OperacaoRegularizacaoLanding";
@@ -223,6 +224,14 @@ export const AnimatedRoutes = () => {
           element={
             <ProtectedRoute requireAdmin>
               <PageTransition><AdminLeads /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/tasks"
+          element={
+            <ProtectedRoute requireAdmin>
+              <PageTransition><AdminTasks /></PageTransition>
             </ProtectedRoute>
           }
         />

@@ -10,6 +10,7 @@ import {
   Target,
   FileText,
   ClipboardCheck,
+  ListTodo,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -51,6 +52,13 @@ const actions = [
     icon: Send,
     label: "Notificação em Massa",
     color: "bg-orange-500 hover:bg-orange-600",
+  },
+  {
+    id: "new-task",
+    icon: ListTodo,
+    label: "Nova Tarefa",
+    color: "bg-teal-500 hover:bg-teal-600",
+    href: "/admin/tasks?new=true",
   },
   {
     id: "mission-reviews",

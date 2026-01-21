@@ -373,6 +373,75 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_tasks: {
+        Row: {
+          assigned_to: string
+          completed_at: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          due_date: string
+          id: string
+          priority: Database["public"]["Enums"]["task_priority"]
+          related_lead_id: string | null
+          related_student_id: string | null
+          reminder_at: string | null
+          reminder_sent: boolean
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to: string
+          completed_at?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          due_date: string
+          id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          related_lead_id?: string | null
+          related_student_id?: string | null
+          reminder_at?: string | null
+          reminder_sent?: boolean
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          related_lead_id?: string | null
+          related_student_id?: string | null
+          reminder_at?: string | null
+          reminder_sent?: boolean
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_tasks_related_lead_id_fkey"
+            columns: ["related_lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_tasks_related_student_id_fkey"
+            columns: ["related_student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       ai_agent_access: {
         Row: {
           agent_id: string | null
@@ -4018,6 +4087,8 @@ export type Database = {
         | "aceleracao"
         | "mentoria-360"
         | "elite"
+      task_priority: "low" | "medium" | "high" | "urgent"
+      task_status: "pending" | "in_progress" | "completed" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4181,6 +4252,8 @@ export const Constants = {
         "mentoria-360",
         "elite",
       ],
+      task_priority: ["low", "medium", "high", "urgent"],
+      task_status: ["pending", "in_progress", "completed", "cancelled"],
     },
   },
 } as const
