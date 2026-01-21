@@ -24,7 +24,7 @@ interface JornadaVideoPlayerProps {
 const fallbackSessions: LiveSession[] = [
   { day: 12, month: "JAN", title: "Como organizar sua rotina e processos para escalar no Direito Imobiliário sem surtar", isUnlocked: true },
   { day: 15, month: "JAN", title: "Passo a passo para fechar contratos com clientes qualificados no imobiliário", isUnlocked: false },
-  { day: 19, month: "JAN", title: "Como usar inteligência artificial para ganhar tempo no escritório jurídico", isUnlocked: false },
+  { day: 19, month: "JAN", title: "Encontro com Mentoradas sobre Criação de Conteúdo", isUnlocked: false },
   { day: 22, month: "JAN", title: "Passo a passo para criar uma tabela de precificação eficiente", isUnlocked: false },
   { day: 26, month: "JAN", title: "Como converter consultas em contratos de alto valor", isUnlocked: false },
 ];
