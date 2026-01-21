@@ -64,7 +64,7 @@ export type Database = {
           message: string
           resolved_at: string | null
           resolved_by: string | null
-          rule_id: string
+          rule_id: string | null
           severity: string
           title: string | null
         }
@@ -78,7 +78,7 @@ export type Database = {
           message: string
           resolved_at?: string | null
           resolved_by?: string | null
-          rule_id: string
+          rule_id?: string | null
           severity?: string
           title?: string | null
         }
@@ -92,7 +92,7 @@ export type Database = {
           message?: string
           resolved_at?: string | null
           resolved_by?: string | null
-          rule_id?: string
+          rule_id?: string | null
           severity?: string
           title?: string | null
         }
