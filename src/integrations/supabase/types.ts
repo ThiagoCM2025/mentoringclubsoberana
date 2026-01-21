@@ -1397,6 +1397,72 @@ export type Database = {
           },
         ]
       }
+      email_tracking: {
+        Row: {
+          campaign_source: string | null
+          channel: string | null
+          clicked_at: string | null
+          clicked_count: number | null
+          clicked_links: Json | null
+          communication_id: string | null
+          id: string
+          lead_id: string | null
+          metadata: Json | null
+          opened_at: string | null
+          opened_count: number | null
+          sent_at: string | null
+          subject: string | null
+          tracking_id: string
+        }
+        Insert: {
+          campaign_source?: string | null
+          channel?: string | null
+          clicked_at?: string | null
+          clicked_count?: number | null
+          clicked_links?: Json | null
+          communication_id?: string | null
+          id?: string
+          lead_id?: string | null
+          metadata?: Json | null
+          opened_at?: string | null
+          opened_count?: number | null
+          sent_at?: string | null
+          subject?: string | null
+          tracking_id: string
+        }
+        Update: {
+          campaign_source?: string | null
+          channel?: string | null
+          clicked_at?: string | null
+          clicked_count?: number | null
+          clicked_links?: Json | null
+          communication_id?: string | null
+          id?: string
+          lead_id?: string | null
+          metadata?: Json | null
+          opened_at?: string | null
+          opened_count?: number | null
+          sent_at?: string | null
+          subject?: string | null
+          tracking_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_tracking_communication_id_fkey"
+            columns: ["communication_id"]
+            isOneToOne: false
+            referencedRelation: "communication_history"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_tracking_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       enrollments: {
         Row: {
           course_id: string
