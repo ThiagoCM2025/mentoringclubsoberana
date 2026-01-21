@@ -228,7 +228,7 @@ const TextLessonContent = ({
                       <CheckCircle className="w-4 h-4" />
                       <span className="font-medium text-sm">Missão Completada!</span>
                     </div>
-                  ) : missionIsSubmitted ? (
+                  ) : missionIsSubmitted && !missionIsRejected ? (
                     <div className="flex items-center justify-center gap-2 text-amber-400 py-2 bg-amber-500/10 rounded-lg">
                       <Clock className="w-4 h-4" />
                       <span className="text-sm">Aguardando aprovação</span>
@@ -463,7 +463,7 @@ const TextLessonContent = ({
                         <CheckCircle className="w-4 h-4" />
                         <span className="font-medium text-sm">Missão Completada!</span>
                       </div>
-                    ) : missionIsSubmitted ? (
+                    ) : missionIsSubmitted && !missionIsRejected ? (
                       <div className="flex items-center justify-center gap-2 text-amber-400 py-2 bg-amber-500/10 rounded-lg">
                         <Clock className="w-4 h-4" />
                         <span className="text-sm">Aguardando aprovação</span>
