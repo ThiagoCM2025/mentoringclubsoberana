@@ -13,6 +13,29 @@ interface Recipient {
   type: "lead" | "student";
 }
 
+// Anti-spam configuration
+const ANTI_SPAM_CONFIG = {
+  MIN_DELAY_MS: 5000,      // Minimum 5 seconds between messages
+  MAX_DELAY_MS: 10000,     // Maximum 10 seconds between messages
+  BATCH_SIZE: 10,          // Messages per batch
+  BATCH_PAUSE_MS: 60000,   // 1 minute pause between batches
+  HOURLY_LIMIT: 25,        // Max messages per hour
+  DAILY_LIMIT: 100,        // Max messages per day
+};
+
+// Helper function to get random delay
+function getRandomDelay(): number {
+  return ANTI_SPAM_CONFIG.MIN_DELAY_MS + 
+    Math.random() * (ANTI_SPAM_CONFIG.MAX_DELAY_MS - ANTI_SPAM_CONFIG.MIN_DELAY_MS);
+}
+
+// Helper function to add small variations to avoid identical messages
+function addTextVariation(text: string): string {
+  const variations = ["", " ", "  ", ".", " ."];
+  const randomSuffix = variations[Math.floor(Math.random() * variations.length)];
+  return text + randomSuffix;
+}
+
 // Helper function to send with retry
 async function sendWithRetry(
   evolutionUrl: string,
@@ -90,6 +113,51 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+    // Check rate limits before starting
+    console.log("Checking rate limits...");
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+    const { count: hourlyCount } = await supabase
+      .from("communication_history")
+      .select("*", { count: "exact", head: true })
+      .eq("channel", "whatsapp")
+      .eq("status", "sent")
+      .gte("sent_at", oneHourAgo);
+
+    const { count: dailyCount } = await supabase
+      .from("communication_history")
+      .select("*", { count: "exact", head: true })
+      .eq("channel", "whatsapp")
+      .eq("status", "sent")
+      .gte("sent_at", oneDayAgo);
+
+    console.log(`Rate limits - Hourly: ${hourlyCount}/${ANTI_SPAM_CONFIG.HOURLY_LIMIT}, Daily: ${dailyCount}/${ANTI_SPAM_CONFIG.DAILY_LIMIT}`);
+
+    if ((hourlyCount || 0) >= ANTI_SPAM_CONFIG.HOURLY_LIMIT) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Limite horário atingido", 
+          details: `Máximo de ${ANTI_SPAM_CONFIG.HOURLY_LIMIT} mensagens por hora. Tente novamente em 1 hora.`,
+          hourlyCount,
+          hourlyLimit: ANTI_SPAM_CONFIG.HOURLY_LIMIT
+        }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if ((dailyCount || 0) >= ANTI_SPAM_CONFIG.DAILY_LIMIT) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Limite diário atingido", 
+          details: `Máximo de ${ANTI_SPAM_CONFIG.DAILY_LIMIT} mensagens por dia. Tente novamente amanhã.`,
+          dailyCount,
+          dailyLimit: ANTI_SPAM_CONFIG.DAILY_LIMIT
+        }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Verify WhatsApp connection before starting
     console.log("Checking Evolution API connection status...");
     try {
@@ -131,6 +199,20 @@ serve(async (req) => {
       );
     }
 
+    // Check if sending this batch would exceed hourly limit
+    const remainingHourly = ANTI_SPAM_CONFIG.HOURLY_LIMIT - (hourlyCount || 0);
+    if (recipients.length > remainingHourly) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Muitos destinatários", 
+          details: `Você pode enviar apenas ${remainingHourly} mensagens nesta hora. Reduza o número de destinatários ou aguarde.`,
+          remainingHourly,
+          requestedCount: recipients.length
+        }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const evolutionUrl = `${EVOLUTION_API_URL}/message/sendText/${EVOLUTION_INSTANCE}`;
 
     const results: { sent: number; failed: number; errors: Array<{ id: string; name: string; error: string }> } = {
@@ -139,9 +221,18 @@ serve(async (req) => {
       errors: [],
     };
 
-    console.log(`Starting bulk WhatsApp send to ${recipients.length} recipients`);
+    const estimatedTime = recipients.length * 7.5; // ~7.5 seconds per message average
+    console.log(`Starting bulk WhatsApp send to ${recipients.length} recipients. Estimated time: ${Math.ceil(estimatedTime / 60)} minutes`);
 
-    for (const recipient of recipients as Recipient[]) {
+    for (let index = 0; index < recipients.length; index++) {
+      const recipient = recipients[index] as Recipient;
+
+      // Batch pause - after every BATCH_SIZE messages, take a longer break
+      if (index > 0 && index % ANTI_SPAM_CONFIG.BATCH_SIZE === 0) {
+        console.log(`Batch ${Math.floor(index / ANTI_SPAM_CONFIG.BATCH_SIZE)} complete. Pausing for 1 minute...`);
+        await new Promise(r => setTimeout(r, ANTI_SPAM_CONFIG.BATCH_PAUSE_MS));
+      }
+
       if (!recipient.phone) {
         results.failed++;
         results.errors.push({ id: recipient.id, name: recipient.name, error: "No phone number" });
@@ -149,10 +240,13 @@ serve(async (req) => {
       }
 
       // Replace variables in message and convert literal \n to actual newlines
-      const personalizedMessage = message
+      let personalizedMessage = message
         .replace(/\{\{nome\}\}/gi, recipient.name || "")
         .replace(/\{\{name\}\}/gi, recipient.name || "")
         .replace(/\\n/g, '\n');
+
+      // Add small variation to avoid identical message detection
+      const finalMessage = addTextVariation(personalizedMessage);
 
       // Format phone number (remove non-digits, ensure country code)
       let formattedPhone = recipient.phone.replace(/\D/g, "");
@@ -161,14 +255,14 @@ serve(async (req) => {
       }
 
       try {
-        console.log(`Sending WhatsApp to ${formattedPhone} (${recipient.name})`);
+        console.log(`[${index + 1}/${recipients.length}] Sending WhatsApp to ${formattedPhone} (${recipient.name})`);
 
         // Send with retry logic
         const { ok, data: evolutionData } = await sendWithRetry(
           evolutionUrl,
           EVOLUTION_API_KEY,
           formattedPhone,
-          personalizedMessage
+          finalMessage
         );
 
         if (!ok) {
@@ -275,8 +369,10 @@ serve(async (req) => {
           });
         }
 
-        // Increased delay between messages to avoid rate limiting (1s instead of 500ms)
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Randomized delay between 5-10 seconds to appear more human-like
+        const randomDelay = getRandomDelay();
+        console.log(`Waiting ${Math.round(randomDelay / 1000)}s before next message...`);
+        await new Promise(resolve => setTimeout(resolve, randomDelay));
 
       } catch (err) {
         console.error(`Error sending to ${recipient.name}:`, err);

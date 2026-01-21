@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Mail, 
@@ -18,7 +19,9 @@ import {
   Bell, 
   Send, 
   Loader2,
-  ExternalLink
+  ExternalLink,
+  AlertTriangle,
+  Clock
 } from "lucide-react";
 import { ScenarioCards } from "./ScenarioCards";
 
@@ -315,14 +318,39 @@ export function MessageComposer({
             </p>
           </div>
 
-          {/* WhatsApp info */}
+          {/* WhatsApp info and anti-spam warnings */}
           {channel === "whatsapp" && (
-            <div className="bg-muted rounded-lg p-3 text-sm text-muted-foreground flex items-start gap-2 border border-border">
-              <ExternalLink className="h-4 w-4 mt-0.5 flex-shrink-0 text-secondary" />
-              <span>
-                O WhatsApp será aberto em uma nova aba para cada destinatário com a mensagem pré-preenchida. 
-                Você precisará clicar em "Enviar" manualmente em cada conversa.
-              </span>
+            <div className="space-y-3">
+              {/* Risk alert for large volumes */}
+              {recipients.filter(r => r.phone).length > 20 && (
+                <Alert variant="default" className="border-amber-500/50 bg-amber-500/10">
+                  <AlertTriangle className="h-4 w-4 text-amber-500" />
+                  <AlertTitle className="text-amber-600 dark:text-amber-400">Atenção: Volume Alto</AlertTitle>
+                  <AlertDescription className="text-sm text-muted-foreground">
+                    Enviar {recipients.filter(r => r.phone).length} mensagens pode demorar aproximadamente{" "}
+                    <strong>{Math.ceil(recipients.filter(r => r.phone).length * 7.5 / 60)} minutos</strong>.
+                    O sistema usará delays de 5-10s entre mensagens para evitar bloqueio.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Estimated time */}
+              {recipients.filter(r => r.phone).length > 5 && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted p-3 rounded-lg border border-border">
+                  <Clock className="h-4 w-4 flex-shrink-0" />
+                  <span>
+                    Tempo estimado: <strong>{Math.ceil(recipients.filter(r => r.phone).length * 7.5 / 60)} min</strong>
+                    {" "}• Limite: 25/hora
+                  </span>
+                </div>
+              )}
+
+              <div className="bg-muted rounded-lg p-3 text-sm text-muted-foreground flex items-start gap-2 border border-border">
+                <ExternalLink className="h-4 w-4 mt-0.5 flex-shrink-0 text-secondary" />
+                <span>
+                  Mensagens serão enviadas automaticamente via Evolution API com proteção anti-spam ativa.
+                </span>
+              </div>
             </div>
           )}
 

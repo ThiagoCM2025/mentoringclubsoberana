@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -34,7 +35,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, Mail, MessageSquare, Bell, Eye, CheckCircle, XCircle, RefreshCw } from "lucide-react";
+import { Loader2, Mail, MessageSquare, Bell, Eye, CheckCircle, XCircle, RefreshCw, AlertTriangle, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
@@ -110,10 +111,44 @@ export function MessageHistory() {
     setResendDialogOpen(false);
 
     try {
+      // First check WhatsApp status and rate limits
+      const { data: statusData, error: statusError } = await supabase.functions.invoke("check-whatsapp-status");
+      
+      if (statusError) {
+        toast.error("Erro ao verificar status do WhatsApp");
+        setIsResending(false);
+        return;
+      }
+
+      if (!statusData?.connected) {
+        toast.error("WhatsApp desconectado. Reconecte antes de reenviar.");
+        setIsResending(false);
+        return;
+      }
+
+      if (statusData?.rateLimit?.hourlyRemaining === 0) {
+        toast.error(`Limite horário atingido (${statusData.rateLimit.hourlyLimit}/hora). Aguarde 1 hora.`);
+        setIsResending(false);
+        return;
+      }
+
+      // Check if we can send all messages
+      const canSendCount = Math.min(
+        failedWhatsappMessages.length,
+        statusData?.rateLimit?.hourlyRemaining || 25
+      );
+
+      if (canSendCount < failedWhatsappMessages.length) {
+        toast.warning(`Enviando apenas ${canSendCount} de ${failedWhatsappMessages.length} (limite horário)`);
+      }
+
       // Group messages by their content to resend in batches
       const messageGroups = new Map<string, HistoryItem[]>();
       
-      failedWhatsappMessages.forEach((msg) => {
+      // Only take messages we can send
+      const messagesToSend = failedWhatsappMessages.slice(0, canSendCount);
+      
+      messagesToSend.forEach((msg) => {
         const key = msg.message;
         if (!messageGroups.has(key)) {
           messageGroups.set(key, []);
@@ -123,6 +158,10 @@ export function MessageHistory() {
 
       let totalSuccess = 0;
       let totalFailed = 0;
+
+      // Show estimated time
+      const estimatedMinutes = Math.ceil(canSendCount * 7.5 / 60);
+      toast.info(`Iniciando reenvio... Tempo estimado: ${estimatedMinutes} minutos`);
 
       for (const [message, messages] of messageGroups) {
         const recipients = messages.map((msg) => ({
@@ -140,8 +179,8 @@ export function MessageHistory() {
           console.error("Resend error:", error);
           totalFailed += recipients.length;
         } else if (data) {
-          totalSuccess += data.successCount || 0;
-          totalFailed += data.failedCount || 0;
+          totalSuccess += data.sent || 0;
+          totalFailed += data.failed || 0;
         }
       }
 
@@ -154,9 +193,9 @@ export function MessageHistory() {
 
       // Refresh history
       fetchHistory();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error resending messages:", error);
-      toast.error("Erro ao reenviar mensagens");
+      toast.error(error.message || "Erro ao reenviar mensagens");
     } finally {
       setIsResending(false);
     }
@@ -390,17 +429,42 @@ export function MessageHistory() {
 
       {/* Resend Confirmation Dialog */}
       <AlertDialog open={resendDialogOpen} onOpenChange={setResendDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-lg">
           <AlertDialogHeader>
-            <AlertDialogTitle>Reenviar Mensagens Falhas</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
-              <p>
-                Você vai reenviar <strong>{failedWhatsappMessages.length}</strong> mensagens 
-                WhatsApp que falharam anteriormente.
-              </p>
-              <p className="text-amber-600 dark:text-amber-400">
-                ⚠️ Certifique-se que o WhatsApp está conectado antes de continuar.
-              </p>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <RefreshCw className="h-5 w-5" />
+              Reenviar Mensagens Falhas
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-4">
+                <p>
+                  Você vai reenviar <strong>{failedWhatsappMessages.length}</strong> mensagens 
+                  WhatsApp que falharam anteriormente.
+                </p>
+                
+                <Alert variant="default" className="border-amber-500/50 bg-amber-500/10">
+                  <AlertTriangle className="h-4 w-4 text-amber-500" />
+                  <AlertTitle className="text-amber-600 dark:text-amber-400">Proteção Anti-Spam Ativa</AlertTitle>
+                  <AlertDescription className="text-sm text-muted-foreground">
+                    <ul className="list-disc list-inside space-y-1 mt-2">
+                      <li>Delay de 5-10 segundos entre mensagens</li>
+                      <li>Pausas de 1 minuto a cada 10 mensagens</li>
+                      <li>Limite de 25 mensagens por hora</li>
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+
+                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted p-3 rounded-lg">
+                  <Clock className="h-4 w-4" />
+                  <span>
+                    Tempo estimado: <strong>{Math.ceil(failedWhatsappMessages.length * 7.5 / 60)} minutos</strong>
+                  </span>
+                </div>
+                
+                <p className="text-amber-600 dark:text-amber-400 text-sm">
+                  ⚠️ Certifique-se que o WhatsApp está conectado antes de continuar.
+                </p>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
