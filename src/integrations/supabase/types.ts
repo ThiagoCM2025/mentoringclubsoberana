@@ -1517,6 +1517,36 @@ export type Database = {
           },
         ]
       }
+      import_lists: {
+        Row: {
+          batch_id: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          lead_count: number | null
+          name: string
+          source_filter: string
+        }
+        Insert: {
+          batch_id: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          lead_count?: number | null
+          name: string
+          source_filter: string
+        }
+        Update: {
+          batch_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          lead_count?: number | null
+          name?: string
+          source_filter?: string
+        }
+        Relationships: []
+      }
       import_logs: {
         Row: {
           admin_id: string | null

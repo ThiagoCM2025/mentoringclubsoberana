@@ -36,6 +36,7 @@ import { LeadMessageModal } from "@/components/admin/leads/LeadMessageModal";
 import { ScheduledMessagesPanel } from "@/components/admin/leads/ScheduledMessagesPanel";
 import { WhatsAppInboxModal } from "@/components/admin/whatsapp/WhatsAppInboxModal";
 import { ImportResultDialog } from "@/components/admin/leads/ImportResultDialog";
+import { ImportNameDialog } from "@/components/admin/leads/ImportNameDialog";
 import { useNurturingSequences } from "@/hooks/useNurturingSequences";
 import { useUnreadWhatsAppCount } from "@/hooks/useUnreadWhatsAppCount";
 import { cn } from "@/lib/utils";
@@ -166,6 +167,14 @@ const AdminLeads = () => {
     completedAt: Date;
   } | null>(null);
   
+  // Import name dialog state
+  const [importNameDialogOpen, setImportNameDialogOpen] = useState(false);
+  const [pendingImportFile, setPendingImportFile] = useState<File | null>(null);
+  const [pendingListName, setPendingListName] = useState<string>('');
+  
+  // Preselected batch for campaign dispatch
+  const [preselectedBatchId, setPreselectedBatchId] = useState<string | undefined>();
+  
   // Função para abrir WhatsApp inbox com telefone e dados do contato
   const openWhatsAppInbox = (phone?: string, name?: string, type?: "lead" | "student", id?: string) => {
     setWhatsAppInitialPhone(phone);
@@ -199,10 +208,37 @@ const AdminLeads = () => {
     toast({ title: "Leads exportados com sucesso!" });
   };
 
-  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Handler when file is selected - opens name dialog first
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    
+    // Store file and open name dialog
+    setPendingImportFile(file);
+    setImportNameDialogOpen(true);
+    
+    // Clear the input so the same file can be selected again
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
+  // Handler when name is confirmed - proceeds with import
+  const handleImportWithName = async (listName: string) => {
+    if (!pendingImportFile) return;
+    
+    setPendingListName(listName);
+    setImportNameDialogOpen(false);
+    await processImportFile(pendingImportFile, listName);
+    setPendingImportFile(null);
+  };
+
+  // Cancel import
+  const handleImportCancel = () => {
+    setImportNameDialogOpen(false);
+    setPendingImportFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const processImportFile = async (file: File, listName: string) => {
     setImporting(true);
     const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
 
@@ -367,6 +403,16 @@ const AdminLeads = () => {
           error_details: errorDetails.slice(0, 100) // Limit to 100 errors
         });
 
+        // Create named import list for campaign dispatch
+        const { data: session } = await supabase.auth.getSession();
+        await supabase.from("import_lists").insert({
+          name: listName,
+          batch_id: batchId,
+          source_filter: `batch:${batchId}`,
+          lead_count: imported + updated,
+          created_by: session?.session?.user?.id
+        });
+
         // Set import result and open dialog
         setImportResult({
           batchId,
@@ -465,6 +511,16 @@ const AdminLeads = () => {
             updated,
             errors,
             error_details: errorDetails.slice(0, 100)
+          });
+
+          // Create named import list for campaign dispatch
+          const { data: session } = await supabase.auth.getSession();
+          await supabase.from("import_lists").insert({
+            name: listName,
+            batch_id: batchId,
+            source_filter: `batch:${batchId}`,
+            lead_count: imported + updated,
+            created_by: session?.session?.user?.id
           });
 
           setImportResult({
@@ -753,7 +809,7 @@ const AdminLeads = () => {
             type="file"
             ref={fileInputRef}
             accept=".csv,.xlsx,.xls"
-            onChange={handleImport}
+            onChange={handleFileSelect}
             className="hidden"
           />
         </div>
@@ -1311,8 +1367,14 @@ const AdminLeads = () => {
         {/* Campaign Dispatch Dialog */}
         <CampaignDispatchDialog
           open={campaignDispatchOpen}
-          onOpenChange={setCampaignDispatchOpen}
+          onOpenChange={(open) => {
+            setCampaignDispatchOpen(open);
+            if (!open) {
+              setPreselectedBatchId(undefined);
+            }
+          }}
           onSuccess={fetchLeads}
+          preselectedBatchId={preselectedBatchId}
         />
 
         {/* Lead Message Modal */}
@@ -1368,6 +1430,15 @@ const AdminLeads = () => {
           initialContactId={whatsAppInitialId}
         />
         
+        {/* Import Name Dialog */}
+        <ImportNameDialog
+          open={importNameDialogOpen}
+          onOpenChange={setImportNameDialogOpen}
+          filename={pendingImportFile?.name || ''}
+          onConfirm={handleImportWithName}
+          onCancel={handleImportCancel}
+        />
+        
         {/* Import Result Dialog */}
         <ImportResultDialog
           open={importResultOpen}
@@ -1378,6 +1449,9 @@ const AdminLeads = () => {
             fetchLeads();
           }}
           onDispatchCampaign={() => {
+            if (importResult?.batchId) {
+              setPreselectedBatchId(importResult.batchId);
+            }
             setCampaignDispatchOpen(true);
           }}
         />
