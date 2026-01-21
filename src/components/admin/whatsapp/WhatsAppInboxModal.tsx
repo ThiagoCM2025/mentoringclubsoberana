@@ -181,7 +181,7 @@ export function WhatsAppInboxModal({
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent 
-          className="fixed inset-0 w-full h-full max-w-none max-h-none p-0 gap-0 overflow-hidden border-0 rounded-none data-[state=open]:animate-none data-[state=closed]:animate-none translate-x-0 translate-y-0 sm:translate-x-0 sm:translate-y-0" 
+          className="fixed inset-0 w-full h-full max-w-none max-h-none p-0 gap-0 overflow-hidden border-0 rounded-none data-[state=open]:animate-none data-[state=closed]:animate-none translate-x-0 translate-y-0 sm:translate-x-0 sm:translate-y-0 flex flex-col bg-background" 
           hideClose 
           aria-describedby={undefined}
         >
