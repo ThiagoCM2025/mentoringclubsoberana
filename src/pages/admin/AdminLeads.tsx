@@ -914,6 +914,16 @@ const AdminLeads = () => {
             leads={filteredLeads} 
             onRefresh={fetchLeads}
             onOpenWhatsAppInbox={openWhatsAppInbox}
+            onDeleteLead={async (leadId: string) => {
+              const { error } = await supabase.from("leads").delete().eq("id", leadId);
+              if (error) {
+                toast({ title: "Erro ao excluir lead", variant: "destructive" });
+                throw error;
+              } else {
+                toast({ title: "Lead excluído com sucesso!" });
+                fetchLeads();
+              }
+            }}
           />
         )}
 

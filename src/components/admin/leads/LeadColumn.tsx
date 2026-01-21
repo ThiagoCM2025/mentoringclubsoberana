@@ -58,6 +58,7 @@ interface LeadColumnProps {
   onSelectionChange?: (leadId: string, selected: boolean) => void;
   onMakeStudent?: (lead: Lead) => void;
   onOpenWhatsAppInbox?: (phone?: string, name?: string, type?: "lead" | "student", id?: string) => void;
+  onDeleteLead?: (leadId: string) => void;
 }
 
 export function LeadColumn({
@@ -76,13 +77,14 @@ export function LeadColumn({
   onSelectionChange,
   onMakeStudent,
   onOpenWhatsAppInbox,
+  onDeleteLead,
 }: LeadColumnProps) {
   const Icon = config.icon;
   
   return (
     <div
       className={cn(
-        "flex flex-col min-w-[280px] max-w-[320px] rounded-lg border border-border bg-muted/30",
+        "flex flex-col min-w-[240px] max-w-[280px] rounded-lg border border-border bg-muted/30",
         "transition-all duration-200",
         isDragOver && "ring-2 ring-secondary/50 bg-secondary/5"
       )}
@@ -90,14 +92,14 @@ export function LeadColumn({
       onDrop={(e) => onDrop(e, config.status)}
     >
       {/* Header */}
-      <div className={cn("px-4 py-3 rounded-t-lg", config.bgColor)}>
+      <div className={cn("px-3 py-2 rounded-t-lg", config.bgColor)}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {Icon && <Icon className={cn("w-4 h-4", config.color)} />}
-            <h3 className={cn("font-semibold text-sm", config.color)}>{config.label}</h3>
+          <div className="flex items-center gap-1.5">
+            {Icon && <Icon className={cn("w-3.5 h-3.5", config.color)} />}
+            <h3 className={cn("font-semibold text-xs", config.color)}>{config.label}</h3>
           </div>
           <span className={cn(
-            "px-2 py-0.5 rounded-full text-xs font-medium",
+            "px-1.5 py-0.5 rounded-full text-[10px] font-medium",
             "bg-background/80 text-foreground"
           )}>
             {leads.length}
@@ -106,9 +108,9 @@ export function LeadColumn({
       </div>
 
       {/* Cards */}
-      <div className="flex-1 p-2 space-y-2 overflow-y-auto max-h-[calc(100vh-320px)] min-h-[200px]">
+      <div className="flex-1 p-1.5 space-y-1.5 overflow-y-auto max-h-[calc(100vh-280px)] min-h-[150px]">
         {leads.length === 0 ? (
-          <div className="flex items-center justify-center h-24 text-muted-foreground text-sm">
+          <div className="flex items-center justify-center h-20 text-muted-foreground text-xs">
             Nenhum lead
           </div>
         ) : (
@@ -127,6 +129,7 @@ export function LeadColumn({
               onMakeStudent={onMakeStudent ? () => onMakeStudent(lead) : undefined}
               columnStatus={config.status}
               onOpenWhatsAppInbox={onOpenWhatsAppInbox}
+              onDelete={onDeleteLead ? () => onDeleteLead(lead.id) : undefined}
             />
           ))
         )}
