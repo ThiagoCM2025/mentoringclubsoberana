@@ -49,6 +49,7 @@ interface LeadPipelineViewProps {
   leads: Lead[];
   onRefresh: () => void;
   onOpenWhatsAppInbox?: (phone?: string, name?: string, type?: "lead" | "student", id?: string) => void;
+  onDeleteLead?: (leadId: string) => Promise<void>;
 }
 
 const columns = [
@@ -60,7 +61,7 @@ const columns = [
   { status: "discarded" as LeadStatus, label: "Descartados", color: "text-gray-700", bgColor: "bg-gray-100", icon: XCircle },
 ];
 
-export function LeadPipelineView({ leads, onRefresh, onOpenWhatsAppInbox }: LeadPipelineViewProps) {
+export function LeadPipelineView({ leads, onRefresh, onOpenWhatsAppInbox, onDeleteLead }: LeadPipelineViewProps) {
   const { toast } = useToast();
   const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<LeadStatus | null>(null);
@@ -276,6 +277,7 @@ export function LeadPipelineView({ leads, onRefresh, onOpenWhatsAppInbox }: Lead
               onSelectionChange={handleSelectionChange}
               onMakeStudent={handleMakeStudent}
               onOpenWhatsAppInbox={onOpenWhatsAppInbox}
+              onDeleteLead={onDeleteLead}
             />
           </div>
         ))}

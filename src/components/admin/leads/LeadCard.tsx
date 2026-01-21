@@ -1,4 +1,4 @@
-import { Flame, Thermometer, ThermometerSnowflake, MessageCircle, Clock, Mail, Send, Eye, Zap, ZapOff, Play, Pause, Calendar, GraduationCap, Trophy, FileText } from "lucide-react";
+import { Flame, Thermometer, ThermometerSnowflake, MessageCircle, Clock, Mail, Send, Eye, Zap, ZapOff, Play, Pause, Calendar, GraduationCap, Trophy, FileText, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -48,6 +48,7 @@ interface LeadCardProps {
   onMakeStudent?: () => void;
   columnStatus?: LeadStatus;
   onOpenWhatsAppInbox?: (phone?: string, name?: string, type?: "lead" | "student", id?: string) => void;
+  onDelete?: () => void;
 }
 
 const temperatureConfig = {
@@ -64,7 +65,7 @@ const meetingStatusConfig: Record<string, { label: string; color: string }> = {
   cancelada: { label: "Cancelada", color: "bg-gray-100 text-gray-700" },
 };
 
-export function LeadCard({ lead, onClick, onOpenDetails, onOpenTemplates, onDragStart, onNurturingToggle, isSelectionMode = false, isSelected = false, onSelectionChange, onMakeStudent, columnStatus, onOpenWhatsAppInbox }: LeadCardProps) {
+export function LeadCard({ lead, onClick, onOpenDetails, onOpenTemplates, onDragStart, onNurturingToggle, isSelectionMode = false, isSelected = false, onSelectionChange, onMakeStudent, columnStatus, onOpenWhatsAppInbox, onDelete }: LeadCardProps) {
   const { toast } = useToast();
   const { getCampaignInfo, getSequenceInfo, calculateNextSend } = useNurturingSequences();
   
@@ -80,13 +81,10 @@ export function LeadCard({ lead, onClick, onOpenDetails, onOpenTemplates, onDrag
   const handleWhatsAppClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!lead.phone) return;
-    // Se temos o callback do inbox, abre o inbox com telefone e dados do lead
     if (onOpenWhatsAppInbox) {
-      // Limpar telefone removendo caracteres não numéricos antes de enviar
       const cleanPhone = lead.phone.replace(/\D/g, '');
       onOpenWhatsAppInbox(cleanPhone, lead.full_name, "lead", lead.id);
     } else {
-      // Fallback para abrir templates
       onOpenTemplates();
     }
   };
@@ -112,6 +110,13 @@ export function LeadCard({ lead, onClick, onOpenDetails, onOpenTemplates, onDrag
     }
   };
 
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm(`Tem certeza que deseja excluir "${lead.full_name}"?`)) {
+      onDelete?.();
+    }
+  };
+
   const isMeetingColumn = columnStatus === "meeting";
   const isConvertedColumn = columnStatus === "converted";
   const isDiscardedColumn = columnStatus === "discarded";
@@ -123,127 +128,128 @@ export function LeadCard({ lead, onClick, onOpenDetails, onOpenTemplates, onDrag
         onDragStart={(e) => onDragStart(e, lead.id)}
         onClick={onClick}
         className={cn(
-          "bg-card border border-border rounded-lg p-3 cursor-grab active:cursor-grabbing",
+          "bg-card border border-border rounded-lg p-2 cursor-grab active:cursor-grabbing",
           "hover:shadow-md hover:border-secondary/50 transition-all duration-200",
           "select-none group"
         )}
       >
-        {/* Header */}
-        <div className="flex items-start gap-3 mb-2">
+        {/* Header - Compact */}
+        <div className="flex items-start gap-2 mb-1.5">
           {isSelectionMode && (
-            <div className="flex-shrink-0 mt-1" onClick={(e) => { e.stopPropagation(); onSelectionChange?.(lead.id, !isSelected); }}>
+            <div className="flex-shrink-0 mt-0.5" onClick={(e) => { e.stopPropagation(); onSelectionChange?.(lead.id, !isSelected); }}>
               <Checkbox checked={isSelected} className="data-[state=checked]:bg-secondary data-[state=checked]:border-secondary" />
             </div>
           )}
           
-          <div className={cn("w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 cursor-pointer", isSelected && "ring-2 ring-secondary ring-offset-2")} onClick={(e) => { e.stopPropagation(); onOpenDetails(); }}>
-            <span className="text-primary font-semibold text-sm">{lead.full_name.charAt(0).toUpperCase()}</span>
+          <div className={cn("w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 cursor-pointer", isSelected && "ring-2 ring-secondary ring-offset-1")} onClick={(e) => { e.stopPropagation(); onOpenDetails(); }}>
+            <span className="text-primary font-semibold text-xs">{lead.full_name.charAt(0).toUpperCase()}</span>
           </div>
           <div className="flex-1 min-w-0 cursor-pointer" onClick={(e) => { e.stopPropagation(); onOpenDetails(); }}>
-            <p className="font-medium text-foreground text-sm truncate hover:text-primary transition-colors">{lead.full_name}</p>
-            <p className="text-xs text-muted-foreground truncate">{lead.source || "Direto"}</p>
+            <p className="font-medium text-foreground text-xs truncate hover:text-primary transition-colors leading-tight">{lead.full_name}</p>
+            <p className="text-[10px] text-muted-foreground truncate">{lead.source || "Direto"}</p>
           </div>
           {temp && (
-            <span className={cn("inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium flex-shrink-0", temp.color)}>
+            <span className={cn("inline-flex items-center px-1 py-0.5 rounded-full flex-shrink-0", temp.color)}>
               <temp.icon className="w-3 h-3" />
             </span>
           )}
         </div>
 
-        {/* Meeting Info */}
+        {/* Meeting Info - Compact */}
         {isMeetingColumn && lead.meeting_scheduled_at && (
-          <div className="mb-2 p-2 bg-cyan-50 dark:bg-cyan-900/20 rounded-md space-y-1">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-3.5 h-3.5 text-cyan-600" />
-              <span className="text-xs font-medium text-cyan-700 dark:text-cyan-400">
-                {format(new Date(lead.meeting_scheduled_at), "dd/MM 'às' HH:mm", { locale: ptBR })}
+          <div className="mb-1.5 p-1.5 bg-cyan-50 dark:bg-cyan-900/20 rounded space-y-0.5">
+            <div className="flex items-center gap-1.5">
+              <Calendar className="w-3 h-3 text-cyan-600" />
+              <span className="text-[10px] font-medium text-cyan-700 dark:text-cyan-400">
+                {format(new Date(lead.meeting_scheduled_at), "dd/MM HH:mm", { locale: ptBR })}
               </span>
+              {lead.meeting_status && meetingStatusConfig[lead.meeting_status] && (
+                <span className={cn("text-[9px] px-1 py-0.5 rounded-full font-medium", meetingStatusConfig[lead.meeting_status].color)}>
+                  {meetingStatusConfig[lead.meeting_status].label}
+                </span>
+              )}
             </div>
-            {lead.meeting_status && meetingStatusConfig[lead.meeting_status] && (
-              <span className={cn("inline-flex text-[10px] px-1.5 py-0.5 rounded-full font-medium", meetingStatusConfig[lead.meeting_status].color)}>
-                {meetingStatusConfig[lead.meeting_status].label}
-              </span>
-            )}
-            {lead.meeting_notes && (
-              <p className="text-[10px] text-muted-foreground line-clamp-2">{lead.meeting_notes}</p>
-            )}
           </div>
         )}
 
-        {/* Converted Info */}
+        {/* Converted Info - Compact */}
         {isConvertedColumn && (
-          <div className="mb-2 p-2 bg-green-50 dark:bg-green-900/20 rounded-md space-y-2">
+          <div className="mb-1.5 p-1.5 bg-green-50 dark:bg-green-900/20 rounded space-y-1">
             {lead.product_interest && (
-              <div className="flex items-center gap-2">
-                <Trophy className="w-3.5 h-3.5 text-green-600" />
-                <span className="text-xs font-medium text-green-700 dark:text-green-400">{lead.product_interest}</span>
+              <div className="flex items-center gap-1.5">
+                <Trophy className="w-3 h-3 text-green-600" />
+                <span className="text-[10px] font-medium text-green-700 dark:text-green-400 truncate">{lead.product_interest}</span>
               </div>
             )}
             {!lead.student_user_id && onMakeStudent && (
-              <Button size="sm" variant="outline" className="w-full h-7 text-xs gap-1.5 border-green-300 text-green-700 hover:bg-green-100" onClick={(e) => { e.stopPropagation(); onMakeStudent(); }}>
-                <GraduationCap className="w-3.5 h-3.5" />
+              <Button size="sm" variant="outline" className="w-full h-6 text-[10px] gap-1 border-green-300 text-green-700 hover:bg-green-100" onClick={(e) => { e.stopPropagation(); onMakeStudent(); }}>
+                <GraduationCap className="w-3 h-3" />
                 Tornar Aluna
               </Button>
             )}
             {lead.student_user_id && (
-              <span className="text-[10px] text-green-600 font-medium flex items-center gap-1">
-                <GraduationCap className="w-3 h-3" /> Já é aluna
+              <span className="text-[9px] text-green-600 font-medium flex items-center gap-1">
+                <GraduationCap className="w-2.5 h-2.5" /> Já é aluna
               </span>
             )}
           </div>
         )}
 
-        {/* Discarded Info */}
+        {/* Discarded Info - Compact */}
         {isDiscardedColumn && lead.discard_reason && (
-          <div className="mb-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-md">
-            <p className="text-xs text-gray-600 dark:text-gray-400">Motivo: {lead.discard_reason}</p>
+          <div className="mb-1.5 p-1.5 bg-gray-50 dark:bg-gray-800/50 rounded">
+            <p className="text-[10px] text-gray-600 dark:text-gray-400 truncate">Motivo: {lead.discard_reason}</p>
           </div>
         )}
 
-        {/* Nurturing Status - Only for new/qualified columns */}
+        {/* Nurturing Status - Compact Single Line */}
         {!isMeetingColumn && !isConvertedColumn && !isDiscardedColumn && (
-          <div className="mb-2 p-2 bg-muted/50 rounded-md space-y-1.5">
-            <div className="flex items-center justify-between">
+          <div className="mb-1.5 p-1.5 bg-muted/50 rounded">
+            <div className="flex items-center justify-between gap-1">
               <CampaignSelector leadId={lead.id} currentSource={lead.source} currentStep={nurturingStep} onCampaignChange={onNurturingToggle || (() => {})} variant="badge" />
-              <Button variant="ghost" size="icon" className="h-5 w-5" onClick={handleToggleNurturing}>
-                {isNurturingActive ? <Pause className="w-3 h-3 text-amber-500" /> : <Play className="w-3 h-3 text-green-500" />}
-              </Button>
-            </div>
-            <div className="flex items-center gap-2">
-              {isNurturingActive ? <Zap className="w-3 h-3 text-amber-500 flex-shrink-0" /> : <ZapOff className="w-3 h-3 text-muted-foreground flex-shrink-0" />}
-              <span className="text-[11px] text-foreground">Step {nurturingStep}/{sequenceInfo.maxStep}</span>
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] text-muted-foreground">{nurturingStep}/{sequenceInfo.maxStep}</span>
+                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={handleToggleNurturing}>
+                  {isNurturingActive ? <Pause className="w-2.5 h-2.5 text-amber-500" /> : <Play className="w-2.5 h-2.5 text-green-500" />}
+                </Button>
+              </div>
             </div>
             {isNurturingActive && nextSend && (
-              <div className="flex items-center gap-1.5">
-                <Send className="w-2.5 h-2.5 text-muted-foreground flex-shrink-0" />
-                <span className={cn("text-[10px]", nextSend.isUrgent ? "text-amber-600 font-medium" : "text-muted-foreground")}>Próximo: {nextSend.text}</span>
+              <div className="flex items-center gap-1 mt-0.5">
+                <Send className="w-2 h-2 text-muted-foreground" />
+                <span className={cn("text-[9px]", nextSend.isUrgent ? "text-amber-600 font-medium" : "text-muted-foreground")}>Próximo: {nextSend.text}</span>
               </div>
             )}
           </div>
         )}
 
-        {/* Delayed Badge */}
+        {/* Delayed Badge - Compact */}
         {isDelayed && !isConvertedColumn && !isDiscardedColumn && (
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
-              <Clock className="w-3 h-3" />Atrasado
+          <div className="flex flex-wrap gap-1 mb-1.5">
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-red-100 text-red-700">
+              <Clock className="w-2.5 h-2.5" />Atrasado
             </span>
           </div>
         )}
 
-        {/* Quick Actions - Always Visible */}
-        <div className="flex items-center justify-between mb-2 pt-2 border-t border-border/30">
-          <div className="flex items-center gap-1">
-            <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleWhatsAppClick} disabled={!lead.phone}><MessageCircle className={cn("w-3.5 h-3.5", lead.phone ? "text-green-600" : "text-muted-foreground")} /></Button></TooltipTrigger><TooltipContent>WhatsApp</TooltipContent></Tooltip>
-            <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleEmailClick}><Mail className="w-3.5 h-3.5" /></Button></TooltipTrigger><TooltipContent>Email</TooltipContent></Tooltip>
-            <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-7 w-7 text-secondary" onClick={(e) => { e.stopPropagation(); onOpenTemplates(); }}><FileText className="w-3.5 h-3.5" /></Button></TooltipTrigger><TooltipContent>Templates</TooltipContent></Tooltip>
+        {/* Quick Actions - Compact */}
+        <div className="flex items-center justify-between pt-1.5 border-t border-border/30">
+          <div className="flex items-center gap-0.5">
+            <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleWhatsAppClick} disabled={!lead.phone}><MessageCircle className={cn("w-3 h-3", lead.phone ? "text-green-600" : "text-muted-foreground")} /></Button></TooltipTrigger><TooltipContent>WhatsApp</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleEmailClick}><Mail className="w-3 h-3" /></Button></TooltipTrigger><TooltipContent>Email</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-6 w-6 text-secondary" onClick={(e) => { e.stopPropagation(); onOpenTemplates(); }}><FileText className="w-3 h-3" /></Button></TooltipTrigger><TooltipContent>Templates</TooltipContent></Tooltip>
           </div>
-          <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onOpenDetails(); }}><Eye className="w-3.5 h-3.5" /></Button></TooltipTrigger><TooltipContent>Ver Detalhes</TooltipContent></Tooltip>
+          <div className="flex items-center gap-0.5">
+            {onDelete && (
+              <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={handleDeleteClick}><Trash2 className="w-3 h-3" /></Button></TooltipTrigger><TooltipContent>Excluir</TooltipContent></Tooltip>
+            )}
+            <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onOpenDetails(); }}><Eye className="w-3 h-3" /></Button></TooltipTrigger><TooltipContent>Ver Detalhes</TooltipContent></Tooltip>
+          </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
-          <span className="flex items-center gap-1"><MessageCircle className="w-3 h-3" />{lead.messages_sent || 0} msgs</span>
+        {/* Footer - Compact */}
+        <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 mt-1 border-t border-border/50">
+          <span className="flex items-center gap-0.5"><MessageCircle className="w-2.5 h-2.5" />{lead.messages_sent || 0}</span>
           <span>{formatDistanceToNow(new Date(lead.created_at), { addSuffix: true, locale: ptBR })}</span>
         </div>
       </div>
