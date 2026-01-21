@@ -35,7 +35,8 @@ import {
   Sparkles,
   BookOpen,
   Target,
-  Zap
+  Zap,
+  Trash2
 } from 'lucide-react';
 import { getBrazilNow, getBrazilToday } from '@/lib/dateUtils';
 
@@ -583,9 +584,40 @@ export function CampaignDispatchDialog({ open, onOpenChange, onSuccess, preselec
                             <p className="font-medium truncate">{origin.label}</p>
                             <p className="text-sm text-muted-foreground">{origin.description}</p>
                           </div>
-                          {selectedOrigin === origin.id && (
-                            <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-                          )}
+                          <div className="flex items-center gap-2">
+                            {selectedOrigin === origin.id && (
+                              <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                            )}
+                            {origin.type === 'batch' && origin.batchId && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 hover:bg-destructive/20 hover:text-destructive flex-shrink-0"
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  if (!confirm('Excluir esta lista? Os leads importados não serão afetados.')) return;
+                                  
+                                  const { error } = await supabase
+                                    .from('import_lists')
+                                    .delete()
+                                    .eq('batch_id', origin.batchId);
+                                  
+                                  if (error) {
+                                    toast.error('Erro ao excluir lista');
+                                    console.error(error);
+                                  } else {
+                                    toast.success('Lista removida');
+                                    if (selectedOrigin === origin.id) {
+                                      setSelectedOrigin('');
+                                    }
+                                    fetchOrigins();
+                                  }
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
                         </CardContent>
                       </Card>
                     ))}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, Copy, Sparkles } from "lucide-react";
+import { Loader2, Plus, Copy, Sparkles, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -50,8 +50,23 @@ export function NewCampaignDialog({
   const [sourceFilter, setSourceFilter] = useState("");
   const [selectedIcon, setSelectedIcon] = useState("📧");
   const [stepsCount, setStepsCount] = useState(4);
+  const [stepDelays, setStepDelays] = useState<number[]>([0, 48, 96, 144]);
   const [copyFrom, setCopyFrom] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+
+  // Update step delays when stepsCount changes
+  useEffect(() => {
+    const newDelays = Array.from({ length: stepsCount }, (_, i) => 
+      stepDelays[i] !== undefined ? stepDelays[i] : (i === 0 ? 0 : 48 * i)
+    );
+    setStepDelays(newDelays);
+  }, [stepsCount]);
+
+  const updateStepDelay = (index: number, value: number) => {
+    const newDelays = [...stepDelays];
+    newDelays[index] = value;
+    setStepDelays(newDelays);
+  };
 
   const handleCreate = async () => {
     if (!name.trim() || !sourceFilter.trim()) {
@@ -84,17 +99,16 @@ export function NewCampaignDialog({
         }
       }
 
-      // Create sequences
+      // Create sequences with custom delays
       const sequencesToCreate = Array.from({ length: stepsCount }, (_, i) => {
         const template = templateSequences[i];
-        const stepDelay = i === 0 ? 0 : 48 * i; // 0, 48, 96, 144...
 
         return {
           step_number: baseStep + i + 1,
           name: template?.name || `Etapa ${i + 1}`,
           email_subject: template?.email_subject || `${name} - Etapa ${i + 1}`,
           email_body: template?.email_body || `Olá {{nome}},\n\nConteúdo do email da etapa ${i + 1}.\n\nAbraços,\nFabiana Ferreira`,
-          delay_hours: template?.delay_hours ?? stepDelay,
+          delay_hours: stepDelays[i] ?? (i === 0 ? 0 : 48 * i),
           source_filter: sourceFilter,
           is_active: true,
         };
@@ -116,6 +130,7 @@ export function NewCampaignDialog({
       setSourceFilter("");
       setSelectedIcon("📧");
       setStepsCount(4);
+      setStepDelays([0, 48, 96, 144]);
       setCopyFrom(null);
     } catch (error) {
       console.error("Error creating campaign:", error);
@@ -232,14 +247,42 @@ export function NewCampaignDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {[2, 3, 4, 5, 6, 7, 8].map((n) => (
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                     <SelectItem key={n} value={n.toString()}>
-                      {n} etapas
+                      {n} {n === 1 ? 'etapa' : 'etapas'}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          {/* Step Delays Configuration */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              Delay por Etapa (horas após etapa anterior)
+            </Label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {Array.from({ length: stepsCount }, (_, i) => (
+                <div key={i} className="flex items-center gap-2 p-2 rounded-lg border bg-muted/30">
+                  <span className="text-xs font-medium text-muted-foreground w-14">
+                    Etapa {i + 1}:
+                  </span>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={stepDelays[i] || 0}
+                    onChange={(e) => updateStepDelay(i, parseInt(e.target.value) || 0)}
+                    className="w-16 h-7 text-xs"
+                  />
+                  <span className="text-xs text-muted-foreground">h</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Etapa 1 geralmente é 0h (envia imediatamente). Etapas seguintes aguardam X horas após a etapa anterior.
+            </p>
           </div>
 
           {existingCampaigns.length > 0 && (
