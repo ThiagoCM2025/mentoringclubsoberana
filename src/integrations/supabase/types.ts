@@ -55,6 +55,7 @@ export type Database = {
       }
       admin_alert_occurrences: {
         Row: {
+          alert_type: string | null
           created_at: string
           entity_id: string | null
           entity_type: string | null
@@ -65,8 +66,10 @@ export type Database = {
           resolved_by: string | null
           rule_id: string
           severity: string
+          title: string | null
         }
         Insert: {
+          alert_type?: string | null
           created_at?: string
           entity_id?: string | null
           entity_type?: string | null
@@ -77,8 +80,10 @@ export type Database = {
           resolved_by?: string | null
           rule_id: string
           severity?: string
+          title?: string | null
         }
         Update: {
+          alert_type?: string | null
           created_at?: string
           entity_id?: string | null
           entity_type?: string | null
@@ -89,6 +94,7 @@ export type Database = {
           resolved_by?: string | null
           rule_id?: string
           severity?: string
+          title?: string | null
         }
         Relationships: [
           {

@@ -416,31 +416,45 @@ async function sendAlertEmails(resendApiKey: string, recipients: EmailRecipient[
   }
 }
 
-// Filter alerts that were already notified in the last hour
+// Filter alerts based on type:
+// - SITUATION ALERTS (lead_inactive, student_inactive): Only notify ONCE until situation is resolved
+// - EVENT ALERTS (new_enrollment, whatsapp_new_messages): Notify with 1-hour deduplication window
 async function filterNewAlerts(supabase: any, alerts: AlertData[]): Promise<AlertData[]> {
   const newAlerts: AlertData[] = [];
-  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  
+  // Situation alerts should only be sent ONCE until the situation changes
+  // (when lead/student is updated, the trigger will clear the occurrence record)
+  const situationAlertTypes = ['lead_inactive', 'student_inactive'];
   
   for (const alert of alerts) {
     let query = supabase
       .from('admin_alert_occurrences')
       .select('id')
-      .eq('alert_type', alert.type)
-      .gte('created_at', oneHourAgo);
+      .eq('alert_type', alert.type);
     
-    // For alerts with entity_id (specific entities like leads, students)
-    if (alert.entity_id) {
-      query = query.eq('entity_id', alert.entity_id);
+    // For SITUATION alerts: check if EVER notified (no time limit)
+    // The trigger will clear the record when situation resolves
+    if (situationAlertTypes.includes(alert.type)) {
+      if (alert.entity_id) {
+        query = query.eq('entity_id', alert.entity_id);
+      }
+      // NO time filter - once notified, don't re-notify until trigger clears it
     } else {
-      // For consolidated alerts (whatsapp, conversion), use null entity_id
-      query = query.is('entity_id', null);
+      // For EVENT alerts: use 1-hour deduplication window
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+      query = query.gte('created_at', oneHourAgo);
+      
+      if (alert.entity_id) {
+        query = query.eq('entity_id', alert.entity_id);
+      } else {
+        query = query.is('entity_id', null);
+      }
     }
     
     const { data: existingAlert, error } = await query.maybeSingle();
     
     if (error) {
       console.error(`Error checking existing alert for ${alert.type}:`, error);
-      // In case of error, include the alert to be safe
       newAlerts.push(alert);
       continue;
     }
@@ -448,7 +462,10 @@ async function filterNewAlerts(supabase: any, alerts: AlertData[]): Promise<Aler
     if (!existingAlert) {
       newAlerts.push(alert);
     } else {
-      console.log(`Alert already notified in last hour: ${alert.type} - ${alert.entity_id || 'consolidated'}`);
+      const reason = situationAlertTypes.includes(alert.type) 
+        ? 'already notified (awaiting resolution)' 
+        : 'notified within last hour';
+      console.log(`Skipping alert ${alert.type} - ${alert.entity_id || 'consolidated'}: ${reason}`);
     }
   }
   

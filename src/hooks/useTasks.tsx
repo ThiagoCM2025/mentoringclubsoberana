@@ -139,6 +139,27 @@ export function useTasks() {
 
       if (error) throw error;
 
+      // Send notification if assigned to someone else
+      if (input.assigned_to !== user.id) {
+        const { data: creatorProfile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("user_id", user.id)
+          .single();
+
+        supabase.functions.invoke("send-task-notification", {
+          body: {
+            taskId: data.id,
+            assignedTo: input.assigned_to,
+            title: input.title,
+            dueDate: input.due_date,
+            description: input.description,
+            priority: input.priority,
+            createdByName: creatorProfile?.full_name || "Admin",
+          },
+        }).catch(err => console.error("Error sending task notification:", err));
+      }
+
       toast({
         title: "Tarefa criada com sucesso!",
       });
