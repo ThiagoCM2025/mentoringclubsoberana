@@ -56,7 +56,33 @@ const replaceVariables = (text: string, lead: Lead): string => {
     .replace(/\{\{full_name\}\}/g, fullName);
 };
 
-const generateProfessionalTemplate = (recipientName: string, subject: string, content: string): string => {
+/**
+ * Generate a unique tracking ID for email tracking
+ */
+const generateTrackingId = (): string => {
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 16);
+};
+
+/**
+ * Wrap all links in the HTML with tracking redirects
+ */
+const wrapLinksWithTracking = (html: string, trackingId: string, baseUrl: string): string => {
+  const trackingUrl = `${baseUrl}/functions/v1/track-link-click`;
+  
+  return html.replace(
+    /href="(https?:\/\/[^"]+)"/g,
+    (match, url) => {
+      // Don't track mailto links or unsubscribe links
+      if (url.includes("mailto:") || url.includes("unsubscribe")) {
+        return match;
+      }
+      const encodedUrl = encodeURIComponent(url);
+      return `href="${trackingUrl}?t=${trackingId}&url=${encodedUrl}"`;
+    }
+  );
+};
+
+const generateProfessionalTemplate = (recipientName: string, subject: string, content: string, trackingId: string, baseUrl: string): string => {
   // Convert all line breaks to proper HTML paragraphs
   const formattedContent = content
     .replace(/\\n\\n/g, "</p><p style='margin: 16px 0; color: #333333; font-size: 16px; line-height: 1.8;'>")
@@ -64,7 +90,10 @@ const generateProfessionalTemplate = (recipientName: string, subject: string, co
     .replace(/\n\n/g, "</p><p style='margin: 16px 0; color: #333333; font-size: 16px; line-height: 1.8;'>")
     .replace(/\n/g, "<br>");
 
-  return `
+  // Tracking pixel URL
+  const trackingPixelUrl = `${baseUrl}/functions/v1/track-email-open?t=${trackingId}`;
+
+  const html = `
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -171,8 +200,13 @@ const generateProfessionalTemplate = (recipientName: string, subject: string, co
       </td>
     </tr>
   </table>
+  <!-- Tracking Pixel -->
+  <img src="${trackingPixelUrl}" width="1" height="1" style="display:none;visibility:hidden;" alt="" />
 </body>
 </html>`;
+
+  // Wrap links with tracking
+  return wrapLinksWithTracking(html, trackingId, baseUrl);
 };
 
 /**
@@ -370,10 +404,11 @@ const handler = async (req: Request): Promise<Response> => {
         console.log(`New lead ${lead.email}: sending immediate email from sequence "${sequence.name}"`);
       }
 
-      // Prepare personalized email
+      // Prepare personalized email with tracking
+      const trackingId = generateTrackingId();
       const personalizedSubject = replaceVariables(sequence.email_subject, lead as Lead);
       const personalizedBody = replaceVariables(sequence.email_body, lead as Lead);
-      const htmlContent = generateProfessionalTemplate(lead.full_name, personalizedSubject, personalizedBody);
+      const htmlContent = generateProfessionalTemplate(lead.full_name, personalizedSubject, personalizedBody, trackingId, supabaseUrl);
 
       try {
         // Send email
@@ -400,7 +435,7 @@ const handler = async (req: Request): Promise<Response> => {
           .eq("id", lead.id);
 
         // Log communication
-        await supabase.from("communication_history").insert({
+        const { data: commData } = await supabase.from("communication_history").insert({
           recipient_id: lead.id,
           recipient_type: "lead",
           recipient_name: lead.full_name,
@@ -412,8 +447,23 @@ const handler = async (req: Request): Promise<Response> => {
           metadata: { 
             sequence_step: sequence.step_number, 
             sequence_name: sequence.name,
-            source_filter: sequence.source_filter || 'default'
+            source_filter: sequence.source_filter || 'default',
+            tracking_id: trackingId
           },
+        }).select("id").single();
+
+        // Create email tracking record
+        await supabase.from("email_tracking").insert({
+          communication_id: commData?.id,
+          lead_id: lead.id,
+          tracking_id: trackingId,
+          subject: personalizedSubject,
+          campaign_source: sequence.source_filter || null,
+          channel: "email",
+          metadata: {
+            sequence_step: sequence.step_number,
+            sequence_name: sequence.name
+          }
         });
 
         emailsSent++;

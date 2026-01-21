@@ -80,3 +80,9 @@ verify_jwt = true
 
 [functions.check-task-reminders]
 verify_jwt = false
+
+[functions.track-email-open]
+verify_jwt = false
+
+[functions.track-link-click]
+verify_jwt = false

@@ -46,22 +46,52 @@ function replaceVariables(text: string, recipient: Recipient): string {
     .replace(/\{telefone\}/g, recipient.phone || "");
 }
 
+/**
+ * Generate a unique tracking ID for email tracking
+ */
+function generateTrackingId(): string {
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 16);
+}
+
+/**
+ * Wrap all links in the HTML with tracking redirects
+ */
+function wrapLinksWithTracking(html: string, trackingId: string, baseUrl: string): string {
+  const trackingUrl = `${baseUrl}/functions/v1/track-link-click`;
+  
+  return html.replace(
+    /href="(https?:\/\/[^"]+)"/g,
+    (match, url) => {
+      // Don't track mailto links or unsubscribe links
+      if (url.includes("mailto:") || url.includes("unsubscribe")) {
+        return match;
+      }
+      const encodedUrl = encodeURIComponent(url);
+      return `href="${trackingUrl}?t=${trackingId}&url=${encodedUrl}"`;
+    }
+  );
+}
+
 function generateEmailTemplate(
   subject: string,
   content: string,
-  recipientType: "student" | "lead"
+  recipientType: "student" | "lead",
+  trackingId: string,
+  baseUrl: string
 ): string {
   const ctaText = recipientType === "student" ? "Acessar Plataforma" : "Conhecer a Mentoria";
   const ctaUrl = recipientType === "student" 
     ? "https://soberanamentoria.com.br/student" 
     : "https://soberanamentoria.com.br";
 
-    const formattedContent = content
-      .replace(/\\n\\n/g, "<br><br>")
-      .replace(/\\n/g, "<br>")
-      .replace(/\n/g, "<br>");
+  const trackingPixelUrl = `${baseUrl}/functions/v1/track-email-open?t=${trackingId}`;
 
-  return `
+  const formattedContent = content
+    .replace(/\\n\\n/g, "<br><br>")
+    .replace(/\\n/g, "<br>")
+    .replace(/\n/g, "<br>");
+
+  const html = `
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -150,9 +180,14 @@ function generateEmailTemplate(
       </td>
     </tr>
   </table>
+  <!-- Tracking Pixel -->
+  <img src="${trackingPixelUrl}" width="1" height="1" style="display:none;visibility:hidden;" alt="" />
 </body>
 </html>
   `.trim();
+
+  // Wrap links with tracking
+  return wrapLinksWithTracking(html, trackingId, baseUrl);
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -193,11 +228,16 @@ const handler = async (req: Request): Promise<Response> => {
 
       try {
         if (channel === "email") {
-          // Generate elegant HTML template
+          // Generate tracking ID for this email
+          const trackingId = generateTrackingId();
+
+          // Generate elegant HTML template with tracking
           const htmlContent = generateEmailTemplate(
             personalizedSubject,
             personalizedMessage,
-            recipient.type
+            recipient.type,
+            trackingId,
+            supabaseUrl
           );
 
           // Send email via Resend
@@ -211,7 +251,7 @@ const handler = async (req: Request): Promise<Response> => {
           console.log(`Email sent to ${recipient.email}:`, emailResponse);
 
           // Log to communication_history
-          await supabase.from("communication_history").insert({
+          const { data: commData } = await supabase.from("communication_history").insert({
             recipient_type: recipient.type,
             recipient_id: recipient.id,
             recipient_name: recipient.name,
@@ -223,8 +263,21 @@ const handler = async (req: Request): Promise<Response> => {
             message: personalizedMessage,
             status: "sent",
             sent_by: user.id,
-            metadata: { resend_id: emailResponse.data?.id },
-          });
+            metadata: { resend_id: emailResponse.data?.id, tracking_id: trackingId },
+          }).select("id").single();
+
+          // Create email tracking record (only for leads)
+          if (recipient.type === "lead") {
+            await supabase.from("email_tracking").insert({
+              communication_id: commData?.id,
+              lead_id: recipient.id,
+              tracking_id: trackingId,
+              subject: personalizedSubject,
+              campaign_source: null,
+              channel: "email",
+              metadata: { template_id: templateId, bulk_send: true }
+            });
+          }
 
           results.push({ 
             recipientId: recipient.id, 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { format, subDays, startOfDay } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { format, subDays } from "date-fns";
 import { 
   BarChart, 
   Bar, 
@@ -19,7 +18,7 @@ import {
   YAxis, 
   Tooltip, 
   ResponsiveContainer,
-  Cell 
+  Legend
 } from "recharts";
 import { 
   Mail, 
@@ -30,12 +29,16 @@ import {
   Loader2,
   RefreshCw,
   FileSpreadsheet,
-  ArrowUpRight
+  ArrowUpRight,
+  Eye,
+  MousePointerClick
 } from "lucide-react";
 
 interface CampaignStats {
   totalSent: number;
   deliveryRate: number;
+  openRate: number;
+  clickRate: number;
   activeLeads: number;
   conversions: number;
 }
@@ -50,7 +53,9 @@ interface FunnelByList {
 
 interface DailyStats {
   date: string;
-  count: number;
+  sent: number;
+  opened: number;
+  clicked: number;
 }
 
 interface CampaignOption {
@@ -63,6 +68,8 @@ export function CampaignAnalyticsDashboard() {
   const [stats, setStats] = useState<CampaignStats>({
     totalSent: 0,
     deliveryRate: 0,
+    openRate: 0,
+    clickRate: 0,
     activeLeads: 0,
     conversions: 0,
   });
@@ -118,6 +125,18 @@ export function CampaignAnalyticsDashboard() {
         .eq("channel", "email")
         .gte("sent_at", startDate.toISOString());
 
+      // Fetch email tracking data for opens/clicks
+      let trackingQuery = supabase
+        .from("email_tracking")
+        .select("id, tracking_id, opened_at, clicked_at, sent_at, campaign_source")
+        .gte("sent_at", startDate.toISOString());
+      
+      if (selectedCampaign !== "all" && selectedCampaign !== "default") {
+        trackingQuery = trackingQuery.eq("campaign_source", selectedCampaign);
+      }
+      
+      const { data: tracking } = await trackingQuery;
+
       // Fetch leads with nurturing info
       let leadsQuery = supabase
         .from("leads")
@@ -140,25 +159,45 @@ export function CampaignAnalyticsDashboard() {
         .order("created_at", { ascending: false });
 
       if (comms && leads) {
-        // Calculate stats
+        // Calculate stats from communication history
         const sent = comms.length;
         const delivered = comms.filter((c) => c.status === "sent").length;
         const active = leads.filter((l) => l.nurturing_active).length;
         const converted = leads.filter((l) => l.status === "converted").length;
 
+        // Calculate open/click rates from tracking data
+        const trackingTotal = tracking?.length || 0;
+        const opened = tracking?.filter((t) => t.opened_at).length || 0;
+        const clicked = tracking?.filter((t) => t.clicked_at).length || 0;
+
         setStats({
           totalSent: sent,
           deliveryRate: sent > 0 ? Math.round((delivered / sent) * 100) : 0,
+          openRate: trackingTotal > 0 ? Math.round((opened / trackingTotal) * 100) : 0,
+          clickRate: trackingTotal > 0 ? Math.round((clicked / trackingTotal) * 100) : 0,
           activeLeads: active,
           conversions: converted,
         });
 
-        // Calculate daily stats
-        const dailyMap = new Map<string, number>();
+        // Calculate daily stats with opens and clicks
+        const dailyMap = new Map<string, { sent: number; opened: number; clicked: number }>();
+        
         comms.forEach((c) => {
           if (c.sent_at) {
             const dateKey = format(new Date(c.sent_at), "dd/MM");
-            dailyMap.set(dateKey, (dailyMap.get(dateKey) || 0) + 1);
+            const existing = dailyMap.get(dateKey) || { sent: 0, opened: 0, clicked: 0 };
+            existing.sent += 1;
+            dailyMap.set(dateKey, existing);
+          }
+        });
+
+        tracking?.forEach((t) => {
+          if (t.sent_at) {
+            const dateKey = format(new Date(t.sent_at), "dd/MM");
+            const existing = dailyMap.get(dateKey) || { sent: 0, opened: 0, clicked: 0 };
+            if (t.opened_at) existing.opened += 1;
+            if (t.clicked_at) existing.clicked += 1;
+            dailyMap.set(dateKey, existing);
           }
         });
 
@@ -166,9 +205,12 @@ export function CampaignAnalyticsDashboard() {
         for (let i = parseInt(dateRange) - 1; i >= 0; i--) {
           const date = subDays(new Date(), i);
           const dateKey = format(date, "dd/MM");
+          const data = dailyMap.get(dateKey) || { sent: 0, opened: 0, clicked: 0 };
           daily.push({
             date: dateKey,
-            count: dailyMap.get(dateKey) || 0,
+            sent: data.sent,
+            opened: data.opened,
+            clicked: data.clicked,
           });
         }
         // Only show last 14 days for chart readability
@@ -251,7 +293,7 @@ export function CampaignAnalyticsDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         <Card>
           <CardContent className="pt-4 pb-3">
             <div className="flex items-center gap-2">
@@ -260,7 +302,7 @@ export function CampaignAnalyticsDashboard() {
               </div>
               <div>
                 <p className="text-xl font-bold">{stats.totalSent.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground">Emails Enviados</p>
+                <p className="text-xs text-muted-foreground">Enviados</p>
               </div>
             </div>
           </CardContent>
@@ -273,7 +315,33 @@ export function CampaignAnalyticsDashboard() {
               </div>
               <div>
                 <p className="text-xl font-bold">{stats.deliveryRate}%</p>
-                <p className="text-xs text-muted-foreground">Taxa de Entrega</p>
+                <p className="text-xs text-muted-foreground">Entrega</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30">
+                <Eye className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <div>
+                <p className="text-xl font-bold">{stats.openRate}%</p>
+                <p className="text-xs text-muted-foreground">Abertura</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-full bg-pink-100 dark:bg-pink-900/30">
+                <MousePointerClick className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+              </div>
+              <div>
+                <p className="text-xl font-bold">{stats.clickRate}%</p>
+                <p className="text-xs text-muted-foreground">Cliques</p>
               </div>
             </div>
           </CardContent>
@@ -286,7 +354,7 @@ export function CampaignAnalyticsDashboard() {
               </div>
               <div>
                 <p className="text-xl font-bold">{stats.activeLeads.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground">Leads Ativos</p>
+                <p className="text-xs text-muted-foreground">Ativos</p>
               </div>
             </div>
           </CardContent>
@@ -306,14 +374,17 @@ export function CampaignAnalyticsDashboard() {
         </Card>
       </div>
 
-      {/* Daily Sends Chart */}
+      {/* Daily Sends Chart with Opens/Clicks */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm">Envios por Dia</CardTitle>
+          <CardTitle className="text-sm">Envios, Aberturas e Cliques por Dia</CardTitle>
+          <CardDescription className="text-xs">
+            Comparativo de performance nos últimos {Math.min(14, parseInt(dateRange))} dias
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {dailyStats.length > 0 ? (
-            <ResponsiveContainer width="100%" height={180}>
+            <ResponsiveContainer width="100%" height={220}>
               <BarChart data={dailyStats}>
                 <XAxis 
                   dataKey="date" 
@@ -334,13 +405,15 @@ export function CampaignAnalyticsDashboard() {
                     borderRadius: '8px',
                     fontSize: '12px'
                   }}
-                  formatter={(value: number) => [`${value} emails`, 'Enviados']}
                 />
-                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                <Legend wrapperStyle={{ fontSize: '11px' }} />
+                <Bar dataKey="sent" name="Enviados" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="opened" name="Abertos" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="clicked" name="Clicados" fill="#ec4899" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[180px] text-sm text-muted-foreground">
+            <div className="flex items-center justify-center h-[220px] text-sm text-muted-foreground">
               Nenhum envio no período
             </div>
           )}
