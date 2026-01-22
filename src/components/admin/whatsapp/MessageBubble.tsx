@@ -1,9 +1,15 @@
-import { Check, CheckCheck, Clock, AlertCircle } from "lucide-react";
+import { Check, CheckCheck, Clock, AlertCircle, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { HighlightedText } from "./HighlightedText";
 import { MediaPreview } from "./MediaPreview";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import type { WhatsAppMessage } from "@/hooks/useWhatsAppConversations";
 
 interface MessageBubbleProps {
@@ -11,13 +17,15 @@ interface MessageBubbleProps {
   searchQuery?: string;
   isCurrentSearchResult?: boolean;
   isNew?: boolean;
+  onDelete?: (messageId: string) => void;
 }
 
 export function MessageBubble({ 
   message, 
   searchQuery = "",
   isCurrentSearchResult = false,
-  isNew = false 
+  isNew = false,
+  onDelete
 }: MessageBubbleProps) {
   const isOutgoing = message.direction === "outgoing";
   const time = format(new Date(message.created_at), "HH:mm", { locale: ptBR });
@@ -50,16 +58,18 @@ export function MessageBubble({
         isNew && "animate-fade-in"
       )}
     >
-      <div
-        className={cn(
-          "max-w-[75%] sm:max-w-[70%] rounded-2xl transition-all duration-200",
-          hasMedia ? "p-1" : "px-3 py-2",
-          isOutgoing
-            ? "bg-[#d9fdd3] dark:bg-[#005c4b] text-foreground rounded-br-md shadow-sm"
-            : "bg-white dark:bg-zinc-800 text-foreground rounded-bl-md shadow-md",
-          isCurrentSearchResult && "ring-2 ring-orange-500 ring-offset-2 ring-offset-background"
-        )}
-      >
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <div
+            className={cn(
+              "max-w-[75%] sm:max-w-[70%] rounded-2xl transition-all duration-200 cursor-context-menu",
+              hasMedia ? "p-1" : "px-3 py-2",
+              isOutgoing
+                ? "bg-[#d9fdd3] dark:bg-[#005c4b] text-foreground rounded-br-md shadow-sm"
+                : "bg-white dark:bg-zinc-800 text-foreground rounded-bl-md shadow-md",
+              isCurrentSearchResult && "ring-2 ring-orange-500 ring-offset-2 ring-offset-background"
+            )}
+          >
         {/* Media content */}
         {hasMedia && (
           <div className="mb-1">
@@ -114,8 +124,19 @@ export function MessageBubble({
           )}>
             {message.error_message}
           </p>
-        )}
-      </div>
+            )}
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem 
+            onClick={() => onDelete?.(message.id)}
+            className="text-destructive focus:text-destructive focus:bg-destructive/10"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Excluir mensagem
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </div>
   );
 }

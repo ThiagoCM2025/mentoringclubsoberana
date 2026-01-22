@@ -43,6 +43,7 @@ interface ChatWindowProps {
   onToggleSound?: () => void;
   onBack?: () => void;
   onMediaSent?: () => void;
+  onDeleteMessage?: (messageId: string) => void;
 }
 
 export function ChatWindow({
@@ -57,6 +58,7 @@ export function ChatWindow({
   onToggleSound,
   onBack,
   onMediaSent,
+  onDeleteMessage,
 }: ChatWindowProps) {
   const [inputValue, setInputValue] = useState("");
   const [sending, setSending] = useState(false);
@@ -459,6 +461,7 @@ export function ChatWindow({
                         searchQuery={debouncedSearchQuery}
                         isCurrentSearchResult={message.id === currentResultId}
                         isNew={groupIndex === groupedMessages.length - 1 && index === group.messages.length - 1}
+                        onDelete={onDeleteMessage}
                       />
                     </div>
                   ))}

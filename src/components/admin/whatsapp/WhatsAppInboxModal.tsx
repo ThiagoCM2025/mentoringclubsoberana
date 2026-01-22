@@ -68,6 +68,7 @@ export function WhatsAppInboxModal({
     archiveConversation,
     unarchiveConversation,
     deleteConversation,
+    deleteMessage,
     fetchArchivedConversations,
     refreshConversations,
   } = useWhatsAppConversations({ onNewIncomingMessage: handleNewIncomingMessage });
@@ -392,6 +393,7 @@ export function WhatsAppInboxModal({
                 soundEnabled={soundEnabled}
                 onToggleSound={toggleSound}
                 onBack={handleBackToList}
+                onDeleteMessage={deleteMessage}
               />
             </div>
 
