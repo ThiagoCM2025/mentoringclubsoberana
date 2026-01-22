@@ -36,7 +36,11 @@ export interface WhatsAppMessage {
   media_size: number | null;
 }
 
-export function useWhatsAppConversations() {
+interface UseWhatsAppConversationsOptions {
+  onNewIncomingMessage?: (message: WhatsAppMessage) => void;
+}
+
+export function useWhatsAppConversations(options?: UseWhatsAppConversationsOptions) {
   const [conversations, setConversations] = useState<WhatsAppConversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedConversation, setSelectedConversation] = useState<WhatsAppConversation | null>(null);
@@ -323,6 +327,11 @@ export function useWhatsAppConversations() {
         },
         (payload) => {
           const newMessage = payload.new as WhatsAppMessage;
+
+          // Notify for incoming messages (not sent by us)
+          if (newMessage.direction === "incoming" && options?.onNewIncomingMessage) {
+            options.onNewIncomingMessage(newMessage);
+          }
 
           // If it's for the current conversation, add to messages
           if (selectedConversation?.id === newMessage.conversation_id) {
