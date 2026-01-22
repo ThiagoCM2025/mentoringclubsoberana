@@ -24,10 +24,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, User, Target, GraduationCap, Clock } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
+import { CalendarIcon, User, Target, GraduationCap, Clock, Users, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Admin, AdminTask, CreateTaskInput, TaskPriority } from "@/hooks/useTasks";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface TaskDialogProps {
   open: boolean;
@@ -59,6 +62,108 @@ const reminderOptions = [
   { value: "1440", label: "1 dia antes" },
 ];
 
+// Multi-select component for admins
+function MultiAdminSelect({
+  admins,
+  selected,
+  onChange,
+  currentUserId,
+}: {
+  admins: Admin[];
+  selected: string[];
+  onChange: (ids: string[]) => void;
+  currentUserId?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const allSelected = admins.length > 0 && selected.length === admins.length;
+  const someSelected = selected.length > 0 && selected.length < admins.length;
+
+  const toggleAll = () => {
+    if (allSelected) {
+      onChange([]);
+    } else {
+      onChange(admins.map(a => a.user_id));
+    }
+  };
+
+  const toggleOne = (id: string) => {
+    if (selected.includes(id)) {
+      onChange(selected.filter(s => s !== id));
+    } else {
+      onChange([...selected, id]);
+    }
+  };
+
+  const getDisplayText = () => {
+    if (selected.length === 0) return "Selecione um ou mais admins";
+    if (allSelected) return `Todos (${admins.length})`;
+    if (selected.length === 1) {
+      const admin = admins.find(a => a.user_id === selected[0]);
+      return admin?.full_name || "1 pessoa selecionada";
+    }
+    return `${selected.length} pessoas selecionadas`;
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between font-normal"
+        >
+          <div className="flex items-center gap-2 truncate">
+            {selected.length > 1 || allSelected ? (
+              <Users className="h-4 w-4 shrink-0" />
+            ) : (
+              <User className="h-4 w-4 shrink-0" />
+            )}
+            <span className="truncate">{getDisplayText()}</span>
+          </div>
+          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+        <div className="max-h-64 overflow-auto">
+          {/* Select All Option */}
+          <div
+            className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent cursor-pointer"
+            onClick={toggleAll}
+          >
+            <Checkbox
+              checked={allSelected}
+              className={someSelected ? "data-[state=checked]:bg-primary/50" : ""}
+            />
+            <Users className="h-4 w-4 text-primary" />
+            <span className="font-medium">Todos os Admins ({admins.length})</span>
+          </div>
+          
+          <Separator />
+          
+          {/* Individual Admins */}
+          {admins.map((admin) => (
+            <div
+              key={admin.user_id}
+              className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent cursor-pointer"
+              onClick={() => toggleOne(admin.user_id)}
+            >
+              <Checkbox checked={selected.includes(admin.user_id)} />
+              <User className="h-4 w-4 text-muted-foreground" />
+              <span>
+                {admin.full_name}
+                {admin.user_id === currentUserId && (
+                  <span className="text-muted-foreground ml-1">(Você)</span>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function TaskDialog({
   open,
   onOpenChange,
@@ -75,7 +180,9 @@ export function TaskDialog({
 }: TaskDialogProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [assignedTo, setAssignedTo] = useState(currentUserId || "");
+  // For create mode: array of selected admins; for edit mode: single admin
+  const [selectedAdmins, setSelectedAdmins] = useState<string[]>([]);
+  const [assignedTo, setAssignedTo] = useState(""); // For edit mode only
   const [dueDate, setDueDate] = useState<Date>();
   const [dueTime, setDueTime] = useState("12:00");
   const [priority, setPriority] = useState<TaskPriority>("medium");
@@ -97,6 +204,7 @@ export function TaskDialog({
       setTitle(task.title);
       setDescription(task.description || "");
       setAssignedTo(task.assigned_to);
+      setSelectedAdmins([task.assigned_to]);
       const taskDate = new Date(task.due_date);
       setDueDate(taskDate);
       setDueTime(format(taskDate, "HH:mm"));
@@ -109,7 +217,8 @@ export function TaskDialog({
     } else {
       // Create mode: reset form or use defaults
       resetForm();
-      if (currentUserId && !assignedTo) {
+      if (currentUserId) {
+        setSelectedAdmins([currentUserId]);
         setAssignedTo(currentUserId);
       }
       if (defaultLeadId) {
@@ -162,7 +271,8 @@ export function TaskDialog({
   }, [studentSearch]);
 
   const handleSubmit = async () => {
-    if (!title.trim() || !dueDate || !assignedTo) return;
+    const hasAssignee = mode === "edit" ? !!assignedTo : selectedAdmins.length > 0;
+    if (!title.trim() || !dueDate || !hasAssignee) return;
 
     setSubmitting(true);
 
@@ -172,7 +282,7 @@ export function TaskDialog({
     dueDateWithTime.setHours(hours, minutes, 0, 0);
 
     if (mode === "edit" && task && onUpdate) {
-      // Update existing task
+      // Update existing task (single assignee)
       await onUpdate(task.id, {
         title: title.trim(),
         description: description.trim() || null,
@@ -183,7 +293,7 @@ export function TaskDialog({
         related_student_id: studentId || null,
       });
     } else {
-      // Create new task
+      // Create new task(s) - one for each selected admin
       let reminderAt: string | undefined;
       if (reminderMinutes !== "0") {
         const reminderDate = new Date(dueDateWithTime);
@@ -191,18 +301,32 @@ export function TaskDialog({
         reminderAt = reminderDate.toISOString();
       }
 
-      const input: CreateTaskInput = {
+      const tasksToCreate = selectedAdmins.map(adminId => ({
         title: title.trim(),
         description: description.trim() || undefined,
-        assigned_to: assignedTo,
+        assigned_to: adminId,
         due_date: dueDateWithTime.toISOString(),
         priority,
         related_lead_id: leadId || undefined,
         related_student_id: studentId || undefined,
         reminder_at: reminderAt,
-      };
+      }));
 
-      await onSubmit(input);
+      // Create all tasks
+      let successCount = 0;
+      for (const input of tasksToCreate) {
+        try {
+          await onSubmit(input);
+          successCount++;
+        } catch (error) {
+          console.error("Error creating task:", error);
+        }
+      }
+
+      // Show success message
+      if (successCount > 1) {
+        toast.success(`${successCount} tarefas criadas com sucesso!`);
+      }
     }
 
     setSubmitting(false);
@@ -213,6 +337,7 @@ export function TaskDialog({
   const resetForm = () => {
     setTitle("");
     setDescription("");
+    setSelectedAdmins(currentUserId ? [currentUserId] : []);
     setAssignedTo(currentUserId || "");
     setDueDate(undefined);
     setDueTime("12:00");
@@ -225,6 +350,7 @@ export function TaskDialog({
   };
 
   const isEdit = mode === "edit";
+  const hasValidAssignee = isEdit ? !!assignedTo : selectedAdmins.length > 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -257,25 +383,41 @@ export function TaskDialog({
             />
           </div>
 
-          {/* Assigned To */}
+          {/* Assigned To - Different UI for create vs edit */}
           <div className="space-y-2">
             <Label>Atribuir para *</Label>
-            <Select value={assignedTo} onValueChange={setAssignedTo}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione um admin" />
-              </SelectTrigger>
-              <SelectContent>
-                {admins.map((admin) => (
-                  <SelectItem key={admin.user_id} value={admin.user_id}>
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      {admin.full_name}
-                      {admin.user_id === currentUserId && " (Você)"}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {isEdit ? (
+              // Edit mode: single select
+              <Select value={assignedTo} onValueChange={setAssignedTo}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um admin" />
+                </SelectTrigger>
+                <SelectContent>
+                  {admins.map((admin) => (
+                    <SelectItem key={admin.user_id} value={admin.user_id}>
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        {admin.full_name}
+                        {admin.user_id === currentUserId && " (Você)"}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              // Create mode: multi-select with "Select All"
+              <MultiAdminSelect
+                admins={admins}
+                selected={selectedAdmins}
+                onChange={setSelectedAdmins}
+                currentUserId={currentUserId}
+              />
+            )}
+            {!isEdit && selectedAdmins.length > 1 && (
+              <p className="text-xs text-muted-foreground">
+                Será criada uma tarefa para cada pessoa selecionada
+              </p>
+            )}
           </div>
 
           {/* Due Date & Time */}
@@ -436,11 +578,16 @@ export function TaskDialog({
           </Button>
           <Button 
             onClick={handleSubmit} 
-            disabled={!title.trim() || !dueDate || !assignedTo || submitting}
+            disabled={!title.trim() || !dueDate || !hasValidAssignee || submitting}
           >
             {submitting 
               ? (isEdit ? "Salvando..." : "Criando...") 
-              : (isEdit ? "Salvar Alterações" : "Criar Tarefa")
+              : (isEdit 
+                  ? "Salvar Alterações" 
+                  : selectedAdmins.length > 1 
+                    ? `Criar ${selectedAdmins.length} Tarefas`
+                    : "Criar Tarefa"
+                )
             }
           </Button>
         </div>
