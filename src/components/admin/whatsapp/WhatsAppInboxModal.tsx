@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface WhatsAppInboxModalProps {
   open: boolean;
@@ -71,6 +72,11 @@ export function WhatsAppInboxModal({
     deleteMessage,
     fetchArchivedConversations,
     refreshConversations,
+    pinConversation,
+    muteConversation,
+    favoriteConversation,
+    blockConversation,
+    markAsUnread,
   } = useWhatsAppConversations({ onNewIncomingMessage: handleNewIncomingMessage });
 
   // Check WhatsApp connection status
@@ -272,6 +278,31 @@ export function WhatsAppInboxModal({
     selectConversation(null as any);
   };
 
+  // Context menu handlers
+  const handlePin = async (conversationId: string, pin: boolean) => {
+    await pinConversation(conversationId, pin);
+  };
+
+  const handleMute = async (conversationId: string, mute: boolean) => {
+    await muteConversation(conversationId, mute);
+  };
+
+  const handleFavorite = async (conversationId: string, favorite: boolean) => {
+    await favoriteConversation(conversationId, favorite);
+  };
+
+  const handleBlock = async (conversationId: string, block: boolean) => {
+    await blockConversation(conversationId, block);
+  };
+
+  const handleMarkUnread = async (conversationId: string) => {
+    await markAsUnread(conversationId);
+  };
+
+  const handleTag = (conversationId: string) => {
+    toast.info("Funcionalidade de tags em breve");
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -377,6 +408,13 @@ export function WhatsAppInboxModal({
                 onNewConversation={() => setShowNewConversation(true)}
                 onUnarchive={handleUnarchive}
                 onDelete={deleteConversation}
+                onArchive={archiveConversation}
+                onPin={handlePin}
+                onMute={handleMute}
+                onFavorite={handleFavorite}
+                onBlock={handleBlock}
+                onMarkUnread={handleMarkUnread}
+                onTag={handleTag}
               />
             </div>
 
