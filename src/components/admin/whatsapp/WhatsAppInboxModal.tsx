@@ -263,6 +263,9 @@ export function WhatsAppInboxModal({
   const handleArchive = async () => {
     if (!selectedConversation) return;
     await archiveConversation(selectedConversation.id);
+    // Atualizar lista de arquivadas imediatamente
+    const archived = await fetchArchivedConversations();
+    setArchivedConversations(archived);
   };
 
   const handleBackToList = () => {
