@@ -197,8 +197,8 @@ export function ConversationList({
           </div>
         </div>
 
-        {/* Delete button for empty conversations */}
-        {!isArchived && isEmptyConversation && onDelete && (
+              {/* Delete button for empty conversations (active or archived) */}
+              {isEmptyConversation && onDelete && (
           <Button
             variant="ghost"
             size="icon"
