@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle, Send, Inbox, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { getBrazilToday } from "@/lib/dateUtils";
 
 interface Stats {
   activeConversations: number;
@@ -22,8 +23,8 @@ export function WhatsAppDashboardStats() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // Usar horário de Brasília para filtrar "hoje"
+        const today = getBrazilToday();
 
         // Active conversations
         const { count: activeCount } = await supabase

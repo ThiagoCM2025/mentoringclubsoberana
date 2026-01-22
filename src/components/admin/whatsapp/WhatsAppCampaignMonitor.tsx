@@ -14,8 +14,9 @@ import {
   Calendar,
   AlertTriangle
 } from "lucide-react";
-import { format, formatDistanceToNow, isPast } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { isPastBrazil } from "@/lib/dateUtils";
 
 interface Campaign {
   id: string;
@@ -114,7 +115,7 @@ export function WhatsAppCampaignMonitor() {
   };
 
   const processingCampaigns = campaigns.filter(c => c.status === 'processing');
-  const pendingCampaigns = campaigns.filter(c => c.status === 'pending' && !isPast(new Date(c.scheduledFor)));
+  const pendingCampaigns = campaigns.filter(c => c.status === 'pending' && !isPastBrazil(c.scheduledFor));
   const completedCampaigns = campaigns.filter(c => c.status === 'completed' || c.status === 'failed').slice(0, 3);
 
   const getProgressPercentage = (campaign: Campaign) => {

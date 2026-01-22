@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
-import { format, subDays, startOfDay } from "date-fns";
+import { getBrazilNow, getBrazilToday, formatBrazilDateISO } from "@/lib/dateUtils";
 import { ptBR } from "date-fns/locale";
+import { format } from "date-fns";
 
 interface DayData {
   date: string;
@@ -19,7 +20,11 @@ export function WhatsAppVolumeChart() {
     const fetchData = async () => {
       try {
         const days = 7;
-        const startDate = startOfDay(subDays(new Date(), days - 1));
+        
+        // Usar horário de Brasília para calcular a data de início
+        const startDate = getBrazilToday();
+        startDate.setDate(startDate.getDate() - (days - 1));
+        startDate.setHours(0, 0, 0, 0);
 
         const { data: messages } = await supabase
           .from("whatsapp_messages")
@@ -27,30 +32,37 @@ export function WhatsAppVolumeChart() {
           .gte("created_at", startDate.toISOString())
           .order("created_at", { ascending: true });
 
-        // Group by date
+        // Group by date - inicializar todos os dias no horário de Brasília
         const grouped: Record<string, { enviadas: number; recebidas: number }> = {};
         
-        // Initialize all days
+        // Initialize all days using Brazil timezone
         for (let i = 0; i < days; i++) {
-          const date = format(subDays(new Date(), days - 1 - i), "yyyy-MM-dd");
-          grouped[date] = { enviadas: 0, recebidas: 0 };
+          const d = getBrazilToday();
+          d.setDate(d.getDate() - (days - 1 - i));
+          const dateKey = formatBrazilDateISO(d);
+          grouped[dateKey] = { enviadas: 0, recebidas: 0 };
         }
 
-        // Count messages
+        // Count messages - converter cada mensagem para o timezone de Brasília
         messages?.forEach((msg) => {
-          const date = format(new Date(msg.created_at), "yyyy-MM-dd");
-          if (grouped[date]) {
+          // Converter created_at para data no formato yyyy-MM-dd em Brasília
+          const msgDate = new Date(msg.created_at);
+          const brazilDateStr = msgDate.toLocaleDateString('en-CA', { 
+            timeZone: 'America/Sao_Paulo' 
+          }); // en-CA dá formato yyyy-MM-dd
+          
+          if (grouped[brazilDateStr]) {
             if (msg.direction === "outgoing") {
-              grouped[date].enviadas++;
+              grouped[brazilDateStr].enviadas++;
             } else {
-              grouped[date].recebidas++;
+              grouped[brazilDateStr].recebidas++;
             }
           }
         });
 
-        // Convert to array
+        // Convert to array with formatted display dates
         const chartData = Object.entries(grouped).map(([date, counts]) => ({
-          date: format(new Date(date), "dd/MM", { locale: ptBR }),
+          date: format(new Date(date + "T12:00:00"), "dd/MM", { locale: ptBR }),
           enviadas: counts.enviadas,
           recebidas: counts.recebidas,
         }));

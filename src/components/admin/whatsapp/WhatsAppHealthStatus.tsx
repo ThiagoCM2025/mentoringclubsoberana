@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { RefreshCw, Wifi, WifiOff, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { toBrazilISOString, formatBrazilTime } from "@/lib/dateUtils";
 
 interface ConnectionStatus {
   connected: boolean;
@@ -98,9 +99,9 @@ export function WhatsAppHealthStatus() {
                 </div>
                 <div>
                   <span className="font-medium text-emerald-600">WhatsApp Conectado</span>
-                  {status.lastSync && (
+                {status.lastSync && (
                     <p className="text-xs text-muted-foreground">
-                      Última verificação: {new Date(status.lastSync).toLocaleTimeString('pt-BR')}
+                      Última verificação: {formatBrazilTime(status.lastSync)}
                     </p>
                   )}
                 </div>
