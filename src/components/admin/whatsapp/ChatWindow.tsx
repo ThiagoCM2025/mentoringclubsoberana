@@ -508,15 +508,19 @@ export function ChatWindow({
             </TooltipContent>
           </Tooltip>
           
-          <Input
-            ref={inputRef}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Digite uma mensagem..."
-            className="flex-1 h-9 sm:h-10 rounded-full bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60 text-sm"
-            disabled={sending}
-          />
+            <Input
+              ref={inputRef}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Digite uma mensagem..."
+              className="flex-1 h-9 sm:h-10 rounded-full bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60 text-sm"
+              disabled={sending}
+              spellCheck={true}
+              lang="pt-BR"
+              autoComplete="off"
+              autoCorrect="on"
+            />
           
           {/* Show Send button or Voice Recorder based on input */}
           {inputValue.trim() ? (
