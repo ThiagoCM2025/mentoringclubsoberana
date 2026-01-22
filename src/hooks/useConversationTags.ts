@@ -8,7 +8,7 @@ export interface ConversationTag {
   color: string;
 }
 
-export function useConversationTags(conversationId: string | null) {
+export function useConversationTags(conversationId: string | null, onTagsChange?: () => void) {
   const [tags, setTags] = useState<ConversationTag[]>([]);
   const [availableTags, setAvailableTags] = useState<ConversationTag[]>([]);
   const [loading, setLoading] = useState(false);
@@ -99,11 +99,14 @@ export function useConversationTags(conversationId: string | null) {
       if (tag && !tags.some((t) => t.id === tagId)) {
         setTags((prev) => [...prev, tag]);
       }
+      
+      // Notify parent of change
+      onTagsChange?.();
     } catch (error) {
       console.error("Error adding tag:", error);
       toast.error("Erro ao adicionar tag");
     }
-  }, [conversationId, availableTags, tags]);
+  }, [conversationId, availableTags, tags, onTagsChange]);
 
   // Remove tag from conversation
   const removeTag = useCallback(async (tagId: string) => {
@@ -120,11 +123,14 @@ export function useConversationTags(conversationId: string | null) {
       if (error) throw error;
 
       setTags((prev) => prev.filter((t) => t.id !== tagId));
+      
+      // Notify parent of change
+      onTagsChange?.();
     } catch (error) {
       console.error("Error removing tag:", error);
       toast.error("Erro ao remover tag");
     }
-  }, [conversationId]);
+  }, [conversationId, onTagsChange]);
 
   // Toggle tag
   const toggleTag = useCallback(async (tagId: string) => {

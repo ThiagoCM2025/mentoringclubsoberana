@@ -75,7 +75,7 @@ export function ConversationList({
     [conversations, archivedConversations]
   );
 
-  const { tagsMap } = useConversationTagsBatch(conversationIds);
+  const { tagsMap, refetch: refetchTags } = useConversationTagsBatch(conversationIds);
 
   const [filters, setFilters] = useState<ConversationFilters>({
     contactType: "all",
@@ -209,28 +209,28 @@ export function ConversationList({
               )}>
                 {displayName}
               </span>
-              {/* Tags - colored circles */}
+              {/* Tags - show emoji from tag name */}
               {conversationTags.length > 0 && (
                 <TooltipProvider delayDuration={200}>
                   <div className="flex items-center gap-0.5 flex-shrink-0">
-                    {conversationTags.slice(0, 3).map((tag) => (
-                      <Tooltip key={tag.id}>
-                        <TooltipTrigger asChild>
-                          <span
-                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: tag.color }}
-                          />
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="text-xs">
-                          {tag.name}
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
-                    {conversationTags.length > 3 && (
-                      <span className="text-[9px] text-muted-foreground ml-0.5">
-                        +{conversationTags.length - 3}
-                      </span>
-                    )}
+                    {conversationTags.map((tag) => {
+                      // Extract emoji from tag name (first character or emoji at start)
+                      const emojiMatch = tag.name.match(/^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F?)/u);
+                      const emoji = emojiMatch ? emojiMatch[0] : tag.name.charAt(0);
+                      
+                      return (
+                        <Tooltip key={tag.id}>
+                          <TooltipTrigger asChild>
+                            <span className="text-sm flex-shrink-0 cursor-default">
+                              {emoji}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="text-xs">
+                            {tag.name}
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    })}
                   </div>
                 </TooltipProvider>
               )}
@@ -297,6 +297,7 @@ export function ConversationList({
             onMarkUnread={() => onMarkUnread(conversation.id)}
             onDelete={() => setConversationToDelete(conversation)}
             isArchived={isArchived}
+            onTagsChange={refetchTags}
           />
         )}
       </div>

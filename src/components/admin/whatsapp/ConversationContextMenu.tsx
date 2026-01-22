@@ -46,6 +46,7 @@ interface ConversationDropdownMenuProps {
   onMarkUnread: () => void;
   onDelete: () => void;
   isArchived?: boolean;
+  onTagsChange?: () => void;
 }
 
 export function ConversationDropdownMenu({
@@ -59,13 +60,14 @@ export function ConversationDropdownMenu({
   onMarkUnread,
   onDelete,
   isArchived = false,
+  onTagsChange,
 }: ConversationDropdownMenuProps) {
   const isPinned = conversation.is_pinned ?? false;
   const isMuted = conversation.is_muted ?? false;
   const isFavorite = conversation.is_favorite ?? false;
   const isBlocked = conversation.is_blocked ?? false;
 
-  const { tags, availableTags, toggleTag, loading } = useConversationTags(conversation.id);
+  const { tags, availableTags, toggleTag, loading } = useConversationTags(conversation.id, onTagsChange);
   const hasTag = (tagId: string) => tags.some((t) => t.id === tagId);
 
   return (
