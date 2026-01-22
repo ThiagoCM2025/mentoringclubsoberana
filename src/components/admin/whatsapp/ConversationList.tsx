@@ -253,7 +253,6 @@ export function ConversationList({
             onFavorite={() => onFavorite(conversation.id, !extConv.is_favorite)}
             onBlock={() => onBlock(conversation.id, !extConv.is_blocked)}
             onMarkUnread={() => onMarkUnread(conversation.id)}
-            onTag={() => onTag(conversation.id)}
             onDelete={() => setConversationToDelete(conversation)}
             isArchived={isArchived}
           />
