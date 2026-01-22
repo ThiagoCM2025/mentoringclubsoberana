@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,8 @@ import {
   RefreshCw,
   ListTodo,
   History,
+  MessageSquare,
+  Bot,
 } from "lucide-react";
 import isotipoGold from "@/assets/brand/isotipo-s-framed-gold.png";
 import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
@@ -43,22 +45,33 @@ interface AdminLayoutProps {
 }
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/admin", hasBadge: false },
-  { icon: ListTodo, label: "Tarefas", href: "/admin/tasks", hasBadge: true, badgeType: "tasks" },
-  { icon: BookOpen, label: "Cursos", href: "/admin/courses", hasBadge: false },
-  { icon: Target, label: "Agentes IA", href: "/admin/agents", hasBadge: false },
-  { icon: FileText, label: "Blog", href: "/admin/blog", hasBadge: false },
-  { icon: Users, label: "Alunos", href: "/admin/students", hasBadge: false },
-  { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments", hasBadge: false },
-  { icon: Target, label: "Leads", href: "/admin/leads", hasBadge: false },
-  { icon: History, label: "Histórico Importações", href: "/admin/import-history", hasBadge: false },
-  { icon: ClipboardCheck, label: "Revisar Missões", href: "/admin/mission-reviews", hasBadge: true, badgeType: "missions" },
-  { icon: Mail, label: "Comunicação", href: "/admin/messaging", hasBadge: false },
-  { icon: Activity, label: "Engajamento", href: "/admin/engagement", hasBadge: false },
-  { icon: Bell, label: "Notificações", href: "/admin/notifications", hasBadge: false },
-  { icon: Users, label: "Comunidade", href: "/admin/community", hasBadge: false },
-  { icon: BarChart3, label: "Relatórios", href: "/admin/reports", hasBadge: false },
-  { icon: Settings, label: "Configurações", href: "/admin/settings", hasBadge: false },
+  // Visão Geral
+  { icon: LayoutDashboard, label: "Dashboard", href: "/admin", group: "visao" },
+  { icon: ListTodo, label: "Tarefas", href: "/admin/tasks", hasBadge: true, badgeType: "tasks", group: "visao" },
+  
+  // Pessoas
+  { icon: Target, label: "Leads", href: "/admin/leads", group: "pessoas" },
+  { icon: Users, label: "Alunos", href: "/admin/students", group: "pessoas" },
+  { icon: UserCheck, label: "Matrículas", href: "/admin/enrollments", group: "pessoas" },
+  { icon: Users, label: "Comunidade", href: "/admin/community", group: "pessoas" },
+  
+  // Conteúdo
+  { icon: BookOpen, label: "Cursos", href: "/admin/courses", group: "conteudo" },
+  { icon: ClipboardCheck, label: "Revisar Missões", href: "/admin/mission-reviews", hasBadge: true, badgeType: "missions", group: "conteudo" },
+  { icon: FileText, label: "Blog", href: "/admin/blog", group: "conteudo" },
+  { icon: Bot, label: "Agentes IA", href: "/admin/agents", group: "conteudo" },
+  
+  // Comunicação
+  { icon: MessageSquare, label: "Mensagens", href: "/admin/messaging", group: "comunicacao" },
+  { icon: Bell, label: "Notificações", href: "/admin/notifications", group: "comunicacao" },
+  
+  // Análise
+  { icon: Activity, label: "Engajamento", href: "/admin/engagement", group: "analise" },
+  { icon: BarChart3, label: "Relatórios", href: "/admin/reports", group: "analise" },
+  
+  // Sistema
+  { icon: History, label: "Histórico Importações", href: "/admin/import-history", group: "sistema" },
+  { icon: Settings, label: "Configurações", href: "/admin/settings", group: "sistema" },
 ];
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
@@ -145,25 +158,35 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 bg-card z-40 pt-16">
-          <nav className="p-4 space-y-2">
-            {menuItems.map((item) => (
-              <Link
-                key={item.href}
-                to={item.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
-                  location.pathname === item.href
-                    ? "bg-secondary/20 text-secondary border border-secondary/30"
-                    : "text-muted-foreground hover:bg-secondary/10 hover:text-foreground"
-                )}
-              >
-              <item.icon className="w-5 h-5" />
-                <span className="flex-1">{item.label}</span>
-                {item.hasBadge && item.badgeType === "missions" && <PendingMissionsBadge />}
-                {item.hasBadge && item.badgeType === "tasks" && <PendingTasksBadge />}
-              </Link>
-            ))}
+          <nav className="p-4 space-y-1">
+            {menuItems.map((item, index) => {
+              const prevGroup = index > 0 ? menuItems[index - 1].group : null;
+              const showSeparator = prevGroup && prevGroup !== item.group;
+              
+              return (
+                <Fragment key={item.href}>
+                  {showSeparator && (
+                    <div className="border-t border-secondary/10 my-2" />
+                  )}
+                  <Link
+                    to={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
+                      location.pathname === item.href
+                        ? "bg-secondary/20 text-secondary border border-secondary/30"
+                        : "text-muted-foreground hover:bg-secondary/10 hover:text-foreground"
+                    )}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    <span className="flex-1">{item.label}</span>
+                    {item.hasBadge && item.badgeType === "missions" && <PendingMissionsBadge />}
+                    {item.hasBadge && item.badgeType === "tasks" && <PendingTasksBadge />}
+                  </Link>
+                </Fragment>
+              );
+            })}
+            <div className="border-t border-secondary/10 my-2" />
             <button
               onClick={handleSignOut}
               className="flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left text-red-400 hover:bg-red-400/10"
@@ -252,27 +275,39 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
 
         {/* Navigation */}
         <nav className="relative flex-1 p-4 space-y-1 overflow-y-auto">
-          {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
-                location.pathname === item.href || location.pathname.startsWith(item.href + "/")
-                  ? "bg-secondary/20 text-secondary border border-secondary/30"
-                  : "text-muted-foreground hover:bg-secondary/10 hover:text-foreground",
-                !isSidebarOpen && "justify-center px-2"
-              )}
-              title={!isSidebarOpen ? item.label : undefined}
-            >
-              <item.icon className={cn("w-5 h-5 flex-shrink-0", 
-                (location.pathname === item.href || location.pathname.startsWith(item.href + "/")) && "text-secondary"
-              )} />
-              {isSidebarOpen && <span className="flex-1">{item.label}</span>}
-              {isSidebarOpen && item.hasBadge && item.badgeType === "missions" && <PendingMissionsBadge />}
-              {isSidebarOpen && item.hasBadge && item.badgeType === "tasks" && <PendingTasksBadge />}
-            </Link>
-          ))}
+          {menuItems.map((item, index) => {
+            const prevGroup = index > 0 ? menuItems[index - 1].group : null;
+            const showSeparator = prevGroup && prevGroup !== item.group;
+            
+            return (
+              <Fragment key={item.href}>
+                {showSeparator && (
+                  <div className={cn(
+                    "border-t border-secondary/10 my-2",
+                    !isSidebarOpen && "mx-1"
+                  )} />
+                )}
+                <Link
+                  to={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
+                    location.pathname === item.href || location.pathname.startsWith(item.href + "/")
+                      ? "bg-secondary/20 text-secondary border border-secondary/30"
+                      : "text-muted-foreground hover:bg-secondary/10 hover:text-foreground",
+                    !isSidebarOpen && "justify-center px-2"
+                  )}
+                  title={!isSidebarOpen ? item.label : undefined}
+                >
+                  <item.icon className={cn("w-5 h-5 flex-shrink-0", 
+                    (location.pathname === item.href || location.pathname.startsWith(item.href + "/")) && "text-secondary"
+                  )} />
+                  {isSidebarOpen && <span className="flex-1">{item.label}</span>}
+                  {isSidebarOpen && item.hasBadge && item.badgeType === "missions" && <PendingMissionsBadge />}
+                  {isSidebarOpen && item.hasBadge && item.badgeType === "tasks" && <PendingTasksBadge />}
+                </Link>
+              </Fragment>
+            );
+          })}
         </nav>
 
         {/* Footer */}
