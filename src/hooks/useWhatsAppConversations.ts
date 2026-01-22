@@ -220,28 +220,23 @@ export function useWhatsAppConversations(options?: UseWhatsAppConversationsOptio
     }
   }, [selectedConversation]);
 
-  // Delete empty conversation (only if no messages)
+  // Delete conversation (including all messages)
   const deleteConversation = useCallback(async (conversationId: string) => {
     try {
-      // First check if there are no messages
-      const { count } = await supabase
+      // 1. Delete all messages from the conversation first
+      await supabase
         .from("whatsapp_messages")
-        .select("*", { count: "exact", head: true })
+        .delete()
         .eq("conversation_id", conversationId);
 
-      if (count && count > 0) {
-        toast.error("Não é possível excluir conversa com mensagens");
-        return;
-      }
-
-      // Delete conversation tags first
+      // 2. Delete conversation tags
       await supabase
         .from("entity_tags")
         .delete()
         .eq("entity_id", conversationId)
         .eq("entity_type", "conversation");
 
-      // Delete the conversation
+      // 3. Delete the conversation
       const { error } = await supabase
         .from("whatsapp_conversations")
         .delete()
@@ -249,13 +244,16 @@ export function useWhatsAppConversations(options?: UseWhatsAppConversationsOptio
 
       if (error) throw error;
 
+      // 4. Update local state
       setConversations((prev) => prev.filter((c) => c.id !== conversationId));
+      
+      // 5. If it was the selected conversation, clear selection
       if (selectedConversation?.id === conversationId) {
         setSelectedConversation(null);
         setMessages([]);
       }
 
-      toast.success("Conversa removida");
+      toast.success("Conversa excluída");
     } catch (error) {
       console.error("Error deleting conversation:", error);
       toast.error("Erro ao excluir conversa");
