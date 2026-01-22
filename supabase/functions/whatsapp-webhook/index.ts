@@ -194,11 +194,20 @@ serve(async (req) => {
 
     const { event, data } = payload;
 
-    // Handle typing events
+    // Handle typing events - support multiple Evolution API formats
     if (event === "presence.update" || event === "PRESENCE_UPDATE") {
-      const rawPhone = data.key?.remoteJid || data.remoteJid || "";
+      console.log("Presence event received:", JSON.stringify(data, null, 2));
+      
+      // Try multiple sources for phone number
+      const rawPhone = data.key?.remoteJid || data.remoteJid || (data as any).participant || "";
       const phone = normalizePhone(rawPhone);
-      const isTyping = data.status === "composing";
+      
+      // Evolution API sends: "composing" (typing) or "available"/"paused" (not typing)
+      // Support multiple field names for presence status
+      const presenceType = (data as any).presence || data.status || (data as any).type || "";
+      const isTyping = presenceType === "composing";
+      
+      console.log(`Typing status update: phone=${phone}, presence=${presenceType}, isTyping=${isTyping}`);
       
       if (phone) {
         // Find conversation by phone
@@ -209,7 +218,8 @@ serve(async (req) => {
           .single();
         
         if (conversation) {
-          await supabase
+          console.log(`Updating typing status for conversation ${conversation.id}`);
+          const { error: upsertError } = await supabase
             .from("whatsapp_typing_status")
             .upsert({
               conversation_id: conversation.id,
@@ -217,10 +227,18 @@ serve(async (req) => {
               is_typing: isTyping,
               updated_at: new Date().toISOString()
             }, { onConflict: "conversation_id" });
+          
+          if (upsertError) {
+            console.error("Error upserting typing status:", upsertError);
+          } else {
+            console.log("Typing status updated successfully");
+          }
+        } else {
+          console.log("No conversation found for phone:", phone);
         }
       }
 
-      return new Response(JSON.stringify({ success: true }), {
+      return new Response(JSON.stringify({ success: true, typing: isTyping }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
