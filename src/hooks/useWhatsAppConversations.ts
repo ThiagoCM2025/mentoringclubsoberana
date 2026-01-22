@@ -298,6 +298,57 @@ export function useWhatsAppConversations(options?: UseWhatsAppConversationsOptio
     }
   }, []);
 
+  // Delete a message
+  const deleteMessage = useCallback(async (messageId: string) => {
+    try {
+      // Find the message to get conversation info
+      const messageToDelete = messages.find(m => m.id === messageId);
+      if (!messageToDelete) return;
+
+      const conversationId = messageToDelete.conversation_id;
+
+      // Delete from database
+      const { error } = await supabase
+        .from("whatsapp_messages")
+        .delete()
+        .eq("id", messageId);
+
+      if (error) throw error;
+
+      // Update local state
+      const remainingMessages = messages.filter(m => m.id !== messageId);
+      setMessages(remainingMessages);
+
+      // If there are remaining messages, update conversation preview
+      if (remainingMessages.length > 0) {
+        const lastMsg = remainingMessages[remainingMessages.length - 1];
+        const preview = lastMsg.message.substring(0, 35) + (lastMsg.message.length > 35 ? "..." : "");
+        
+        await supabase
+          .from("whatsapp_conversations")
+          .update({
+            last_message_preview: preview,
+            last_message_at: lastMsg.created_at,
+          })
+          .eq("id", conversationId);
+      } else {
+        // No messages left, clear preview
+        await supabase
+          .from("whatsapp_conversations")
+          .update({
+            last_message_preview: null,
+            last_message_at: new Date().toISOString(),
+          })
+          .eq("id", conversationId);
+      }
+
+      toast.success("Mensagem excluída");
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      toast.error("Erro ao excluir mensagem");
+    }
+  }, [messages]);
+
   // Select a conversation
   const selectConversation = useCallback(
     (conversation: WhatsAppConversation | null) => {
@@ -382,6 +433,7 @@ export function useWhatsAppConversations(options?: UseWhatsAppConversationsOptio
     archiveConversation,
     unarchiveConversation,
     deleteConversation,
+    deleteMessage,
     fetchArchivedConversations,
     refreshConversations: fetchConversations,
   };
