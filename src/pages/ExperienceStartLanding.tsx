@@ -106,7 +106,7 @@ const ExperienceStartLanding = () => {
   } = useUTMParams();
 
   // Link de pagamento Kiwify com UTM
-  const baseCtaUrl = "https://pay.kiwify.com.br/p3kpN7k";
+  const baseCtaUrl = "https://pay.kiwify.com.br/MnhYIKz";
   const ctaUrl = buildUrlWithUTM(baseCtaUrl);
   const programContent = [{
     icon: Target,
@@ -194,7 +194,7 @@ const ExperienceStartLanding = () => {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
               </span>
               <p className="text-primary-foreground/90 text-xs sm:text-sm md:text-base font-medium">
-                Apenas <strong className="text-secondary">12 vagas</strong> restantes
+                Apenas <strong className="text-secondary">6 vagas</strong> restantes
               </p>
             </div>
           </div>
@@ -1021,7 +1021,7 @@ const ExperienceStartLanding = () => {
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                     </span>
-                    <span className="text-red-400 text-sm font-medium">Apenas 12 vagas restantes</span>
+                    <span className="text-red-400 text-sm font-medium">Apenas 6 vagas restantes</span>
                   </div>
 
                   <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-bold mb-6 glow-gold-subtle">

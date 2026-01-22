@@ -111,7 +111,7 @@ export const ExperienceExitPopup = () => {
 
   const handleClose = () => setShowPopup(false);
 
-  const kiwifyLink = "https://pay.kiwify.com.br/p3kpN7k";
+  const kiwifyLink = "https://pay.kiwify.com.br/MnhYIKz";
 
   return (
     <AnimatePresence>
