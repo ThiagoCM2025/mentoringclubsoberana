@@ -37,7 +37,7 @@ type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
 
 const formSchema = z.object({
   full_name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres").max(100),
-  email: z.string().email("Email inválido").max(255),
+  email: z.string().email("Email inválido").max(255).optional().or(z.literal("")),
   phone: z.string().optional(),
   source: z.string().optional(),
   status: z.enum(["new", "contacted", "negotiating", "converted", "lost"]),
@@ -77,7 +77,7 @@ export const NewLeadDialog = ({ open, onOpenChange, onSuccess }: NewLeadDialogPr
 
     const { error } = await supabase.from("leads").insert({
       full_name: data.full_name,
-      email: data.email,
+      email: data.email || "",
       phone: data.phone || null,
       source: data.source || "manual",
       status: data.status as LeadStatus,
@@ -132,7 +132,7 @@ export const NewLeadDialog = ({ open, onOpenChange, onSuccess }: NewLeadDialogPr
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email *</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="maria@exemplo.com" {...field} />
                   </FormControl>
