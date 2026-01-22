@@ -7,16 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-/**
- * Obter data/hora atual no horário de Brasília (GMT-3)
- */
-function getBrazilNow(): Date {
-  const now = new Date();
-  const brazilOffset = -3 * 60;
-  const utcOffset = now.getTimezoneOffset();
-  const diff = brazilOffset + utcOffset;
-  return new Date(now.getTime() + diff * 60 * 1000);
-}
+import { getBrazilNow, getBrazilYear } from "../_shared/dateUtils.ts";
 
 interface Lead {
   id: string;
@@ -179,7 +170,7 @@ const generateProfessionalTemplate = (recipientName: string, subject: string, co
                 Fundadora da Mentoria Soberana
               </p>
               <p style="color: #cccccc; font-size: 11px; margin: 0;">
-                © ${new Date().getFullYear()} Soberana Mentoring Club • Todos os direitos reservados
+                © ${getBrazilYear()} Soberana Mentoring Club • Todos os direitos reservados
               </p>
             </td>
           </tr>

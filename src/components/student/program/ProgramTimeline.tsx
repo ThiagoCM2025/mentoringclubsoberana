@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { WeeklyMission } from "./WeeklyMissionCard";
+import { getBrazilNow } from "@/lib/dateUtils";
 
 interface MissionCompletion {
   mission_id: string;
@@ -71,7 +72,7 @@ export const ProgramTimeline = ({
     if (!enrollmentDate) return 0;
     const unlockDate = new Date(enrollmentDate);
     unlockDate.setDate(unlockDate.getDate() + (week - 1) * 7);
-    const today = new Date();
+    const today = getBrazilNow();
     const diffTime = unlockDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return Math.max(0, diffDays);

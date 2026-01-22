@@ -23,6 +23,7 @@ import { WeeklyMission } from "./WeeklyMissionCard";
 import { MissionArena } from "./MissionArena";
 import { MissionSubmissionHistory } from "./MissionSubmissionHistory";
 import { useMissionSubmissionCount } from "@/hooks/useMissionSubmissionCount";
+import { getBrazilNow } from "@/lib/dateUtils";
 
 interface CurrentMissionSectionProps {
   missions: WeeklyMission[];
@@ -67,7 +68,7 @@ export const CurrentMissionSection = ({
     if (!enrollmentDate) return 0;
     const unlockDate = new Date(enrollmentDate);
     unlockDate.setDate(unlockDate.getDate() + (week - 1) * 7);
-    const today = new Date();
+    const today = getBrazilNow();
     const diffTime = unlockDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return Math.max(0, diffDays);

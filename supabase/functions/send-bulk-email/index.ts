@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getBrazilYear } from "../_shared/dateUtils.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -168,7 +169,7 @@ function generateEmailTemplate(
           <tr>
             <td style="background-color: #64001C; padding: 25px 30px; text-align: center; border-radius: 0 0 12px 12px;">
               <p style="margin: 0 0 10px 0; font-size: 12px; color: #FFDFA6;">
-                © ${new Date().getFullYear()} Mentoria Soberana | Todos os direitos reservados
+                © ${getBrazilYear()} Mentoria Soberana | Todos os direitos reservados
               </p>
               <p style="margin: 0; font-size: 11px; color: #ffffff; opacity: 0.7;">
                 Transformando advogadas em empresárias de sucesso

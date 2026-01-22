@@ -8,17 +8,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-/**
- * Obter data/hora atual no horário de Brasília (GMT-3)
- */
-function getBrazilNow(): Date {
-  const now = new Date();
-  // Converter UTC para GMT-3 (Brasília)
-  const brazilOffset = -3 * 60; // -3 horas em minutos
-  const utcOffset = now.getTimezoneOffset(); // Offset local em minutos (positivo a oeste de UTC)
-  const diff = brazilOffset + utcOffset;
-  return new Date(now.getTime() + diff * 60 * 1000);
-}
+import { getBrazilNow, getBrazilWeekdayEnglish, getBrazilHour, getBrazilMinute } from "../_shared/dateUtils.ts";
 
 interface StudyReminder {
   id: string;
@@ -151,10 +141,9 @@ const handler = async (req: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get current day and time in Brasília timezone (GMT-3)
-    const now = getBrazilNow();
-    const currentDay = DAY_MAP[now.getDay()];
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
+    const currentDay = getBrazilWeekdayEnglish();
+    const currentHour = getBrazilHour();
+    const currentMinute = getBrazilMinute();
     
     // Format current time for comparison (we check within a 30-minute window)
     console.log(`Running at: ${currentDay}, ${currentHour}:${currentMinute} Brasília (GMT-3)`);

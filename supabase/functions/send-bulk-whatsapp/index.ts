@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getBrazilHoursAgoISO, getBrazilDaysAgoISO, getBrazilISOString } from "../_shared/dateUtils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -115,8 +116,8 @@ serve(async (req) => {
 
     // Check rate limits before starting
     console.log("Checking rate limits...");
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const oneHourAgo = getBrazilHoursAgoISO(1);
+    const oneDayAgo = getBrazilDaysAgoISO(1);
 
     const { count: hourlyCount } = await supabase
       .from("communication_history")
@@ -314,7 +315,7 @@ serve(async (req) => {
                   contact_name: recipient.name,
                   contact_type: recipient.type,
                   contact_id: recipient.id,
-                  last_message_at: new Date().toISOString(),
+                  last_message_at: getBrazilISOString(),
                   last_message_preview: personalizedMessage.substring(0, 100),
                 })
                 .select("id")
@@ -341,7 +342,7 @@ serve(async (req) => {
               await supabase
                 .from("whatsapp_conversations")
                 .update({
-                  last_message_at: new Date().toISOString(),
+                  last_message_at: getBrazilISOString(),
                   last_message_preview: personalizedMessage.substring(0, 100),
                 })
                 .eq("id", conversationId);

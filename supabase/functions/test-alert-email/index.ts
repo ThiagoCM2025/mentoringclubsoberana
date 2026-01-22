@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { formatBrazilDateTime } from "../_shared/dateUtils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -85,7 +86,7 @@ Deno.serve(async (req) => {
               Soberana Mentoring Club
             </p>
             <p style="color: #999; font-size: 12px; margin: 5px 0 0 0;">
-              Enviado em: ${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}
+              Enviado em: ${formatBrazilDateTime(new Date())}
             </p>
           </div>
         </div>

@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { getBrazilToday, formatBrazilDateISO } from "@/lib/dateUtils";
 
 interface Challenge {
   id: string;
@@ -77,8 +78,7 @@ export function DailyChallenges() {
   const fetchUserProgress = async () => {
     if (!user) return;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = getBrazilToday();
 
     // Lessons completed today
     const { count: lessonsCount } = await supabase
@@ -113,7 +113,7 @@ export function DailyChallenges() {
   const fetchCompletions = async () => {
     if (!user) return;
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = formatBrazilDateISO();
 
     const { data } = await supabase
       .from("user_challenge_completions")
@@ -162,7 +162,7 @@ export function DailyChallenges() {
     const progress = getChallengeProgress(challenge);
     if (progress < 100 || completedIds.has(challenge.id)) return;
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = formatBrazilDateISO();
 
     // Insert completion
     const { error } = await supabase

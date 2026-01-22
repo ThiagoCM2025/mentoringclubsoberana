@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { getBrazilNow, toBrazilISOString } from "@/lib/dateUtils";
 
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
 export type TaskStatus = "pending" | "in_progress" | "completed" | "cancelled";
@@ -182,7 +183,7 @@ export function useTasks() {
       
       // If marking as completed, set completed_at
       if (updates.status === "completed" && !updates.completed_at) {
-        updateData.completed_at = new Date().toISOString();
+        updateData.completed_at = toBrazilISOString();
       }
 
       const { error } = await supabase
@@ -254,7 +255,7 @@ export function useTasks() {
   const myTasks = tasks.filter((t) => t.assigned_to === user?.id);
   const pendingTasks = tasks.filter((t) => t.status === "pending" || t.status === "in_progress");
   const todayTasks = tasks.filter((t) => {
-    const today = new Date();
+    const today = getBrazilNow();
     const dueDate = new Date(t.due_date);
     return (
       dueDate.toDateString() === today.toDateString() &&
@@ -262,7 +263,7 @@ export function useTasks() {
     );
   });
   const overdueTasks = tasks.filter((t) => {
-    const now = new Date();
+    const now = getBrazilNow();
     const dueDate = new Date(t.due_date);
     return dueDate < now && (t.status === "pending" || t.status === "in_progress");
   });

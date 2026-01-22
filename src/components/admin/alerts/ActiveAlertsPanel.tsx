@@ -8,6 +8,7 @@ import { AlertTriangle, AlertCircle, Info, Check, Bell, Settings } from "lucide-
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AlertRulesManager } from "./AlertRulesManager";
+import { toBrazilISOString } from "@/lib/dateUtils";
 
 interface AlertOccurrence {
   id: string;
@@ -68,7 +69,7 @@ export const ActiveAlertsPanel = () => {
         .update({
           is_resolved: true,
           resolved_by: user?.id,
-          resolved_at: new Date().toISOString(),
+          resolved_at: toBrazilISOString(),
         })
         .eq("id", alertId);
 

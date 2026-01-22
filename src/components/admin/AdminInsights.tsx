@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { getBrazilNow, getBrazilDaysAgo, formatBrazilDateISO } from "@/lib/dateUtils";
 
 interface Insight {
   id: string;
@@ -65,18 +66,17 @@ export function AdminInsights() {
 
   const generateInsights = async () => {
     // Check for students at risk of churning (no activity in 7+ days)
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const sevenDaysAgo = getBrazilDaysAgo(7);
 
     const { data: inactiveStudents } = await supabase
       .from("user_gamification")
       .select("user_id, last_activity_date")
-      .lt("last_activity_date", sevenDaysAgo.toISOString().split('T')[0])
+      .lt("last_activity_date", formatBrazilDateISO(sevenDaysAgo))
       .limit(10);
 
     if (inactiveStudents && inactiveStudents.length >= 5) {
       // Check if this insight already exists today
-      const today = new Date().toISOString().split('T')[0];
+      const today = formatBrazilDateISO();
       const { data: existing } = await supabase
         .from("admin_insights")
         .select("id")
@@ -96,10 +96,8 @@ export function AdminInsights() {
     }
 
     // Check for growth
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const sixtyDaysAgo = new Date();
-    sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+    const thirtyDaysAgo = getBrazilDaysAgo(30);
+    const sixtyDaysAgo = getBrazilDaysAgo(60);
 
     const { count: recentEnrollments } = await supabase
       .from("enrollments")
@@ -119,7 +117,7 @@ export function AdminInsights() {
         .from("admin_insights")
         .select("id")
         .eq("insight_type", "growth")
-        .gte("created_at", new Date().toISOString().split('T')[0])
+        .gte("created_at", formatBrazilDateISO())
         .maybeSingle();
 
       if (!existingGrowth) {

@@ -105,7 +105,7 @@ export const CronJobsStatus = () => {
 
   const fetchExecutions = async () => {
     setLoading(true);
-    const twentyFourHoursAgo = new Date();
+    const twentyFourHoursAgo = getBrazilNow();
     twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
 
     const { data } = await supabase
@@ -182,7 +182,7 @@ export const CronJobsStatus = () => {
     const hasRecentExecution = executions.length > 0;
     
     // Verificar se houve execução na última hora
-    const oneHourAgo = new Date();
+    const oneHourAgo = getBrazilNow();
     oneHourAgo.setHours(oneHourAgo.getHours() - 1);
     const hasRecentHourlyExecution = executions.some(
       e => new Date(e.executed_at) > oneHourAgo

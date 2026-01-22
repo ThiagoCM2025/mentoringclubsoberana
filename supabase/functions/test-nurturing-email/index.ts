@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { getBrazilYear } from "../_shared/dateUtils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -96,7 +97,7 @@ const generateProfessionalTemplate = (recipientName: string, subject: string, co
                 Fundadora da Mentoria Soberana
               </p>
               <p style="color: #cccccc; font-size: 11px; margin: 0;">
-                © ${new Date().getFullYear()} Soberana Mentoring Club • Todos os direitos reservados
+                © ${getBrazilYear()} Soberana Mentoring Club • Todos os direitos reservados
               </p>
             </td>
           </tr>
