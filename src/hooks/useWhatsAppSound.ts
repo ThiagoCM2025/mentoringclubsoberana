@@ -5,7 +5,8 @@ const NOTIFICATION_SOUND_URL = "https://assets.mixkit.co/active_storage/sfx/2354
 export function useWhatsAppSound() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [enabled, setEnabled] = useState(() => {
-    const stored = localStorage.getItem("whatsapp-sound-enabled");
+    // Usar a mesma chave do AdminNotificationBell para consistência
+    const stored = localStorage.getItem("admin_notification_sound");
     return stored !== "false";
   });
 
@@ -16,8 +17,27 @@ export function useWhatsAppSound() {
     audioRef.current.preload = "auto";
   }, []);
 
+  // Desbloquear áudio com primeira interação do usuário
   useEffect(() => {
-    localStorage.setItem("whatsapp-sound-enabled", String(enabled));
+    const unlockAudio = () => {
+      if (audioRef.current) {
+        const audio = audioRef.current;
+        audio.volume = 0;
+        audio.play().then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.volume = 0.5;
+        }).catch(() => {});
+      }
+      document.removeEventListener('click', unlockAudio);
+    };
+    
+    document.addEventListener('click', unlockAudio, { once: true });
+    return () => document.removeEventListener('click', unlockAudio);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("admin_notification_sound", String(enabled));
   }, [enabled]);
 
   const playNotification = useCallback(() => {
@@ -25,8 +45,8 @@ export function useWhatsAppSound() {
     
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => {
-        // Silently fail if autoplay is blocked
+      audioRef.current.play().catch((error) => {
+        console.warn("Autoplay bloqueado pelo navegador:", error.message);
       });
     }
   }, [enabled]);

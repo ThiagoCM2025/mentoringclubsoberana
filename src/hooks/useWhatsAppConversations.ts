@@ -417,7 +417,7 @@ export function useWhatsAppConversations(options?: UseWhatsAppConversationsOptio
       supabase.removeChannel(messagesChannel);
       supabase.removeChannel(conversationsChannel);
     };
-  }, [fetchConversations, selectedConversation?.id]);
+  }, [fetchConversations, selectedConversation?.id, options?.onNewIncomingMessage]);
 
   return {
     conversations,
