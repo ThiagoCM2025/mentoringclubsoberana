@@ -11,12 +11,33 @@
     <!-- Global Error Handler - Prevents GTM errors from causing blank screen -->
     <script>
       window.addEventListener('error', function(e) {
+        // Check filename OR stack trace for GTM origin
+        var isGTMError = false;
         if (e.filename && (e.filename.includes('googletagmanager.com') || e.filename.includes('gtm.js'))) {
+          isGTMError = true;
+        }
+        // Also check stack trace for GTM errors that execute inline
+        if (e.error && e.error.stack && e.error.stack.includes('googletagmanager.com')) {
+          isGTMError = true;
+        }
+        // Check the message for common GTM null errors
+        if (e.message && e.message.includes("Cannot set properties of null") && e.error && e.error.stack && e.error.stack.includes('gtm.js')) {
+          isGTMError = true;
+        }
+        if (isGTMError) {
           console.warn('GTM Error caught and suppressed:', e.message);
           e.preventDefault();
+          e.stopPropagation();
           return true;
         }
       }, true);
+      // Also catch unhandled promise rejections from GTM
+      window.addEventListener('unhandledrejection', function(e) {
+        if (e.reason && e.reason.stack && e.reason.stack.includes('googletagmanager.com')) {
+          console.warn('GTM Promise rejection suppressed:', e.reason.message);
+          e.preventDefault();
+        }
+      });
     </script>
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
