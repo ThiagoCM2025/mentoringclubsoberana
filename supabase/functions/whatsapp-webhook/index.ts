@@ -10,11 +10,17 @@ interface EvolutionWebhookPayload {
   event: string;
   instance: string;
   data: {
-    key: {
+    // Standard message format
+    key?: {
       remoteJid: string;
       fromMe: boolean;
       id: string;
     };
+    // Alternative format for messages.update events
+    keyId?: string;
+    remoteJid?: string;
+    fromMe?: boolean;
+    status?: string;
     pushName?: string;
     message?: {
       conversation?: string;
@@ -52,7 +58,6 @@ interface EvolutionWebhookPayload {
     };
     messageType?: string;
     messageTimestamp?: number;
-    status?: string;
   };
 }
 
@@ -191,7 +196,8 @@ serve(async (req) => {
 
     // Handle typing events
     if (event === "presence.update" || event === "PRESENCE_UPDATE") {
-      const phone = normalizePhone(data.key?.remoteJid || "");
+      const rawPhone = data.key?.remoteJid || data.remoteJid || "";
+      const phone = normalizePhone(rawPhone);
       const isTyping = data.status === "composing";
       
       if (phone) {
@@ -221,10 +227,19 @@ serve(async (req) => {
 
     // Handle incoming messages
     if (event === "messages.upsert" || event === "MESSAGE_RECEIVED") {
-      const phone = normalizePhone(data.key.remoteJid);
+      // Handle both formats: data.key.remoteJid or data.remoteJid
+      const rawPhone = data.key?.remoteJid || data.remoteJid || "";
+      if (!rawPhone) {
+        console.log("No phone number found in payload, skipping");
+        return new Response(JSON.stringify({ success: true, skipped: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      
+      const phone = normalizePhone(rawPhone);
       const messageText = extractMessageText(data);
       const mediaInfo = extractMediaInfo(data);
-      const isFromMe = data.key.fromMe;
+      const isFromMe = data.key?.fromMe ?? data.fromMe ?? false;
       const contactName = data.pushName || null;
 
       // Check if we have any content (text OR media)
@@ -320,7 +335,7 @@ serve(async (req) => {
         media_filename: mediaInfo.mediaFilename,
         media_mimetype: mediaInfo.mediaMimetype,
         status: "delivered",
-        evolution_id: data.key.id,
+        evolution_id: data.key?.id || data.keyId || null,
       });
 
       if (msgError) {
@@ -370,10 +385,20 @@ serve(async (req) => {
 
     // Handle message status updates
     if (event === "messages.update" || event === "MESSAGE_UPDATE") {
-      const evolutionId = data.key.id;
+      // Evolution API can send keyId directly OR inside key.id
+      const evolutionId = data.keyId || data.key?.id;
       const status = data.status;
 
-      if (evolutionId && status) {
+      console.log("Status update received - evolutionId:", evolutionId, "status:", status);
+
+      if (!evolutionId) {
+        console.log("No evolution ID found in payload, skipping status update");
+        return new Response(JSON.stringify({ success: true, skipped: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (status) {
         // Map Evolution status to our status
         const statusMap: Record<string, string> = {
           PENDING: "pending",
@@ -392,6 +417,8 @@ serve(async (req) => {
 
         if (error) {
           console.error("Error updating message status:", error);
+        } else {
+          console.log("Message status updated to:", mappedStatus);
         }
       }
 
