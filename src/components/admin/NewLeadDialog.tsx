@@ -38,12 +38,18 @@ type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
 const formSchema = z.object({
   full_name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres").max(100),
   email: z.string().email("Email inválido").max(255).optional().or(z.literal("")),
-  phone: z.string().optional(),
+  phone: z.string().max(20).optional().or(z.literal("")),
   source: z.string().optional(),
   status: z.enum(["new", "contacted", "negotiating", "converted", "lost"]),
   temperature: z.enum(["cold", "warm", "hot"]),
   notes: z.string().optional(),
-});
+}).refine(
+  (data) => (data.email && data.email.trim() !== "") || (data.phone && data.phone.trim() !== ""),
+  {
+    message: "Preencha pelo menos o email ou o telefone",
+    path: ["email"],
+  }
+);
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -77,8 +83,8 @@ export const NewLeadDialog = ({ open, onOpenChange, onSuccess }: NewLeadDialogPr
 
     const { error } = await supabase.from("leads").insert({
       full_name: data.full_name,
-      email: data.email || null,
-      phone: data.phone || null,
+      email: data.email?.trim() || null,
+      phone: data.phone?.trim() || null,
       source: data.source || "manual",
       status: data.status as LeadStatus,
       temperature: data.temperature as LeadTemperature,
