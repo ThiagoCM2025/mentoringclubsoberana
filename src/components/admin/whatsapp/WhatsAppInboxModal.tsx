@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { X, MessageCircle } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { X, MessageCircle, Wifi, WifiOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
@@ -13,6 +13,8 @@ import { LeadDetailModal } from "@/components/admin/leads/LeadDetailModal";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 
 interface WhatsAppInboxModalProps {
   open: boolean;
@@ -39,6 +41,14 @@ export function WhatsAppInboxModal({
   const [leadData, setLeadData] = useState<any>(null);
   const { soundEnabled, toggleSound } = useWhatsAppSound();
   
+  // Connection status state
+  const [connectionStatus, setConnectionStatus] = useState<{
+    connected: boolean;
+    state: "checking" | "open" | "close" | "error";
+    hourlyRemaining?: number;
+    dailyRemaining?: number;
+  }>({ connected: false, state: "checking" });
+  
   const {
     conversations,
     loading,
@@ -52,14 +62,39 @@ export function WhatsAppInboxModal({
     unarchiveConversation,
     deleteConversation,
     fetchArchivedConversations,
+    refreshConversations,
   } = useWhatsAppConversations();
 
-  // Fetch archived conversations when modal opens
+  // Check WhatsApp connection status
+  const checkConnectionStatus = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("check-whatsapp-status");
+      if (error) throw error;
+      
+      setConnectionStatus({
+        connected: data?.canSend ?? false,
+        state: data?.connectionState === "open" ? "open" : "close",
+        hourlyRemaining: data?.hourlyRemaining,
+        dailyRemaining: data?.dailyRemaining,
+      });
+    } catch (err) {
+      console.error("Error checking WhatsApp status:", err);
+      setConnectionStatus({ connected: false, state: "error" });
+    }
+  }, []);
+
+  // Fetch archived conversations and check status when modal opens
   useEffect(() => {
     if (open) {
       fetchArchivedConversations().then(setArchivedConversations);
+      refreshConversations?.(); // Refresh active conversations
+      checkConnectionStatus(); // Check status immediately
+      
+      // Check status every 30 seconds while modal is open
+      const interval = setInterval(checkConnectionStatus, 30000);
+      return () => clearInterval(interval);
     }
-  }, [open, fetchArchivedConversations]);
+  }, [open, fetchArchivedConversations, refreshConversations, checkConnectionStatus]);
 
   // Handle conversation selection when initialPhone changes (even if modal already open)
   useEffect(() => {
@@ -237,20 +272,61 @@ export function WhatsAppInboxModal({
           <VisuallyHidden>
             <DialogTitle>WhatsApp Business Inbox</DialogTitle>
           </VisuallyHidden>
-          {/* Compact modern header */}
+          {/* Compact modern header with connection status */}
           <div className="flex items-center justify-between px-4 py-2 bg-[#00a884]">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <MessageCircle className="h-4 w-4 text-white" />
               <span className="font-medium text-white text-sm">WhatsApp Business</span>
+              
+              {/* Connection Status Indicator */}
+              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/10">
+                {connectionStatus.state === "checking" ? (
+                  <>
+                    <Loader2 className="h-3 w-3 text-yellow-300 animate-spin" />
+                    <span className="text-xs text-white/80">Verificando...</span>
+                  </>
+                ) : connectionStatus.state === "open" ? (
+                  <>
+                    <Wifi className="h-3 w-3 text-green-300" />
+                    <span className="text-xs text-white/90">Online</span>
+                  </>
+                ) : (
+                  <>
+                    <WifiOff className="h-3 w-3 text-red-300" />
+                    <span className="text-xs text-white/80">Offline</span>
+                  </>
+                )}
+              </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onOpenChange(false)}
-              className="h-7 w-7 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            
+            <div className="flex items-center gap-2">
+              {/* Rate limit badge */}
+              {connectionStatus.hourlyRemaining !== undefined && connectionStatus.state === "open" && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge 
+                      variant="outline" 
+                      className="text-xs text-white/80 border-white/30 hover:bg-white/10 cursor-help"
+                    >
+                      {connectionStatus.hourlyRemaining}/h
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p>{connectionStatus.hourlyRemaining} mensagens restantes nesta hora</p>
+                    <p className="text-muted-foreground text-xs">{connectionStatus.dailyRemaining} restantes hoje</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onOpenChange(false)}
+                className="h-7 w-7 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Main content - responsive layout */}
