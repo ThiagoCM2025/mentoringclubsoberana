@@ -299,9 +299,6 @@ export function WhatsAppInboxModal({
     await markAsUnread(conversationId);
   };
 
-  const handleTag = (conversationId: string) => {
-    toast.info("Funcionalidade de tags em breve");
-  };
 
   return (
     <>
@@ -414,7 +411,6 @@ export function WhatsAppInboxModal({
                 onFavorite={handleFavorite}
                 onBlock={handleBlock}
                 onMarkUnread={handleMarkUnread}
-                onTag={handleTag}
               />
             </div>
 

@@ -17,12 +17,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { formatDistanceToNow, isToday, isThisWeek, isThisMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn, shortenName } from "@/lib/utils";
 import { ConversationFiltersPopover, type ConversationFilters } from "./ConversationFilters";
 import { PushNotificationToggle } from "./PushNotificationToggle";
 import { ConversationDropdownMenu, type ExtendedWhatsAppConversation } from "./ConversationContextMenu";
+import { useConversationTagsBatch } from "@/hooks/useConversationTags";
 import type { WhatsAppConversation } from "@/hooks/useWhatsAppConversations";
 
 interface ConversationListProps {
@@ -40,7 +47,6 @@ interface ConversationListProps {
   onFavorite?: (conversationId: string, favorite: boolean) => void;
   onBlock?: (conversationId: string, block: boolean) => void;
   onMarkUnread?: (conversationId: string) => void;
-  onTag?: (conversationId: string) => void;
 }
 
 export function ConversationList({
@@ -58,11 +64,19 @@ export function ConversationList({
   onFavorite,
   onBlock,
   onMarkUnread,
-  onTag,
 }: ConversationListProps) {
   const [search, setSearch] = useState("");
   const [showArchived, setShowArchived] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<WhatsAppConversation | null>(null);
+
+  // Get all conversation IDs for batch tag fetching
+  const conversationIds = useMemo(() => 
+    [...conversations, ...archivedConversations].map(c => c.id),
+    [conversations, archivedConversations]
+  );
+
+  const { tagsMap } = useConversationTagsBatch(conversationIds);
+
   const [filters, setFilters] = useState<ConversationFilters>({
     contactType: "all",
     dateRange: "all",
@@ -146,7 +160,8 @@ export function ConversationList({
     const isSelected = selectedId === conversation.id;
     const displayName = shortenName(conversation.contact_name, 22) || formatPhone(conversation.phone);
     const extConv = conversation as ExtendedWhatsAppConversation;
-    const hasContextMenu = onArchive && onPin && onMute && onFavorite && onBlock && onMarkUnread && onTag && onDelete;
+    const hasContextMenu = onArchive && onPin && onMute && onFavorite && onBlock && onMarkUnread && onDelete;
+    const conversationTags = tagsMap[conversation.id] || [];
     
     return (
       <div
@@ -187,12 +202,39 @@ export function ConversationList({
 
         <div className="flex-1 min-w-0 overflow-hidden">
           <div className="flex items-center justify-between gap-2">
-            <span className={cn(
-              "font-medium truncate max-w-[140px]",
-              hasUnread ? "text-foreground" : "text-foreground"
-            )}>
-              {displayName}
-            </span>
+            <div className="flex items-center gap-1.5 min-w-0 flex-1">
+              <span className={cn(
+                "font-medium truncate",
+                hasUnread ? "text-foreground" : "text-foreground"
+              )}>
+                {displayName}
+              </span>
+              {/* Tags - colored circles */}
+              {conversationTags.length > 0 && (
+                <TooltipProvider delayDuration={200}>
+                  <div className="flex items-center gap-0.5 flex-shrink-0">
+                    {conversationTags.slice(0, 3).map((tag) => (
+                      <Tooltip key={tag.id}>
+                        <TooltipTrigger asChild>
+                          <span
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: tag.color }}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="text-xs">
+                          {tag.name}
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                    {conversationTags.length > 3 && (
+                      <span className="text-[9px] text-muted-foreground ml-0.5">
+                        +{conversationTags.length - 3}
+                      </span>
+                    )}
+                  </div>
+                </TooltipProvider>
+              )}
+            </div>
             <span className={cn(
               "text-[10px] whitespace-nowrap flex-shrink-0",
               hasUnread ? "text-[#25D366] font-semibold" : "text-muted-foreground"
