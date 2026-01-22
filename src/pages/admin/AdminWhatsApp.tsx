@@ -1,6 +1,7 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import SEO from "@/components/SEO";
 import { WhatsAppHealthStatus } from "@/components/admin/whatsapp/WhatsAppHealthStatus";
+import { WhatsAppCampaignMonitor } from "@/components/admin/whatsapp/WhatsAppCampaignMonitor";
 import { WhatsAppDashboardStats } from "@/components/admin/whatsapp/WhatsAppDashboardStats";
 import { WhatsAppVolumeChart } from "@/components/admin/whatsapp/WhatsAppVolumeChart";
 import { WhatsAppQuickActions } from "@/components/admin/whatsapp/WhatsAppQuickActions";
@@ -33,6 +34,9 @@ export default function AdminWhatsApp() {
 
         {/* Connection Status */}
         <WhatsAppHealthStatus />
+
+        {/* Campaign Monitor */}
+        <WhatsAppCampaignMonitor />
 
         {/* Stats Cards */}
         <WhatsAppDashboardStats />
