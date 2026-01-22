@@ -69,29 +69,41 @@ export function useConversationTags(conversationId: string | null) {
     }
   }, [conversationId]);
 
-  // Add tag to conversation
+  // Add tag to conversation (using upsert to avoid duplicate key errors)
   const addTag = useCallback(async (tagId: string) => {
     if (!conversationId) return;
 
+    // Check if already in local state to avoid duplicate adds
+    if (tags.some((t) => t.id === tagId)) {
+      console.log("Tag already exists in local state, skipping add");
+      return;
+    }
+
     try {
-      const { error } = await supabase.from("entity_tags").insert({
-        entity_id: conversationId,
-        entity_type: "conversation",
-        tag_id: tagId,
-      });
+      const { error } = await supabase.from("entity_tags").upsert(
+        {
+          entity_id: conversationId,
+          entity_type: "conversation",
+          tag_id: tagId,
+        },
+        {
+          onConflict: "tag_id,entity_id,entity_type",
+          ignoreDuplicates: true,
+        }
+      );
 
       if (error) throw error;
 
       // Update local state
       const tag = availableTags.find((t) => t.id === tagId);
-      if (tag) {
+      if (tag && !tags.some((t) => t.id === tagId)) {
         setTags((prev) => [...prev, tag]);
       }
     } catch (error) {
       console.error("Error adding tag:", error);
       toast.error("Erro ao adicionar tag");
     }
-  }, [conversationId, availableTags]);
+  }, [conversationId, availableTags, tags]);
 
   // Remove tag from conversation
   const removeTag = useCallback(async (tagId: string) => {
