@@ -2074,7 +2074,7 @@ export type Database = {
           created_at: string
           discard_notes: string | null
           discard_reason: string | null
-          email: string
+          email: string | null
           full_name: string
           id: string
           import_batch_id: string | null
@@ -2106,7 +2106,7 @@ export type Database = {
           created_at?: string
           discard_notes?: string | null
           discard_reason?: string | null
-          email: string
+          email?: string | null
           full_name: string
           id?: string
           import_batch_id?: string | null
@@ -2138,7 +2138,7 @@ export type Database = {
           created_at?: string
           discard_notes?: string | null
           discard_reason?: string | null
-          email?: string
+          email?: string | null
           full_name?: string
           id?: string
           import_batch_id?: string | null
