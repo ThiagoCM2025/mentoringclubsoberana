@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, MessageCircle, Wifi, WifiOff, Loader2 } from "lucide-react";
+import { X, MessageCircle, Wifi, WifiOff, Loader2, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { useWhatsAppConversations, type WhatsAppConversation } from "@/hooks/useWhatsAppConversations";
+import { useWhatsAppConversations, type WhatsAppConversation, type WhatsAppMessage } from "@/hooks/useWhatsAppConversations";
 import { useWhatsAppSound } from "@/hooks/useWhatsAppSound";
 import { ConversationList } from "./ConversationList";
 import { ChatWindow } from "./ChatWindow";
@@ -39,7 +39,14 @@ export function WhatsAppInboxModal({
   const [archivedConversations, setArchivedConversations] = useState<WhatsAppConversation[]>([]);
   const [leadDetailOpen, setLeadDetailOpen] = useState(false);
   const [leadData, setLeadData] = useState<any>(null);
-  const { soundEnabled, toggleSound } = useWhatsAppSound();
+  const { playNotification, soundEnabled, toggleSound } = useWhatsAppSound();
+  
+  // Callback para tocar som quando mensagem recebida
+  const handleNewIncomingMessage = useCallback((message: WhatsAppMessage) => {
+    if (open && !message.sent_by) {
+      playNotification();
+    }
+  }, [open, playNotification]);
   
   // Connection status state
   const [connectionStatus, setConnectionStatus] = useState<{
@@ -63,7 +70,7 @@ export function WhatsAppInboxModal({
     deleteConversation,
     fetchArchivedConversations,
     refreshConversations,
-  } = useWhatsAppConversations();
+  } = useWhatsAppConversations({ onNewIncomingMessage: handleNewIncomingMessage });
 
   // Check WhatsApp connection status
   const checkConnectionStatus = useCallback(async () => {
@@ -72,10 +79,10 @@ export function WhatsAppInboxModal({
       if (error) throw error;
       
       setConnectionStatus({
-        connected: data?.canSend ?? false,
-        state: data?.connectionState === "open" ? "open" : "close",
-        hourlyRemaining: data?.hourlyRemaining,
-        dailyRemaining: data?.dailyRemaining,
+        connected: data?.connected ?? false,
+        state: data?.state === "open" ? "open" : data?.state === "error" ? "error" : "close",
+        hourlyRemaining: data?.rateLimit?.hourlyRemaining,
+        dailyRemaining: data?.rateLimit?.dailyRemaining,
       });
     } catch (err) {
       console.error("Error checking WhatsApp status:", err);
@@ -317,6 +324,27 @@ export function WhatsAppInboxModal({
                   </TooltipContent>
                 </Tooltip>
               )}
+              
+              {/* Sound toggle button */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleSound}
+                    className="h-7 w-7 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                  >
+                    {soundEnabled ? (
+                      <Volume2 className="h-4 w-4" />
+                    ) : (
+                      <VolumeX className="h-4 w-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  {soundEnabled ? "Desativar notificação sonora" : "Ativar notificação sonora"}
+                </TooltipContent>
+              </Tooltip>
               
               <Button
                 variant="ghost"
