@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { getBrazilISOString } from "../_shared/dateUtils.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -156,7 +157,7 @@ const handler = async (req: Request): Promise<Response> => {
       // Mark notification as processed
       await supabase
         .from("jornada_notification_queue")
-        .update({ processed: true, processed_at: new Date().toISOString() })
+        .update({ processed: true, processed_at: getBrazilISOString() })
         .eq("id", notification.id);
 
       results.push({ sessionId: notification.session_id, sent: sentCount, errors });

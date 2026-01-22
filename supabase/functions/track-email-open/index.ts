@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getBrazilISOString } from "../_shared/dateUtils.ts";
 
 // 1x1 transparent GIF pixel
 const TRANSPARENT_GIF = new Uint8Array([
@@ -45,7 +46,7 @@ serve(async (req: Request): Promise<Response> => {
 
     if (tracking) {
       const isFirstOpen = !tracking.opened_count || tracking.opened_count === 0;
-      const now = new Date().toISOString();
+      const now = getBrazilISOString();
 
       // Update tracking record
       const { error: updateError } = await supabase

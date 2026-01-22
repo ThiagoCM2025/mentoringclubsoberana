@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AdminTask, TaskPriority } from "@/hooks/useTasks";
+import { getBrazilNow } from "@/lib/dateUtils";
 
 interface TaskCalendarProps {
   tasks: AdminTask[];
@@ -20,7 +21,7 @@ const priorityColors: Record<TaskPriority, string> = {
 };
 
 export function TaskCalendar({ tasks, selectedDate, onDateSelect }: TaskCalendarProps) {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(getBrazilNow());
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);

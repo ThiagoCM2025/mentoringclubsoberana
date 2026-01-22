@@ -21,13 +21,14 @@ import { TaskCard } from "@/components/admin/tasks/TaskCard";
 import { TaskDialog } from "@/components/admin/tasks/TaskDialog";
 import { TaskViewDialog } from "@/components/admin/tasks/TaskViewDialog";
 import { useNavigate } from "react-router-dom";
+import { getBrazilNow } from "@/lib/dateUtils";
 
 export default function AdminTasks() {
   const { tasks, admins, loading, myTasks, pendingTasks, todayTasks, overdueTasks, createTask, updateTask, deleteTask } = useTasks();
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(getBrazilNow());
   const [newTaskOpen, setNewTaskOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<AdminTask | null>(null);
   const [viewingTask, setViewingTask] = useState<AdminTask | null>(null);

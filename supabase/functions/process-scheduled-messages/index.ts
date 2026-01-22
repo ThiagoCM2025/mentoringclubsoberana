@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getBrazilISOString, getBrazilYear } from "../_shared/dateUtils.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const EVOLUTION_API_URL = Deno.env.get("EVOLUTION_API_URL");
@@ -45,7 +46,7 @@ function generateEmailTemplate(subject: string, content: string): string {
           ${content.replace(/\n/g, '<br>')}
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Soberana - Todos os direitos reservados</p>
+          <p>© ${getBrazilYear()} Soberana - Todos os direitos reservados</p>
           <p>Este e-mail foi enviado por Fabiana Ferreira</p>
         </div>
       </div>
@@ -67,7 +68,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     // Buscar disparos pendentes que já deveriam ter sido executados
-    const now = new Date().toISOString();
+    const now = getBrazilISOString();
     
     const { data: pendingMessages, error: fetchError } = await supabase
       .from("scheduled_messages")
@@ -136,7 +137,7 @@ const handler = async (req: Request): Promise<Response> => {
             .from("scheduled_messages")
             .update({ 
               status: "completed", 
-              processed_at: new Date().toISOString(),
+              processed_at: getBrazilISOString(),
               sent_count: 0,
               error_message: "Nenhum lead encontrado para os filtros especificados"
             })
@@ -313,7 +314,7 @@ const handler = async (req: Request): Promise<Response> => {
           .from("scheduled_messages")
           .update({
             status: failedCount === leads.length ? "failed" : "completed",
-            processed_at: new Date().toISOString(),
+            processed_at: getBrazilISOString(),
             sent_count: sentCount,
             failed_count: failedCount,
             error_message: failedCount > 0 ? `${failedCount} envios falharam` : null,
@@ -332,7 +333,7 @@ const handler = async (req: Request): Promise<Response> => {
           .from("scheduled_messages")
           .update({
             status: "failed",
-            processed_at: new Date().toISOString(),
+            processed_at: getBrazilISOString(),
             error_message: processError.message || "Erro desconhecido",
           })
           .eq("id", scheduledMsg.id);

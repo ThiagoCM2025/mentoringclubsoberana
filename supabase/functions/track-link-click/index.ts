@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getBrazilISOString } from "../_shared/dateUtils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -43,7 +44,7 @@ serve(async (req: Request): Promise<Response> => {
 
     if (tracking) {
       const isFirstClick = !tracking.clicked_at;
-      const now = new Date().toISOString();
+      const now = getBrazilISOString();
 
       // Update clicked_links array
       const existingLinks = Array.isArray(tracking.clicked_links) ? tracking.clicked_links : [];

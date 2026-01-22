@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getBrazilISOString } from "../_shared/dateUtils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -21,7 +22,7 @@ serve(async (req) => {
     console.log("Checking for tasks with pending reminders...");
 
     // Find tasks where reminder_at has passed and reminder hasn't been sent yet
-    const now = new Date().toISOString();
+    const now = getBrazilISOString();
     
     const { data: tasks, error: tasksError } = await supabase
       .from("admin_tasks")
