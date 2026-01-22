@@ -7,6 +7,16 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { formatDistanceToNow, isToday, isThisWeek, isThisMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn, shortenName } from "@/lib/utils";
@@ -37,6 +47,7 @@ export function ConversationList({
 }: ConversationListProps) {
   const [search, setSearch] = useState("");
   const [showArchived, setShowArchived] = useState(false);
+  const [conversationToDelete, setConversationToDelete] = useState<WhatsAppConversation | null>(null);
   const [filters, setFilters] = useState<ConversationFilters>({
     contactType: "all",
     dateRange: "all",
@@ -120,8 +131,6 @@ export function ConversationList({
     const isSelected = selectedId === conversation.id;
     const displayName = shortenName(conversation.contact_name, 22) || formatPhone(conversation.phone);
     
-    const isEmptyConversation = !conversation.last_message_preview;
-    
     return (
       <div
         key={conversation.id}
@@ -197,17 +206,20 @@ export function ConversationList({
           </div>
         </div>
 
-              {/* Delete button for empty conversations (active or archived) */}
-              {isEmptyConversation && onDelete && (
+        {/* Delete button - visible on hover (desktop) or always (mobile) */}
+        {onDelete && (
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 flex-shrink-0 opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-opacity"
+            className={cn(
+              "h-7 w-7 flex-shrink-0 hover:bg-destructive/10 hover:text-destructive transition-opacity",
+              "opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+            )}
             onClick={(e) => {
               e.stopPropagation();
-              onDelete(conversation.id);
+              setConversationToDelete(conversation);
             }}
-            title="Remover conversa vazia"
+            title="Excluir conversa"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -327,6 +339,34 @@ export function ConversationList({
           </div>
         )}
       </ScrollArea>
+
+      {/* Confirmation dialog for delete */}
+      <AlertDialog open={!!conversationToDelete} onOpenChange={(open) => !open && setConversationToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir conversa?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação vai excluir permanentemente a conversa com{" "}
+              <strong>{conversationToDelete?.contact_name || conversationToDelete?.phone}</strong>{" "}
+              e todas as mensagens. Isso não pode ser desfeito.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (conversationToDelete && onDelete) {
+                  onDelete(conversationToDelete.id);
+                  setConversationToDelete(null);
+                }
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
