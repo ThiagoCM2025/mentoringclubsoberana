@@ -77,7 +77,7 @@ export const NewLeadDialog = ({ open, onOpenChange, onSuccess }: NewLeadDialogPr
 
     const { error } = await supabase.from("leads").insert({
       full_name: data.full_name,
-      email: data.email || "",
+      email: data.email || null,
       phone: data.phone || null,
       source: data.source || "manual",
       status: data.status as LeadStatus,
