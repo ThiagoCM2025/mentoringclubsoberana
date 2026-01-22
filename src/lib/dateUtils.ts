@@ -159,8 +159,8 @@ export function getWeeksDifference(date1: Date, date2: Date): number {
  * Converter data para ISO string com timezone de Brasília
  */
 export function toBrazilISOString(date?: Date): string {
-  const d = date || getBrazilNow();
-  // Formatar com offset -03:00
+  const d = date ? new Date(date) : getBrazilNow();
+  
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
@@ -169,4 +169,24 @@ export function toBrazilISOString(date?: Date): string {
   const seconds = String(d.getSeconds()).padStart(2, '0');
   
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}-03:00`;
+}
+
+/**
+ * Obter data X horas atrás no horário de Brasília
+ */
+export function getBrazilHoursAgo(hours: number): Date {
+  const date = getBrazilNow();
+  date.setHours(date.getHours() - hours);
+  return date;
+}
+
+/**
+ * Formatar data no formato yyyy-MM-dd (para queries de banco)
+ */
+export function formatBrazilDateISO(date?: Date): string {
+  const d = date || getBrazilNow();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }

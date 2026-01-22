@@ -9,6 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
 import { WhatsAppInboxModal } from "./WhatsAppInboxModal";
+import { getBrazilHoursAgo } from "@/lib/dateUtils";
 
 interface Conversation {
   id: string;
@@ -43,12 +44,9 @@ export function WhatsAppRecentActivity() {
     try {
       setLoading(true);
       
-      // Time filters
-      const fortyEightHoursAgo = new Date();
-      fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
-      
-      const twentyFourHoursAgo = new Date();
-      twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
+      // Time filters usando horário de Brasília
+      const fortyEightHoursAgo = getBrazilHoursAgo(48);
+      const twentyFourHoursAgo = getBrazilHoursAgo(24);
 
       // Recent conversations
       const { data: recentConvs } = await supabase
