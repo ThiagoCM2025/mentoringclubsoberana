@@ -22,7 +22,7 @@ import { ptBR } from "date-fns/locale";
 import { cn, shortenName } from "@/lib/utils";
 import { ConversationFiltersPopover, type ConversationFilters } from "./ConversationFilters";
 import { PushNotificationToggle } from "./PushNotificationToggle";
-import { ConversationContextMenu, type ExtendedWhatsAppConversation } from "./ConversationContextMenu";
+import { ConversationDropdownMenu, type ExtendedWhatsAppConversation } from "./ConversationContextMenu";
 import type { WhatsAppConversation } from "@/hooks/useWhatsAppConversations";
 
 interface ConversationListProps {
@@ -146,14 +146,16 @@ export function ConversationList({
     const isSelected = selectedId === conversation.id;
     const displayName = shortenName(conversation.contact_name, 22) || formatPhone(conversation.phone);
     const extConv = conversation as ExtendedWhatsAppConversation;
+    const hasContextMenu = onArchive && onPin && onMute && onFavorite && onBlock && onMarkUnread && onTag && onDelete;
     
-    const conversationContent = (
+    return (
       <div
+        key={conversation.id}
         className={cn(
-          "w-full flex items-center gap-3 p-3 text-left group",
+          "relative w-full flex items-center gap-3 p-3 pr-10 text-left group",
           "transition-all duration-200 ease-out",
           isArchived ? "opacity-70" : "",
-          !isArchived && "hover:bg-muted/60 hover:-translate-y-[1px] hover:shadow-sm cursor-pointer",
+          !isArchived && "hover:bg-muted/60 cursor-pointer",
           isSelected && "bg-[#25D366]/10 border-l-2 border-[#25D366] shadow-sm"
         )}
         onClick={() => !isArchived && onSelect(conversation)}
@@ -239,32 +241,25 @@ export function ConversationList({
             <RotateCcw className="h-4 w-4 text-[#25D366]" />
           </Button>
         )}
+
+        {/* Dropdown menu trigger - visible on hover */}
+        {hasContextMenu && (
+          <ConversationDropdownMenu
+            conversation={extConv}
+            onArchive={() => onArchive(conversation.id)}
+            onUnarchive={() => onUnarchive(conversation.id)}
+            onPin={() => onPin(conversation.id, !extConv.is_pinned)}
+            onMute={() => onMute(conversation.id, !extConv.is_muted)}
+            onFavorite={() => onFavorite(conversation.id, !extConv.is_favorite)}
+            onBlock={() => onBlock(conversation.id, !extConv.is_blocked)}
+            onMarkUnread={() => onMarkUnread(conversation.id)}
+            onTag={() => onTag(conversation.id)}
+            onDelete={() => setConversationToDelete(conversation)}
+            isArchived={isArchived}
+          />
+        )}
       </div>
     );
-
-    // Wrap with context menu if handlers are provided
-    if (onArchive && onPin && onMute && onFavorite && onBlock && onMarkUnread && onTag && onDelete) {
-      return (
-        <ConversationContextMenu
-          key={conversation.id}
-          conversation={extConv}
-          onArchive={() => onArchive(conversation.id)}
-          onUnarchive={() => onUnarchive(conversation.id)}
-          onPin={() => onPin(conversation.id, !extConv.is_pinned)}
-          onMute={() => onMute(conversation.id, !extConv.is_muted)}
-          onFavorite={() => onFavorite(conversation.id, !extConv.is_favorite)}
-          onBlock={() => onBlock(conversation.id, !extConv.is_blocked)}
-          onMarkUnread={() => onMarkUnread(conversation.id)}
-          onTag={() => onTag(conversation.id)}
-          onDelete={() => setConversationToDelete(conversation)}
-          isArchived={isArchived}
-        >
-          {conversationContent}
-        </ConversationContextMenu>
-      );
-    }
-
-    return <div key={conversation.id}>{conversationContent}</div>;
   };
 
   if (loading) {
