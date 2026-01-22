@@ -31,6 +31,7 @@ import patternCirclesGold from "@/assets/brand/pattern-circles-gold.png";
 import { AdminNotificationBell } from "./AdminNotificationBell";
 import { PendingMissionsBadge } from "./PendingMissionsBadge";
 import { PendingTasksBadge } from "./tasks/PendingTasksBadge";
+import { UnreadWhatsAppBadge } from "./whatsapp/UnreadWhatsAppBadge";
 import { CommandPalette } from "./CommandPalette";
 import { QuickActionsCenter } from "./QuickActionsCenter";
 import { QuickEnrollDialog } from "./QuickEnrollDialog";
@@ -62,7 +63,8 @@ const menuItems = [
   { icon: Bot, label: "Agentes IA", href: "/admin/agents", group: "conteudo" },
   
   // Comunicação
-  { icon: MessageSquare, label: "Mensagens", href: "/admin/messaging", group: "comunicacao" },
+  { icon: MessageSquare, label: "WhatsApp", href: "/admin/whatsapp", group: "comunicacao", hasBadge: true, badgeType: "whatsapp" },
+  { icon: Mail, label: "Mensagens", href: "/admin/messaging", group: "comunicacao" },
   { icon: Bell, label: "Notificações", href: "/admin/notifications", group: "comunicacao" },
   
   // Análise
@@ -182,6 +184,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
                     <span className="flex-1">{item.label}</span>
                     {item.hasBadge && item.badgeType === "missions" && <PendingMissionsBadge />}
                     {item.hasBadge && item.badgeType === "tasks" && <PendingTasksBadge />}
+                    {item.hasBadge && item.badgeType === "whatsapp" && <UnreadWhatsAppBadge />}
                   </Link>
                 </Fragment>
               );
@@ -304,6 +307,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
                   {isSidebarOpen && <span className="flex-1">{item.label}</span>}
                   {isSidebarOpen && item.hasBadge && item.badgeType === "missions" && <PendingMissionsBadge />}
                   {isSidebarOpen && item.hasBadge && item.badgeType === "tasks" && <PendingTasksBadge />}
+                  {isSidebarOpen && item.hasBadge && item.badgeType === "whatsapp" && <UnreadWhatsAppBadge />}
                 </Link>
               </Fragment>
             );

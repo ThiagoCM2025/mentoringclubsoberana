@@ -34,6 +34,7 @@ import AdminSettings from "@/pages/admin/AdminSettings";
 import AdminNotifications from "@/pages/admin/AdminNotifications";
 import AdminCommunity from "@/pages/admin/AdminCommunity";
 import AdminMessaging from "@/pages/admin/AdminMessaging";
+import AdminWhatsApp from "@/pages/admin/AdminWhatsApp";
 import AdminReports from "@/pages/admin/AdminReports";
 import AdminEngagement from "@/pages/admin/AdminEngagement";
 import AdminBlog from "@/pages/admin/AdminBlog";
@@ -273,6 +274,14 @@ export const AnimatedRoutes = () => {
           element={
             <ProtectedRoute requireAdmin>
               <PageTransition><AdminCommunity /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/whatsapp"
+          element={
+            <ProtectedRoute requireAdmin>
+              <PageTransition><AdminWhatsApp /></PageTransition>
             </ProtectedRoute>
           }
         />
