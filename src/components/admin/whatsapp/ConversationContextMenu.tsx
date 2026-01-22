@@ -1,10 +1,12 @@
-import { ReactNode } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import {
   Archive,
@@ -20,8 +22,10 @@ import {
   Trash2,
   RotateCcw,
   ChevronDown,
+  Check,
 } from "lucide-react";
 import type { WhatsAppConversation } from "@/hooks/useWhatsAppConversations";
+import { useConversationTags } from "@/hooks/useConversationTags";
 
 export interface ExtendedWhatsAppConversation extends WhatsAppConversation {
   is_pinned?: boolean;
@@ -40,7 +44,6 @@ interface ConversationDropdownMenuProps {
   onFavorite: () => void;
   onBlock: () => void;
   onMarkUnread: () => void;
-  onTag: () => void;
   onDelete: () => void;
   isArchived?: boolean;
 }
@@ -54,7 +57,6 @@ export function ConversationDropdownMenu({
   onFavorite,
   onBlock,
   onMarkUnread,
-  onTag,
   onDelete,
   isArchived = false,
 }: ConversationDropdownMenuProps) {
@@ -62,6 +64,9 @@ export function ConversationDropdownMenu({
   const isMuted = conversation.is_muted ?? false;
   const isFavorite = conversation.is_favorite ?? false;
   const isBlocked = conversation.is_blocked ?? false;
+
+  const { tags, availableTags, toggleTag, loading } = useConversationTags(conversation.id);
+  const hasTag = (tagId: string) => tags.some((t) => t.id === tagId);
 
   return (
     <DropdownMenu>
@@ -119,11 +124,40 @@ export function ConversationDropdownMenu({
           </DropdownMenuItem>
         )}
 
-        {/* Tag conversation */}
-        <DropdownMenuItem onClick={onTag} className="gap-2 cursor-pointer">
-          <Tag className="h-4 w-4" />
-          Etiquetar conversa
-        </DropdownMenuItem>
+        {/* Tag conversation - Submenu */}
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className="gap-2 cursor-pointer">
+            <Tag className="h-4 w-4" />
+            Tags da conversa
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="w-52">
+            {availableTags.length === 0 ? (
+              <div className="px-2 py-3 text-sm text-muted-foreground text-center">
+                Nenhuma tag disponível
+              </div>
+            ) : (
+              availableTags.map((tag) => (
+                <DropdownMenuItem
+                  key={tag.id}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleTag(tag.id);
+                  }}
+                  disabled={loading}
+                  className="gap-2 cursor-pointer"
+                >
+                  <span
+                    className="w-3 h-3 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: tag.color }}
+                  />
+                  <span className="flex-1">{tag.name}</span>
+                  {hasTag(tag.id) && <Check className="h-4 w-4 text-primary" />}
+                </DropdownMenuItem>
+              ))
+            )}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
 
         {/* Mark as unread */}
         {!isArchived && (
