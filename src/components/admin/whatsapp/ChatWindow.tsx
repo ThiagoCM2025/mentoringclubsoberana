@@ -95,12 +95,17 @@ export function ChatWindow({
     }
   }, [currentResultId]);
 
-  // Scroll to bottom when messages change (only if not searching)
+  // Scroll to bottom when messages change or conversation changes (only if not searching)
   useEffect(() => {
-    if (!isSearchOpen && scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    if (!isSearchOpen && scrollRef.current && !loading && messages.length > 0) {
+      // Aguardar renderização das mensagens antes de fazer scroll
+      const timer = setTimeout(() => {
+        scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
-  }, [messages, isSearchOpen]);
+  }, [messages.length, isSearchOpen, loading, conversation?.id]);
 
   // Reset search when conversation changes
   useEffect(() => {
