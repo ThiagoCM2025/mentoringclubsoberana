@@ -4009,8 +4009,13 @@ export type Database = {
           contact_type: string
           created_at: string
           id: string
+          is_blocked: boolean | null
+          is_favorite: boolean | null
+          is_muted: boolean | null
+          is_pinned: boolean | null
           last_message_at: string | null
           last_message_preview: string | null
+          muted_until: string | null
           phone: string
           status: string
           unread_count: number
@@ -4022,8 +4027,13 @@ export type Database = {
           contact_type?: string
           created_at?: string
           id?: string
+          is_blocked?: boolean | null
+          is_favorite?: boolean | null
+          is_muted?: boolean | null
+          is_pinned?: boolean | null
           last_message_at?: string | null
           last_message_preview?: string | null
+          muted_until?: string | null
           phone: string
           status?: string
           unread_count?: number
@@ -4035,8 +4045,13 @@ export type Database = {
           contact_type?: string
           created_at?: string
           id?: string
+          is_blocked?: boolean | null
+          is_favorite?: boolean | null
+          is_muted?: boolean | null
+          is_pinned?: boolean | null
           last_message_at?: string | null
           last_message_preview?: string | null
+          muted_until?: string | null
           phone?: string
           status?: string
           unread_count?: number

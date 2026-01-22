@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Search, Archive, MessageSquarePlus, RotateCcw, ChevronDown, ChevronUp, X } from "lucide-react";
+import { Search, Archive, MessageSquarePlus, RotateCcw, ChevronDown, ChevronUp, Pin, BellOff, Star, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -22,6 +22,7 @@ import { ptBR } from "date-fns/locale";
 import { cn, shortenName } from "@/lib/utils";
 import { ConversationFiltersPopover, type ConversationFilters } from "./ConversationFilters";
 import { PushNotificationToggle } from "./PushNotificationToggle";
+import { ConversationContextMenu, type ExtendedWhatsAppConversation } from "./ConversationContextMenu";
 import type { WhatsAppConversation } from "@/hooks/useWhatsAppConversations";
 
 interface ConversationListProps {
@@ -33,6 +34,13 @@ interface ConversationListProps {
   onNewConversation: () => void;
   onUnarchive: (conversationId: string) => void;
   onDelete?: (conversationId: string) => void;
+  onArchive?: (conversationId: string) => void;
+  onPin?: (conversationId: string, pin: boolean) => void;
+  onMute?: (conversationId: string, mute: boolean) => void;
+  onFavorite?: (conversationId: string, favorite: boolean) => void;
+  onBlock?: (conversationId: string, block: boolean) => void;
+  onMarkUnread?: (conversationId: string) => void;
+  onTag?: (conversationId: string) => void;
 }
 
 export function ConversationList({
@@ -44,6 +52,13 @@ export function ConversationList({
   onNewConversation,
   onUnarchive,
   onDelete,
+  onArchive,
+  onPin,
+  onMute,
+  onFavorite,
+  onBlock,
+  onMarkUnread,
+  onTag,
 }: ConversationListProps) {
   const [search, setSearch] = useState("");
   const [showArchived, setShowArchived] = useState(false);
@@ -130,10 +145,10 @@ export function ConversationList({
     const hasUnread = conversation.unread_count > 0 && selectedId !== conversation.id;
     const isSelected = selectedId === conversation.id;
     const displayName = shortenName(conversation.contact_name, 22) || formatPhone(conversation.phone);
+    const extConv = conversation as ExtendedWhatsAppConversation;
     
-    return (
+    const conversationContent = (
       <div
-        key={conversation.id}
         className={cn(
           "w-full flex items-center gap-3 p-3 text-left group",
           "transition-all duration-200 ease-out",
@@ -186,7 +201,7 @@ export function ConversationList({
               })}
             </span>
           </div>
-          <div className="flex items-center gap-1.5 mt-0.5">
+          <div className="flex items-center gap-1 mt-0.5">
             <p className={cn(
               "text-sm truncate flex-1",
               hasUnread
@@ -195,6 +210,10 @@ export function ConversationList({
             )}>
               {truncateMessage(conversation.last_message_preview)}
             </p>
+            {/* Status indicators */}
+            {extConv.is_pinned && <Pin className="h-3 w-3 text-muted-foreground" />}
+            {extConv.is_muted && <BellOff className="h-3 w-3 text-muted-foreground" />}
+            {extConv.is_favorite && <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />}
             {conversation.contact_type === "student" && (
               <Badge 
                 variant="secondary" 
@@ -205,25 +224,6 @@ export function ConversationList({
             )}
           </div>
         </div>
-
-        {/* Delete button - visible on hover (desktop) or always (mobile) */}
-        {onDelete && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "h-7 w-7 flex-shrink-0 hover:bg-destructive/10 hover:text-destructive transition-opacity",
-              "opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-              setConversationToDelete(conversation);
-            }}
-            title="Excluir conversa"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        )}
 
         {isArchived && (
           <Button
@@ -241,6 +241,30 @@ export function ConversationList({
         )}
       </div>
     );
+
+    // Wrap with context menu if handlers are provided
+    if (onArchive && onPin && onMute && onFavorite && onBlock && onMarkUnread && onTag && onDelete) {
+      return (
+        <ConversationContextMenu
+          key={conversation.id}
+          conversation={extConv}
+          onArchive={() => onArchive(conversation.id)}
+          onUnarchive={() => onUnarchive(conversation.id)}
+          onPin={() => onPin(conversation.id, !extConv.is_pinned)}
+          onMute={() => onMute(conversation.id, !extConv.is_muted)}
+          onFavorite={() => onFavorite(conversation.id, !extConv.is_favorite)}
+          onBlock={() => onBlock(conversation.id, !extConv.is_blocked)}
+          onMarkUnread={() => onMarkUnread(conversation.id)}
+          onTag={() => onTag(conversation.id)}
+          onDelete={() => setConversationToDelete(conversation)}
+          isArchived={isArchived}
+        >
+          {conversationContent}
+        </ConversationContextMenu>
+      );
+    }
+
+    return <div key={conversation.id}>{conversationContent}</div>;
   };
 
   if (loading) {
