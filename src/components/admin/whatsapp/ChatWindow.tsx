@@ -480,8 +480,8 @@ export function ChatWindow({
         </div>
       </ScrollArea>
 
-      {/* Input - Modern design */}
-      <div className="flex-shrink-0 p-2 sm:p-3 bg-gradient-to-t from-card via-card to-card/80 border-t border-border">
+      {/* Input - Modern design with safe area for mobile home indicator */}
+      <div className="flex-shrink-0 p-2 sm:p-3 bg-gradient-to-t from-card via-card to-card/80 border-t border-border safe-area-bottom">
         <div className="flex items-center gap-1 sm:gap-2 bg-muted/60 rounded-2xl p-1 sm:p-1.5">
           <EmojiPicker onEmojiSelect={handleEmojiSelect} className="flex-shrink-0" />
           

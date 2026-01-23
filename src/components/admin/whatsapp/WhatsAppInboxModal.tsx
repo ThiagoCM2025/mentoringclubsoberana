@@ -304,35 +304,37 @@ export function WhatsAppInboxModal({
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent 
-          className="fixed inset-0 w-full h-full max-w-none max-h-none p-0 gap-0 overflow-hidden border-0 rounded-none data-[state=open]:animate-none data-[state=closed]:animate-none translate-x-0 translate-y-0 sm:translate-x-0 sm:translate-y-0 flex flex-col bg-background" 
+          variant="fullscreen"
+          className="w-full h-full max-w-none max-h-none p-0 gap-0 overflow-hidden border-0 rounded-none" 
           hideClose 
           aria-describedby={undefined}
         >
           <VisuallyHidden>
             <DialogTitle>WhatsApp Business Inbox</DialogTitle>
           </VisuallyHidden>
-          {/* Compact modern header with connection status */}
-          <div className="flex items-center justify-between px-4 py-2 bg-[#00a884]">
-            <div className="flex items-center gap-3">
-              <MessageCircle className="h-4 w-4 text-white" />
-              <span className="font-medium text-white text-sm">WhatsApp Business</span>
+          {/* Compact modern header with connection status - safe area top */}
+          <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-[#00a884] safe-area-top flex-shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <MessageCircle className="h-4 w-4 text-white flex-shrink-0" />
+              <span className="font-medium text-white text-sm hidden sm:inline">WhatsApp Business</span>
+              <span className="font-medium text-white text-sm sm:hidden">WhatsApp</span>
               
               {/* Connection Status Indicator */}
-              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/10">
+              <div className="flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 flex-shrink-0">
                 {connectionStatus.state === "checking" ? (
                   <>
                     <Loader2 className="h-3 w-3 text-yellow-300 animate-spin" />
-                    <span className="text-xs text-white/80">Verificando...</span>
+                    <span className="text-[10px] sm:text-xs text-white/80 hidden xs:inline">Verificando...</span>
                   </>
                 ) : connectionStatus.state === "open" ? (
                   <>
                     <Wifi className="h-3 w-3 text-green-300" />
-                    <span className="text-xs text-white/90">Online</span>
+                    <span className="text-[10px] sm:text-xs text-white/90">Online</span>
                   </>
                 ) : (
                   <>
                     <WifiOff className="h-3 w-3 text-red-300" />
-                    <span className="text-xs text-white/80">Offline</span>
+                    <span className="text-[10px] sm:text-xs text-white/80">Offline</span>
                   </>
                 )}
               </div>
