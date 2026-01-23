@@ -23,10 +23,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { CalendarIcon, User, Target, GraduationCap, Clock, Users, ChevronDown } from "lucide-react";
+import { CalendarIcon, User, Target, GraduationCap, Clock, Users, ChevronDown, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Admin, AdminTask, CreateTaskInput, TaskPriority } from "@/hooks/useTasks";
 import { supabase } from "@/integrations/supabase/client";
@@ -354,12 +354,12 @@ export function TaskDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-xl flex flex-col gap-0 p-0 overflow-hidden">
+        <DialogHeader className="flex-shrink-0 p-6 pb-4 border-b">
           <DialogTitle>{isEdit ? "Editar Tarefa" : "Nova Tarefa"}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title">Título *</Label>
@@ -398,14 +398,13 @@ export function TaskDialog({
                       <div className="flex items-center gap-2">
                         <User className="h-4 w-4" />
                         {admin.full_name}
-                        {admin.user_id === currentUserId && " (Você)"}
                       </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             ) : (
-              // Create mode: multi-select with "Select All"
+              // Create mode: multi-select with checkboxes
               <MultiAdminSelect
                 admins={admins}
                 selected={selectedAdmins}
@@ -413,17 +412,12 @@ export function TaskDialog({
                 currentUserId={currentUserId}
               />
             )}
-            {!isEdit && selectedAdmins.length > 1 && (
-              <p className="text-xs text-muted-foreground">
-                Será criada uma tarefa para cada pessoa selecionada
-              </p>
-            )}
           </div>
 
-          {/* Due Date & Time */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Due Date and Time */}
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Data limite *</Label>
+              <Label>Data *</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -433,15 +427,15 @@ export function TaskDialog({
                       !dueDate && "text-muted-foreground"
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dueDate ? format(dueDate, "dd/MM/yyyy", { locale: ptBR }) : "Selecione"}
+                    <Calendar className="mr-2 h-4 w-4" />
+                    {dueDate ? format(dueDate, "dd/MM/yyyy", { locale: ptBR }) : "Selecionar"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
+                  <CalendarComponent
                     mode="single"
                     selected={dueDate}
-                    onSelect={setDueDate}
+                    onSelect={(date) => date && setDueDate(date)}
                     initialFocus
                     locale={ptBR}
                   />
@@ -451,20 +445,16 @@ export function TaskDialog({
 
             <div className="space-y-2">
               <Label>Horário</Label>
-              <div className="relative">
-                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="time"
-                  value={dueTime}
-                  onChange={(e) => setDueTime(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+              <Input
+                type="time"
+                value={dueTime}
+                onChange={(e) => setDueTime(e.target.value)}
+              />
             </div>
           </div>
 
-          {/* Priority & Reminder */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Priority and Reminder */}
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Prioridade</Label>
               <Select value={priority} onValueChange={(v) => setPriority(v as TaskPriority)}>
@@ -472,51 +462,49 @@ export function TaskDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {priorityOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      <span className={opt.color}>{opt.label}</span>
+                  {priorityOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      <div className="flex items-center gap-2">
+                        <div className={cn("h-2 w-2 rounded-full", option.color)} />
+                        {option.label}
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {!isEdit && (
-              <div className="space-y-2">
-                <Label>Lembrete</Label>
-                <Select value={reminderMinutes} onValueChange={setReminderMinutes}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {reminderOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label>Lembrete</Label>
+              <Select value={reminderMinutes} onValueChange={setReminderMinutes}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {reminderOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          {/* Link to Lead */}
+          {/* Related Lead */}
           <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <Target className="h-4 w-4" />
-              Vincular a Lead
-            </Label>
+            <Label>Vincular a Lead (opcional)</Label>
             <div className="relative">
               <Input
                 placeholder="Buscar lead pelo nome..."
                 value={leadSearch}
                 onChange={(e) => {
                   setLeadSearch(e.target.value);
-                  if (!e.target.value) setLeadId("");
+                  if (!e.target.value) setLeadId(null);
                 }}
               />
               {leadResults.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-popover border rounded-md shadow-lg">
+                <div className="absolute z-10 w-full mt-1 bg-popover border rounded-md shadow-lg max-h-40 overflow-y-auto">
                   {leadResults.map((lead) => (
                     <button
                       key={lead.id}
@@ -535,23 +523,20 @@ export function TaskDialog({
             </div>
           </div>
 
-          {/* Link to Student */}
+          {/* Related Student */}
           <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              Vincular a Aluna
-            </Label>
+            <Label>Vincular a Aluna (opcional)</Label>
             <div className="relative">
               <Input
                 placeholder="Buscar aluna pelo nome..."
                 value={studentSearch}
                 onChange={(e) => {
                   setStudentSearch(e.target.value);
-                  if (!e.target.value) setStudentId("");
+                  if (!e.target.value) setStudentId(null);
                 }}
               />
               {studentResults.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-popover border rounded-md shadow-lg">
+                <div className="absolute z-10 w-full mt-1 bg-popover border rounded-md shadow-lg max-h-40 overflow-y-auto">
                   {studentResults.map((student) => (
                     <button
                       key={student.user_id}
@@ -571,8 +556,8 @@ export function TaskDialog({
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex justify-end gap-2">
+        {/* Actions - Fixed footer */}
+        <div className="flex-shrink-0 border-t p-6 pt-4 flex justify-end gap-2 bg-background">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
