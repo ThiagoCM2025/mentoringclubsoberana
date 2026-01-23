@@ -119,47 +119,44 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         "--admin-sidebar-offset": isSidebarOpen ? "208px" : "64px"
       } as React.CSSProperties}
     >
-      {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-b border-secondary/20 shadow-sm p-4 z-50 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <img src={isotipoGold} alt="Soberana" className="w-8 h-8 drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
+      {/* Mobile Header - with safe area */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-b border-secondary/20 shadow-sm px-3 py-2 z-50 flex items-center justify-between safe-area-top">
+        <div className="flex items-center gap-2">
+          <img src={isotipoGold} alt="Soberana" className="w-7 h-7 drop-shadow-[0_0_10px_rgba(166,144,97,0.3)]" />
           <div className="flex flex-col leading-tight">
-            <span className="text-muted-foreground text-[7px] tracking-[0.15em] uppercase">
-              Mentoring
+            <span className="text-muted-foreground text-[6px] tracking-[0.12em] uppercase">
+              Mentoring Club
             </span>
-            <span className="text-muted-foreground text-[7px] tracking-[0.15em] uppercase -mt-0.5">
-              Club
-            </span>
-            <span className="font-serif font-bold text-secondary text-xs tracking-wider mt-0.5">
+            <span className="font-serif font-bold text-secondary text-[11px] tracking-wider">
               SOBERANA
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           {/* Search shortcut button */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
-            className="text-muted-foreground"
+            className="text-muted-foreground h-9 w-9"
           >
-            <Search className="w-5 h-5" />
+            <Search className="w-4 h-4" />
           </Button>
           <AdminNotificationBell />
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="text-foreground"
+            className="text-foreground h-9 w-9"
           >
-            <Menu className="w-6 h-6" />
+            <Menu className="w-5 h-5" />
           </Button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - with safe areas */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 bg-card z-40 pt-16">
+        <div className="lg:hidden fixed inset-0 bg-card z-40 pt-14 safe-area-inset overflow-y-auto">
           <nav className="p-4 space-y-1">
             {menuItems.map((item, index) => {
               const prevGroup = index > 0 ? menuItems[index - 1].group : null;
@@ -350,14 +347,14 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         </div>
       </aside>
 
-      {/* Main Content */}
+      {/* Main Content - with safe area bottom */}
       <main
         className={cn(
-          "min-h-screen transition-all duration-300 pt-16 lg:pt-0",
+          "min-h-screen transition-all duration-300 pt-14 lg:pt-0",
           isSidebarOpen ? "lg:ml-52" : "lg:ml-16"
         )}
       >
-        <div className="p-4 lg:p-6">
+        <div className="p-3 sm:p-4 lg:p-6 safe-area-bottom">
           <AdminBreadcrumbs />
           {children}
         </div>

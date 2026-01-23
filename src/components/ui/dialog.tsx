@@ -30,35 +30,49 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   overlayClassName?: string;
   hideClose?: boolean;
+  /** Use "fullscreen" for custom full-screen layouts like WhatsApp Inbox */
+  variant?: "default" | "fullscreen";
 }
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(({ className, children, overlayClassName, hideClose, ...props }, ref) => (
+>(({ className, children, overlayClassName, hideClose, variant = "default", ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay className={overlayClassName} />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        // Mobile: Full-screen
-        "fixed inset-0 z-50 flex flex-col bg-background",
-        // Desktop: Modal centralizado
-        "sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%]",
-        "sm:w-full sm:max-w-lg sm:max-h-[90vh] sm:rounded-lg sm:border sm:shadow-lg",
-        // Animações
+        // Base styles
+        "fixed z-50 bg-background",
+        // Fullscreen variant - no wrapper, custom layout
+        variant === "fullscreen" && "inset-0 flex flex-col",
+        // Default variant - responsive modal
+        variant === "default" && [
+          // Mobile: Full-screen with safe areas
+          "inset-0 flex flex-col",
+          // Desktop: Centered modal
+          "sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%]",
+          "sm:w-full sm:max-w-lg sm:max-h-[85vh] sm:rounded-lg sm:border sm:shadow-lg",
+        ],
+        // Animations
         "duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        "sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
+        variant === "default" && "sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
         className,
       )}
       {...props}
     >
-      <div className="flex-1 overflow-y-auto p-6">
-        {children}
-      </div>
+      {/* Fullscreen: render children directly, Default: wrap with scroll area */}
+      {variant === "fullscreen" ? (
+        children
+      ) : (
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 safe-area-inset">
+          {children}
+        </div>
+      )}
       {!hideClose && (
-        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none z-10">
+        <DialogPrimitive.Close className="absolute right-3 top-3 sm:right-4 sm:top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none z-10 p-1">
           <X className="h-5 w-5 sm:h-4 sm:w-4" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>

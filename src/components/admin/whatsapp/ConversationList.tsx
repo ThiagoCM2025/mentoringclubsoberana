@@ -167,21 +167,21 @@ export function ConversationList({
       <div
         key={conversation.id}
         className={cn(
-          "relative w-full flex items-center gap-3 p-3 pr-10 text-left group",
+          "relative w-full flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 pr-9 sm:pr-10 text-left group min-h-[60px] touch-target",
           "transition-all duration-200 ease-out",
           isArchived ? "opacity-70" : "",
-          !isArchived && "hover:bg-muted/60 cursor-pointer",
+          !isArchived && "hover:bg-muted/60 cursor-pointer active:bg-muted/80",
           isSelected && "bg-[#25D366]/10 border-l-2 border-[#25D366] shadow-sm"
         )}
         onClick={() => !isArchived && onSelect(conversation)}
       >
         <div className="relative flex-shrink-0">
           <Avatar className={cn(
-            "h-12 w-12 transition-all duration-200",
+            "h-10 w-10 sm:h-12 sm:w-12 transition-all duration-200",
             hasUnread && "ring-2 ring-[#25D366]/50 ring-offset-2 ring-offset-background"
           )}>
             <AvatarFallback className={cn(
-              "text-sm font-semibold transition-colors",
+              "text-xs sm:text-sm font-semibold transition-colors",
               isSelected 
                 ? "bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white"
                 : hasUnread
@@ -194,7 +194,7 @@ export function ConversationList({
             </AvatarFallback>
           </Avatar>
           {hasUnread && !isArchived && (
-            <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-[#25D366] text-white text-xs flex items-center justify-center font-bold shadow-lg shadow-[#25D366]/30 animate-pulse">
+            <span className="absolute -top-0.5 -right-0.5 h-4 sm:h-5 min-w-4 sm:min-w-5 px-1 rounded-full bg-[#25D366] text-white text-[10px] sm:text-xs flex items-center justify-center font-bold shadow-lg shadow-[#25D366]/30 animate-pulse">
               {conversation.unread_count > 9 ? "9+" : conversation.unread_count}
             </span>
           )}
@@ -327,11 +327,11 @@ export function ConversationList({
 
   return (
     <div className="flex flex-col h-full bg-card">
-      {/* Header */}
-      <div className="p-3 border-b border-border space-y-3">
+      {/* Header - compact on mobile */}
+      <div className="p-2.5 sm:p-3 border-b border-border space-y-2 sm:space-y-3 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-foreground">Conversas</h3>
-          <div className="flex items-center gap-1">
+          <h3 className="font-semibold text-foreground text-sm sm:text-base">Conversas</h3>
+          <div className="flex items-center gap-0.5 sm:gap-1">
             <PushNotificationToggle />
             <ConversationFiltersPopover
               filters={filters}
@@ -341,19 +341,19 @@ export function ConversationList({
               variant="ghost"
               size="icon"
               onClick={onNewConversation}
-              className="h-8 w-8"
+              className="h-8 w-8 sm:h-9 sm:w-9"
             >
               <MessageSquarePlus className="h-4 w-4" />
             </Button>
           </div>
         </div>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar conversas..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 h-9 bg-muted/50"
+            className="pl-8 sm:pl-9 h-9 bg-muted/50 text-sm"
           />
         </div>
       </div>
