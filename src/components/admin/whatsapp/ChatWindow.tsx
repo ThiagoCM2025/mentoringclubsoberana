@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import { Send, FileText, MoreVertical, Archive, User, Volume2, VolumeX, ArrowLeft, Search, ChevronUp, ChevronDown, X } from "lucide-react";
+import { Send, MoreVertical, Archive, User, Volume2, VolumeX, ArrowLeft, Search, ChevronUp, ChevronDown, X, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -28,6 +29,7 @@ import { VoiceRecorder } from "./VoiceRecorder";
 import { cn, shortenName } from "@/lib/utils";
 import { useTypingStatus } from "@/hooks/useTypingStatus";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import type { WhatsAppConversation, WhatsAppMessage } from "@/hooks/useWhatsAppConversations";
 
@@ -246,15 +248,15 @@ export function ChatWindow({
       "flex-1 flex flex-col min-h-0 overflow-hidden bg-[#efeae2] dark:bg-zinc-900 relative",
       !conversation && "hidden sm:flex"
     )}>
-      {/* Header */}
-      <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-2.5 bg-card border-b border-border shadow-sm relative z-10">
-        {/* Back button - mobile only */}
+      {/* Header - Compacto e otimizado para mobile */}
+      <div className="flex items-center gap-1.5 sm:gap-3 px-2 sm:px-4 py-2 sm:py-2.5 bg-card border-b border-border shadow-sm relative z-10">
+        {/* Back button - mobile only - touch target 44px */}
         {onBack && (
           <Button
             variant="ghost"
             size="icon"
             onClick={onBack}
-            className="h-9 w-9 sm:hidden text-muted-foreground hover:text-foreground"
+            className="h-11 w-11 sm:hidden text-muted-foreground hover:text-foreground touch-target"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -267,44 +269,40 @@ export function ChatWindow({
         </Avatar>
         
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <h3 className="font-medium text-foreground text-sm sm:text-base truncate max-w-[140px] sm:max-w-none">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <h3 className="font-medium text-foreground text-sm sm:text-base truncate max-w-[100px] sm:max-w-[180px] lg:max-w-none">
               {displayName || formatPhone(conversation.phone)}
             </h3>
             {conversation.contact_type === "student" && (
-              <Badge variant="secondary" className="text-[9px] sm:text-[10px] h-4 px-1.5 flex-shrink-0">
+              <Badge variant="secondary" className="text-[9px] sm:text-[10px] h-4 px-1 sm:px-1.5 flex-shrink-0">
                 Aluna
               </Badge>
             )}
           </div>
-          <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+          <p className="text-[10px] sm:text-xs text-muted-foreground truncate max-w-[120px] sm:max-w-none">
             {formatPhone(conversation.phone)}
           </p>
         </div>
         
-        <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
-          {/* Tags picker */}
-          {conversation && (
-            <ConversationTagPicker conversationId={conversation.id} compact />
-          )}
-          
-          {/* Search button */}
+        <div className="flex items-center gap-0.5 flex-shrink-0">
+          {/* Search button - always visible */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchOpen(true)}
-                className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground hover:text-foreground"
+                className="h-10 w-10 text-muted-foreground hover:text-foreground touch-target"
               >
                 <Search className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">
+            <TooltipContent side="bottom" className="text-xs hidden sm:block">
               Buscar mensagens
             </TooltipContent>
           </Tooltip>
           
+          {/* Sound toggle - hidden on mobile, inside dropdown */}
           {onToggleSound && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -312,12 +310,12 @@ export function ChatWindow({
                   variant="ghost"
                   size="icon"
                   onClick={onToggleSound}
-                  className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground hover:text-foreground"
+                  className="h-10 w-10 text-muted-foreground hover:text-foreground hidden sm:flex"
                 >
                   {soundEnabled ? (
-                    <Volume2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <Volume2 className="h-5 w-5" />
                   ) : (
-                    <VolumeX className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <VolumeX className="h-5 w-5" />
                   )}
                 </Button>
               </TooltipTrigger>
@@ -326,17 +324,46 @@ export function ChatWindow({
               </TooltipContent>
             </Tooltip>
           )}
+          
+          {/* Tags picker - hidden on mobile, inside dropdown */}
+          <div className="hidden sm:block">
+            {conversation && (
+              <ConversationTagPicker conversationId={conversation.id} compact />
+            )}
+          </div>
+          
+          {/* More options dropdown - contains all secondary actions */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
+              <Button variant="ghost" size="icon" className="h-10 w-10 touch-target">
                 <MoreVertical className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem onClick={onViewContact}>
                 <User className="h-4 w-4 mr-2" />
                 Ver contato
               </DropdownMenuItem>
+              
+              {/* Sound toggle - mobile only */}
+              {onToggleSound && (
+                <DropdownMenuItem onClick={onToggleSound} className="sm:hidden">
+                  {soundEnabled ? (
+                    <>
+                      <VolumeX className="h-4 w-4 mr-2" />
+                      Desativar som
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 className="h-4 w-4 mr-2" />
+                      Ativar som
+                    </>
+                  )}
+                </DropdownMenuItem>
+              )}
+              
+              <DropdownMenuSeparator />
+              
               <DropdownMenuItem onClick={onArchive}>
                 <Archive className="h-4 w-4 mr-2" />
                 Arquivar conversa
@@ -480,57 +507,44 @@ export function ChatWindow({
         </div>
       </ScrollArea>
 
-      {/* Input - Modern design with safe area for mobile home indicator */}
+      {/* Input - Optimized for mobile with fewer buttons */}
       <div className="flex-shrink-0 p-2 sm:p-3 bg-gradient-to-t from-card via-card to-card/80 border-t border-border safe-area-bottom">
-        <div className="flex items-center gap-1 sm:gap-2 bg-muted/60 rounded-2xl p-1 sm:p-1.5">
+        <div className="flex items-center gap-1.5 sm:gap-2 bg-muted/60 rounded-2xl px-1.5 sm:px-2 py-1 sm:py-1.5">
+          {/* Emoji picker */}
           <EmojiPicker onEmojiSelect={handleEmojiSelect} className="flex-shrink-0" />
           
-          {/* Media upload button */}
+          {/* Media upload button - now includes templates option */}
           {conversation && (
             <MediaUploadButton
               conversationId={conversation.id}
               phone={conversation.phone}
               onMediaSent={onMediaSent || (() => {})}
               disabled={sending}
+              onOpenTemplates={onOpenTemplates}
             />
           )}
           
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 sm:h-10 sm:w-10 rounded-full flex-shrink-0 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                onClick={onOpenTemplates}
-              >
-                <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">
-              Templates
-            </TooltipContent>
-          </Tooltip>
-          
-            <Input
-              ref={inputRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Digite uma mensagem..."
-              className="flex-1 h-9 sm:h-10 rounded-full bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60 text-sm"
-              disabled={sending}
-              spellCheck={true}
-              lang="pt-BR"
-              autoComplete="off"
-              autoCorrect="on"
-            />
+          {/* Input field */}
+          <Input
+            ref={inputRef}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Mensagem..."
+            className="flex-1 h-9 sm:h-10 rounded-full bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60 text-sm px-2"
+            disabled={sending}
+            spellCheck={true}
+            lang="pt-BR"
+            autoComplete="off"
+            autoCorrect="on"
+          />
           
           {/* Show Send button or Voice Recorder based on input */}
           {inputValue.trim() ? (
             <Button
               size="icon"
               className={cn(
-                "h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0 rounded-full shadow-md transition-all duration-200",
+                "h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0 rounded-full shadow-md transition-all duration-200 touch-target",
                 "bg-[#25D366] hover:bg-[#128C7E] hover:scale-105 hover:shadow-lg"
               )}
               onClick={handleSend}

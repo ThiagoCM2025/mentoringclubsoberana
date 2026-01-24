@@ -209,12 +209,11 @@ export function ConversationList({
               )}>
                 {displayName}
               </span>
-              {/* Tags - show emoji from tag name */}
+              {/* Tags - show max 2 emojis on mobile for compact view */}
               {conversationTags.length > 0 && (
                 <TooltipProvider delayDuration={200}>
                   <div className="flex items-center gap-0.5 flex-shrink-0">
-                    {conversationTags.map((tag) => {
-                      // Extract emoji from tag name (first character or emoji at start)
+                    {conversationTags.slice(0, 2).map((tag) => {
                       const emojiMatch = tag.name.match(/^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F?)/u);
                       const emoji = emojiMatch ? emojiMatch[0] : tag.name.charAt(0);
                       
@@ -231,6 +230,11 @@ export function ConversationList({
                         </Tooltip>
                       );
                     })}
+                    {conversationTags.length > 2 && (
+                      <span className="text-[10px] text-muted-foreground">
+                        +{conversationTags.length - 2}
+                      </span>
+                    )}
                   </div>
                 </TooltipProvider>
               )}

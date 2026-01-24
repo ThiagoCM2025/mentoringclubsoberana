@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, Trash2, Send, X, Loader2 } from "lucide-react";
+import { Mic, Trash2, Send, X, Loader2, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface VoiceRecorderProps {
@@ -14,7 +14,8 @@ interface VoiceRecorderProps {
   disabled?: boolean;
 }
 
-const WAVEFORM_BARS = 12;
+// Reduced to 8 bars for compact mobile display
+const WAVEFORM_BARS = 8;
 
 export function VoiceRecorder({
   conversationId,
@@ -22,7 +23,6 @@ export function VoiceRecorder({
   onMessageSent,
   disabled,
 }: VoiceRecorderProps) {
-  const { toast } = useToast();
   const {
     isRecording,
     duration,
@@ -38,20 +38,19 @@ export function VoiceRecorder({
   const [isSending, setIsSending] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
-  // Process audio data for waveform visualization
+  // Process audio data for waveform visualization - compact 8 bars
   const waveformBars = useMemo(() => {
     if (!audioData || audioData.length === 0) {
       return Array(WAVEFORM_BARS).fill(4);
     }
     
-    // Sample the frequency data to get the desired number of bars
     const step = Math.floor(audioData.length / WAVEFORM_BARS);
     const bars: number[] = [];
     
     for (let i = 0; i < WAVEFORM_BARS; i++) {
       const index = Math.min(i * step, audioData.length - 1);
-      // Normalize value from 0-255 to 4-28 (min-max height in pixels)
-      const normalized = Math.max(4, Math.floor((audioData[index] / 255) * 28));
+      // Normalize value from 0-255 to 4-20 (compact height range)
+      const normalized = Math.max(4, Math.floor((audioData[index] / 255) * 20));
       bars.push(normalized);
     }
     
@@ -68,17 +67,13 @@ export function VoiceRecorder({
   const formatDuration = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleStartRecording = async () => {
     const success = await startRecording();
     if (!success) {
-      toast({
-        title: "Erro ao gravar",
-        description: "Não foi possível acessar o microfone. Verifique as permissões.",
-        variant: "destructive",
-      });
+      toast.error("Não foi possível acessar o microfone");
     }
   };
 
@@ -91,67 +86,42 @@ export function VoiceRecorder({
 
     setIsSending(true);
     try {
-      // Upload to Supabase Storage
       const filename = `voice-${Date.now()}.webm`;
       const filePath = `${conversationId}/${filename}`;
       
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from("whatsapp-media")
         .upload(filePath, audioBlob, {
           contentType: audioBlob.type,
           upsert: false,
         });
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
-      // Get public URL
       const { data: urlData } = supabase.storage
         .from("whatsapp-media")
         .getPublicUrl(filePath);
 
       const mediaUrl = urlData.publicUrl;
 
-      // Send via Edge Function
-      const { data: session } = await supabase.auth.getSession();
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-whatsapp-media`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.session?.access_token}`,
-          },
-          body: JSON.stringify({
-            phone,
-            mediaUrl,
-            mediaType: "audio",
-            conversationId,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Falha ao enviar áudio");
-      }
-
-      toast({
-        title: "Áudio enviado!",
-        description: "Sua mensagem de voz foi enviada com sucesso.",
+      const { error: sendError } = await supabase.functions.invoke("send-whatsapp-media", {
+        body: {
+          phone,
+          mediaUrl,
+          mediaType: "audio",
+          conversationId,
+        },
       });
 
+      if (sendError) throw sendError;
+
+      toast.success("Áudio enviado!");
       clearAudio();
       setShowPreview(false);
       onMessageSent();
     } catch (error) {
       console.error("Error sending voice message:", error);
-      toast({
-        title: "Erro ao enviar",
-        description: "Não foi possível enviar o áudio. Tente novamente.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao enviar áudio");
     } finally {
       setIsSending(false);
     }
@@ -173,36 +143,39 @@ export function VoiceRecorder({
   return (
     <AnimatePresence mode="wait">
       {isRecording ? (
+        // Recording state - compact design for mobile
         <motion.div
           key="recording"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9 }}
-          className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-full px-3 py-1.5"
+          className="flex items-center gap-1.5 bg-red-500/10 rounded-full px-2 py-1"
         >
+          {/* Cancel button */}
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="h-8 w-8 hover:bg-red-500/20"
+            className="h-8 w-8 rounded-full hover:bg-red-500/20"
             onClick={handleCancel}
           >
             <Trash2 className="h-4 w-4 text-red-500" />
           </Button>
           
-          <div className="flex items-center gap-2 min-w-[80px]">
+          {/* Recording indicator + duration */}
+          <div className="flex items-center gap-1.5 px-1">
             <motion.span
               animate={{ opacity: [1, 0.3, 1] }}
               transition={{ repeat: Infinity, duration: 1 }}
               className="w-2 h-2 bg-red-500 rounded-full"
             />
-            <span className="text-sm font-medium text-red-600">
+            <span className="text-xs font-medium text-red-600 dark:text-red-400 min-w-[28px]">
               {formatDuration(duration)}
             </span>
           </div>
           
-          {/* Real-time Waveform animation */}
-          <div className="flex items-center justify-center gap-[2px] h-7 min-w-[60px]">
+          {/* Compact waveform visualization */}
+          <div className="flex items-center justify-center gap-[2px] h-5">
             {waveformBars.map((height, i) => (
               <motion.div
                 key={i}
@@ -212,52 +185,56 @@ export function VoiceRecorder({
                   type: "spring", 
                   stiffness: 400, 
                   damping: 25,
-                  mass: 0.5
                 }}
                 style={{ minHeight: 4 }}
               />
             ))}
           </div>
           
+          {/* Stop button */}
           <Button
             type="button"
             size="icon"
-            className="h-8 w-8 bg-[#25D366] hover:bg-[#128C7E] rounded-full"
+            className="h-8 w-8 bg-red-500 hover:bg-red-600 rounded-full text-white"
             onClick={handleStopAndSend}
           >
-            <Send className="h-4 w-4" />
+            <Square className="h-3 w-3 fill-current" />
           </Button>
         </motion.div>
       ) : showPreview && audioBlob ? (
+        // Preview state - compact
         <motion.div
           key="preview"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9 }}
-          className="flex items-center gap-2 bg-[#25D366]/10 border border-[#25D366]/20 rounded-full px-3 py-1.5"
+          className="flex items-center gap-1.5 bg-muted/80 rounded-full px-2 py-1"
         >
+          {/* Delete button */}
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="h-8 w-8 hover:bg-red-500/20"
+            className="h-8 w-8 rounded-full hover:bg-red-500/20"
             onClick={handleCancel}
             disabled={isSending}
           >
             <X className="h-4 w-4 text-muted-foreground" />
           </Button>
           
-          <div className="flex items-center gap-2">
-            <Mic className="h-4 w-4 text-[#25D366]" />
-            <span className="text-sm font-medium text-[#25D366]">
+          {/* Duration */}
+          <div className="flex items-center gap-1.5 px-1">
+            <Mic className="h-3.5 w-3.5 text-[#25D366]" />
+            <span className="text-xs font-medium text-muted-foreground">
               {formatDuration(duration)}
             </span>
           </div>
           
+          {/* Send button */}
           <Button
             type="button"
             size="icon"
-            className="h-8 w-8 bg-[#25D366] hover:bg-[#128C7E] rounded-full"
+            className="h-8 w-8 bg-[#25D366] hover:bg-[#128C7E] rounded-full text-white"
             onClick={handleSendAudio}
             disabled={isSending}
           >
@@ -269,6 +246,7 @@ export function VoiceRecorder({
           </Button>
         </motion.div>
       ) : (
+        // Idle state - mic button
         <motion.div
           key="idle"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -280,7 +258,7 @@ export function VoiceRecorder({
             variant="ghost"
             size="icon"
             className={cn(
-              "h-10 w-10 rounded-full transition-all",
+              "h-10 w-10 rounded-full transition-all touch-target",
               "hover:bg-[#25D366]/20 hover:text-[#25D366]"
             )}
             onClick={handleStartRecording}
