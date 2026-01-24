@@ -11,7 +11,8 @@ import { TimeTracker } from "@/components/TimeTracker";
 import { ClickTracker } from "@/components/ClickTracker";
 import { useUTMParams } from "@/hooks/useUTMParams";
 import { useEventTracking } from "@/hooks/useEventTracking";
-import { useIsMobile, usePrefersReducedMotion } from "@/components/ui/optimized-image";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { usePrefersReducedMotion } from "@/components/ui/optimized-image";
 
 // Lazy load heavy components below the fold
 const ExperienceFAQ = lazy(() => import("@/components/landing/ExperienceFAQ").then(m => ({

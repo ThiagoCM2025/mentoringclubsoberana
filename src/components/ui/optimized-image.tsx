@@ -107,19 +107,8 @@ export const usePrefersReducedMotion = () => {
   return prefersReduced;
 };
 
-// Hook for detecting mobile devices
-export const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  return isMobile;
-};
+// Re-export from official hook for backward compatibility
+export { useIsMobile } from "@/hooks/use-mobile";
 
 // Animation variants optimized for mobile
 export const mobileOptimizedVariants = {
