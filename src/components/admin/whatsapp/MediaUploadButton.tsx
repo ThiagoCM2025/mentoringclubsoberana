@@ -1,21 +1,24 @@
 import { useState, useRef } from "react";
-import { Paperclip, Image, FileAudio, FileText, Loader2 } from "lucide-react";
+import { Paperclip, Image, FileAudio, FileText, Loader2, MessageSquareText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface MediaUploadButtonProps {
   conversationId: string;
   phone: string;
   onMediaSent: () => void;
   disabled?: boolean;
+  onOpenTemplates?: () => void;
 }
 
 type MediaType = "image" | "audio" | "document";
@@ -32,7 +35,8 @@ export function MediaUploadButton({
   conversationId, 
   phone, 
   onMediaSent,
-  disabled 
+  disabled,
+  onOpenTemplates,
 }: MediaUploadButtonProps) {
   const [uploading, setUploading] = useState(false);
   const [selectedType, setSelectedType] = useState<MediaType | null>(null);
@@ -132,35 +136,48 @@ export function MediaUploadButton({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 sm:h-10 sm:w-10 rounded-full flex-shrink-0 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                className={cn(
+                  "h-10 w-10 rounded-full flex-shrink-0 text-muted-foreground touch-target",
+                  "hover:text-primary hover:bg-primary/10 transition-colors"
+                )}
                 disabled={disabled || uploading}
               >
                 {uploading ? (
-                  <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  <Paperclip className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <Paperclip className="h-5 w-5" />
                 )}
               </Button>
             </DropdownMenuTrigger>
           </TooltipTrigger>
-          <TooltipContent side="top" className="text-xs">
-            Anexar mídia
+          <TooltipContent side="top" className="text-xs hidden sm:block">
+            Anexar
           </TooltipContent>
         </Tooltip>
         
-        <DropdownMenuContent align="start" side="top" className="min-w-[160px]">
-          <DropdownMenuItem onClick={() => handleSelectType("image")}>
-            <Image className="h-4 w-4 mr-2 text-blue-500" />
+        <DropdownMenuContent align="start" side="top" className="w-48">
+          <DropdownMenuItem onClick={() => handleSelectType("image")} className="py-2.5">
+            <Image className="h-4 w-4 mr-3 text-blue-500" />
             Imagem
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleSelectType("audio")}>
-            <FileAudio className="h-4 w-4 mr-2 text-green-500" />
+          <DropdownMenuItem onClick={() => handleSelectType("audio")} className="py-2.5">
+            <FileAudio className="h-4 w-4 mr-3 text-purple-500" />
             Áudio
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleSelectType("document")}>
-            <FileText className="h-4 w-4 mr-2 text-orange-500" />
+          <DropdownMenuItem onClick={() => handleSelectType("document")} className="py-2.5">
+            <FileText className="h-4 w-4 mr-3 text-orange-500" />
             Documento
           </DropdownMenuItem>
+          
+          {onOpenTemplates && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={onOpenTemplates} className="py-2.5">
+                <MessageSquareText className="h-4 w-4 mr-3 text-emerald-500" />
+                Templates
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </>
