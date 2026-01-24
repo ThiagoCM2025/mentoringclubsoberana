@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ResponsiveTable } from "@/components/ui/responsive-table";
 import {
   XAxis,
   YAxis,
@@ -657,9 +658,10 @@ export const BehavioralAnalytics = ({ startDate }: BehavioralAnalyticsProps) => 
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {loading ? (
+          {loading ? (
               <TableSkeleton rows={5} columns={6} />
             ) : recentSessions.length > 0 ? (
+              <ResponsiveTable minWidth="700px">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -699,6 +701,7 @@ export const BehavioralAnalytics = ({ startDate }: BehavioralAnalyticsProps) => 
                   ))}
                 </TableBody>
               </Table>
+              </ResponsiveTable>
             ) : (
               <div className="h-32 flex items-center justify-center text-muted-foreground">
                 Sem sessões registradas

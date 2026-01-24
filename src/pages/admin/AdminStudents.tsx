@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ResponsiveTable } from "@/components/ui/responsive-table";
 import {
   Dialog,
   DialogContent,
@@ -843,7 +844,7 @@ const AdminStudents = () => {
         </div>
 
         {/* Table */}
-        <div className="admin-table-container">
+        <ResponsiveTable minWidth="700px">
           <Table>
             <TableHeader>
               <TableRow className="border-border hover:bg-muted/50">
@@ -974,7 +975,7 @@ const AdminStudents = () => {
               )}
             </TableBody>
           </Table>
-        </div>
+        </ResponsiveTable>
       </div>
     </AdminLayout>
   );

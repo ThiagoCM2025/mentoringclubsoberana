@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ResponsiveTable } from "@/components/ui/responsive-table";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ClickHeatmapProps {
@@ -280,7 +281,7 @@ export const ClickHeatmap = ({ startDate }: ClickHeatmapProps) => {
               {/* Top Elements Table */}
               <div>
                 <h4 className="text-sm font-medium mb-3">Top Elementos Clicados</h4>
-                <div className="rounded-lg border border-border/50 overflow-hidden">
+                <ResponsiveTable minWidth="400px">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-muted/30">
@@ -308,7 +309,7 @@ export const ClickHeatmap = ({ startDate }: ClickHeatmapProps) => {
                       )}
                     </TableBody>
                   </Table>
-                </div>
+                </ResponsiveTable>
               </div>
             </>
           )}
