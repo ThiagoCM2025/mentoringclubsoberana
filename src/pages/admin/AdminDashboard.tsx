@@ -1188,7 +1188,7 @@ const AdminDashboard = () => {
         {/* Growth Section */}
         <div>
           <SectionHeader title="Crescimento" icon={TrendingUp} iconColor="text-emerald-500" />
-          <div className="grid lg:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-3 sm:gap-4">
             {/* Enrollment Trends */}
             <ChartCard
               title="Evolução de Matrículas"
@@ -1197,7 +1197,7 @@ const AdminDashboard = () => {
               onPeriodChange={setEnrollmentPeriod}
               delay={0.3}
             >
-              <div className="h-52">
+              <div className="h-40 sm:h-48 lg:h-52">
                 <AnimatePresence mode="wait">
                   {loading ? (
                     <ChartSkeleton height={256} />
@@ -1255,7 +1255,7 @@ const AdminDashboard = () => {
               onPeriodChange={setLeadsPeriod}
               delay={0.4}
             >
-              <div className="h-52">
+              <div className="h-40 sm:h-48 lg:h-52">
                 <AnimatePresence mode="wait">
                   {loading ? (
                     <div className="h-full flex items-center justify-center">
@@ -1311,7 +1311,7 @@ const AdminDashboard = () => {
         {/* Engagement Section */}
         <div>
           <SectionHeader title="Engajamento" icon={Heart} iconColor="text-rose-500" />
-          <div className="grid lg:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {/* Community Engagement Chart */}
             <ChartCard
               title="Engajamento da Comunidade"
@@ -1321,7 +1321,7 @@ const AdminDashboard = () => {
               onPeriodChange={setCommunityPeriod}
               delay={0.45}
             >
-              <div className="h-52">
+              <div className="h-40 sm:h-48 lg:h-52">
                 <AnimatePresence mode="wait">
                   {loading ? (
                     <ChartSkeleton height={208} />
@@ -1508,7 +1508,7 @@ const AdminDashboard = () => {
         {/* Performance Section */}
         <div>
           <SectionHeader title="Performance" icon={GraduationCap} iconColor="text-indigo-500" />
-          <div className="grid lg:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-3 sm:gap-6">
             {/* Student Progress */}
             <ChartCard
               title="Top 5 Alunos Mais Ativos"
@@ -1518,7 +1518,7 @@ const AdminDashboard = () => {
               onPeriodChange={setProgressPeriod}
               delay={0.6}
             >
-              <div className="h-64">
+              <div className="h-48 sm:h-56 lg:h-64">
                 <AnimatePresence mode="wait">
                   {loading ? (
                     <ChartSkeleton height={256} />

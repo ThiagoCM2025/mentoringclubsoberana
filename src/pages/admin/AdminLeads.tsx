@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
+import { ResponsiveTable } from "@/components/ui/responsive-table";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -929,7 +930,7 @@ const AdminLeads = () => {
 
         {/* Table View */}
         {viewMode === "table" && (
-          <div className="admin-card overflow-hidden">
+          <ResponsiveTable minWidth="900px">
             <Table>
               <TableHeader>
                 <TableRow className="border-border hover:bg-muted/50">
@@ -1061,7 +1062,7 @@ const AdminLeads = () => {
                 )}
               </TableBody>
             </Table>
-          </div>
+          </ResponsiveTable>
         )}
 
         {/* Lead Details Dialog - Fullscreen */}

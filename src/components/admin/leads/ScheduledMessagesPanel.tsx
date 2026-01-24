@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ResponsiveTable } from '@/components/ui/responsive-table';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -225,7 +226,7 @@ export function ScheduledMessagesPanel() {
               <p className="text-sm">Nenhum disparo realizado ainda</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <ResponsiveTable minWidth="600px">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -275,7 +276,7 @@ export function ScheduledMessagesPanel() {
                   ))}
                 </TableBody>
               </Table>
-            </div>
+            </ResponsiveTable>
           )}
         </CardContent>
       </Card>
