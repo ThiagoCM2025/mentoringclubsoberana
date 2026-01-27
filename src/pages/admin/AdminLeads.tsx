@@ -57,7 +57,7 @@ interface ImportLog {
 interface Lead {
   id: string;
   full_name: string;
-  email: string;
+  email: string | null;
   phone: string | null;
   source: string | null;
   status: LeadStatus | null;
@@ -643,9 +643,9 @@ const AdminLeads = () => {
 
   const filteredLeads = leads.filter((lead) => {
     const matchesSearch =
-      lead.full_name.toLowerCase().includes(search.toLowerCase()) ||
-      lead.email.toLowerCase().includes(search.toLowerCase()) ||
-      lead.phone?.includes(search);
+      lead.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+      lead.email?.toLowerCase().includes(search.toLowerCase()) ||
+      lead.phone?.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = filterStatus === "all" || lead.status === filterStatus;
     const matchesTemp = filterTemp === "all" || lead.temperature === filterTemp;
     const matchesNurturing = filterNurturing === "all" || 

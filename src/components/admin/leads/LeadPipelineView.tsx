@@ -30,7 +30,7 @@ type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
 interface Lead {
   id: string;
   full_name: string;
-  email: string;
+  email: string | null;
   phone: string | null;
   source: string | null;
   status: LeadStatus | null;
