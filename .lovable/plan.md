@@ -1,37 +1,51 @@
 
-## Plano: Atualizar Datas dos Encontros Ao Vivo
 
-### Alteração Necessária
+## Plano: Atualizar Calendário de Encontros Ao Vivo
 
-Atualizar as datas do calendário de "Encontros Ao Vivo" da Mentoria 360° no componente `CourseGamificationSidebar.tsx`.
+### Alteração Solicitada
+
+Substituir as 6 datas atuais por 5 novas datas conforme especificado.
 
 ### Mudanças
 
-| Data Atual | Nova Data |
-|------------|-----------|
-| 29 de Janeiro | **28 de Janeiro** |
-| 22 de Fevereiro | **23 de Fevereiro** |
-| 14 de Março | **12 de Março** |
-| 16 de Abril | 16 de Abril (sem mudança) |
-| 14 de Maio | 14 de Maio (sem mudança) |
-| 18 de Junho | 18 de Junho (sem mudança) |
+| Datas Atuais (6) | Novas Datas (5) |
+|------------------|-----------------|
+| 28 de Janeiro | **29 de Janeiro** |
+| 23 de Fevereiro | **12 de Fevereiro** |
+| 12 de Março | **26 de Fevereiro** |
+| 16 de Abril | **11 de Março** |
+| 14 de Maio | **26 de Março** |
+| 18 de Junho | *(removido)* |
 
 ### Arquivo a Modificar
 
-**`src/components/student/program/CourseGamificationSidebar.tsx`** (linhas 104-109)
+**`src/components/student/program/CourseGamificationSidebar.tsx`** (linhas 103-108)
 
 ```typescript
-// De:
-{ date: new Date(2026, 0, 29, 18, 30), label: "29 de Janeiro" },
-{ date: new Date(2026, 1, 22, 18, 30), label: "22 de Fevereiro" },
-{ date: new Date(2026, 2, 14, 18, 30), label: "14 de Março" },
-
-// Para:
+// De (6 datas):
 { date: new Date(2026, 0, 28, 18, 30), label: "28 de Janeiro" },
 { date: new Date(2026, 1, 23, 18, 30), label: "23 de Fevereiro" },
 { date: new Date(2026, 2, 12, 18, 30), label: "12 de Março" },
+{ date: new Date(2026, 3, 16, 18, 30), label: "16 de Abril" },
+{ date: new Date(2026, 4, 14, 18, 30), label: "14 de Maio" },
+{ date: new Date(2026, 5, 18, 18, 30), label: "18 de Junho" },
+
+// Para (5 datas):
+{ date: new Date(2026, 0, 29, 18, 30), label: "29 de Janeiro" },
+{ date: new Date(2026, 1, 12, 18, 30), label: "12 de Fevereiro" },
+{ date: new Date(2026, 1, 26, 18, 30), label: "26 de Fevereiro" },
+{ date: new Date(2026, 2, 11, 18, 30), label: "11 de Março" },
+{ date: new Date(2026, 2, 26, 18, 30), label: "26 de Março" },
 ```
+
+### Detalhes Técnicos
+
+- **Janeiro** = mês 0 em JavaScript
+- **Fevereiro** = mês 1
+- **Março** = mês 2
+- Horário mantido: 18:30 (Brasília)
 
 ### Resultado
 
-O calendário de encontros na área do aluno exibirá as novas datas corretamente, mantendo o horário de 18:30 (Brasília) e toda a lógica visual de próximo encontro/passado.
+O calendário exibirá 5 encontros concentrados entre Janeiro e Março de 2026, com a mesma lógica visual de próximo/passado funcionando corretamente.
+
