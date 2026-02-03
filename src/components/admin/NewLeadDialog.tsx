@@ -36,20 +36,14 @@ type LeadStatus = Database["public"]["Enums"]["lead_status"];
 type LeadTemperature = Database["public"]["Enums"]["lead_temperature"];
 
 const formSchema = z.object({
-  full_name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres").max(100),
+  full_name: z.string().min(1, "Nome é obrigatório").max(100),
   email: z.string().email("Email inválido").max(255).optional().or(z.literal("")),
   phone: z.string().max(20).optional().or(z.literal("")),
   source: z.string().optional(),
   status: z.enum(["new", "contacted", "negotiating", "converted", "lost"]),
   temperature: z.enum(["cold", "warm", "hot"]),
   notes: z.string().optional(),
-}).refine(
-  (data) => (data.email && data.email.trim() !== "") || (data.phone && data.phone.trim() !== ""),
-  {
-    message: "Preencha pelo menos o email ou o telefone",
-    path: ["email"],
-  }
-);
+});
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -124,7 +118,7 @@ export const NewLeadDialog = ({ open, onOpenChange, onSuccess }: NewLeadDialogPr
               name="full_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome completo *</FormLabel>
+                  <FormLabel>Nome completo</FormLabel>
                   <FormControl>
                     <Input placeholder="Maria Silva" {...field} />
                   </FormControl>

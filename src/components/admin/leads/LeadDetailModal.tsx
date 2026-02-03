@@ -240,8 +240,8 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent 
-        className="fixed top-0 right-0 bottom-0 h-full max-h-full w-full max-w-none lg:left-[var(--admin-sidebar-offset,208px)] lg:w-auto p-0 gap-0 overflow-hidden rounded-none border-0 translate-x-0 translate-y-0 z-40 data-[state=open]:slide-in-from-right-0 data-[state=closed]:slide-out-to-right-0"
-        overlayClassName="lg:left-[var(--admin-sidebar-offset,208px)] z-30 bg-black/50"
+        variant="fullscreen"
+        className="flex flex-col bg-background p-0 gap-0"
         hideClose
       >
         {/* Compact Header */}
