@@ -1,45 +1,43 @@
 
+## Plano: Corrigir Scroll na Área de Conteúdo do Lead
 
-## Plano: Corrigir Modal Fechando ao Clicar na Scrollbar
+### Problema Identificado
 
-### Problema
+A seção "Dados de Qualificação" e outros conteúdos não rolam porque os containers flexbox não têm `min-h-0`. Em flexbox, `flex-1` permite crescer, mas o `min-height: auto` padrão impede que o elemento encolha abaixo do tamanho do conteúdo, quebrando o overflow scroll.
 
-O modal full-screen fecha quando o usuário clica na barra de rolagem lateral para rolar o conteudo. Isso acontece porque o Radix UI Dialog interpreta o clique na scrollbar como um clique "fora" do conteudo do dialog.
+### Causa Técnica
 
-### Causa Tecnica
+```
+DialogContent (inset-0 flex flex-col)
+  └── Header (fixo)
+  └── div.flex-1.overflow-hidden (problema: sem min-h-0)
+        └── Sidebar (w-280px)
+        └── div.flex-1.overflow-hidden (problema: sem min-h-0)
+              └── Tabs.flex-1.flex-col (problema: sem min-h-0)
+                    └── TabsContent.overflow-y-auto (não rola!)
+```
 
-O componente `DialogContent` do Radix UI possui um handler `onPointerDownOutside` que fecha o modal quando detecta cliques fora da area de conteudo. A scrollbar, tecnicamente, esta fora do conteudo do dialog.
+Sem `min-h-0`, o container não pode encolher e força o conteúdo a expandir infinitamente ao invés de ativar o scroll.
 
-### Solucao
+### Solução
 
-Adicionar o prop `onPointerDownOutside` com `e.preventDefault()` para impedir que cliques na scrollbar fechem o modal.
-
-### Alteracao
+Adicionar `min-h-0` nos containers flexbox que precisam permitir scroll:
 
 **Arquivo**: `src/components/admin/leads/LeadDetailModal.tsx`
 
-**Linha 241-246** - Adicionar prop para prevenir fechamento:
+| Linha | Atual | Corrigido |
+|-------|-------|-----------|
+| 298 | `flex flex-1 overflow-hidden` | `flex flex-1 overflow-hidden min-h-0` |
+| 456 | `flex-1 overflow-hidden flex flex-col` | `flex-1 overflow-hidden flex flex-col min-h-0` |
+| 457 | `flex-1 flex flex-col` | `flex-1 flex flex-col min-h-0` |
 
-```typescript
-<DialogContent 
-  variant="fullscreen"
-  className="flex flex-col bg-background p-0 gap-0"
-  hideClose
-  onPointerDownOutside={(e) => e.preventDefault()}
-  onInteractOutside={(e) => e.preventDefault()}
->
-```
+### Por que `min-h-0` funciona?
 
-### Detalhes Tecnicos
-
-| Prop | Funcao |
-|------|--------|
-| `onPointerDownOutside` | Previne fechamento ao clicar fora (incluindo scrollbar) |
-| `onInteractOutside` | Previne fechamento em qualquer interacao externa |
-
-O modal ainda pode ser fechado pelo botao "Voltar" ou pelo "X" no header.
+- `flex-1` = `flex: 1 1 0%` (grow, shrink, basis=0)
+- Porém `min-height: auto` (padrão) impede shrink abaixo do conteúdo
+- `min-h-0` = `min-height: 0` permite que o elemento encolha
+- Isso ativa o `overflow-y-auto` no TabsContent corretamente
 
 ### Resultado
 
-O usuario podera clicar na barra de rolagem para navegar pelo conteudo do lead sem que o modal feche inesperadamente.
-
+Após a correção, toda a área de conteúdo (Tarefas, Qualificação, Histórico) será rolável normalmente.
