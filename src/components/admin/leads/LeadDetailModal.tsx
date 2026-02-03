@@ -243,6 +243,8 @@ export function LeadDetailModal({ open, onClose, lead, onLeadUpdated, onOpenQual
         variant="fullscreen"
         className="flex flex-col bg-background p-0 gap-0"
         hideClose
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
       >
         {/* Compact Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b bg-background">
