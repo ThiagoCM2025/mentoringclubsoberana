@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useCallback, useEffect } from "react";
-import { Brain, TrendingUp, Users, Building2, Zap, Target, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { TrendingUp, Users, Building2, Settings, ChevronDown, ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -14,52 +14,50 @@ import isotipoFramedGold from "@/assets/brand/isotipo-s-framed-gold-v2.png";
 const pillars = [
   {
     number: 1,
-    title: "BASE TÉCNICA ESSENCIAL",
-    subtitle: "Preparação para entrar no jogo",
-    description: "Fundamentos práticos e visão do Direito Imobiliário. Você aprenderá o essencial para atuar com segurança e domínio técnico desde o início.",
+    title: "ESTRUTURA",
+    subtitle: "O alicerce do negócio",
+    description: "Definir oferta clara, promessa e proposta fechável.",
     highlights: [],
-    icon: Brain,
+    icon: Building2,
   },
   {
     number: 2,
-    title: "POSICIONAMENTO E AUTORIDADE",
-    subtitle: "Autoimagem, nicho e diferencial",
-    description: "Desenvolva a mentalidade para se destacar e ser reconhecida como referência no mercado imobiliário. Construa sua marca pessoal com propósito.",
+    title: "POSICIONAMENTO",
+    subtitle: "Ser escolhida",
+    description: "Conteúdo estratégico e autoridade para ser escolhida.",
     highlights: [],
     icon: Users,
   },
   {
     number: 3,
-    title: "PROSPECÇÃO E CAPTAÇÃO",
-    subtitle: "Como atrair clientes certos",
-    description: "Aprenda a construir rede, usar o digital e aplicar estratégias práticas para atrair clientes qualificados de forma consistente.",
+    title: "GESTÃO",
+    subtitle: "Previsibilidade",
+    description: "Rotina comercial, processos e previsibilidade.",
     highlights: [],
-    icon: Target,
+    icon: Settings,
   },
   {
     number: 4,
-    title: "COMUNICAÇÃO E VENDAS",
-    subtitle: "Vendas com segurança",
-    description: "Negociação, copywriting, oratória, reuniões, contorno de objeções e cobrança de honorários com confiança e profissionalismo.",
+    title: "ESCALA",
+    subtitle: "Crescimento sustentável",
+    description: "Precificação alta, contratos maiores e plano de crescimento.",
     highlights: [],
     icon: TrendingUp,
   },
-  {
-    number: 5,
-    title: "GESTÃO E OPERAÇÃO LUCRATIVA",
-    subtitle: "Processos e finanças",
-    description: "Delegação, organização, seleção estratégica de causas e estruturação financeira para máxima lucratividade do seu escritório.",
-    highlights: [],
-    icon: Building2,
-  },
-  {
-    number: 6,
-    title: "ESCALABILIDADE E RECORRÊNCIA",
-    subtitle: "Recorrência financeira",
-    description: "Modelos de negócio, serviços recorrentes, uso de tecnologia e construção de autonomia para escalar seus resultados.",
-    highlights: [],
-    icon: Zap,
-  },
+];
+
+const whatItIs = [
+  "Estruturar uma oferta fechável",
+  "Posicionar com autoridade (conteúdo com intenção)",
+  "Criar rotina comercial previsível (captação + follow-up + proposta)",
+  "Organizar processos e escalar com ticket/contratos maiores",
+];
+
+const whatItIsNot = [
+  "Aula de tese, peça, estratégia processual",
+  "Revisão de petição, jurisprudência, doutrina",
+  "Para quem busca milagres sem executar",
+  "Promessa de resultado sem rotina comercial",
 ];
 
 // Mobile Carousel Component
@@ -515,33 +513,83 @@ const MethodologySection = () => {
           <MobileCarousel />
         </div>
 
-        {/* Desktop View - Grid with Staggered Animation */}
+        {/* Desktop View - Grid 2x2 */}
         <div className="hidden lg:block">
-          {/* First Row - 3 Cards */}
           <motion.div 
             variants={staggerContainer}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
-            className="grid grid-cols-3 gap-4 lg:gap-5 xl:gap-6 mb-4 lg:mb-5 xl:mb-6"
+            className="grid grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-5 xl:gap-6"
           >
-            {pillars.slice(0, 3).map((pillar) => (
-              <DesktopPillarCard key={pillar.number} pillar={pillar} />
-            ))}
-          </motion.div>
-          
-          {/* Second Row - 3 Cards */}
-          <motion.div 
-            variants={staggerContainer}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            transition={{ delayChildren: 0.3 }}
-            className="grid grid-cols-3 gap-4 lg:gap-5 xl:gap-6"
-          >
-            {pillars.slice(3, 6).map((pillar) => (
+            {pillars.map((pillar) => (
               <DesktopPillarCard key={pillar.number} pillar={pillar} />
             ))}
           </motion.div>
         </div>
+
+        {/* O Que É / O Que Não É Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="mt-12 md:mt-16 lg:mt-20"
+        >
+          <h3 className="text-center font-playfair text-xl md:text-2xl lg:text-3xl font-bold text-cream mb-8 lg:mb-10">
+            O Método Soberano
+          </h3>
+          
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
+            {/* O Que É */}
+            <div className="relative rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/40 via-black/80 to-emerald-950/20 p-6 lg:p-8">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/5 to-transparent" />
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
+                    <Check className="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <h4 className="font-playfair text-lg lg:text-xl font-bold text-emerald-400">
+                    É
+                  </h4>
+                </div>
+                <ul className="space-y-4">
+                  {whatItIs.map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <span className="text-emerald-400 mt-1">✓</span>
+                      <span className="text-cream/80 text-sm lg:text-base leading-relaxed">
+                        {item}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* O Que Não É */}
+            <div className="relative rounded-2xl border border-red-500/30 bg-gradient-to-br from-red-950/40 via-black/80 to-red-950/20 p-6 lg:p-8">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/5 to-transparent" />
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center">
+                    <X className="w-5 h-5 text-red-400" />
+                  </div>
+                  <h4 className="font-playfair text-lg lg:text-xl font-bold text-red-400">
+                    NÃO É
+                  </h4>
+                </div>
+                <ul className="space-y-4">
+                  {whatItIsNot.map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <span className="text-red-400 mt-1">✕</span>
+                      <span className="text-cream/80 text-sm lg:text-base leading-relaxed">
+                        {item}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
         {/* CTA */}
         <motion.div
