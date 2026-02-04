@@ -46,18 +46,17 @@ const pillars = [
   },
 ];
 
-const whatItIs = [
-  "Estruturar uma oferta fechável",
-  "Posicionar com autoridade (conteúdo com intenção)",
-  "Criar rotina comercial previsível (captação + follow-up + proposta)",
-  "Organizar processos e escalar com ticket/contratos maiores",
+const forWho = [
+  "Advogadas que trabalham muito e têm picos e sumiços de contratos",
+  "Quem quer parar de depender de indicação e \"sorte\"",
+  "Quem quer clareza de oferta, posicionamento que atrai, rotina comercial e processo de fechamento",
+  "Quem quer crescer com mais margem, previsibilidade e leveza operacional",
 ];
 
-const whatItIsNot = [
-  "Aula de tese, peça, estratégia processual",
-  "Revisão de petição, jurisprudência, doutrina",
-  "Para quem busca milagres sem executar",
-  "Promessa de resultado sem rotina comercial",
+const notForWho = [
+  "Quem quer técnica jurídica (peças, teses, jurisprudência, revisão de petições)",
+  "Quem quer resultado sem rotina comercial",
+  "Quem não quer vender com clareza e processo",
 ];
 
 // Mobile Carousel Component
@@ -508,6 +507,31 @@ const MethodologySection = () => {
           </motion.p>
         </div>
 
+        {/* A Promessa do Método */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="max-w-4xl mx-auto mb-12 md:mb-16 lg:mb-20"
+        >
+          <div className="relative rounded-2xl border border-gold/30 bg-gradient-to-br from-black via-black/95 to-marsala-dark/10 p-6 md:p-8 lg:p-10">
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-gold/5 to-transparent" />
+            <div className="relative text-center">
+              <h3 className="font-playfair text-lg md:text-xl lg:text-2xl font-bold text-gold mb-4">
+                A Promessa do Método
+              </h3>
+              <p className="text-cream/90 text-base md:text-lg leading-relaxed mb-4">
+                O Método Soberano ensina advogadas a saírem da instabilidade e construírem 
+                uma advocacia previsível e lucrativa através de estrutura de oferta, 
+                posicionamento, autoridade, gestão comercial e escala.
+              </p>
+              <p className="text-gold font-semibold text-sm md:text-base">
+                Importante: aqui você não aprende Direito. Você aprende ADVOCACIA como negócio.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Mobile View - Carousel */}
         <div className="lg:hidden">
           <MobileCarousel />
@@ -527,7 +551,7 @@ const MethodologySection = () => {
           </motion.div>
         </div>
 
-        {/* O Que É / O Que Não É Section */}
+        {/* Para Quem É / Para Quem Não É Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -539,7 +563,7 @@ const MethodologySection = () => {
           </h3>
           
           <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
-            {/* O Que É */}
+            {/* Para Quem É */}
             <div className="relative rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/40 via-black/80 to-emerald-950/20 p-6 lg:p-8">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/5 to-transparent" />
               <div className="relative">
@@ -548,11 +572,11 @@ const MethodologySection = () => {
                     <Check className="w-5 h-5 text-emerald-400" />
                   </div>
                   <h4 className="font-playfair text-lg lg:text-xl font-bold text-emerald-400">
-                    É
+                    Para Quem É
                   </h4>
                 </div>
                 <ul className="space-y-4">
-                  {whatItIs.map((item, index) => (
+                  {forWho.map((item, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <span className="text-emerald-400 mt-1">✓</span>
                       <span className="text-cream/80 text-sm lg:text-base leading-relaxed">
@@ -564,7 +588,7 @@ const MethodologySection = () => {
               </div>
             </div>
 
-            {/* O Que Não É */}
+            {/* Para Quem Não É */}
             <div className="relative rounded-2xl border border-red-500/30 bg-gradient-to-br from-red-950/40 via-black/80 to-red-950/20 p-6 lg:p-8">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/5 to-transparent" />
               <div className="relative">
@@ -573,11 +597,11 @@ const MethodologySection = () => {
                     <X className="w-5 h-5 text-red-400" />
                   </div>
                   <h4 className="font-playfair text-lg lg:text-xl font-bold text-red-400">
-                    NÃO É
+                    Para Quem NÃO É
                   </h4>
                 </div>
                 <ul className="space-y-4">
-                  {whatItIsNot.map((item, index) => (
+                  {notForWho.map((item, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <span className="text-red-400 mt-1">✕</span>
                       <span className="text-cream/80 text-sm lg:text-base leading-relaxed">
