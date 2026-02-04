@@ -14,28 +14,28 @@ import isotipoSGold from "@/assets/brand/isotipo-s-gold.png";
 
 const faqs = [
   {
-    question: "Preciso atuar exclusivamente com Direito Imobiliário?",
-    answer: "Não. O Experience Start é ideal para advogadas que querem migrar para o Direito Imobiliário ou que já atuam na área e desejam escalar seus resultados. Você aprenderá técnicas aplicáveis desde a transição até o domínio completo do nicho."
+    question: "Preciso atuar em uma área específica do Direito?",
+    answer: "Não. O Experience Start é ideal para advogadas de qualquer área que querem estruturar um negócio jurídico lucrativo. Você aprenderá técnicas aplicáveis para qualquer nicho."
   },
   {
-    question: "O que são os 6 Pilares do Método Soberana?",
-    answer: "Os 6 pilares são: Base Técnica Essencial (fundamentos do imobiliário), Posicionamento e Autoridade (diferencial e reconhecimento), Prospecção e Captação de Clientes (atrair os clientes certos), Comunicação e Vendas com Segurança (negociação e cobrança), Gestão e Operação Lucrativa (processos e finanças) e Escalabilidade e Recorrência Financeira (autonomia e escala). Juntos, formam o caminho para faturar +R$ 50k/mês."
+    question: "O que são os 4 Pilares do Método Soberano?",
+    answer: "Os 4 pilares são: Estrutura (oferta clara e proposta fechável), Posicionamento (conteúdo estratégico e autoridade), Gestão (rotina comercial e previsibilidade) e Escala (precificação alta e contratos maiores). Juntos, formam o caminho para faturar +R$ 50k/mês."
   },
   {
     question: "Como a Inteligência Artificial será abordada no evento?",
-    answer: "Você aprenderá a usar IA como ferramenta estratégica para automatizar tarefas, criar conteúdo, otimizar processos e liberar +10 horas semanais do seu tempo. Apresentaremos as 'IAs Soberanas' — ferramentas personalizadas para advogadas imobiliárias."
+    answer: "Você aprenderá a usar IA como ferramenta estratégica para automatizar tarefas, criar conteúdo, otimizar processos e liberar +10 horas semanais do seu tempo. Apresentaremos as 'IAs Soberanas' — ferramentas personalizadas para advogadas."
   },
   {
     question: "O evento é para iniciantes ou advogadas experientes?",
     answer: "Para ambas! Se você está começando, terá o mapa completo para construir uma advocacia lucrativa do zero. Se já tem experiência, aprenderá estratégias avançadas de escala, precificação premium e automação que aceleram seus resultados."
   },
   {
-    question: "Vou aprender sobre captação de clientes no Direito Imobiliário?",
-    answer: "Sim! O pilar 'Vendas e Lucratividade' aborda prospecção ativa, posicionamento para atração de clientes qualificados, técnicas de conversão e precificação estratégica para maximizar seus honorários."
+    question: "Vou aprender sobre captação de clientes?",
+    answer: "Sim! O pilar de Gestão aborda captação, follow-up e proposta. Você aprenderá a criar uma rotina comercial previsível para atrair clientes qualificados de forma consistente."
   },
   {
     question: "Como o evento me ajuda a faturar +R$ 50k/mês?",
-    answer: "Você receberá um plano de ação completo baseado nos 5 pilares, com estratégias testadas por advogadas que já alcançaram essa meta. Inclui posicionamento, captação, precificação e uso de IA para escalar sem aumentar carga de trabalho."
+    answer: "Você receberá um plano de ação completo baseado nos 4 pilares, com estratégias testadas por advogadas que já alcançaram essa meta. Inclui estrutura de oferta, posicionamento, gestão comercial e escala."
   },
   {
     question: "Onde fica o local e como chegar?",

@@ -190,8 +190,8 @@ export const programs: Record<string, Program> = {
     image: programAceleracao,
     subtitle: "Programa de Aceleração Soberana",
     impactPhrase: "A fundação do seu escritório lucrativo.",
-    description: "Mentoria em grupo focada nos 6 pilares: Mentalidade, Posicionamento, Marketing, Vendas, Precificação e Gestão.",
-    fullDescription: "O Programa de Aceleração é a mentoria em grupo de 90 dias para advogadas que querem sair do caos e estruturar um negócio jurídico organizado e lucrativo. Trabalhamos os 6 pilares fundamentais da Metodologia Soberana para você construir uma base sólida.",
+    description: "Mentoria em grupo focada nos 4 pilares: Estrutura, Posicionamento, Gestão e Escala.",
+    fullDescription: "O Programa de Aceleração é a mentoria em grupo de 90 dias para advogadas que querem sair do caos e estruturar um negócio jurídico organizado e lucrativo. Trabalhamos os 4 pilares fundamentais do Método Soberano para você construir uma base sólida.",
     targetAudience: [
       "Advogadas iniciantes que querem começar certo",
       "Profissionais em transição de carreira",
@@ -201,8 +201,8 @@ export const programs: Record<string, Program> = {
     format: "Mentoria em grupo - 90 dias",
     duration: "3 meses",
     deliverables: [
-      "6 encontros quinzenais ao vivo",
-      "Os 6 pilares: Mentalidade, Posicionamento, Marketing, Vendas, Precificação e Gestão",
+      "4 encontros quinzenais ao vivo",
+      "Os 4 pilares: Estrutura, Posicionamento, Gestão e Escala",
       "Scripts de Vendas prontos para usar",
       "Sistema de Gestão com Auralex",
       "Comunidade exclusiva de alunas",
@@ -213,12 +213,10 @@ export const programs: Record<string, Program> = {
     icon: Rocket,
     tier: "mid",
     modules: [
-      { title: "Pilar 1: Mentalidade", description: "Desenvolva a mentalidade de empresária jurídica" },
-      { title: "Pilar 2: Posicionamento", description: "Defina seu nicho e diferencial no mercado" },
-      { title: "Pilar 3: Marketing", description: "Atraia clientes de forma consistente" },
-      { title: "Pilar 4: Vendas", description: "Converta consultas em contratos" },
-      { title: "Pilar 5: Precificação", description: "Cobre o que você vale" },
-      { title: "Pilar 6: Gestão", description: "Organize processos e escale" }
+      { title: "Pilar 1: Estrutura", description: "Defina oferta clara, promessa e proposta fechável" },
+      { title: "Pilar 2: Posicionamento", description: "Conteúdo estratégico e autoridade para ser escolhida" },
+      { title: "Pilar 3: Gestão", description: "Rotina comercial, processos e previsibilidade" },
+      { title: "Pilar 4: Escala", description: "Precificação alta, contratos maiores e plano de crescimento" }
     ],
     testimonials: [
       {
@@ -237,7 +235,7 @@ export const programs: Record<string, Program> = {
     faq: [
       {
         question: "Qual o formato dos encontros?",
-        answer: "São 6 encontros quinzenais ao vivo via Zoom, sempre com gravação disponível."
+        answer: "São 4 encontros quinzenais ao vivo via Zoom, sempre com gravação disponível."
       },
       {
         question: "Posso participar se já tenho escritório há anos?",

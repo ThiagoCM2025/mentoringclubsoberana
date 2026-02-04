@@ -14,37 +14,37 @@ const faqs = [
   {
     question: "Preciso ter experiência em Direito Imobiliário para começar?",
     answer:
-      "Não! A metodologia foi criada justamente para advogadas que desejam entrar ou se especializar no Direito Imobiliário. Você aprenderá do zero: desde a técnica consultiva e extrajudicial até a estruturação do negócio para faturar +50k/mês.",
+      "Não! A metodologia foi criada justamente para advogadas que desejam estruturar um negócio jurídico lucrativo. Você aprenderá do zero: desde a estruturação da oferta até a escala com contratos maiores.",
   },
   {
-    question: "Como funciona a metodologia dos 6 Pilares?",
+    question: "Como funciona a metodologia dos 4 Pilares?",
     answer:
-      "Os 6 Pilares — Base Técnica Essencial, Posicionamento e Autoridade, Prospecção e Captação, Comunicação e Vendas, Gestão e Operação Lucrativa, e Escalabilidade e Recorrência — formam um sistema integrado. Cada pilar trabalha uma área essencial para você sair da operação, estruturar um negócio lucrativo e se posicionar como referência no mercado imobiliário.",
+      "Os 4 Pilares — Estrutura, Posicionamento, Gestão e Escala — formam um sistema integrado. Estrutura define sua oferta fechável. Posicionamento constrói autoridade. Gestão cria rotina comercial previsível. Escala permite crescimento com contratos maiores.",
   },
   {
     question: "Em quanto tempo posso alcançar os +50k/mês?",
     answer:
-      "O tempo varia conforme sua dedicação e ponto de partida. Advogadas que aplicam a metodologia de forma consistente alcançam resultados expressivos em 6 a 12 meses. A chave está na implementação dos 5 pilares de forma estratégica.",
+      "O tempo varia conforme sua dedicação e ponto de partida. Advogadas que aplicam a metodologia de forma consistente alcançam resultados expressivos em 6 a 12 meses. A chave está na implementação dos 4 pilares de forma estratégica.",
   },
   {
-    question: "Vocês ensinam técnica de Direito Imobiliário ou gestão de negócio?",
+    question: "Vocês ensinam técnica jurídica ou gestão de negócio?",
     answer:
-      "Os dois! O diferencial do Método Soberana é unir domínio técnico (regularização, contratos, due diligence) com visão de negócio. Você aprende a prática consultiva e extrajudicial onde está o 'dinheiro grande', além de vendas, posicionamento e gestão com IA.",
+      "O Método Soberano foca em gestão de negócio: estruturar oferta, posicionar com autoridade, criar rotina comercial e escalar com ticket maior. Não é aula de tese, peça ou estratégia processual.",
   },
   {
-    question: "A metodologia funciona para quem já atua no Imobiliário?",
+    question: "A metodologia funciona para quem já tem escritório?",
     answer:
-      "Sim! Se você já atua mas não consegue escalar ou cobrar honorários de alto ticket, os pilares de Mentalidade, Vendas e Audiência vão destravar seu crescimento. Muitas alunas já experientes dobraram ou triplicaram o faturamento.",
+      "Sim! Se você já atua mas não consegue escalar ou cobrar honorários de alto ticket, os pilares de Posicionamento, Gestão e Escala vão destravar seu crescimento. Muitas alunas já experientes dobraram ou triplicaram o faturamento.",
   },
   {
-    question: "Como funciona o pilar de IA e Gestão?",
+    question: "Como funciona o pilar de Gestão?",
     answer:
-      "No pilar de Gestão e IA você aprende a implementar inteligência artificial para automação de peças, análises e atendimento. Isso permite faturar mais trabalhando menos horas, além de organizar fluxos e processos para quando chegar a hora de montar equipe.",
+      "No pilar de Gestão você aprende a criar rotina comercial previsível: captação, follow-up e proposta. Além de organizar processos e implementar ferramentas de automação para trabalhar menos e faturar mais.",
   },
   {
     question: "Qual programa é ideal para quem está começando?",
     answer:
-      "Se está começando do zero no Imobiliário, recomendo o Soberana Experience Start para uma imersão prática, ou a Mentoria 360° para acompanhamento completo. Ambos te dão a base técnica e estratégica para estruturar seu negócio desde o início.",
+      "Se está começando do zero, recomendo o Soberana Experience Start para uma imersão prática, ou a Mentoria 360° para acompanhamento completo. Ambos te dão a base estratégica para estruturar seu negócio desde o início.",
   },
 ];
 
