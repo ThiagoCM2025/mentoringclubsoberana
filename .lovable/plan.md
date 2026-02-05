@@ -1,64 +1,47 @@
 
-# Plano: Navegação por Lista de Missões
+# Plano: Corrigir Status "Aguardando Aprovação" em Missões Não Enviadas
 
 ## Problema Identificado
-A interface agrupa missões por `week_number`, mas:
-- Semana 1 tem 8 missões
-- Semana 2 tem 1 missão
-- O `find()` retorna apenas a primeira de cada semana
+Missões que **nunca foram enviadas** estão aparecendo como "Aguardando aprovação da mentora" porque:
 
-```javascript
-// Linha 68 - só pega UMA missão por semana
-const mission = missions.find(m => m.week_number === selectedWeek);
-```
+1. **RPC retorna `'pending'` por padrão** quando não existe registro de envio
+2. **Frontend trata `'pending'` como "enviado"** na condição `isSubmitted`
 
-## Solução
-Trocar navegação de "semanas" para "lista de missões", permitindo navegar entre todas as missões criadas.
-
-## Alterações Técnicas
+## Correção Necessária
 
 ### Arquivo: `src/components/student/program/CurrentMissionSection.tsx`
 
-| Item | Antes | Depois |
-|------|-------|--------|
-| Estado | `selectedWeek` (número da semana) | `selectedIndex` (índice na lista) |
-| Navegação | Semana 1-12 | Missão 1 de N |
-| Seleção | `find(m => m.week_number === selectedWeek)` | `missions[selectedIndex]` |
-| Label | "Semana X de 12" | "Missão X de N" ou título da missão |
-
-### Mudanças no código:
-
-1. **Remover lógica de semanas:**
+**Linha 70 - Antes:**
 ```javascript
-// REMOVER
-const weeksWithMissions = [...new Set(missions.map(m => m.week_number))];
-const [selectedWeek, setSelectedWeek] = useState(getInitialWeek);
-const mission = missions.find(m => m.week_number === selectedWeek);
-
-// ADICIONAR
-const [selectedIndex, setSelectedIndex] = useState(0);
-const mission = missions[selectedIndex];
+const isSubmitted = status === 'submitted' || status === 'pending';
 ```
 
-2. **Atualizar navegação:**
+**Linha 70 - Depois:**
 ```javascript
-const canGoPrev = selectedIndex > 0;
-const canGoNext = selectedIndex < missions.length - 1;
-
-// Botões
-onClick={() => setSelectedIndex(i => Math.max(0, i - 1))}
-onClick={() => setSelectedIndex(i => Math.min(missions.length - 1, i + 1))}
+const isSubmitted = status === 'submitted';
 ```
 
-3. **Atualizar labels visuais:**
-- De "Semana X de 12" para "Missão X de Y"
-- Manter indicador de semana dentro do card como referência
+### Mapeamento de Status Correto
+
+| Status | Significado | UI Exibida |
+|--------|-------------|------------|
+| `undefined` / `null` / `pending` | Não enviada | Botão "Entregar Missão" |
+| `submitted` | Aguardando revisão | "Aguardando aprovação da mentora" |
+| `approved` | Completa | "Missão Completada! +XP" |
+| `rejected` | Reprovada | Botão "Reenviar Entrega" |
+
+## Arquivos Afetados
+
+Vou verificar e corrigir em **todos os arquivos** que usam essa lógica:
+
+| Arquivo | Ação |
+|---------|------|
+| `src/components/student/program/CurrentMissionSection.tsx` | CORRIGIR |
+| `src/components/student/program/WeeklyMissionCard.tsx` | VERIFICAR |
+| `src/components/student/TextLessonContent.tsx` | VERIFICAR |
 
 ## Resultado Esperado
-- Todas as 9 missões navegáveis
-- Setas avançam entre missões, não semanas
-- Novas missões adicionadas aparecem automaticamente
-- Card ainda mostra "Semana X" como informação contextual
-
-## Arquivos a Modificar
-- `src/components/student/program/CurrentMissionSection.tsx`
+- Missões não enviadas → Botão "Entregar Missão"
+- Missões enviadas (status `submitted`) → "Aguardando aprovação"
+- Missões aprovadas → Badge de sucesso
+- Missões rejeitadas → Botão "Reenviar"
