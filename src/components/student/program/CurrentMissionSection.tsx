@@ -46,26 +46,20 @@ export const CurrentMissionSection = ({
   courseId,
   userId
 }: CurrentMissionSectionProps) => {
+  // Sort missions by week_number for consistent navigation order
+  const sortedMissions = [...missions].sort((a, b) => a.week_number - b.week_number);
+  
   // Calculate completed missions count
-  const completedMissionsCount = missions.filter(
+  const completedMissionsCount = sortedMissions.filter(
     m => missionCompletions[m.id]?.status === 'approved'
   ).length;
-  const totalMissionsCount = missions.length;
+  const totalMissionsCount = sortedMissions.length;
 
-  // Find weeks that have missions
-  const weeksWithMissions = [...new Set(missions.map(m => m.week_number))].sort((a, b) => a - b);
-  
-  // Find the initial week: prefer current week if it has a mission, otherwise first available
-  const getInitialWeek = () => {
-    if (missions.length === 0) return 1;
-    if (missions.some(m => m.week_number === currentWeek)) return currentWeek;
-    return weeksWithMissions[0] || 1;
-  };
-  
-  const [selectedWeek, setSelectedWeek] = useState(getInitialWeek);
+  // Index-based navigation through all missions
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   
-  const mission = missions.find(m => m.week_number === selectedWeek);
+  const mission = sortedMissions[selectedIndex];
   const completion = mission ? missionCompletions[mission.id] : null;
   
   const { count: submissionCount } = useMissionSubmissionCount(mission?.id, userId);
@@ -75,17 +69,14 @@ export const CurrentMissionSection = ({
   const isCompleted = status === 'approved';
   const isSubmitted = status === 'submitted' || status === 'pending';
   const isRejected = status === 'rejected';
-  const isCurrentWeek = selectedWeek === currentWeek;
+  const isCurrentWeek = mission?.week_number === currentWeek;
 
-  const canNavigatePrev = selectedWeek > 1;
-  const canNavigateNext = selectedWeek < 12;
-
-  // Allow free navigation between all 12 weeks
-  const canGoPrev = selectedWeek > 1;
-  const canGoNext = selectedWeek < 12;
+  // Navigation between missions (index-based)
+  const canGoPrev = selectedIndex > 0;
+  const canGoNext = selectedIndex < sortedMissions.length - 1;
 
   // Empty state when no missions exist
-  if (missions.length === 0) {
+  if (sortedMissions.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -109,74 +100,6 @@ export const CurrentMissionSection = ({
           </div>
           <h3 className="font-serif text-xl text-cream/60 mb-2">Missões em Breve</h3>
           <p className="text-zinc-500 text-sm">As missões da sua jornada serão disponibilizadas em breve.</p>
-        </Card>
-      </motion.div>
-    );
-  }
-
-  // If selected week has no mission, show a "no mission for this week" state
-  if (!mission) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-8"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary/30 to-secondary/10 flex items-center justify-center border border-secondary/30">
-              <Flame className="w-6 h-6 text-secondary" />
-            </div>
-            <div>
-              <h2 className="font-serif font-bold text-2xl text-shimmer-gold">Sua Jornada Semanal</h2>
-              <p className="text-sm text-cream/60 flex items-center gap-2">
-                <Sparkles className="w-3 h-3 text-secondary" />
-                Arena de Execução
-              </p>
-            </div>
-          </div>
-          
-          {/* Week Navigation */}
-          <div className="flex items-center gap-2 bg-zinc-900/60 rounded-xl p-1.5 border border-secondary/20 backdrop-blur-sm">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setSelectedWeek(prev => Math.max(1, prev - 1))}
-              disabled={!canGoPrev}
-              className={cn(
-                "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
-                !canGoPrev && "opacity-30"
-              )}
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            
-            <Badge variant="outline" className="min-w-[140px] justify-center text-sm py-2 font-semibold border-cream/30 text-cream/70">
-              <Flame className="w-4 h-4 mr-2 text-cream/50" />
-              Semana {selectedWeek} de 12
-            </Badge>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setSelectedWeek(prev => Math.min(12, prev + 1))}
-              disabled={!canGoNext}
-              className={cn(
-                "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
-                !canGoNext && "opacity-30"
-              )}
-            >
-              <ChevronRight className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-        
-        <Card className="border-2 border-dashed border-zinc-700/50 bg-zinc-900/50 p-8 text-center">
-          <p className="text-zinc-400">Nenhuma missão para esta semana.</p>
-          <p className="text-zinc-500 text-sm mt-2">
-            Missões disponíveis nas semanas: {weeksWithMissions.join(', ')}
-          </p>
         </Card>
       </motion.div>
     );
@@ -243,7 +166,7 @@ export const CurrentMissionSection = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setSelectedWeek(prev => Math.max(1, prev - 1))}
+              onClick={() => setSelectedIndex(prev => Math.max(0, prev - 1))}
             disabled={!canGoPrev}
             className={cn(
               "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
@@ -263,13 +186,13 @@ export const CurrentMissionSection = ({
             )}
           >
             <Flame className={cn("w-4 h-4 mr-2", isCurrentWeek ? "text-secondary" : "text-cream/50")} />
-            Semana {selectedWeek} de 12
+              Missão {selectedIndex + 1} de {totalMissionsCount}
           </Badge>
           
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setSelectedWeek(prev => Math.min(12, prev + 1))}
+              onClick={() => setSelectedIndex(prev => Math.min(sortedMissions.length - 1, prev + 1))}
             disabled={!canGoNext}
             className={cn(
               "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
@@ -284,7 +207,7 @@ export const CurrentMissionSection = ({
       {/* Mission Card with Enhanced Animations */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={selectedWeek}
+          key={mission?.id || selectedIndex}
           initial={{ opacity: 0, x: 30, scale: 0.98 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
           exit={{ opacity: 0, x: -30, scale: 0.98 }}
