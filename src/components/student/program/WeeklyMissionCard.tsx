@@ -1,15 +1,13 @@
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { 
   Target, 
   Lightbulb, 
-  Gift, 
   CheckCircle2, 
   Clock,
-  Send,
-  Trophy
+  Trophy,
+  ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +46,7 @@ export const WeeklyMissionCard = ({
   const isCompleted = status === 'approved';
   const isSubmitted = status === 'submitted' || status === 'pending';
   const isRejected = status === 'rejected';
+  const canInteract = !isCompleted && !isSubmitted;
 
   return (
     <motion.div
@@ -64,14 +63,18 @@ export const WeeklyMissionCard = ({
         />
       )}
 
-      <Card className={cn(
-        "relative overflow-hidden border-2 transition-all bg-zinc-900/80 backdrop-blur-sm",
-        isCompleted && "border-green-500/50 bg-green-500/5",
-        isSubmitted && "border-amber-500/50 bg-amber-500/5",
-        isRejected && "border-red-500/50 bg-red-500/5",
-        isCurrentWeek && !isCompleted && !isSubmitted && "border-secondary glow-gold-subtle",
-        !isCurrentWeek && !isCompleted && !isSubmitted && "border-secondary/20"
-      )}>
+      <Card 
+        onClick={canInteract ? onSubmit : undefined}
+        className={cn(
+          "relative overflow-hidden border-2 transition-all bg-zinc-900/80 backdrop-blur-sm",
+          isCompleted && "border-green-500/50 bg-green-500/5",
+          isSubmitted && "border-amber-500/50 bg-amber-500/5",
+          isRejected && "border-red-500/50 bg-red-500/5",
+          isCurrentWeek && !isCompleted && !isSubmitted && "border-secondary glow-gold-subtle",
+          !isCurrentWeek && !isCompleted && !isSubmitted && "border-secondary/20",
+          canInteract && "cursor-pointer hover:border-secondary hover:bg-zinc-800/80"
+        )}
+      >
         {/* Header with week indicator */}
         <div className="flex items-center justify-between p-4 border-b border-secondary/10">
           <div className="flex items-center gap-3">
@@ -159,13 +162,10 @@ export const WeeklyMissionCard = ({
               <span>Aguardando aprovação da mentora</span>
             </div>
           ) : (
-            <Button 
-              onClick={onSubmit}
-              className="w-full bg-secondary hover:bg-secondary/90 text-black font-semibold"
-            >
-              <Send className="w-4 h-4 mr-2" />
-              {isRejected ? "Reenviar Entrega" : "Entregar Missão"}
-            </Button>
+            <div className="flex items-center justify-center gap-2 text-secondary py-2 font-medium">
+              <span>{isRejected ? "Clique para reenviar" : "Clique para entregar"}</span>
+              <ChevronRight className="w-5 h-5" />
+            </div>
           )}
         </div>
       </Card>
