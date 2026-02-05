@@ -1,44 +1,104 @@
 
-# Plano: Liberar Todas as Missões
+# Plano: Alertas de Missão Rejeitada + Celebração Aprovada
 
-## Problema Atual
-A lógica na linha 80 de `CurrentMissionSection.tsx` bloqueia missões futuras:
-```javascript
-const isLocked = selectedWeek > currentWeek;
+## Situação Atual
+
+### ✅ Já Funciona (Aprovação)
+- `WeekCelebrationModal` com fogos de artifício via `useConfetti`
+- Toast de sucesso com XP ganho
+- Atualização em tempo real via Supabase Realtime
+
+### ⚠️ Parcialmente Implementado (Rejeição)
+- Toast de alerta é exibido
+- Card mostra borda vermelha e badge "↻ Reenviar"
+- Feedback da mentora aparece no card
+- **PORÉM:** o hook retorna `rejection` e `clearRejection` que NÃO estão sendo usados na página
+
+## Alterações Necessárias
+
+### 1. Criar Modal de Rejeição
+**Arquivo:** `src/components/student/program/MissionRejectionModal.tsx`
+
+Modal com design consistente para alertar a aluna quando sua missão for rejeitada:
+- Ícone de alerta (⚠️ ou similar)
+- Semana e título da missão
+- Feedback da mentora em destaque
+- Botão "Entendi, vou corrigir"
+- Animação de entrada suave (sem confetti)
+
+### 2. Integrar Modal na Página
+**Arquivo:** `src/pages/student/ProgramCourseDetail.tsx`
+
+```text
+Mudanças:
+┌─────────────────────────────────────────────────────────────┐
+│ Linha 53 (atual):                                           │
+│   const { celebration, clearCelebration } = useRealtime...  │
+│                                                             │
+│ Linha 53 (novo):                                            │
+│   const { celebration, clearCelebration, rejection,         │
+│           clearRejection } = useRealtime...                 │
+└─────────────────────────────────────────────────────────────┘
+
++ Adicionar <MissionRejectionModal /> no final do componente
++ Passar rejection como props e clearRejection como onClose
 ```
 
-Isso faz com que:
-- Apenas missões até a semana atual da aluna fiquem disponíveis
-- Semanas futuras mostrem um card com cadeado 🔒 e "Disponível em X dias"
+### 3. Refresh de Dados na Rejeição
+Adicionar effect para atualizar os dados quando uma missão for rejeitada:
 
-## Solução
-Remover completamente a lógica de bloqueio temporal, permitindo que a aluna:
-- Navegue livremente entre todas as 12 semanas
-- Submeta qualquer missão em qualquer momento
-- Veja o conteúdo completo de todas as missões
+```text
+useEffect(() => {
+  if (rejection) {
+    refetch();
+  }
+}, [rejection, refetch]);
+```
 
-## Alterações Técnicas
+## Componente MissionRejectionModal
 
-### Arquivo: `src/components/student/program/CurrentMissionSection.tsx`
+```text
+┌──────────────────────────────────────────┐
+│              ⚠️ (ícone vermelho)         │
+│                                          │
+│    Semana 3 • Missão Precisa de Ajustes  │
+│                                          │
+│    "Título da Missão"                    │
+│                                          │
+│  ┌────────────────────────────────────┐  │
+│  │ 💬 Feedback da Mentora             │  │
+│  │                                    │  │
+│  │ "O screenshot precisa mostrar o    │  │
+│  │  resultado final do perfil..."     │  │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  Não desanime! Ajustes fazem parte do    │
+│  processo de aprendizado.                │
+│                                          │
+│  ┌────────────────────────────────────┐  │
+│  │   Entendi, Vou Corrigir  →         │  │
+│  └────────────────────────────────────┘  │
+└──────────────────────────────────────────┘
+```
 
-| Mudança | Antes | Depois |
-|---------|-------|--------|
-| Variável isLocked | `selectedWeek > currentWeek` | Sempre `false` |
-| Card bloqueado | Renderiza cadeado e contador | Removido completamente |
-| Arena de Execução | Condicional `!isLocked` | Sempre visível |
+## Arquivos a Criar/Modificar
 
-### Código a modificar:
-
-1. **Remover variável `isLocked`** (linha 80)
-2. **Remover função `getDaysUntilUnlock`** (linhas 83-91) - não mais necessária
-3. **Remover renderização do card bloqueado** (linhas 328-349)
-4. **Simplificar condição da MissionArena** (linha 592)
+| Arquivo | Ação |
+|---------|------|
+| `src/components/student/program/MissionRejectionModal.tsx` | **CRIAR** |
+| `src/pages/student/ProgramCourseDetail.tsx` | MODIFICAR |
 
 ## Resultado Esperado
-- ✅ Todas as 12 semanas navegáveis
-- ✅ Todas as missões clicáveis e submetíveis
-- ✅ Aluna pode completar missões na ordem que preferir
-- ✅ Mantém indicador visual "🔥 Atual" apenas como referência
 
-## Arquivos Afetados
-- `src/components/student/program/CurrentMissionSection.tsx`
+1. **Missão Aprovada**: Modal celebratório com confetti + toast de sucesso ✨
+2. **Missão Rejeitada**: Modal de alerta com feedback + toast de aviso 📝
+3. **Card atualizado**: Mostra status em tempo real com feedback visível
+4. **Navegação clara**: Botão leva a aluna a corrigir e reenviar
+
+## Detalhes Técnicos
+
+O modal de rejeição terá:
+- Animações com Framer Motion (consistente com o resto do app)
+- Cores vermelhas/laranjas para indicar atenção
+- Design responsivo
+- Integração com o hook existente `useRealtimeMissionCelebration`
