@@ -24,6 +24,7 @@ import { DiagnosticCTA } from "@/components/student/program/DiagnosticCTA";
 import { SchedulingCTA } from "@/components/student/program/SchedulingCTA";
 import { CertificateGenerator } from "@/components/student/CertificateGenerator";
 import { WeekCelebrationModal } from "@/components/student/program/WeekCelebrationModal";
+import { MissionRejectionModal } from "@/components/student/program/MissionRejectionModal";
 import { useRealtimeMissionCelebration } from "@/hooks/useRealtimeMissionCelebration";
 import { useRealtimeProgramSync } from "@/hooks/useRealtimeProgramSync";
 import { ContentModulesSection } from "@/components/student/program/ContentModulesSection";
@@ -50,14 +51,14 @@ const ProgramCourseDetail = () => {
   useRealtimeProgramSync(courseId, user?.id);
 
   // Realtime celebration hook
-  const { celebration, clearCelebration } = useRealtimeMissionCelebration(user?.id, courseId);
+  const { celebration, clearCelebration, rejection, clearRejection } = useRealtimeMissionCelebration(user?.id, courseId);
 
   // Refresh data when a mission is approved via realtime
   useEffect(() => {
-    if (celebration) {
+    if (celebration || rejection) {
       refetch();
     }
-  }, [celebration, refetch]);
+  }, [celebration, rejection, refetch]);
 
   const handleLessonClick = (lessonId: string) => {
     navigate(`/student/lesson/${lessonId}`);
@@ -408,6 +409,13 @@ const ProgramCourseDetail = () => {
         missionTitle={celebration?.missionTitle || ""}
         xpEarned={celebration?.xpEarned || 100}
         emoji={celebration?.emoji || "🏆"}
+      />
+
+      {/* Mission Rejection Modal */}
+      <MissionRejectionModal
+        isOpen={!!rejection}
+        onClose={clearRejection}
+        rejection={rejection}
       />
     </div>
   );
