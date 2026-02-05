@@ -13,7 +13,6 @@ import {
   Trophy,
   ChevronLeft,
   ChevronRight,
-  Lock,
   Flame,
   Sparkles,
   History
@@ -23,7 +22,6 @@ import { WeeklyMission } from "./WeeklyMissionCard";
 import { MissionArena } from "./MissionArena";
 import { MissionSubmissionHistory } from "./MissionSubmissionHistory";
 import { useMissionSubmissionCount } from "@/hooks/useMissionSubmissionCount";
-import { getBrazilNow } from "@/lib/dateUtils";
 
 interface CurrentMissionSectionProps {
   missions: WeeklyMission[];
@@ -77,18 +75,7 @@ export const CurrentMissionSection = ({
   const isCompleted = status === 'approved';
   const isSubmitted = status === 'submitted' || status === 'pending';
   const isRejected = status === 'rejected';
-  const isLocked = selectedWeek > currentWeek;
   const isCurrentWeek = selectedWeek === currentWeek;
-  
-  const getDaysUntilUnlock = (week: number): number => {
-    if (!enrollmentDate) return 0;
-    const unlockDate = new Date(enrollmentDate);
-    unlockDate.setDate(unlockDate.getDate() + (week - 1) * 7);
-    const today = getBrazilNow();
-    const diffTime = unlockDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return Math.max(0, diffDays);
-  };
 
   const canNavigatePrev = selectedWeek > 1;
   const canNavigateNext = selectedWeek < 12;
@@ -325,31 +312,7 @@ export const CurrentMissionSection = ({
           exit={{ opacity: 0, x: -30, scale: 0.98 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          {isLocked ? (
-            // Locked Week Card - Enhanced
-            <Card className="relative overflow-hidden border-2 border-zinc-700/50 bg-gradient-to-br from-zinc-900/80 to-zinc-950/80 backdrop-blur-sm">
-              <div className="p-8 text-center space-y-4">
-                <motion.div 
-                  whileHover={{ rotate: [0, -5, 5, -5, 0] }}
-                  transition={{ duration: 0.5 }}
-                  className="w-20 h-20 rounded-full bg-gradient-to-br from-zinc-800/80 to-zinc-900/80 flex items-center justify-center mx-auto border border-zinc-700/50"
-                >
-                  <Lock className="w-10 h-10 text-zinc-500" />
-                </motion.div>
-                <div>
-                  <h3 className="font-serif font-bold text-cream/60 text-xl mb-2">
-                    Semana {selectedWeek} Bloqueada
-                  </h3>
-                  <p className="text-zinc-500 flex items-center justify-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    Disponível em {getDaysUntilUnlock(selectedWeek)} dias
-                  </p>
-                </div>
-              </div>
-            </Card>
-          ) : (
-            // Active Mission Card - Enhanced
-            <div className="relative">
+          <div className="relative">
               {/* Intense Glow Effect for Current Week */}
               {isCurrentWeek && !isCompleted && (
                 <>
@@ -584,12 +547,11 @@ export const CurrentMissionSection = ({
                 </div>
               </Card>
             </div>
-          )}
         </motion.div>
       </AnimatePresence>
 
       {/* Mission Arena - Comments Section */}
-      {!isLocked && mission && (
+      {mission && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
