@@ -1652,6 +1652,80 @@ export type Database = {
         }
         Relationships: []
       }
+      inbound_emails: {
+        Row: {
+          attachments: Json | null
+          body_html: string | null
+          body_text: string | null
+          created_at: string
+          from_email: string
+          from_name: string | null
+          headers: Json | null
+          id: string
+          in_reply_to: string | null
+          is_archived: boolean | null
+          is_read: boolean | null
+          is_starred: boolean | null
+          lead_id: string | null
+          message_id: string | null
+          received_at: string
+          reply_to: string | null
+          student_user_id: string | null
+          subject: string | null
+          to_email: string
+        }
+        Insert: {
+          attachments?: Json | null
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          from_email: string
+          from_name?: string | null
+          headers?: Json | null
+          id?: string
+          in_reply_to?: string | null
+          is_archived?: boolean | null
+          is_read?: boolean | null
+          is_starred?: boolean | null
+          lead_id?: string | null
+          message_id?: string | null
+          received_at?: string
+          reply_to?: string | null
+          student_user_id?: string | null
+          subject?: string | null
+          to_email: string
+        }
+        Update: {
+          attachments?: Json | null
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          from_email?: string
+          from_name?: string | null
+          headers?: Json | null
+          id?: string
+          in_reply_to?: string | null
+          is_archived?: boolean | null
+          is_read?: boolean | null
+          is_starred?: boolean | null
+          lead_id?: string | null
+          message_id?: string | null
+          received_at?: string
+          reply_to?: string | null
+          student_user_id?: string | null
+          subject?: string | null
+          to_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inbound_emails_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jornada_access: {
         Row: {
           access_token: string | null
