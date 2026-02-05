@@ -48,6 +48,12 @@ export const CurrentMissionSection = ({
   courseId,
   userId
 }: CurrentMissionSectionProps) => {
+  // Calculate completed missions count
+  const completedMissionsCount = missions.filter(
+    m => missionCompletions[m.id]?.status === 'approved'
+  ).length;
+  const totalMissionsCount = missions.length;
+
   // Find weeks that have missions
   const weeksWithMissions = [...new Set(missions.map(m => m.week_number))].sort((a, b) => a - b);
   
@@ -248,6 +254,10 @@ export const CurrentMissionSection = ({
             <p className="text-sm text-cream/60 flex items-center gap-2">
               <Sparkles className="w-3 h-3 text-secondary" />
               Arena de Execução
+              <Badge className="bg-secondary/20 text-secondary border-secondary/30 ml-2">
+                <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                {completedMissionsCount}/{totalMissionsCount}
+              </Badge>
             </p>
           </div>
         </motion.div>
