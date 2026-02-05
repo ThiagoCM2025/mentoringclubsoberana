@@ -79,7 +79,7 @@ const TextLessonContent = ({
   
   // Determine mission status
   const missionIsApproved = missionCompletion?.status === 'approved';
-  const missionIsSubmitted = missionCompletion?.status === 'submitted' || missionCompletion?.status === 'pending';
+ const missionIsSubmitted = missionCompletion?.status === 'submitted';
   const missionIsRejected = missionCompletion?.status === 'rejected';
 
   // Check if this lesson has a special form type

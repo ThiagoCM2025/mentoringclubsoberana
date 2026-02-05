@@ -44,7 +44,7 @@ export const WeeklyMissionCard = ({
 }: WeeklyMissionCardProps) => {
   const status = userCompletion?.status;
   const isCompleted = status === 'approved';
-  const isSubmitted = status === 'submitted' || status === 'pending';
+ const isSubmitted = status === 'submitted';
   const isRejected = status === 'rejected';
   const canInteract = !isCompleted && !isSubmitted;
 
