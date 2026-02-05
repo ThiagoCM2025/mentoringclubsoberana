@@ -1,104 +1,64 @@
 
-# Plano: Alertas de Missão Rejeitada + Celebração Aprovada
+# Plano: Navegação por Lista de Missões
 
-## Situação Atual
+## Problema Identificado
+A interface agrupa missões por `week_number`, mas:
+- Semana 1 tem 8 missões
+- Semana 2 tem 1 missão
+- O `find()` retorna apenas a primeira de cada semana
 
-### ✅ Já Funciona (Aprovação)
-- `WeekCelebrationModal` com fogos de artifício via `useConfetti`
-- Toast de sucesso com XP ganho
-- Atualização em tempo real via Supabase Realtime
-
-### ⚠️ Parcialmente Implementado (Rejeição)
-- Toast de alerta é exibido
-- Card mostra borda vermelha e badge "↻ Reenviar"
-- Feedback da mentora aparece no card
-- **PORÉM:** o hook retorna `rejection` e `clearRejection` que NÃO estão sendo usados na página
-
-## Alterações Necessárias
-
-### 1. Criar Modal de Rejeição
-**Arquivo:** `src/components/student/program/MissionRejectionModal.tsx`
-
-Modal com design consistente para alertar a aluna quando sua missão for rejeitada:
-- Ícone de alerta (⚠️ ou similar)
-- Semana e título da missão
-- Feedback da mentora em destaque
-- Botão "Entendi, vou corrigir"
-- Animação de entrada suave (sem confetti)
-
-### 2. Integrar Modal na Página
-**Arquivo:** `src/pages/student/ProgramCourseDetail.tsx`
-
-```text
-Mudanças:
-┌─────────────────────────────────────────────────────────────┐
-│ Linha 53 (atual):                                           │
-│   const { celebration, clearCelebration } = useRealtime...  │
-│                                                             │
-│ Linha 53 (novo):                                            │
-│   const { celebration, clearCelebration, rejection,         │
-│           clearRejection } = useRealtime...                 │
-└─────────────────────────────────────────────────────────────┘
-
-+ Adicionar <MissionRejectionModal /> no final do componente
-+ Passar rejection como props e clearRejection como onClose
+```javascript
+// Linha 68 - só pega UMA missão por semana
+const mission = missions.find(m => m.week_number === selectedWeek);
 ```
 
-### 3. Refresh de Dados na Rejeição
-Adicionar effect para atualizar os dados quando uma missão for rejeitada:
+## Solução
+Trocar navegação de "semanas" para "lista de missões", permitindo navegar entre todas as missões criadas.
 
-```text
-useEffect(() => {
-  if (rejection) {
-    refetch();
-  }
-}, [rejection, refetch]);
+## Alterações Técnicas
+
+### Arquivo: `src/components/student/program/CurrentMissionSection.tsx`
+
+| Item | Antes | Depois |
+|------|-------|--------|
+| Estado | `selectedWeek` (número da semana) | `selectedIndex` (índice na lista) |
+| Navegação | Semana 1-12 | Missão 1 de N |
+| Seleção | `find(m => m.week_number === selectedWeek)` | `missions[selectedIndex]` |
+| Label | "Semana X de 12" | "Missão X de N" ou título da missão |
+
+### Mudanças no código:
+
+1. **Remover lógica de semanas:**
+```javascript
+// REMOVER
+const weeksWithMissions = [...new Set(missions.map(m => m.week_number))];
+const [selectedWeek, setSelectedWeek] = useState(getInitialWeek);
+const mission = missions.find(m => m.week_number === selectedWeek);
+
+// ADICIONAR
+const [selectedIndex, setSelectedIndex] = useState(0);
+const mission = missions[selectedIndex];
 ```
 
-## Componente MissionRejectionModal
+2. **Atualizar navegação:**
+```javascript
+const canGoPrev = selectedIndex > 0;
+const canGoNext = selectedIndex < missions.length - 1;
 
-```text
-┌──────────────────────────────────────────┐
-│              ⚠️ (ícone vermelho)         │
-│                                          │
-│    Semana 3 • Missão Precisa de Ajustes  │
-│                                          │
-│    "Título da Missão"                    │
-│                                          │
-│  ┌────────────────────────────────────┐  │
-│  │ 💬 Feedback da Mentora             │  │
-│  │                                    │  │
-│  │ "O screenshot precisa mostrar o    │  │
-│  │  resultado final do perfil..."     │  │
-│  └────────────────────────────────────┘  │
-│                                          │
-│  Não desanime! Ajustes fazem parte do    │
-│  processo de aprendizado.                │
-│                                          │
-│  ┌────────────────────────────────────┐  │
-│  │   Entendi, Vou Corrigir  →         │  │
-│  └────────────────────────────────────┘  │
-└──────────────────────────────────────────┘
+// Botões
+onClick={() => setSelectedIndex(i => Math.max(0, i - 1))}
+onClick={() => setSelectedIndex(i => Math.min(missions.length - 1, i + 1))}
 ```
 
-## Arquivos a Criar/Modificar
-
-| Arquivo | Ação |
-|---------|------|
-| `src/components/student/program/MissionRejectionModal.tsx` | **CRIAR** |
-| `src/pages/student/ProgramCourseDetail.tsx` | MODIFICAR |
+3. **Atualizar labels visuais:**
+- De "Semana X de 12" para "Missão X de Y"
+- Manter indicador de semana dentro do card como referência
 
 ## Resultado Esperado
+- Todas as 9 missões navegáveis
+- Setas avançam entre missões, não semanas
+- Novas missões adicionadas aparecem automaticamente
+- Card ainda mostra "Semana X" como informação contextual
 
-1. **Missão Aprovada**: Modal celebratório com confetti + toast de sucesso ✨
-2. **Missão Rejeitada**: Modal de alerta com feedback + toast de aviso 📝
-3. **Card atualizado**: Mostra status em tempo real com feedback visível
-4. **Navegação clara**: Botão leva a aluna a corrigir e reenviar
-
-## Detalhes Técnicos
-
-O modal de rejeição terá:
-- Animações com Framer Motion (consistente com o resto do app)
-- Cores vermelhas/laranjas para indicar atenção
-- Design responsivo
-- Integração com o hook existente `useRealtimeMissionCelebration`
+## Arquivos a Modificar
+- `src/components/student/program/CurrentMissionSection.tsx`
