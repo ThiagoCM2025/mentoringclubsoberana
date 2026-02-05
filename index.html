@@ -10,34 +10,71 @@
     
     <!-- Global Error Handler - Prevents GTM errors from causing blank screen -->
     <script>
-      window.addEventListener('error', function(e) {
-        // Check filename OR stack trace for GTM origin
-        var isGTMError = false;
-        if (e.filename && (e.filename.includes('googletagmanager.com') || e.filename.includes('gtm.js'))) {
-          isGTMError = true;
+      (function() {
+        // Helper to check if error is GTM-related
+        function isGTMRelated(e) {
+          var stack = '';
+          var msg = e.message || '';
+          
+          // Get stack from multiple sources
+          if (e.error && e.error.stack) stack = e.error.stack;
+          else if (e.stack) stack = e.stack;
+          
+          // Direct GTM filename check
+          if (e.filename && (e.filename.indexOf('googletagmanager.com') !== -1 || e.filename.indexOf('gtm.js') !== -1)) {
+            return true;
+          }
+          
+          // Stack trace contains GTM
+          if (stack.indexOf('googletagmanager.com') !== -1 || stack.indexOf('gtm.js') !== -1) {
+            return true;
+          }
+          
+          // Common GTM null errors (when GTM tries to access DOM elements that don't exist)
+          if (msg.indexOf("Cannot set properties of null") !== -1 || 
+              msg.indexOf("Cannot read properties of null") !== -1 ||
+              msg.indexOf("null is not an object") !== -1) {
+            // Check if it's from an anonymous/inline script (GTM injects these)
+            if (stack.indexOf('<anonymous>') !== -1 && stack.indexOf('gtm') !== -1) {
+              return true;
+            }
+          }
+          
+          return false;
         }
-        // Also check stack trace for GTM errors that execute inline
-        if (e.error && e.error.stack && e.error.stack.includes('googletagmanager.com')) {
-          isGTMError = true;
-        }
-        // Check the message for common GTM null errors
-        if (e.message && e.message.includes("Cannot set properties of null") && e.error && e.error.stack && e.error.stack.includes('gtm.js')) {
-          isGTMError = true;
-        }
-        if (isGTMError) {
-          console.warn('GTM Error caught and suppressed:', e.message);
-          e.preventDefault();
-          e.stopPropagation();
-          return true;
-        }
-      }, true);
-      // Also catch unhandled promise rejections from GTM
-      window.addEventListener('unhandledrejection', function(e) {
-        if (e.reason && e.reason.stack && e.reason.stack.includes('googletagmanager.com')) {
-          console.warn('GTM Promise rejection suppressed:', e.reason.message);
-          e.preventDefault();
-        }
-      });
+        
+        window.addEventListener('error', function(e) {
+          if (isGTMRelated(e)) {
+            console.warn('[GTM Suppressed]', e.message);
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+        
+        window.addEventListener('unhandledrejection', function(e) {
+          var reason = e.reason || {};
+          var stack = reason.stack || '';
+          if (stack.indexOf('googletagmanager.com') !== -1 || stack.indexOf('gtm.js') !== -1) {
+            console.warn('[GTM Promise Suppressed]', reason.message);
+            e.preventDefault();
+          }
+        });
+        
+        // Extra safety: override window.onerror as a fallback
+        var originalOnError = window.onerror;
+        window.onerror = function(msg, url, line, col, error) {
+          var stack = (error && error.stack) || '';
+          if ((url && url.indexOf('gtm') !== -1) || 
+              stack.indexOf('gtm.js') !== -1 || 
+              stack.indexOf('googletagmanager.com') !== -1) {
+            console.warn('[GTM onerror Suppressed]', msg);
+            return true;
+          }
+          return originalOnError ? originalOnError.apply(this, arguments) : false;
+        };
+      })();
     </script>
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
