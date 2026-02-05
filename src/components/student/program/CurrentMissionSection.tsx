@@ -80,19 +80,9 @@ export const CurrentMissionSection = ({
   const canNavigatePrev = selectedWeek > 1;
   const canNavigateNext = selectedWeek < 12;
 
-  // Navigation helpers for weeks with missions only
-  const getPrevWeekWithMission = () => {
-    const prevWeeks = weeksWithMissions.filter(w => w < selectedWeek);
-    return prevWeeks.length > 0 ? Math.max(...prevWeeks) : null;
-  };
-  
-  const getNextWeekWithMission = () => {
-    const nextWeeks = weeksWithMissions.filter(w => w > selectedWeek);
-    return nextWeeks.length > 0 ? Math.min(...nextWeeks) : null;
-  };
-  
-  const canGoPrev = getPrevWeekWithMission() !== null;
-  const canGoNext = getNextWeekWithMission() !== null;
+  // Allow free navigation between all 12 weeks
+  const canGoPrev = selectedWeek > 1;
+  const canGoNext = selectedWeek < 12;
 
   // Empty state when no missions exist
   if (missions.length === 0) {
@@ -152,10 +142,7 @@ export const CurrentMissionSection = ({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => {
-                const prev = getPrevWeekWithMission();
-                if (prev) setSelectedWeek(prev);
-              }}
+              onClick={() => setSelectedWeek(prev => Math.max(1, prev - 1))}
               disabled={!canGoPrev}
               className={cn(
                 "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
@@ -173,10 +160,7 @@ export const CurrentMissionSection = ({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => {
-                const next = getNextWeekWithMission();
-                if (next) setSelectedWeek(next);
-              }}
+              onClick={() => setSelectedWeek(prev => Math.min(12, prev + 1))}
               disabled={!canGoNext}
               className={cn(
                 "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
@@ -259,10 +243,7 @@ export const CurrentMissionSection = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => {
-              const prev = getPrevWeekWithMission();
-              if (prev) setSelectedWeek(prev);
-            }}
+            onClick={() => setSelectedWeek(prev => Math.max(1, prev - 1))}
             disabled={!canGoPrev}
             className={cn(
               "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
@@ -288,10 +269,7 @@ export const CurrentMissionSection = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => {
-              const next = getNextWeekWithMission();
-              if (next) setSelectedWeek(next);
-            }}
+            onClick={() => setSelectedWeek(prev => Math.min(12, prev + 1))}
             disabled={!canGoNext}
             className={cn(
               "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
