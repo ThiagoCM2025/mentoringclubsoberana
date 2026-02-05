@@ -48,7 +48,17 @@ export const CurrentMissionSection = ({
   courseId,
   userId
 }: CurrentMissionSectionProps) => {
-  const [selectedWeek, setSelectedWeek] = useState(currentWeek);
+  // Find weeks that have missions
+  const weeksWithMissions = [...new Set(missions.map(m => m.week_number))].sort((a, b) => a - b);
+  
+  // Find the initial week: prefer current week if it has a mission, otherwise first available
+  const getInitialWeek = () => {
+    if (missions.length === 0) return 1;
+    if (missions.some(m => m.week_number === currentWeek)) return currentWeek;
+    return weeksWithMissions[0] || 1;
+  };
+  
+  const [selectedWeek, setSelectedWeek] = useState(getInitialWeek);
   const [showHistory, setShowHistory] = useState(false);
   
   const mission = missions.find(m => m.week_number === selectedWeek);
@@ -77,7 +87,123 @@ export const CurrentMissionSection = ({
   const canNavigatePrev = selectedWeek > 1;
   const canNavigateNext = selectedWeek < 12;
 
-  if (!mission) return null;
+  // Navigation helpers for weeks with missions only
+  const getPrevWeekWithMission = () => {
+    const prevWeeks = weeksWithMissions.filter(w => w < selectedWeek);
+    return prevWeeks.length > 0 ? Math.max(...prevWeeks) : null;
+  };
+  
+  const getNextWeekWithMission = () => {
+    const nextWeeks = weeksWithMissions.filter(w => w > selectedWeek);
+    return nextWeeks.length > 0 ? Math.min(...nextWeeks) : null;
+  };
+  
+  const canGoPrev = getPrevWeekWithMission() !== null;
+  const canGoNext = getNextWeekWithMission() !== null;
+
+  // Empty state when no missions exist
+  if (missions.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-8"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary/30 to-secondary/10 flex items-center justify-center border border-secondary/30">
+            <Flame className="w-6 h-6 text-secondary" />
+          </div>
+          <div>
+            <h2 className="font-serif font-bold text-2xl text-shimmer-gold">
+              Sua Jornada Semanal
+            </h2>
+            <p className="text-sm text-cream/60">Arena de Execução</p>
+          </div>
+        </div>
+        <Card className="border-2 border-dashed border-zinc-700/50 bg-zinc-900/50 p-8 text-center">
+          <div className="w-16 h-16 rounded-full bg-zinc-800/50 flex items-center justify-center mx-auto mb-4">
+            <Target className="w-8 h-8 text-zinc-500" />
+          </div>
+          <h3 className="font-serif text-xl text-cream/60 mb-2">Missões em Breve</h3>
+          <p className="text-zinc-500 text-sm">As missões da sua jornada serão disponibilizadas em breve.</p>
+        </Card>
+      </motion.div>
+    );
+  }
+
+  // If selected week has no mission, show a "no mission for this week" state
+  if (!mission) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-8"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary/30 to-secondary/10 flex items-center justify-center border border-secondary/30">
+              <Flame className="w-6 h-6 text-secondary" />
+            </div>
+            <div>
+              <h2 className="font-serif font-bold text-2xl text-shimmer-gold">Sua Jornada Semanal</h2>
+              <p className="text-sm text-cream/60 flex items-center gap-2">
+                <Sparkles className="w-3 h-3 text-secondary" />
+                Arena de Execução
+              </p>
+            </div>
+          </div>
+          
+          {/* Week Navigation */}
+          <div className="flex items-center gap-2 bg-zinc-900/60 rounded-xl p-1.5 border border-secondary/20 backdrop-blur-sm">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                const prev = getPrevWeekWithMission();
+                if (prev) setSelectedWeek(prev);
+              }}
+              disabled={!canGoPrev}
+              className={cn(
+                "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
+                !canGoPrev && "opacity-30"
+              )}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            
+            <Badge variant="outline" className="min-w-[140px] justify-center text-sm py-2 font-semibold border-cream/30 text-cream/70">
+              <Flame className="w-4 h-4 mr-2 text-cream/50" />
+              Semana {selectedWeek} de 12
+            </Badge>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                const next = getNextWeekWithMission();
+                if (next) setSelectedWeek(next);
+              }}
+              disabled={!canGoNext}
+              className={cn(
+                "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
+                !canGoNext && "opacity-30"
+              )}
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
+        </div>
+        
+        <Card className="border-2 border-dashed border-zinc-700/50 bg-zinc-900/50 p-8 text-center">
+          <p className="text-zinc-400">Nenhuma missão para esta semana.</p>
+          <p className="text-zinc-500 text-sm mt-2">
+            Missões disponíveis nas semanas: {weeksWithMissions.join(', ')}
+          </p>
+        </Card>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -136,11 +262,14 @@ export const CurrentMissionSection = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setSelectedWeek(prev => Math.max(1, prev - 1))}
-            disabled={!canNavigatePrev}
+            onClick={() => {
+              const prev = getPrevWeekWithMission();
+              if (prev) setSelectedWeek(prev);
+            }}
+            disabled={!canGoPrev}
             className={cn(
               "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
-              !canNavigatePrev && "opacity-30"
+              !canGoPrev && "opacity-30"
             )}
           >
             <ChevronLeft className="w-5 h-5" />
@@ -162,11 +291,14 @@ export const CurrentMissionSection = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setSelectedWeek(prev => Math.min(12, prev + 1))}
-            disabled={!canNavigateNext}
+            onClick={() => {
+              const next = getNextWeekWithMission();
+              if (next) setSelectedWeek(next);
+            }}
+            disabled={!canGoNext}
             className={cn(
               "text-cream/50 hover:text-secondary hover:bg-secondary/20 transition-all h-9 w-9",
-              !canNavigateNext && "opacity-30"
+              !canGoNext && "opacity-30"
             )}
           >
             <ChevronRight className="w-5 h-5" />
