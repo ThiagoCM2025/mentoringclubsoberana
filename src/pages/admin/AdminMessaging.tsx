@@ -2,10 +2,12 @@ import { useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import SEO from "@/components/SEO";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, FileText, History, MessageCircle } from "lucide-react";
+import { Mail, FileText, History, MessageCircle, Inbox, Send } from "lucide-react";
 import { StudentRecipientSelector } from "@/components/admin/messaging/StudentRecipientSelector";
 import { MessageHistory } from "@/components/admin/messaging/MessageHistory";
 import { TemplatesManager } from "@/components/admin/messaging/TemplatesManager";
+import { EmailInbox } from "@/components/admin/messaging/EmailInbox";
+import { EmailTrackingHistory } from "@/components/admin/messaging/EmailTrackingHistory";
 import { WhatsAppInboxModal } from "@/components/admin/whatsapp/WhatsAppInboxModal";
 import { Button } from "@/components/ui/button";
 import { useUnreadWhatsAppCount } from "@/hooks/useUnreadWhatsAppCount";
@@ -51,16 +53,24 @@ export default function AdminMessaging() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3 bg-muted border border-border">
-            <TabsTrigger value="send" className="flex items-center gap-2 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
-              <Mail className="h-4 w-4" />
+          <TabsList className="grid w-full max-w-2xl grid-cols-5 bg-muted border border-border">
+            <TabsTrigger value="send" className="flex items-center gap-1.5 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm">
+              <Send className="h-4 w-4" />
               Enviar
             </TabsTrigger>
-            <TabsTrigger value="templates" className="flex items-center gap-2 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
+            <TabsTrigger value="inbox" className="flex items-center gap-1.5 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm">
+              <Inbox className="h-4 w-4" />
+              Inbox
+            </TabsTrigger>
+            <TabsTrigger value="email-history" className="flex items-center gap-1.5 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm">
+              <Mail className="h-4 w-4" />
+              Emails
+            </TabsTrigger>
+            <TabsTrigger value="templates" className="flex items-center gap-1.5 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm">
               <FileText className="h-4 w-4" />
               Templates
             </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
+            <TabsTrigger value="history" className="flex items-center gap-1.5 text-foreground/80 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground text-xs sm:text-sm">
               <History className="h-4 w-4" />
               Histórico
             </TabsTrigger>
@@ -68,6 +78,14 @@ export default function AdminMessaging() {
 
           <TabsContent value="send" className="space-y-6">
             <StudentRecipientSelector />
+          </TabsContent>
+
+          <TabsContent value="inbox" className="space-y-6">
+            <EmailInbox />
+          </TabsContent>
+
+          <TabsContent value="email-history" className="space-y-6">
+            <EmailTrackingHistory />
           </TabsContent>
 
           <TabsContent value="templates" className="space-y-6">
