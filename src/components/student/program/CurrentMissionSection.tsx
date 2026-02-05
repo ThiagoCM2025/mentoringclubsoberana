@@ -67,7 +67,7 @@ export const CurrentMissionSection = ({
   const status = completion?.status;
   const adminFeedback = completion?.admin_feedback;
   const isCompleted = status === 'approved';
-  const isSubmitted = status === 'submitted' || status === 'pending';
+ const isSubmitted = status === 'submitted';
   const isRejected = status === 'rejected';
   const isCurrentWeek = mission?.week_number === currentWeek;
 
