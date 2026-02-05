@@ -1,35 +1,44 @@
 
-# Plano: Restaurar Curso Mentoria 360°
+# Plano: Liberar Todas as Missões
 
-## Problema Identificado
-O curso com `program_type: mentoria-360` foi editado incorretamente:
-- **Título atual**: "Soberana Elite Mastermind Anual" 
-- **Imagem atual**: `/assets/program-elite-BJgBXjqz.jpg` (imagem do programa Elite)
-
-## Restauração Necessária
-Atualizar o banco de dados para restaurar os valores originais:
-
-| Campo | Valor Atual (errado) | Valor Correto |
-|-------|---------------------|---------------|
-| Título | Soberana Elite Mastermind Anual | Mentoria Soberana 360° |
-| Imagem | /assets/program-elite-BJgBXjqz.jpg | /assets/programs/program-mentoria-360.jpg |
-
-## Ação Técnica
-Executar UPDATE no banco de dados:
-
-```sql
-UPDATE courses 
-SET 
-  title = 'Mentoria Soberana 360°',
-  thumbnail_url = '/assets/programs/program-mentoria-360.jpg',
-  updated_at = NOW()
-WHERE id = 'c0000001-0004-0000-0000-000000000004';
+## Problema Atual
+A lógica na linha 80 de `CurrentMissionSection.tsx` bloqueia missões futuras:
+```javascript
+const isLocked = selectedWeek > currentWeek;
 ```
 
-## Resultado Esperado
-- O card do curso na área "Meus Cursos" exibirá:
-  - **Título**: "Mentoria Soberana 360°"
-  - **Imagem**: A foto correta da mentora (não mais o placeholder cinza)
+Isso faz com que:
+- Apenas missões até a semana atual da aluna fiquem disponíveis
+- Semanas futuras mostrem um card com cadeado 🔒 e "Disponível em X dias"
 
-## Arquivo Afetado
-Nenhum arquivo de código será modificado - apenas atualização de dados no banco.
+## Solução
+Remover completamente a lógica de bloqueio temporal, permitindo que a aluna:
+- Navegue livremente entre todas as 12 semanas
+- Submeta qualquer missão em qualquer momento
+- Veja o conteúdo completo de todas as missões
+
+## Alterações Técnicas
+
+### Arquivo: `src/components/student/program/CurrentMissionSection.tsx`
+
+| Mudança | Antes | Depois |
+|---------|-------|--------|
+| Variável isLocked | `selectedWeek > currentWeek` | Sempre `false` |
+| Card bloqueado | Renderiza cadeado e contador | Removido completamente |
+| Arena de Execução | Condicional `!isLocked` | Sempre visível |
+
+### Código a modificar:
+
+1. **Remover variável `isLocked`** (linha 80)
+2. **Remover função `getDaysUntilUnlock`** (linhas 83-91) - não mais necessária
+3. **Remover renderização do card bloqueado** (linhas 328-349)
+4. **Simplificar condição da MissionArena** (linha 592)
+
+## Resultado Esperado
+- ✅ Todas as 12 semanas navegáveis
+- ✅ Todas as missões clicáveis e submetíveis
+- ✅ Aluna pode completar missões na ordem que preferir
+- ✅ Mantém indicador visual "🔥 Atual" apenas como referência
+
+## Arquivos Afetados
+- `src/components/student/program/CurrentMissionSection.tsx`
