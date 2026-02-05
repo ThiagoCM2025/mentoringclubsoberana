@@ -1,60 +1,35 @@
 
-# Plano: Adicionar Contador de Missões no Header
+# Plano: Restaurar Curso Mentoria 360°
 
-## Problema
-A seção "Sua Jornada Semanal" não exibe o progresso total de missões (ex: "3/9 Concluídas") no header, dificultando que o aluno veja seu progresso geral.
+## Problema Identificado
+O curso com `program_type: mentoria-360` foi editado incorretamente:
+- **Título atual**: "Soberana Elite Mastermind Anual" 
+- **Imagem atual**: `/assets/program-elite-BJgBXjqz.jpg` (imagem do programa Elite)
 
-## Solução
-Adicionar um badge/contador de progresso no header do `CurrentMissionSection` mostrando missões completadas vs total.
+## Restauração Necessária
+Atualizar o banco de dados para restaurar os valores originais:
 
----
+| Campo | Valor Atual (errado) | Valor Correto |
+|-------|---------------------|---------------|
+| Título | Soberana Elite Mastermind Anual | Mentoria Soberana 360° |
+| Imagem | /assets/program-elite-BJgBXjqz.jpg | /assets/programs/program-mentoria-360.jpg |
 
-## Mudanças Técnicas
+## Ação Técnica
+Executar UPDATE no banco de dados:
 
-### 1. Atualizar `CurrentMissionSection.tsx`
-
-**Adicionar props para receber contagem de missões completadas:**
-```text
-interface CurrentMissionSectionProps {
-  missions: WeeklyMission[];
-  missionCompletions: Record<string, {...}>;
-  // ... existing props
-}
+```sql
+UPDATE courses 
+SET 
+  title = 'Mentoria Soberana 360°',
+  thumbnail_url = '/assets/programs/program-mentoria-360.jpg',
+  updated_at = NOW()
+WHERE id = 'c0000001-0004-0000-0000-000000000004';
 ```
-
-**Calcular missões concluídas:**
-```text
-const completedMissionsCount = missions.filter(
-  m => missionCompletions[m.id]?.status === 'approved'
-).length;
-const totalMissionsCount = missions.length;
-```
-
-**Adicionar badge no header:**
-```text
-// No header, junto ao título "Sua Jornada Semanal"
-<div className="flex items-center gap-3">
-  <Badge className="bg-secondary/20 text-secondary border-secondary/30">
-    <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-    {completedMissionsCount}/{totalMissionsCount} Missões
-  </Badge>
-</div>
-```
-
-### 2. Layout do Header Atualizado
-```text
-┌─────────────────────────────────────────────────────────────┐
-│  🔥 Sua Jornada Semanal                                     │
-│     Arena de Execução   [✓ 3/9 Missões]    [< Semana 1 >]  │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Arquivo a Modificar
-1. `src/components/student/program/CurrentMissionSection.tsx`
 
 ## Resultado Esperado
-- O aluno verá instantaneamente quantas missões completou do total
-- O contador atualiza automaticamente quando missões são aprovadas
-- Mantém consistência visual com o design premium existente
+- O card do curso na área "Meus Cursos" exibirá:
+  - **Título**: "Mentoria Soberana 360°"
+  - **Imagem**: A foto correta da mentora (não mais o placeholder cinza)
+
+## Arquivo Afetado
+Nenhum arquivo de código será modificado - apenas atualização de dados no banco.
