@@ -1,73 +1,32 @@
-# Welcome to your Lovable project
+# Soberana Digital
 
-## Project info
+Chat, crie um ecosistema para cursos, veja as referencias em anexo e sites abaixo para se coletar mais informações, podemos aplicar as tecnicas do Plano que esta em PDF, seguir o Brand que tambem esta em PDF e USAr as Imagens...
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+A Ideia é Ter uma Paginal Principal, que é o Site Soberana - USar todas tecnicas de vendas e mais atuais do mercado para ser uma pagina vendavel, Neste Pagina teremos um Botão de Area do Aluno que levará para plataforma de cursos,  esta plataforma deve ter todos os componetes de estrutura de plataformas de cursos, os alunos terão acesso as aulas, materiais e tudo que as plataformas mais atuais disponibilizam, o administrador terá seu dashbord onde controla os alunos, inclui as aulas e faz todo acompanhamento das novas inscriçõs... na pagina tambem teremos uma seção que demonstre os produtos oferecidos, mentoria, cursos, palestras, monte uns 5 mockups de exemplos e dpois vamos nomeando e estruturando um a um...
+No Footer teremo im botão Admin, ali teremos um outro dashboard com informações relacionadas as paginas, acompanhamento de visualizações, crm integrado, acompanhamento de leads de paginas de capturas, acompanhamento de ebooks baixados, e-mails enviados... Pagina para uma analise completa...
+Sei que é algo complexo, por isso peço sua maxima atenção e estudo critido e traga um plano bem estruturado para montarmos algo impressionante
 
-## How can I edit this code?
+https://soberanamentoria.com.br/--- https://flo.host/35FdTmO/ ----- https://mentoriamarcellosafe.com.br/o-ano-da-virada-13/ ----
 
-There are several ways of editing your application.
+This project was built with [Lovable](https://lovable.dev).
 
-**Use Lovable**
+**Live app**: https://mentoringclubsoberana.lovable.app
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Build with Lovable
 
-Changes made via Lovable will be committed automatically to this repo.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/30c7ed49-1679-49f8-a57b-4f1e68e5f21a).
 
-**Use your preferred IDE**
+- **Ship faster**: describe what you want to build and Lovable handles the code.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Development
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
+git clone <this-repository-url>
+cd <repository-name>
 npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
